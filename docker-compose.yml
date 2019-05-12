@@ -49,12 +49,11 @@ services:
       - MYSQL_DATABASE=${MARIADB_DATABASE}
       - MYSQL_USER=${MARIADB_USER}
       - MYSQL_PASSWORD=${MARIADB_PASSWORD}
-
     volumes:
       - ${CODE}:/var/www/
-    #depends_on:
-    #  - mariadb
-    #  - redis
+    depends_on:
+      - mariadb
+      - redis
     networks:
       - backend
 
@@ -74,7 +73,6 @@ services:
       - "${NGINX_HTTPS}:443"
     depends_on:
       - eveapi
-    #  - redis
     command: /bin/sh -c "envsubst '${NGINX_HOST}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
     networks:
     - backend
