@@ -40,20 +40,32 @@ services:
     networks:
     - backend
 
-### app ################################################
-  eveapi:
+### php-fpm ################################################
+  php-fpm:
     build:
-      context: ./.docker/eveapi
+      context: ./.docker/php-fpm
     restart: always
-    environment:
-      - MYSQL_DATABASE=${MARIADB_DATABASE}
-      - MYSQL_USER=${MARIADB_USER}
-      - MYSQL_PASSWORD=${MARIADB_PASSWORD}
     volumes:
       - ${CODE}:/var/www/
     depends_on:
       - mariadb
       - redis
+    networks:
+      - backend
+
+### eve-api ################################################
+  eveapi:
+    build:
+      context: ./.docker/eveapi
+    restart: on-failure
+    volumes:
+      - ${CODE}:/var/www/
+    depends_on:
+      - mariadb
+      - redis
+    environment:
+      - MYSQL_USER=${MARIADB_USER}
+      - MYSQL_PASSWORD=${MARIADB_PASSWORD}
     networks:
       - backend
 
@@ -72,10 +84,11 @@ services:
       - "${NGINX_HTTP}:80"
       - "${NGINX_HTTPS}:443"
     depends_on:
-      - eveapi
+      - php-fpm
     command: /bin/sh -c "envsubst '${NGINX_HOST}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
     networks:
-    - backend
+      - backend
+      - frontend
 
 
 ### Old ###

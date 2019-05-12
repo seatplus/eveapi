@@ -1,4 +1,4 @@
-FROM php:7.3-alpine
+FROM php:7.3-fpm-alpine
 
 RUN apk add --no-cache \
     # Install OS level dependencies
@@ -8,7 +8,6 @@ RUN apk add --no-cache \
     docker-php-ext-install pdo_mysql gd bz2 intl pcntl && \
     # Prepare composer for use
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
 #    # Prepare the source directory for SeAT
 #    mkdir -p /usr/src && cd /usr/src && \
 #    # And install SeAT
@@ -22,10 +21,12 @@ RUN apk add --no-cache \
 #    # Fix up the source permissions to be owned by www-data
 #    chown -R www-data:www-data /usr/src/seat/
 
-VOLUME /var/www
-WORKDIR /var/www
 
 COPY startup.sh /root/startup.sh
 RUN chmod +x /root/startup.sh
+
+WORKDIR /var/www
+
+CMD ["php-fpm", "-F"]
 
 ENTRYPOINT ["/bin/sh", "/root/startup.sh"]
