@@ -1,7 +1,7 @@
 {
-    "name": "laravel/lumen",
-    "description": "The Laravel Lumen Framework.",
-    "keywords": ["framework", "laravel", "lumen"],
+    "name": "seatplus/eveapi",
+    "description": "Microservice for esi updates",
+    "keywords": ["SeAT plus", "microservice", "lumen", "ESI", "eve", "online"],
     "license": "MIT",
     "type": "project",
     "require": {
