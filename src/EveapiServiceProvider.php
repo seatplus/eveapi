@@ -4,8 +4,10 @@
 namespace Seatplus\Eveapi;
 
 
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Horizon\Horizon;
+use Seatplus\Eveapi\Helpers\EseyeSetup;
 
 class EveapiServiceProvider extends ServiceProvider
 {
@@ -26,6 +28,20 @@ class EveapiServiceProvider extends ServiceProvider
 
         // Configure the queue dashboard
         $this->configure_horizon();
+
+        // Add Horizon Snapshot schedule
+        $this->addHorizonSnapshotSchedule();
+    }
+
+    public function register()
+    {
+        $this->mergeConfigFrom(__DIR__ . '/Config/eveapi.config.php', 'eveapi.config');
+
+        // Eseye Singleton
+        $this->app->singleton('esi-client', function () {
+
+            return new EseyeSetup;
+        });
     }
 
     /**
@@ -40,7 +56,8 @@ class EveapiServiceProvider extends ServiceProvider
         Horizon::auth(function ($request) {
             if (is_null($request->user()))
                 return false;
-            return $request->user()->has('queue_manager', false);
+            //return $request->user()->has('queue_manager', false);
+            return true;
         });
         
         // attempt to parse the QUEUE_BALANCING variable into a boolean
@@ -53,7 +70,7 @@ class EveapiServiceProvider extends ServiceProvider
         // Configure the workers for SeAT.
         $horizon_environments = [
             'local' => [
-                'seat-workers' => [
+                'seatplus-workers' => [
                     'connection' => 'redis',
                     'queue'      => ['high', 'medium', 'low', 'default'],
                     'balance'    => $balancing_mode,
@@ -66,6 +83,14 @@ class EveapiServiceProvider extends ServiceProvider
         
         // Set the environment configuration.
         config(['horizon.environments' => $horizon_environments]);
+    }
+
+    private function addHorizonSnapshotSchedule()
+    {
+        $this->app->booted(function () {
+            $schedule = $this->app->make(Schedule::class);
+            $schedule->command('horizon:snapshot')->everyFiveMinutes();
+        });
     }
 
 }
