@@ -3,8 +3,6 @@
 
 namespace Seatplus\Eveapi\Jobs\Status;
 
-
-use Exception;
 use Seatplus\Eveapi\Jobs\EsiBase;
 
 class Esi extends EsiBase
@@ -13,6 +11,7 @@ class Esi extends EsiBase
      * @var string
      */
     protected $method = 'get';
+
     /**
      * @var string
      */

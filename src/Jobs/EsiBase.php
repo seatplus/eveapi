@@ -4,6 +4,7 @@
 namespace Seatplus\Eveapi\Jobs;
 
 
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -12,10 +13,12 @@ use Illuminate\Queue\SerializesModels;
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Containers\EsiResponse;
 use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 
 abstract class EsiBase implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels,
+        RateLimitsEsiCalls;
 
     /**
      * @var \Seatplus\Eveapi\Models\RefreshToken
@@ -72,6 +75,49 @@ abstract class EsiBase implements ShouldQueue
         is_null($refresh_token) ? $this->public_call = true : $this->refresh_token = $refresh_token;
     }
 
+    /**
+     * Get the character_id we have for the token in this job.
+     *
+     * An exception will be thrown if an empty token is set.
+     *
+     * @return int
+     * @throws \Exception
+     */
+    public function getCharacterId(): int
+    {
+
+        if (is_null($this->refresh_token))
+            throw new Exception('No refresh_token specified');
+
+        return $this->refresh_token->character_id;
+    }
+
+    /**
+     * Assign this job a tag so that Horizon can categorize and allow
+     * for specific tags to be monitored.
+     *
+     * If a job specifies the tags property, that is added to the
+     * character_id tag that automatically gets appended.
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function tags(): array
+    {
+
+        if (property_exists($this, 'tags')) {
+            if (is_null($this->refresh_token))
+                return array_merge($this->tags, ['public']);
+
+            return array_merge($this->tags, ['character_id:' . $this->getCharacterId()]);
+        }
+
+        if (is_null($this->refresh_token))
+            return ['unknown_tag', 'public'];
+
+        return ['unknown_tag', 'character_id:' . $this->getCharacterId()];
+    }
+
     public function retrieve(array $path_values = []): EsiResponse
     {
         $client = $this->eseye();
@@ -114,4 +160,55 @@ abstract class EsiBase implements ShouldQueue
             'scopes'        => $this->refresh_token->scopes,
         ]));
     }
+
+    /**
+     * Check if there are any pages left in a response
+     * based on the number of pages available and the
+     * current page.
+     *
+     * @param int $pages
+     *
+     * @return bool
+     */
+    public function nextPage(int $pages): bool
+    {
+
+        if ($this->page >= $pages)
+            return false;
+
+        $this->page++;
+
+        return true;
+    }
+
+    /**
+     * When a job fails, grab some information and send a
+     * GA event about the exception. The Analytics job
+     * does the work of checking if analytics is disabled
+     * or not, so we don't have to care about that here.
+     *
+     * On top of that, we also increment the error rate
+     * limiter. This is checked as part of the preflight
+     * checks when API calls are made.
+     *
+     * @param \Exception $exception
+     *
+     * @throws \Exception
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    public function failed(Exception $exception)
+    {
+
+        $this->incrementEsiRateLimit();
+
+        // Rethrow the original exception for Horizon
+        throw $exception;
+    }
+
+    /**
+     * Execute the job.
+     *
+     * @return void
+     */
+    abstract public function handle();
 }

@@ -27,7 +27,7 @@ class CreateCharacterInfosTable extends Migration
             $table->string('gender');
             $table->integer('race_id');
             $table->integer('bloodline_id');
-            $table->integer('ancenstry_id')->nullable();
+            $table->integer('ancestry_id')->nullable();
             $table->float('security_status')->nullable();
             $table->integer('faction_id')->nullable();
 
