@@ -7,7 +7,7 @@ namespace Seatplus\Eveapi\Actions\Alliances;
 use Seatplus\Eveapi\Actions\Eseye\RetrieveEsiDataAction;
 use Spatie\QueueableAction\QueueableAction;
 
-class InfoAction
+class AllianceInfoAction
 {
     use QueueableAction;
 
@@ -25,7 +25,7 @@ class InfoAction
 
     private function getVersion() :string
     {
-        return 'v4';
+        return 'v3';
     }
 
     /**

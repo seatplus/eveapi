@@ -4,7 +4,6 @@
 namespace Seatplus\Eveapi\Jobs\Character;
 
 
-use Seatplus\Eveapi\Actions\Alliances\InfoAction as AllianceInfoAction;
 use Seatplus\Eveapi\Actions\Jobs\Character\InfoAction;
 use Seatplus\Eveapi\Jobs\EsiBase;
 

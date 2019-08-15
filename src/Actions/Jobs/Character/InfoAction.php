@@ -4,7 +4,7 @@ namespace Seatplus\Eveapi\Actions\Jobs\Character;
 
 use Seat\Eseye\Containers\EsiResponse;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Seatplus\Eveapi\Actions\Alliances\InfoAction as AllianceInfoAction;
+use Seatplus\Eveapi\Actions\Alliances\AllianceInfoAction;
 
 class InfoAction
 {
