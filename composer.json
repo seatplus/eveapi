@@ -34,7 +34,7 @@
   "extra": {
     "laravel": {
       "providers": [
-        "Seatplus\\Eveapi\\EveapiServiceProvider "
+        "Seatplus\\Eveapi\\EveapiServiceProvider"
       ]
     }
   }
