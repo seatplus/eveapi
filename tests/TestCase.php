@@ -6,6 +6,7 @@ namespace Seatplus\Eveapi\Tests;
 use Laravel\Horizon\HorizonServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use Seatplus\Eveapi\EveapiServiceProvider;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Web\Tests\Stubs\Kernel;
 
 abstract class TestCase extends OrchestraTestCase
@@ -23,8 +24,11 @@ abstract class TestCase extends OrchestraTestCase
         $this->setupDatabase($this->app);
 
         // setup factories
-        /*$this->withFactories(__DIR__ . '/database/factories');
+        $this->withFactories(__DIR__ . '/database/factories');
 
+        $this->test_character = factory(CharacterInfo::class)->create();
+
+        /*
         $this->test_user = factory(User::class)->create();
 
         $this->test_character = factory(CharacterInfo::class)->create([
@@ -54,7 +58,6 @@ abstract class TestCase extends OrchestraTestCase
     protected function getPackageProviders($app)
     {
         return [
-            //WebServiceProvider::class,
             EveapiServiceProvider::class,
             HorizonServiceProvider::class,
         ];
