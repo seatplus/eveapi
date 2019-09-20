@@ -37,5 +37,8 @@
         "Seatplus\\Eveapi\\EveapiServiceProvider"
       ]
     }
+  },
+  "scripts": {
+    "watch": "vendor/bin/phpunit-watcher watch"
   }
 }
