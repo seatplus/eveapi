@@ -18,6 +18,16 @@ class CorporationInfo extends Model
      */
     protected $primaryKey = 'corporation_id';
 
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'corporation_id' => 'integer',
+        'alliance_id' => 'integer'
+    ];
+
     public function characters()
     {
 
