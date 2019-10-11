@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi;
-
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\ServiceProvider;
@@ -15,12 +13,12 @@ class EveapiServiceProvider extends ServiceProvider
      * The environment variable name used to setup the queue daemon balancing mode.
      */
     const QUEUE_BALANCING_MODE = 'QUEUE_BALANCING_MODE';
-    
+
     /**
      * The environment variable name used to setup the queue workers amount.
      */
     const QUEUE_BALANCING_WORKERS = 'QUEUE_WORKERS';
-    
+
     public function boot()
     {
         //Add Migrations
@@ -59,14 +57,14 @@ class EveapiServiceProvider extends ServiceProvider
             //return $request->user()->has('queue_manager', false);
             return true;
         });
-        
+
         // attempt to parse the QUEUE_BALANCING variable into a boolean
         $balancing_mode = filter_var(env(self::QUEUE_BALANCING_MODE, false), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-        
+
         // in case the variable cannot be parsed into a boolean, assign the environment value itself
         if (is_null($balancing_mode))
             $balancing_mode = env(self::QUEUE_BALANCING_MODE, false);
-        
+
         // Configure the workers for SeAT.
         $horizon_environments = [
             'local' => [
@@ -80,7 +78,7 @@ class EveapiServiceProvider extends ServiceProvider
                 ],
             ],
         ];
-        
+
         // Set the environment configuration.
         config(['horizon.environments' => $horizon_environments]);
     }
@@ -92,5 +90,4 @@ class EveapiServiceProvider extends ServiceProvider
             $schedule->command('horizon:snapshot')->everyFiveMinutes();
         });
     }
-
 }

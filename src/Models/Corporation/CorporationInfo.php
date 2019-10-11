@@ -2,7 +2,6 @@
 
 namespace Seatplus\Eveapi\Models\Corporation;
 
-
 use Illuminate\Database\Eloquent\Model;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
@@ -25,7 +24,7 @@ class CorporationInfo extends Model
      */
     protected $casts = [
         'corporation_id' => 'integer',
-        'alliance_id' => 'integer'
+        'alliance_id' => 'integer',
     ];
 
     public function characters()
@@ -33,5 +32,4 @@ class CorporationInfo extends Model
 
         return $this->hasMany(CharacterInfo::class, 'corporation_id', 'corporation_id');
     }
-
 }

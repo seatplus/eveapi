@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Actions\Eseye;
-
 
 class LogWarningsAction
 {
@@ -24,5 +22,4 @@ class LogWarningsAction
                 $response->headers['Warning']);
         }
     }
-
 }

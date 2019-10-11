@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Helpers;
-
 
 use Seat\Eseye\Configuration;
 use Seat\Eseye\Containers\EsiAuthentication;
@@ -59,6 +57,4 @@ class EseyeSetup
         // Return an unauthenticated Eseye instance
         return new Eseye;
     }
-
-
 }
