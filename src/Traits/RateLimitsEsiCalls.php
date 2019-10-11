@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Traits;
 
 use Illuminate\Support\Facades\Redis;

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Models\Character;
 
 use Illuminate\Database\Eloquent\Model;
@@ -25,14 +24,12 @@ class CharacterInfo extends Model
      */
     protected $casts = [
         'character_id' => 'integer',
-        'corporation_id' => 'integer'
+        'corporation_id' => 'integer',
     ];
 
     public function corporation()
     {
 
-        return $this->belongsTo(CorporationInfo::class,'corporation_id', 'corporation_id');
+        return $this->belongsTo(CorporationInfo::class, 'corporation_id', 'corporation_id');
     }
-
-
 }

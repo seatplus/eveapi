@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Actions\Alliances;
-
 
 use Seatplus\Eveapi\Actions\Eseye\RetrieveEsiDataAction;
 use Spatie\QueueableAction\QueueableAction;
@@ -54,5 +52,4 @@ class AllianceInfoAction
         return $alliance_info;
 
     }
-
 }

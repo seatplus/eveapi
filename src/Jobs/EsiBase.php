@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Jobs;
-
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -46,7 +44,7 @@ abstract class EsiBase implements ShouldQueue
      *
      * @return EsiBase
      */
-    public function setAllianceId( int $alliance_id)
+    public function setAllianceId(int $alliance_id)
     {
 
         $this->alliance_id = $alliance_id;
@@ -71,5 +69,4 @@ abstract class EsiBase implements ShouldQueue
      * @return void
      */
     abstract public function handle();
-
 }
