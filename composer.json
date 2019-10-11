@@ -22,9 +22,9 @@
   "prefer-stable": true,
   "require": {
     "php": ">=7.1",
-    "laravel/framework": "5.8.*",
+    "laravel/framework": "^6.0",
     "laravel/horizon": "^3.2",
-    "eveseat/eseye": "dev-master",
+    "eveseat/eseye": "1.1.8",
     "spatie/laravel-queueable-action": "^2.1"
   },
   "require-dev": {

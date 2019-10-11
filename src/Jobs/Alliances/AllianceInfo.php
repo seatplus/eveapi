@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Jobs\Alliances;
-
 
 use Seatplus\Eveapi\Actions\Alliances\AllianceInfoAction;
 use Seatplus\Eveapi\Jobs\EsiBase;

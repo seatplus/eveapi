@@ -3,8 +3,8 @@
 namespace Seatplus\Eveapi\Actions\Jobs\Character;
 
 use Seat\Eseye\Containers\EsiResponse;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Actions\Alliances\AllianceInfoAction;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
 class InfoAction
 {
@@ -26,12 +26,11 @@ class InfoAction
             'faction_id'      => $esi_response->optional('faction_id'),
         ])->save();
 
-        if ( !empty($esi_response->optional('alliance_id')))
+        if (! empty($esi_response->optional('alliance_id')))
         {
             $alliance_info_action = new AllianceInfoAction();
             $alliance_info_action->onQueue()->execute($esi_response->alliance_id);
         }
 
     }
-
 }

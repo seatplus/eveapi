@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Jobs\Status;
 
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -42,5 +41,4 @@ class Esi extends EsiBase
 
         logger()->debug('status: ' . $status . ' request_time: ' . $end);
     }
-
 }

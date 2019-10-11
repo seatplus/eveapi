@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateCorporationInfosTable extends Migration
 {
@@ -20,7 +20,7 @@ class CreateCorporationInfosTable extends Migration
             $table->bigInteger('member_count'); //req
             $table->bigInteger('ceo_id'); //req
             $table->bigInteger('creator_id'); //req
-            $table->float('tax_rate',10,2); //req
+            $table->float('tax_rate', 10, 2); //req
 
             $table->bigInteger('alliance_id')->nullable();
             $table->dateTime('date_founded')->nullable();
