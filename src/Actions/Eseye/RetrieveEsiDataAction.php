@@ -1,6 +1,8 @@
 <?php
 
+
 namespace Seatplus\Eveapi\Actions\Eseye;
+
 
 use Seat\Eseye\Containers\EsiResponse;
 use Seat\Eseye\Exceptions\RequestFailedException;
@@ -11,9 +13,9 @@ class RetrieveEsiDataAction
     protected $get_eseye_client_action;
 
     /**
-     * @param string                                    $method
-     * @param string                                    $version
-     * @param string                                    $endpoint
+     * @param String                                    $method
+     * @param String                                    $version
+     * @param String                                    $endpoint
      * @param \Seatplus\Eveapi\Models\RefreshToken|null $refresh_token
      * @param array                                     $path_values
      * @param int|null                                  $page
@@ -30,9 +32,9 @@ class RetrieveEsiDataAction
      * @throws \Seat\Eseye\Exceptions\UriDataMissingException
      */
     public function execute(
-        string $method,
-        string $version,
-        string $endpoint,
+        String $method,
+        String $version,
+        String $endpoint,
         RefreshToken $refresh_token = null,
         array $path_values = [],
         int $page = null,
@@ -66,7 +68,7 @@ class RetrieveEsiDataAction
                 ])) {
 
                 // Remove the invalid token
-                if(! is_null($refresh_token))
+                if( !is_null($refresh_token))
                     $refresh_token->delete();
             }
 
@@ -80,7 +82,9 @@ class RetrieveEsiDataAction
             return $result;
 
         // Perform error checking
-        $this->getLogWarningAction()->execute($result, $page);
+        $this->getLogWarningAction()->setEseyeClient($client)->execute($result, $page);
+
+        //TODO update refresh token
 
         return $result;
     }
@@ -90,4 +94,5 @@ class RetrieveEsiDataAction
 
         return new LogWarningsAction();
     }
+
 }

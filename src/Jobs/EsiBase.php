@@ -69,4 +69,5 @@ abstract class EsiBase implements ShouldQueue
      * @return void
      */
     abstract public function handle();
+
 }

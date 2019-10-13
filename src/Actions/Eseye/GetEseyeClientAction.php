@@ -1,6 +1,8 @@
 <?php
 
+
 namespace Seatplus\Eveapi\Actions\Eseye;
+
 
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Eseye;
@@ -25,6 +27,8 @@ class GetEseyeClientAction
      */
     public function execute(RefreshToken $refresh_token = null) : Eseye
     {
+
+        //TODO: Use cache to receive a cached client
         $this->client = app('esi-client');
 
         $this->refresh_token = $refresh_token;
@@ -43,4 +47,5 @@ class GetEseyeClientAction
         ]));
 
     }
+
 }

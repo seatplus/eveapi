@@ -1,6 +1,8 @@
 <?php
 
+
 namespace Seatplus\Eveapi;
+
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\ServiceProvider;
@@ -29,6 +31,9 @@ class EveapiServiceProvider extends ServiceProvider
 
         // Add Horizon Snapshot schedule
         $this->addHorizonSnapshotSchedule();
+
+        // Add routes
+        $this->loadRoutesFrom(__DIR__ . '/Http/routes.php');
     }
 
     public function register()
@@ -90,4 +95,5 @@ class EveapiServiceProvider extends ServiceProvider
             $schedule->command('horizon:snapshot')->everyFiveMinutes();
         });
     }
+
 }
