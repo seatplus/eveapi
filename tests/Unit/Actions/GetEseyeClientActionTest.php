@@ -33,7 +33,7 @@ class GetEseyeClientActionTest extends TestCase
     }
 
     /** @test */
-    public function get()
+    public function getClient()
     {
 
         $action = new GetEseyeClientAction;
