@@ -3,8 +3,7 @@
 namespace Seatplus\Eveapi\Http\Controllers\Jobs\Character;
 
 use Illuminate\Http\Request;
-use Seatplus\Eveapi\Actions\Alliances\AllianceInfoAction;
-use Seatplus\Eveapi\Actions\Jobs\Character\InfoAction;
+use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Http\Controllers\Controller;
 use Seatplus\Eveapi\Jobs\Character\Info;
 
@@ -16,13 +15,16 @@ class InfoController extends Controller
             'character_id' => 'required'
         ]);
 
-        (new Info())->setCharacterId(1234);
 
+        $job_container = new JobContainer([
+            'character_id' => $request->character_id
+        ]);
 
-        $alliance_info_action = new AllianceInfoAction();
-        $data = $alliance_info_action->onQueue('default')->execute($validatedData['character_id']);
+        Info::dispatch($job_container)->onQueue('default');
 
-        dd($data);
+        return response('success', 200);
+
+        //(new Info($job_container))->handle();
 
     }
 

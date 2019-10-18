@@ -7,6 +7,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Seatplus\Eveapi\Actions\Eseye\RetrieveEsiDataAction;
+use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 abstract class EsiBase implements ShouldQueue
@@ -28,64 +30,71 @@ abstract class EsiBase implements ShouldQueue
     /**
      * @var int
      */
-    protected $alliance_id;
+    public $character_id;
 
     /**
      * @var int
      */
-    protected $character_id;
+    protected $corporation_id;
 
     /**
-     * @return mixed
+     * @var int
      */
-    public function getAllianceId()
-    {
-
-        return $this->alliance_id;
-    }
+    protected $alliance_id;
 
     /**
-     * @param mixed $alliance_id
-     *
-     * @return EsiBase
+     * @param \Seatplus\Eveapi\Models\RefreshToken $refresh_token
      */
-    public function setAllianceId(int $alliance_id)
+    public function setRefreshToken(RefreshToken $refresh_token): void
     {
 
-        $this->alliance_id = $alliance_id;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getCharacterId(): int
-    {
-
-        return $this->character_id;
+        $this->refresh_token = $refresh_token;
     }
 
     /**
      * @param int $character_id
      */
-    public function setCharacterId(int $character_id): void
+    public function setCharacterId(?int $character_id): void
     {
 
         $this->character_id = $character_id;
     }
 
+    /**
+     * @param int $corporation_id
+     */
+    public function setCorporationId(?int $corporation_id): void
+    {
 
+        $this->corporation_id = $corporation_id;
+    }
+
+    /**
+     * @param int $alliance_id
+     *
+     * @return void
+     */
+    public function setAllianceId(?int $alliance_id): void
+    {
+
+        $this->alliance_id = $alliance_id;
+    }
 
     /**
      * EsiBase constructor.
      *
-     * @param \Seatplus\Eveapi\Models\RefreshToken|null $refresh_token
+     * @param \Seatplus\Eveapi\Containers\JobContainer|null $job_container
+     *
+     * @throws \Seatplus\Eveapi\Exceptions\InvalidContainerDataException
      */
-    public function __construct(?RefreshToken $refresh_token = null)
+    public function __construct(?JobContainer $job_container = null)
     {
+        $job_container = $job_container ?? new JobContainer();
 
-        $this->refresh_token = $refresh_token;
+
+        $this->setCharacterId($job_container->getCharacterId());
+        $this->setCorporationId($job_container->getCorporationId());
+        $this->setAllianceId($job_container->getAllianceId());
     }
 
     /**
