@@ -27,14 +27,6 @@ abstract class TestCase extends OrchestraTestCase
         $this->withFactories(__DIR__ . '/database/factories');
 
         $this->test_character = factory(CharacterInfo::class)->create();
-
-        /*
-        $this->test_user = factory(User::class)->create();
-
-        $this->test_character = factory(CharacterInfo::class)->create([
-            'character_id' => $this->test_user->id,
-            'name' => $this->test_user->name
-        ]);*/
     }
 
     /**

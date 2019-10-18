@@ -8,8 +8,9 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
 class InfoAction
 {
-    public function execute(EsiResponse $esi_response, int $character_id)
+    public function execute(int $character_id)
     {
+
         if ($esi_response->isCachedLoad()) return;
 
         CharacterInfo::firstOrNew(['character_id' => $character_id])->fill([

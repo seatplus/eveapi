@@ -3,8 +3,8 @@
 namespace Seatplus\Eveapi\Tests\Unit\Containers;
 
 
-use Seatplus\Eveapi\Containers\EsiRequest;
-use Seatplus\Eveapi\Exceptions\InvalidEsiRequestDataException;
+use Seatplus\Eveapi\Containers\EsiRequestContainer;
+use Seatplus\Eveapi\Exceptions\InvalidContainerDataException;
 use Seatplus\Eveapi\Tests\TestCase;
 
 class EsiRequestContainerTest extends TestCase
@@ -12,7 +12,7 @@ class EsiRequestContainerTest extends TestCase
     /** @test */
     public function canSetProppertyTest()
     {
-        $esi_request = new EsiRequest([
+        $esi_request = new EsiRequestContainer([
             'version' => 'v4'
         ]);
 
@@ -20,14 +20,14 @@ class EsiRequestContainerTest extends TestCase
     }
 
     /** @test
-     * @throws \Seatplus\Eveapi\Exceptions\InvalidEsiRequestDataException
+     * @throws \Seatplus\Eveapi\Exceptions\InvalidContainerDataException
      */
     public function canNotSetProppertyTest()
     {
 
-        $this->expectException(InvalidEsiRequestDataException::class);
+        $this->expectException(InvalidContainerDataException::class);
 
-        $esi_request = new EsiRequest([
+        $esi_request = new EsiRequestContainer([
             'herpaderp' => 'v4'
         ]);
 
@@ -37,7 +37,7 @@ class EsiRequestContainerTest extends TestCase
     public function getPublicEsiRequest()
     {
 
-        $esi_request = new EsiRequest([
+        $esi_request = new EsiRequestContainer([
             'refresh_token' => 'someXYToken'
         ]);
 

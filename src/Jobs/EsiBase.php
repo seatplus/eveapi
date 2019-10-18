@@ -31,6 +31,11 @@ abstract class EsiBase implements ShouldQueue
     protected $alliance_id;
 
     /**
+     * @var int
+     */
+    protected $character_id;
+
+    /**
      * @return mixed
      */
     public function getAllianceId()
@@ -51,6 +56,26 @@ abstract class EsiBase implements ShouldQueue
 
         return $this;
     }
+
+    /**
+     * @return int
+     */
+    public function getCharacterId(): int
+    {
+
+        return $this->character_id;
+    }
+
+    /**
+     * @param int $character_id
+     */
+    public function setCharacterId(int $character_id): void
+    {
+
+        $this->character_id = $character_id;
+    }
+
+
 
     /**
      * EsiBase constructor.

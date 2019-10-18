@@ -5,7 +5,7 @@ namespace Seatplus\Eveapi\Exceptions;
 use Exception;
 use Throwable;
 
-class InvalidEsiRequestDataException extends Exception
+class InvalidContainerDataException extends Exception
 {
     public function __construct($message = "", $code = 0, Throwable $previous = null)
     {

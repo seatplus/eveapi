@@ -1,20 +1,20 @@
 <?php
 
+
 namespace Seatplus\Eveapi\Containers;
 
-use Seatplus\Eveapi\Exceptions\InvalidEsiRequestDataException;
 
-class EsiRequest
+use Seatplus\Eveapi\Exceptions\InvalidContainerDataException;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
+
+class JobContainer
 {
     protected $data = [
-        'method' => '',
-        'version' => '',
-        'endpoint' => '',
         'refresh_token' => null,
-        'path_values' => [],
-        'page' => null,
-        'request_body' => [],
-        'query_string' => []
+        'character_id' => null,
+        'corporation_id' => null,
+        'alliance_id' => null
     ];
 
     public function __construct(array $data = null)
@@ -25,7 +25,7 @@ class EsiRequest
             foreach ($data as $key => $value) {
 
                 if (! array_key_exists($key, $this->data))
-                    throw new InvalidEsiRequestDataException(
+                    throw new InvalidContainerDataException(
                         'Key ' . $key . ' is not valid for this container'
                     );
 
@@ -50,9 +50,24 @@ class EsiRequest
         return '';
     }
 
-    public function isPublic() : bool
+    public function getCharacterId()
     {
-        return is_null($this->data['refresh_token']);
+
+        return $this->character_id ?? $this->refresh_token->character_id;
+    }
+
+    public function getCorporationId()
+    {
+
+        return $this->corporation_id ?? CharacterInfo::find($this->getCharacterId())->corporation_id;
+
+    }
+
+    public function getAllianceId()
+    {
+
+        return $this->alliance_id ?? CorporationInfo::find($this->getCorporationId())->alliance_id;
+
     }
 
 
