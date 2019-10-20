@@ -96,6 +96,21 @@ abstract class EsiBase implements ShouldQueue
         $this->setAllianceId($job_container->getAllianceId());
     }
 
+    public function tags() : array
+    {
+        $array = property_exists($this, 'tags') ? $this->tags : [];
+
+        if(is_null($this->refresh_token))
+            $array = array_merge($array, ['public']);
+
+        return array_filter(array_merge($array, [
+            'character_id:' . $this->character_id,
+            'corporation_id:' . $this->corporation_id,
+            'alliance_id:' . $this->alliance_id
+        ]));
+
+    }
+
     /**
      * Execute the job.
      *
