@@ -58,11 +58,11 @@ class InfoAction
             'faction_id'      => $response->optional('faction_id'),
         ])->save();
 
-        if (! empty($response->optional('alliance_id')))
+        /*if (! empty($response->optional('alliance_id')))
         {
             $alliance_info_action = new AllianceInfoAction();
             $alliance_info_action->onQueue()->execute($response->alliance_id);
-        }
+        }*/
 
     }
 }

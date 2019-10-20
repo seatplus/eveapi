@@ -24,5 +24,7 @@ class Info extends EsiBase
 
         (new InfoAction())->execute($this->character_id);
 
+        return;
+
     }
 }

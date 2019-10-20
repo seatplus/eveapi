@@ -64,7 +64,7 @@ class RetrieveEsiDataAction
             return $result;
 
         // Perform error checking
-        $this->getLogWarningAction()->setEseyeClient($client)->execute($result, $page);
+        $this->getLogWarningAction()->setEseyeClient($client)->execute($result, $request->page);
 
         //TODO update refresh token
 

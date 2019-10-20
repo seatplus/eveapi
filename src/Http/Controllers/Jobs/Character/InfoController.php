@@ -15,7 +15,6 @@ class InfoController extends Controller
             'character_id' => 'required'
         ]);
 
-
         $job_container = new JobContainer([
             'character_id' => $request->character_id
         ]);
