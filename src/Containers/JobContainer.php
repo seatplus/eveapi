@@ -66,7 +66,7 @@ class JobContainer
     public function getAllianceId()
     {
 
-        return $this->alliance_id ?? optional(CorporationInfo::find($this->getCorporationId()))->alliance_id;
+        return $this->alliance_id ?? optional(CharacterInfo::find($this->getCharacterId()))->alliance_id;
 
     }
 
