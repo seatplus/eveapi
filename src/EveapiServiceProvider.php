@@ -29,6 +29,9 @@ class EveapiServiceProvider extends ServiceProvider
 
         // Add Horizon Snapshot schedule
         $this->addHorizonSnapshotSchedule();
+
+        // Add routes
+        $this->loadRoutesFrom(__DIR__ . '/Http/routes.php');
     }
 
     public function register()
@@ -65,7 +68,7 @@ class EveapiServiceProvider extends ServiceProvider
         if (is_null($balancing_mode))
             $balancing_mode = env(self::QUEUE_BALANCING_MODE, false);
 
-        // Configure the workers for SeAT.
+        // Configure the workers for SeAT plus.
         $horizon_environments = [
             'local' => [
                 'seatplus-workers' => [

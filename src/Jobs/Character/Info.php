@@ -7,20 +7,6 @@ use Seatplus\Eveapi\Jobs\EsiBase;
 
 class Info extends EsiBase
 {
-    /**
-     * @var string
-     */
-    protected $method = 'get';
-
-    /**
-     * @var string
-     */
-    protected $endpoint = '/characters/{character_id}/';
-
-    /**
-     * @var int
-     */
-    protected $version = 'v4';
 
     /**
      * @var array
@@ -35,11 +21,8 @@ class Info extends EsiBase
      */
     public function handle()
     {
-        $character_info = $this->retrieve([
-            'character_id' => $this->getCharacterId(),
-        ]);
 
-        (new InfoAction())->execute($character_info, $this->getCharacterId());
+        (new InfoAction())->execute($this->character_id);
 
     }
 }

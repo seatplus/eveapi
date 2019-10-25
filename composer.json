@@ -24,7 +24,7 @@
     "php": ">=7.1",
     "laravel/framework": "^6.0",
     "laravel/horizon": "^3.2",
-    "eveseat/eseye": "1.1.8",
+    "seatplus/eseye": "^2.0",
     "spatie/laravel-queueable-action": "^2.1"
   },
   "require-dev": {

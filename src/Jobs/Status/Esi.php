@@ -27,7 +27,9 @@ class Esi extends EsiBase
     {
         $start = microtime(true);
 
-        try {
+        logger()->debug('time is now: ' . $start);
+
+        /*try {
 
             $status = $this->retrieve()->raw;
 
@@ -39,6 +41,6 @@ class Esi extends EsiBase
 
         $end = microtime(true) - $start;
 
-        logger()->debug('status: ' . $status . ' request_time: ' . $end);
+        logger()->debug('status: ' . $status . ' request_time: ' . $end);*/
     }
 }

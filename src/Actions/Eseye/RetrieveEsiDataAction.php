@@ -4,23 +4,14 @@ namespace Seatplus\Eveapi\Actions\Eseye;
 
 use Seat\Eseye\Containers\EsiResponse;
 use Seat\Eseye\Exceptions\RequestFailedException;
-use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Containers\EsiRequestContainer;
 
 class RetrieveEsiDataAction
 {
     protected $get_eseye_client_action;
 
     /**
-     * @param string                                    $method
-     * @param string                                    $version
-     * @param string                                    $endpoint
-     * @param \Seatplus\Eveapi\Models\RefreshToken|null $refresh_token
-     * @param array                                     $path_values
-     * @param int|null                                  $page
-     *
-     * @param array                                     $request_body
-     *
-     * @param array                                     $query_string
+     * @param \Seatplus\Eveapi\Containers\EsiRequestContainer $request
      *
      * @return \Seat\Eseye\Containers\EsiResponse
      * @throws \Seat\Eseye\Exceptions\EsiScopeAccessDeniedException
@@ -29,32 +20,23 @@ class RetrieveEsiDataAction
      * @throws \Seat\Eseye\Exceptions\RequestFailedException
      * @throws \Seat\Eseye\Exceptions\UriDataMissingException
      */
-    public function execute(
-        string $method,
-        string $version,
-        string $endpoint,
-        RefreshToken $refresh_token = null,
-        array $path_values = [],
-        int $page = null,
-        array $request_body = [],
-        array $query_string = []
-    ) : EsiResponse
+    public function execute(EsiRequestContainer $request) : EsiResponse
     {
 
         $this->get_eseye_client_action = new GetEseyeClientAction();
 
-        $client = $this->get_eseye_client_action->execute($refresh_token);
-        $client->setVersion($version);
-        $client->setBody($request_body);
-        $client->setQueryString($query_string);
+        $client = $this->get_eseye_client_action->execute($request->refresh_token);
+        $client->setVersion($request->version);
+        $client->setBody($request->request_body);
+        $client->setQueryString($request->query_string);
 
         // Configure the page to get
-        if (! is_null($page))
-            $client->page($page);
+        if (! is_null($request->page))
+            $client->page($request->page);
 
         try {
 
-            $result = $client->invoke($method, $endpoint, $path_values);
+            $result = $client->invoke($request->method, $request->endpoint, $request->path_values);
         } catch (RequestFailedException $exception) {
 
             // If the token can't login and we get an HTTP 400 together with
@@ -66,8 +48,8 @@ class RetrieveEsiDataAction
                 ])) {
 
                 // Remove the invalid token
-                if(! is_null($refresh_token))
-                    $refresh_token->delete();
+                if(! is_null($request->refresh_token))
+                    $request->refresh_token->delete();
             }
 
             // Rethrow the exception
@@ -80,7 +62,9 @@ class RetrieveEsiDataAction
             return $result;
 
         // Perform error checking
-        $this->getLogWarningAction()->execute($result, $page);
+        $this->getLogWarningAction()->setEseyeClient($client)->execute($result, $request->page);
+
+        //TODO update refresh token
 
         return $result;
     }
