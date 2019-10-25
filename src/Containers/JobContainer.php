@@ -1,12 +1,9 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Containers;
-
 
 use Seatplus\Eveapi\Exceptions\InvalidContainerDataException;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
 class JobContainer
 {
@@ -14,7 +11,7 @@ class JobContainer
         'refresh_token' => null,
         'character_id' => null,
         'corporation_id' => null,
-        'alliance_id' => null
+        'alliance_id' => null,
     ];
 
     public function __construct(array $data = null)
@@ -69,7 +66,4 @@ class JobContainer
         return $this->alliance_id ?? optional(CharacterInfo::find($this->getCharacterId()))->alliance_id;
 
     }
-
-
-
 }

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Actions\Eseye;
-
 
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Eseye;
@@ -47,5 +45,4 @@ class GetEseyeClientAction
         ]));
 
     }
-
 }

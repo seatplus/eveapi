@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Actions\Eseye;
-
 
 use Seat\Eseye\Containers\EsiResponse;
 use Seat\Eseye\Exceptions\RequestFailedException;
@@ -50,7 +48,7 @@ class RetrieveEsiDataAction
                 ])) {
 
                 // Remove the invalid token
-                if( !is_null($request->refresh_token))
+                if(! is_null($request->refresh_token))
                     $request->refresh_token->delete();
             }
 
@@ -76,5 +74,4 @@ class RetrieveEsiDataAction
 
         return new LogWarningsAction();
     }
-
 }

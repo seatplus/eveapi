@@ -90,7 +90,6 @@ abstract class EsiBase implements ShouldQueue
     {
         $job_container = $job_container ?? new JobContainer();
 
-
         $this->setCharacterId($job_container->getCharacterId());
         $this->setCorporationId($job_container->getCorporationId());
         $this->setAllianceId($job_container->getAllianceId());
@@ -106,7 +105,7 @@ abstract class EsiBase implements ShouldQueue
         return array_filter(array_merge($array, [
             'character_id:' . $this->character_id,
             'corporation_id:' . $this->corporation_id,
-            'alliance_id:' . $this->alliance_id
+            'alliance_id:' . $this->alliance_id,
         ]));
 
     }
@@ -117,5 +116,4 @@ abstract class EsiBase implements ShouldQueue
      * @return void
      */
     abstract public function handle();
-
 }

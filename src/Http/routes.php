@@ -6,7 +6,7 @@ Route::namespace('Seatplus\Eveapi\Http\Controllers\Jobs\Character')
 
         Route::post('/info', [
             'as' => 'info',
-            'uses' => 'InfoController@update'
+            'uses' => 'InfoController@update',
         ]);
 
     });

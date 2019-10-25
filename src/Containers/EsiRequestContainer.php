@@ -14,7 +14,7 @@ class EsiRequestContainer
         'path_values' => [],
         'page' => null,
         'request_body' => [],
-        'query_string' => []
+        'query_string' => [],
     ];
 
     public function __construct(array $data = null)
@@ -54,7 +54,4 @@ class EsiRequestContainer
     {
         return is_null($this->data['refresh_token']);
     }
-
-
-
 }

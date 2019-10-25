@@ -38,8 +38,8 @@ class InfoAction
             'version' => $this->version,
             'endpoint' => $this->endpoint,
             'path_values' => [
-                'character_id' => $character_id
-            ]
+                'character_id' => $character_id,
+            ],
         ]));
 
         if ($response->isCachedLoad()) return;

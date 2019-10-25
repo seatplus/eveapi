@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi;
-
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\ServiceProvider;
@@ -69,7 +67,7 @@ class EveapiServiceProvider extends ServiceProvider
         // in case the variable cannot be parsed into a boolean, assign the environment value itself
         if (is_null($balancing_mode))
             $balancing_mode = env(self::QUEUE_BALANCING_MODE, false);
-        
+
         // Configure the workers for SeAT plus.
         $horizon_environments = [
             'local' => [
@@ -83,7 +81,7 @@ class EveapiServiceProvider extends ServiceProvider
                 ],
             ],
         ];
-        
+
         // Set the environment configuration.
         config(['horizon.environments' => $horizon_environments]);
     }
@@ -95,5 +93,4 @@ class EveapiServiceProvider extends ServiceProvider
             $schedule->command('horizon:snapshot')->everyFiveMinutes();
         });
     }
-
 }
