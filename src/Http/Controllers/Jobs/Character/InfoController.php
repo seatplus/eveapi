@@ -13,12 +13,11 @@ class InfoController extends Controller
     {
 
         $validatedData = $request->validate([
-            'character_id' => 'required'
+            'character_id' => 'required',
         ]);
 
-
         $job_container = new JobContainer([
-            'character_id' => $request->character_id
+            'character_id' => $request->character_id,
         ]);
 
         Info::dispatch($job_container)->onQueue('default');
@@ -26,5 +25,4 @@ class InfoController extends Controller
         return response('success', 200);
 
     }
-
 }
