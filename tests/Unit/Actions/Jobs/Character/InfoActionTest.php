@@ -2,9 +2,11 @@
 
 namespace Seatplus\Eveapi\Tests\Unit\Actions\Jobs\Character;
 
+use Illuminate\Support\Facades\Bus;
 use Mockery;
 use Seat\Eseye\Containers\EsiResponse;
-use Seatplus\Eveapi\Actions\Jobs\Character\InfoAction;
+use Seatplus\Eveapi\Actions\Jobs\Character\CharacterInfoAction;
+use Seatplus\Eveapi\Jobs\Alliances\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Tests\TestCase;
 
@@ -36,12 +38,18 @@ class InfoActionTest extends TestCase
         // First remove the test characters entry in character_infos
         CharacterInfo::find($this->test_character->character_id)->delete();
 
+        // Stop CharacterInfoAction dispatching a new job
+        Bus::fake();
+
         $this->assertDatabaseMissing('character_infos', [
             'name' => $this->test_character->name
         ]);
 
         // Run InfoAction
-        (new InfoAction)->execute(2113468987);
+        (new CharacterInfoAction)->execute(2113468987);
+
+        // Assert that Alliance Info has dispatched
+        Bus::assertDispatched(AllianceInfo::class);
 
         //Assert that test character is now created
         $this->assertDatabaseHas('character_infos', [

@@ -3,7 +3,7 @@
 namespace Seatplus\Eveapi\Tests\Jobs\Character;
 
 use Illuminate\Support\Facades\Queue;
-use Seatplus\Eveapi\Jobs\Character\Info;
+use Seatplus\Eveapi\Jobs\Character\CharacterInfo;
 use Seatplus\Eveapi\Tests\TestCase;
 
 class InfoTest extends TestCase
@@ -16,10 +16,10 @@ class InfoTest extends TestCase
         // Assert that no jobs were pushed...
         Queue::assertNothingPushed();
 
-        Info::dispatch()->onQueue('default');
+        CharacterInfo::dispatch()->onQueue('default');
 
         // Assert a job was pushed to a given queue...
-        Queue::assertPushedOn('default', Info::class);
+        Queue::assertPushedOn('default', CharacterInfo::class);
     }
 
 }
