@@ -8,6 +8,8 @@ use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 
 class AllianceInfoAction
 {
+
+    //TODO write unit test
     /**
      * @var string
      */

@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfo;
 use Seatplus\Eveapi\Tests\TestCase;
 
-class InfoTest extends TestCase
+class CharacterInfoTest extends TestCase
 {
     /** @test */
     public function testIfJobIsQueued()

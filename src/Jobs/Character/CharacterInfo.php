@@ -8,6 +8,7 @@ use Seatplus\Eveapi\Jobs\EsiBase;
 class CharacterInfo extends EsiBase
 {
 
+    //TODO Implement JobMiddlewareForRateLimit
     /**
      * @var array
      */

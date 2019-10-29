@@ -13,6 +13,8 @@ use Seatplus\Eveapi\Tests\TestCase;
 class InfoActionTest extends TestCase
 {
 
+    //TODO extend more unit test for actions
+
     /**
      * @test
      * @runTestsInSeparateProcesses

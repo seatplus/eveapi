@@ -34,12 +34,12 @@ abstract class EsiBase implements ShouldQueue
     /**
      * @var int
      */
-    protected $corporation_id;
+    public $corporation_id;
 
     /**
      * @var int
      */
-    protected $alliance_id;
+    public $alliance_id;
 
     /**
      * @param \Seatplus\Eveapi\Models\RefreshToken $refresh_token
