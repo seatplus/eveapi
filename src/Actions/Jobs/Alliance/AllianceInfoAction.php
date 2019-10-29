@@ -55,8 +55,7 @@ class AllianceInfoAction
             'executor_corporation_id' => $response->optional('executor_corporation_id'),
             'faction_id' => $response->optional('faction_id'),
             'name' => $response->name,
-            'ticker' => $response->ticker
+            'ticker' => $response->ticker,
         ])->save();
     }
-
 }

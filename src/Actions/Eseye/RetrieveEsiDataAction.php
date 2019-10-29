@@ -3,7 +3,6 @@
 namespace Seatplus\Eveapi\Actions\Eseye;
 
 use Seat\Eseye\Containers\EsiResponse;
-use Seat\Eseye\Eseye;
 use Seat\Eseye\Exceptions\RequestFailedException;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
 
@@ -90,14 +89,13 @@ class RetrieveEsiDataAction
         if(is_null($this->client) || $this->request->isPublic())
             return;
 
-        $auth =  $this->client->getAuthentication();
+        $auth = $this->client->getAuthentication();
 
         $refresh_token = $this->request->refresh_token;
         $refresh_token->token = $auth->access_token ?? '-';
         $refresh_token->expires_on = $auth->token_expires;
 
         $refresh_token->save();
-
 
     }
 }
