@@ -1,12 +1,12 @@
 <?php
 
-Route::namespace('Seatplus\Eveapi\Http\Controllers\Jobs\Character')
+use Illuminate\Support\Facades\Route;
+
+Route::namespace('Seatplus\Eveapi\Http\Controllers\Updates')
     ->prefix('eveapi')
     ->group(function () {
 
-        Route::post('/info', [
-            'as' => 'info',
-            'uses' => 'InfoController@update',
-        ]);
+        Route::post('/character_info', 'CharacterInfoController@update')->name('update.character_info');
+        Route::post('/alliance_info', 'AllianceInfoController@update')->name('update.alliance_info');
 
     });

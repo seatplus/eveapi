@@ -2,16 +2,15 @@
 
 namespace Seatplus\Eveapi\Jobs\Alliances;
 
-use Seatplus\Eveapi\Actions\Alliances\AllianceInfoAction;
+use Seatplus\Eveapi\Actions\Jobs\Alliance\AllianceInfoAction;
 use Seatplus\Eveapi\Jobs\EsiBase;
 
 class AllianceInfo extends EsiBase
 {
-
     /**
-     * @var \Seatplus\Eveapi\Actions\Alliances\AllianceInfoAction
+     * @var array
      */
-    private $alliance_info_action;
+    protected $tags = ['alliance', 'info'];
 
     /**
      * Execute the job.
@@ -25,7 +24,6 @@ class AllianceInfo extends EsiBase
      */
     public function handle()
     {
-        $this->alliance_info_action = new AllianceInfoAction();
-        $this->alliance_info_action->execute($this->getAllianceId());
+        (new AllianceInfoAction())->execute($this->alliance_id);
     }
 }
