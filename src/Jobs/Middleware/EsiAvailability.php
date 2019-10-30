@@ -2,7 +2,6 @@
 
 namespace Seatplus\Eveapi\Jobs\Middleware;
 
-
 use Seatplus\Eveapi\Actions\Esi\GetEsiStatusAction;
 
 class EsiAvailability
@@ -22,5 +21,4 @@ class EsiAvailability
         if($staus === 'ok')
             $next($job);
     }
-
 }

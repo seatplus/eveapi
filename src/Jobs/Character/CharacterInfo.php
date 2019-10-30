@@ -3,8 +3,8 @@
 namespace Seatplus\Eveapi\Jobs\Character;
 
 use Seatplus\Eveapi\Actions\Jobs\Character\CharacterInfoAction;
-use Seatplus\Eveapi\Jobs\Middleware\EsiAvailability;
 use Seatplus\Eveapi\Jobs\EsiBase;
+use Seatplus\Eveapi\Jobs\Middleware\EsiAvailability;
 
 class CharacterInfo extends EsiBase
 {
