@@ -16,9 +16,9 @@ class EsiAvailability
     public function handle($job, $next)
     {
 
-        $staus = (new GetEsiStatusAction())->execute();
+        $status = (new GetEsiStatusAction())->execute();
 
-        if($staus === 'ok')
+        if($status === 'ok')
             $next($job);
     }
 }
