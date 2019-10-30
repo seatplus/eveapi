@@ -97,16 +97,21 @@ abstract class EsiBase implements ShouldQueue
 
     public function tags() : array
     {
-        $array = property_exists($this, 'tags') ? $this->tags : [];
+        $tags = collect(property_exists($this, 'tags') ? $this->tags : []);
 
         if(is_null($this->refresh_token))
-            $array = array_merge($array, ['public']);
+            $tags->push('public');
 
-        return array_filter(array_merge($array, [
-            'character_id:' . $this->character_id,
-            'corporation_id:' . $this->corporation_id,
-            'alliance_id:' . $this->alliance_id,
-        ]));
+        if($this->character_id)
+            $tags->push('character_id:' . $this->character_id);
+
+        if($this->corporation_id)
+            $tags->push('corporation_id:' . $this->corporation_id);
+
+        if($this->alliance_id)
+            $tags->push('alliance_id:' . $this->alliance_id);
+
+        return $tags->toArray();
 
     }
 
