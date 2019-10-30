@@ -57,11 +57,10 @@ class GetEsiStatusAction
 
         cache(['esi-status' => [
             'status' => $status,
-            'request_time' => $end
+            'request_time' => $end,
         ]], now()->addSeconds(10));
 
         return $status;
 
     }
-
 }

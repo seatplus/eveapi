@@ -3,7 +3,6 @@
 namespace Seatplus\Eveapi\Actions\Jobs\Character;
 
 use Seatplus\Eveapi\Actions\Eseye\RetrieveEsiDataAction;
-use Seatplus\Eveapi\Actions\Jobs\Middleware\EsiAvailability;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfo;
