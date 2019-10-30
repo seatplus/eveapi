@@ -3,6 +3,7 @@
 
 namespace Seatplus\Eveapi\Tests;
 
+use Illuminate\Support\Facades\Cache;
 use Laravel\Horizon\HorizonServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use Seatplus\Eveapi\EveapiServiceProvider;
