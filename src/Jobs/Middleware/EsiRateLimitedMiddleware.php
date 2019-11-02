@@ -1,11 +1,8 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Jobs\Middleware;
 
-
 use Mockery\Exception;
-use Seatplus\Eveapi\Actions\Esi\GetEsiStatusAction;
 use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 
 class EsiRateLimitedMiddleware
@@ -27,5 +24,4 @@ class EsiRateLimitedMiddleware
 
         $job->fail(new Exception('Hitting Esi Rate Limit. Probably the scope is missing or refresh_token was deleted'));
     }
-
 }
