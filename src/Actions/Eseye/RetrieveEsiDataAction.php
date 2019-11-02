@@ -52,22 +52,7 @@ class RetrieveEsiDataAction
             $result = $this->client->invoke($this->request->method, $this->request->endpoint, $this->request->path_values);
         } catch (RequestFailedException $exception) {
 
-            // If error is in 4xx or 5xx range increase esi rate limit
-            if(($exception->getEsiResponse()->getErrorCode() >= 400) && ($exception->getEsiResponse()->getErrorCode() <= 599))
-                $this->incrementEsiRateLimit();
-
-            // If the token can't login and we get an HTTP 400 together with
-            // and error message stating that this is an invalid_token, remove
-            // the token from SeAT plus.
-            if ($exception->getEsiResponse()->getErrorCode() == 400 && in_array($exception->getEsiResponse()->error(), [
-                    'invalid_token: The refresh token is expired.',
-                    'invalid_token: The refresh token does not match the client specified.',
-                ])) {
-
-                // Remove the invalid token
-                if(! is_null($this->request->refresh_token))
-                    $this->request->refresh_token->delete();
-            }
+            $this->handleException($exception);
 
             // Rethrow the exception
             throw $exception;
@@ -106,5 +91,25 @@ class RetrieveEsiDataAction
 
         $refresh_token->save();
 
+    }
+
+    private function handleException(RequestFailedException $exception)
+    {
+        // If error is in 4xx or 5xx range increase esi rate limit
+        if(($exception->getEsiResponse()->getErrorCode() >= 400) && ($exception->getEsiResponse()->getErrorCode() <= 599))
+            $this->incrementEsiRateLimit();
+
+        // If the token can't login and we get an HTTP 400 together with
+        // and error message stating that this is an invalid_token, remove
+        // the token from SeAT plus.
+        if ($exception->getEsiResponse()->getErrorCode() == 400 && in_array($exception->getEsiResponse()->error(), [
+                'invalid_token: The refresh token is expired.',
+                'invalid_token: The refresh token does not match the client specified.',
+            ])) {
+
+            // Remove the invalid token
+            if(! is_null($this->request->refresh_token))
+                $this->request->refresh_token->delete();
+        }
     }
 }
