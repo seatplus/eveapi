@@ -20,5 +20,8 @@ class EsiAvailability
 
         if($status === 'ok')
             $next($job);
+
+        //TODO add Exception
+        $job->fail();
     }
 }
