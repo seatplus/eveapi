@@ -25,7 +25,7 @@ class CharacterInfo extends EsiBase
     {
         return [
             new EsiRateLimitedMiddleware,
-            new EsiAvailability
+            new EsiAvailability,
         ];
     }
 
