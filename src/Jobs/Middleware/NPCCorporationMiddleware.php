@@ -5,7 +5,7 @@ namespace Seatplus\Eveapi\Jobs\Middleware;
 use Seatplus\Eveapi\Actions\Esi\GetEsiStatusAction;
 use Seatplus\Eveapi\Exceptions\NPCCorporationCheckException;
 
-class NPCCorporationCheck
+class NPCCorporationMiddleware
 {
     /**
      * Process the queued job. If corporation_id is non NPC.

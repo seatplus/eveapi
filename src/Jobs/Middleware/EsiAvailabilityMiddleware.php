@@ -4,7 +4,7 @@ namespace Seatplus\Eveapi\Jobs\Middleware;
 
 use Seatplus\Eveapi\Actions\Esi\GetEsiStatusAction;
 
-class EsiAvailability
+class EsiAvailabilityMiddleware
 {
     /**
      * Process the queued job.
