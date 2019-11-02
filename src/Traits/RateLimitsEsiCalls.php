@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Redis;
 trait RateLimitsEsiCalls
 {
 
+    //TODO: refactor this to action!
+
     /**
      * @var string
      */
