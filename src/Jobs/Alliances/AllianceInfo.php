@@ -5,6 +5,7 @@ namespace Seatplus\Eveapi\Jobs\Alliances;
 use Seatplus\Eveapi\Actions\Jobs\Alliance\AllianceInfoAction;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailability;
+use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 
 class AllianceInfo extends EsiBase
 {
@@ -20,7 +21,10 @@ class AllianceInfo extends EsiBase
      */
     public function middleware() : array
     {
-        return [new EsiAvailability];
+        return [
+            new EsiRateLimitedMiddleware,
+            new EsiAvailability
+        ];
     }
 
     /**

@@ -8,7 +8,7 @@ use Mockery\Exception;
 use Seatplus\Eveapi\Actions\Esi\GetEsiStatusAction;
 use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 
-class IsEsiRateLimitedMiddleware
+class EsiRateLimitedMiddleware
 {
     use RateLimitsEsiCalls;
 

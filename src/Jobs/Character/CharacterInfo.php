@@ -5,6 +5,7 @@ namespace Seatplus\Eveapi\Jobs\Character;
 use Seatplus\Eveapi\Actions\Jobs\Character\CharacterInfoAction;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailability;
+use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 
 class CharacterInfo extends EsiBase
 {
@@ -22,7 +23,10 @@ class CharacterInfo extends EsiBase
      */
     public function middleware() : array
     {
-        return [new EsiAvailability];
+        return [
+            new EsiRateLimitedMiddleware,
+            new EsiAvailability
+        ];
     }
 
     /**
