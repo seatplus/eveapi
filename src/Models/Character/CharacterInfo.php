@@ -3,6 +3,7 @@
 namespace Seatplus\Eveapi\Models\Character;
 
 use Illuminate\Database\Eloquent\Model;
+use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
 class CharacterInfo extends Model
@@ -31,5 +32,11 @@ class CharacterInfo extends Model
     {
 
         return $this->belongsTo(CorporationInfo::class, 'corporation_id', 'corporation_id');
+    }
+
+    public function alliance()
+    {
+
+        return $this->belongsTo(AllianceInfo::class, 'alliance_id', 'alliance_id');
     }
 }
