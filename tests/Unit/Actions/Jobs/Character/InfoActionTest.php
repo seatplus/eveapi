@@ -21,21 +21,7 @@ class InfoActionTest extends TestCase
      */
     public function retrieveTest()
     {
-        $jsonString = file_get_contents(__DIR__ . '/../../../../Stubs/CharacterInfo.json');
-        $json = json_decode($jsonString, true);
-
-        $json['character_id'] = $this->test_character->character_id;
-        $json['name'] = $this->test_character->name;
-
-        $body = json_encode($json);
-
-        $response = new EsiResponse($body, [], 'now', 200);
-
-        $mock = Mockery::mock('overload:Seatplus\Eveapi\Actions\Eseye\RetrieveEsiDataAction');
-        $mock->shouldReceive('execute')
-            ->once()
-            ->andReturn($response);
-
+        $this->mockRetrieveEsiDataAction();
 
         // First remove the test characters entry in character_infos
         CharacterInfo::find($this->test_character->character_id)->delete();
@@ -58,6 +44,30 @@ class InfoActionTest extends TestCase
             'name' => $this->test_character->name
         ]);
 
+    }
+
+    private function mockRetrieveEsiDataAction()
+    {
+        $body = json_encode([
+            "alliance_id" => 99006828,
+            "ancestry_id"=> 11,
+            "birthday"=> "2017-11-24T14:27:47Z",
+            "bloodline_id"=> 1,
+            "corporation_id"=> 98540583,
+            "description"=> "\u53ea\u6253\u67b6\uff0c\u4e0d\u5237\u602ao(\u2229_\u2229)o ",
+            "gender"=> "male",
+            "name"=> $this->test_character->name,
+            "race_id"=> 1,
+            "security_status"=> 3.7851618081017286,
+            "title"=> "\u5317\u6597\u4e03\u661f"
+        ]);
+
+        $response = new EsiResponse($body, [], 'now', 200);
+
+        $mock = Mockery::mock('overload:Seatplus\Eveapi\Actions\Eseye\RetrieveEsiDataAction');
+        $mock->shouldReceive('execute')
+            ->once()
+            ->andReturn($response);
     }
 
 }
