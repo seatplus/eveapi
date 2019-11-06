@@ -3,8 +3,6 @@
 namespace Seatplus\Eveapi\Tests\Unit\Actions\Jobs\Character;
 
 use Illuminate\Support\Facades\Bus;
-use Mockery;
-use Seat\Eseye\Containers\EsiResponse;
 use Seatplus\Eveapi\Actions\Jobs\Character\CharacterInfoAction;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;

@@ -2,16 +2,10 @@
 
 namespace Seatplus\Eveapi\Tests\Unit\Actions\Jobs\Alliance;
 
-use Illuminate\Support\Facades\Bus;
-use Mockery;
-use Seat\Eseye\Containers\EsiResponse;
 use Seatplus\Eveapi\Actions\Jobs\Alliance\AllianceInfoAction;
-use Seatplus\Eveapi\Actions\Jobs\Character\CharacterInfoAction;
-
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
-use Faker\Generator as Faker;
+
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 
 class AllianceInfoActionTest extends TestCase
