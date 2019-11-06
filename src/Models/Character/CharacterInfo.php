@@ -32,7 +32,7 @@ class CharacterInfo extends Model
     public function refresh_token()
     {
 
-        return $this->hasOne(RefreshToken::class, 'character_id','character_id');
+        return $this->hasOne(RefreshToken::class, 'character_id', 'character_id');
     }
 
     public function corporation()
