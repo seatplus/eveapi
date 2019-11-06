@@ -57,7 +57,7 @@ class CharacterInfoAction
             'ancestry_id'    => $response->optional('ancestry_id'),
             'security_status' => $response->optional('security_status'),
             'faction_id'      => $response->optional('faction_id'),
-            'title' => $response->optional('title')
+            'title' => $response->optional('title'),
         ])->save();
 
         if (! empty($response->optional('alliance_id')))
