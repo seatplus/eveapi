@@ -16,6 +16,11 @@ $factory->define(CharacterInfo::class, function (Faker $faker) {
         'gender'          => $faker->randomElement(['male', 'female']),
         'race_id'         => $faker->randomDigitNotNull,
         'bloodline_id'    => $faker->randomDigitNotNull,
+        'alliance_id'     => $faker->optional()->numberBetween(99000000,100000000),
+        'ancestry_id'     => $faker->optional()->randomDigit,
+        'description'     => $faker->optional()->realText(),
+        'security_status' => $faker->optional()->randomFloat(null,-10,+10),
+        'title'           => $faker->optional()->bs
     ];
 });
 

@@ -9,7 +9,7 @@ use Seatplus\Eveapi\Tests\TestCase;
 class CharacterInfoTest extends TestCase
 {
     /** @test */
-    public function characterHasCorporationRelationTest()
+    public function characterHasAllianceRelationTest()
     {
 
         $this->assertEquals(

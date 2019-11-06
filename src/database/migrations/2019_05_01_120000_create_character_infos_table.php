@@ -29,6 +29,7 @@ class CreateCharacterInfosTable extends Migration
             $table->integer('ancestry_id')->nullable();
             $table->float('security_status')->nullable();
             $table->integer('faction_id')->nullable();
+            $table->integer('title')->nullable();
 
             $table->timestamps();
 
