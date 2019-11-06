@@ -5,6 +5,7 @@ use Faker\Generator as Faker;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
+use Seatplus\Eveapi\Models\RefreshToken;
 
 $factory->define(CharacterInfo::class, function (Faker $faker) {
 
@@ -28,4 +29,5 @@ $factory->afterCreating(CharacterInfo::class, function ($character_info, $faker)
 
     $character_info->corporation()->associate(factory(CorporationInfo::class)->create());
     $character_info->alliance()->associate(factory(AllianceInfo::class)->create());
+    $character_info->refresh_token()->save(factory(RefreshToken::class)->create());
 });
