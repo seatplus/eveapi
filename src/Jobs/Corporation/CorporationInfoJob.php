@@ -1,20 +1,20 @@
 <?php
 
-namespace Seatplus\Eveapi\Jobs\Character;
+namespace Seatplus\Eveapi\Jobs\Corporation;
 
-use Seatplus\Eveapi\Actions\Jobs\Character\CorporationInfoAction;
+use Seatplus\Eveapi\Actions\Jobs\Corporation\CorporationInfoAction;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailability;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 
-class CharacterInfo extends EsiBase
+class CorporationInfoJob extends EsiBase
 {
 
     //TODO Implement JobMiddlewareForRateLimit
     /**
      * @var array
      */
-    protected $tags = ['character', 'info'];
+    protected $tags = ['corporation', 'info'];
 
     /**
      * Get the middleware the job should pass through.
@@ -38,7 +38,7 @@ class CharacterInfo extends EsiBase
     public function handle()
     {
 
-        (new CorporationInfoAction())->execute($this->character_id);
+        (new CorporationInfoAction())->execute($this->corporation_id);
 
     }
 }
