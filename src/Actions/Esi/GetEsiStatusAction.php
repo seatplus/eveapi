@@ -5,9 +5,12 @@ namespace Seatplus\Eveapi\Actions\Esi;
 use Exception;
 use Seatplus\Eveapi\Actions\Eseye\RetrieveEsiDataAction;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
+use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 
 class GetEsiStatusAction
 {
+    use RateLimitsEsiCalls;
+
     /**
      * @var string
      */
@@ -34,6 +37,9 @@ class GetEsiStatusAction
      */
     public function execute() : string
     {
+        if($this->isEsiRateLimited())
+            return 'rate limited';
+
         // If recently a status request was made, return the cached result
         if(! is_null($cache = cache('esi-status')))
             return $cache['status'];

@@ -5,9 +5,13 @@ namespace Seatplus\Eveapi\Actions\Eseye;
 use Seat\Eseye\Containers\EsiResponse;
 use Seat\Eseye\Exceptions\RequestFailedException;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
+use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 
 class RetrieveEsiDataAction
 {
+
+    use RateLimitsEsiCalls;
+
     protected $get_eseye_client_action;
 
     protected $client = null;
@@ -20,7 +24,7 @@ class RetrieveEsiDataAction
     }
 
     /**
-     * @param \Seatplus\Eveapi\Containers\EsiRequestContainer $this->request
+     * @param \Seatplus\Eveapi\Containers\EsiRequestContainer $this ->request
      *
      * @return \Seat\Eseye\Containers\EsiResponse
      * @throws \Seat\Eseye\Exceptions\EsiScopeAccessDeniedException
@@ -28,6 +32,7 @@ class RetrieveEsiDataAction
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      * @throws \Seat\Eseye\Exceptions\RequestFailedException
      * @throws \Seat\Eseye\Exceptions\UriDataMissingException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function execute(EsiRequestContainer $request) : EsiResponse
     {
@@ -47,18 +52,7 @@ class RetrieveEsiDataAction
             $result = $this->client->invoke($this->request->method, $this->request->endpoint, $this->request->path_values);
         } catch (RequestFailedException $exception) {
 
-            // If the token can't login and we get an HTTP 400 together with
-            // and error message stating that this is an invalid_token, remove
-            // the token from SeAT plus.
-            if ($exception->getEsiResponse()->getErrorCode() == 400 && in_array($exception->getEsiResponse()->error(), [
-                    'invalid_token: The refresh token is expired.',
-                    'invalid_token: The refresh token does not match the client specified.',
-                ])) {
-
-                // Remove the invalid token
-                if(! is_null($this->request->refresh_token))
-                    $this->request->refresh_token->delete();
-            }
+            $this->handleException($exception);
 
             // Rethrow the exception
             throw $exception;
@@ -97,5 +91,25 @@ class RetrieveEsiDataAction
 
         $refresh_token->save();
 
+    }
+
+    private function handleException(RequestFailedException $exception)
+    {
+        // If error is in 4xx or 5xx range increase esi rate limit
+        if(($exception->getEsiResponse()->getErrorCode() >= 400) && ($exception->getEsiResponse()->getErrorCode() <= 599))
+            $this->incrementEsiRateLimit();
+
+        // If the token can't login and we get an HTTP 400 together with
+        // and error message stating that this is an invalid_token, remove
+        // the token from SeAT plus.
+        if ($exception->getEsiResponse()->getErrorCode() == 400 && in_array($exception->getEsiResponse()->error(), [
+                'invalid_token: The refresh token is expired.',
+                'invalid_token: The refresh token does not match the client specified.',
+            ])) {
+
+            // Remove the invalid token
+            if(! is_null($this->request->refresh_token))
+                $this->request->refresh_token->delete();
+        }
     }
 }
