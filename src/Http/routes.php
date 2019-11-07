@@ -8,5 +8,6 @@ Route::namespace('Seatplus\Eveapi\Http\Controllers\Updates')
 
         Route::post('/character_info', 'CharacterInfoController@update')->name('update.character_info');
         Route::post('/alliance_info', 'AllianceInfoController@update')->name('update.alliance_info');
+        Route::post('/corporation_info', 'CorporationInfoController@update')->name('update.corporation_info');
 
     });

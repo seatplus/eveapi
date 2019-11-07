@@ -5,6 +5,7 @@ namespace Seatplus\Eveapi\Models\Character;
 use Illuminate\Database\Eloquent\Model;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
+use Seatplus\Eveapi\Models\RefreshToken;
 
 class CharacterInfo extends Model
 {
@@ -27,6 +28,12 @@ class CharacterInfo extends Model
         'character_id' => 'integer',
         'corporation_id' => 'integer',
     ];
+
+    public function refresh_token()
+    {
+
+        return $this->hasOne(RefreshToken::class, 'character_id', 'character_id');
+    }
 
     public function corporation()
     {
