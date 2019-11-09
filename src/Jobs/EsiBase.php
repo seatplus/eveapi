@@ -22,9 +22,9 @@ abstract class EsiBase implements ShouldQueue
     public $tries = 1;
 
     /**
-     * @var \Seatplus\Eveapi\Models\RefreshToken
+     * @var \Seatplus\Eveapi\Models\RefreshToken|null
      */
-    protected $refresh_token;
+    public $refresh_token;
 
     /**
      * @var int
@@ -44,7 +44,7 @@ abstract class EsiBase implements ShouldQueue
     /**
      * @param \Seatplus\Eveapi\Models\RefreshToken $refresh_token
      */
-    public function setRefreshToken(RefreshToken $refresh_token): void
+    public function setRefreshToken(?RefreshToken $refresh_token): void
     {
 
         $this->refresh_token = $refresh_token;
@@ -93,6 +93,7 @@ abstract class EsiBase implements ShouldQueue
         $this->setCharacterId($job_container->getCharacterId());
         $this->setCorporationId($job_container->getCorporationId());
         $this->setAllianceId($job_container->getAllianceId());
+        $this->setRefreshToken($job_container->getRefreshToken());
     }
 
     public function tags() : array
