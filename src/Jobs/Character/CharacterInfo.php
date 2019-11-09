@@ -2,7 +2,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Character;
 
-use Seatplus\Eveapi\Actions\Jobs\Character\CorporationInfoAction;
+use Seatplus\Eveapi\Actions\Jobs\Corporation\CorporationInfoAction;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailability;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;

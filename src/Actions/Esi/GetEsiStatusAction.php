@@ -4,12 +4,12 @@ namespace Seatplus\Eveapi\Actions\Esi;
 
 use Exception;
 use Seatplus\Eveapi\Actions\Eseye\RetrieveEsiDataAction;
-use Seatplus\Eveapi\Containers\EsiRequestContainer;
 use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
+use Seatplus\Eveapi\Traits\RetrieveEsiResponse;
 
 class GetEsiStatusAction
 {
-    use RateLimitsEsiCalls;
+    use RateLimitsEsiCalls, RetrieveEsiResponse;
 
     /**
      * @var string
@@ -21,12 +21,10 @@ class GetEsiStatusAction
      */
     protected $endpoint = '/ping';
 
-    protected $retrieve_action;
-
-    public function __construct()
-    {
-        $this->retrieve_action = new RetrieveEsiDataAction();
-    }
+    /**
+     * @var string
+     */
+    protected $version = '';
 
     /**
      * Execute the job.
@@ -48,10 +46,7 @@ class GetEsiStatusAction
 
         try {
 
-            $status = $this->retrieve_action->execute(new EsiRequestContainer([
-                'method' => $this->method,
-                'endpoint' => $this->endpoint,
-            ]))->raw;
+            $status = $this->retrieve()->raw;
 
         } catch (Exception $exception) {
 
