@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Traits;
-
 
 use Exception;
 use Seatplus\Eveapi\Actions\Eseye\RetrieveEsiDataAction;
@@ -33,7 +31,7 @@ trait RetrieveEsiResponse
             'version' => $this->version,
             'endpoint' => $this->endpoint,
             'path_values' => $path_values,
-            'refresh_token' => property_exists($this, 'refresh_token') ? $this->refresh_token : null
+            'refresh_token' => property_exists($this, 'refresh_token') ? $this->refresh_token : null,
         ]);
 
         return $this->retrieve_action->execute($esi_request_container);
@@ -47,6 +45,4 @@ trait RetrieveEsiResponse
         return true;
 
     }
-
-
 }

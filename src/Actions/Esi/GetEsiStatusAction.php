@@ -3,7 +3,6 @@
 namespace Seatplus\Eveapi\Actions\Esi;
 
 use Exception;
-use Seatplus\Eveapi\Actions\Eseye\RetrieveEsiDataAction;
 use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 use Seatplus\Eveapi\Traits\RetrieveEsiResponse;
 

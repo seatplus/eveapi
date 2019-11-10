@@ -11,7 +11,6 @@ use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 
 class CharacterRoleJob extends EsiBase
 {
-
     /**
      * Get the middleware the job should pass through.
      *
@@ -33,7 +32,7 @@ class CharacterRoleJob extends EsiBase
         return [
             'character',
             'character_id: ' . $this->character_id,
-            'roles'
+            'roles',
             ];
     }
 

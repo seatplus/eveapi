@@ -34,7 +34,7 @@ class CharacterInfoAction
         if ($response->isCachedLoad()) return;
 
         CharacterInfo::updateOrCreate([
-            'character_id' => $character_id
+            'character_id' => $character_id,
         ], [
             'name'            => $response->name,
             'description'     => $response->optional('description'),
