@@ -6,7 +6,6 @@ use Exception;
 
 class HasRefreshTokenMiddleware
 {
-
     /**
      * Process the queued job.
      *

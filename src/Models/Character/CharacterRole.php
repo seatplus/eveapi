@@ -3,9 +3,6 @@
 namespace Seatplus\Eveapi\Models\Character;
 
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
-use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
-use Seatplus\Eveapi\Models\RefreshToken;
 
 class CharacterRole extends Model
 {
@@ -29,7 +26,7 @@ class CharacterRole extends Model
         'roles' => 'array',
         'roles_at_base' => 'array',
         'roles_at_hq' => 'array',
-        'roles_at_other' => 'array'
+        'roles_at_other' => 'array',
     ];
 
     protected $roles_array = [
@@ -40,7 +37,7 @@ class CharacterRole extends Model
         'Hangar_Query_2', 'Hangar_Query_3', 'Hangar_Query_4', 'Hangar_Query_5', 'Hangar_Query_6', 'Hangar_Query_7',
         'Hangar_Take_1', 'Hangar_Take_2', 'Hangar_Take_3', 'Hangar_Take_4', 'Hangar_Take_5', 'Hangar_Take_6', 'Hangar_Take_7',
         'Junior_Accountant', 'Personnel_Manager', 'Rent_Factory_Facility', 'Rent_Office', 'Rent_Research_Facility',
-        'Security_Officer', 'Starbase_Defense_Operator', 'Starbase_Fuel_Technician', 'Station_Manager', 'Trader'
+        'Security_Officer', 'Starbase_Defense_Operator', 'Starbase_Fuel_Technician', 'Station_Manager', 'Trader',
     ];
 
     public function character()
