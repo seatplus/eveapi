@@ -7,7 +7,7 @@ use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 
-class CharacterRoles extends Model
+class CharacterRole extends Model
 {
     /**
      * @var bool

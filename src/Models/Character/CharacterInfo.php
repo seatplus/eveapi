@@ -50,6 +50,6 @@ class CharacterInfo extends Model
     public function roles()
     {
 
-        return $this->hasMany(CharacterRoles::class, 'character_id', 'character_id');
+        return $this->hasOne(CharacterRole::class, 'character_id', 'character_id');
     }
 }

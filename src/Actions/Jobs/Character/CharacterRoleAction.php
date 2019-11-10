@@ -5,7 +5,7 @@ namespace Seatplus\Eveapi\Actions\Jobs\Character;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Seatplus\Eveapi\Models\Character\CharacterRoles;
+use Seatplus\Eveapi\Models\Character\CharacterRole;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Traits\RetrieveEsiResponse;
 
@@ -42,7 +42,7 @@ class CharacterRoleAction
 
         if ($response->isCachedLoad()) return;
 
-        CharacterRoles::updateOrCreate([
+        CharacterRole::updateOrCreate([
             'character_id' => $refresh_token->character_id
         ], [
             'roles' => json_encode($response->roles),
