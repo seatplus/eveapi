@@ -38,7 +38,12 @@ class CorporationInfoJob extends EsiBase
     public function handle()
     {
 
-        (new CorporationInfoAction())->execute($this->corporation_id);
+        $this->getActionClass()->execute($this->corporation_id);
 
+    }
+
+    public function getActionClass()
+    {
+        return new CorporationInfoAction;
     }
 }

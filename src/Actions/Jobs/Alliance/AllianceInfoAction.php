@@ -2,14 +2,15 @@
 
 namespace Seatplus\Eveapi\Actions\Jobs\Alliance;
 
-use Seatplus\Eveapi\Actions\Eseye\RetrieveEsiDataAction;
-use Seatplus\Eveapi\Containers\EsiRequestContainer;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
+use Seatplus\Eveapi\Traits\RetrieveEsiResponse;
 
 class AllianceInfoAction
 {
 
     //TODO write unit test
+    use RetrieveEsiResponse;
+
     /**
      * @var string
      */
@@ -21,30 +22,16 @@ class AllianceInfoAction
     protected $endpoint = '/alliances/{alliance_id}/';
 
     /**
-     * @var int
+     * @var string
      */
     protected $version = 'v3';
 
-    /**
-     * @var \Seatplus\Eveapi\Actions\Eseye\RetrieveEsiDataAction
-     */
-    protected $retrieve_action;
-
-    public function __construct()
-    {
-        $this->retrieve_action = new RetrieveEsiDataAction();
-    }
-
     public function execute(int $alliance_id)
     {
-        $response = $this->retrieve_action->execute(new EsiRequestContainer([
-            'method' => $this->method,
-            'version' => $this->version,
-            'endpoint' => $this->endpoint,
-            'path_values' => [
+
+        $response = $this->retrieve([
                 'alliance_id' => $alliance_id,
-            ],
-        ]));
+            ]);
 
         if ($response->isCachedLoad()) return;
 

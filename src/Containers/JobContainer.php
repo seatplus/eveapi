@@ -57,13 +57,17 @@ class JobContainer
     {
 
         return $this->corporation_id ?? optional(CharacterInfo::find($this->getCharacterId()))->corporation_id;
-
     }
 
     public function getAllianceId()
     {
 
         return $this->alliance_id ?? optional(CharacterInfo::find($this->getCharacterId()))->alliance_id;
+    }
 
+    public function getRefreshToken()
+    {
+
+        return $this->refresh_token;
     }
 }

@@ -2,14 +2,15 @@
 
 namespace Seatplus\Eveapi\Actions\Jobs\Corporation;
 
-use Seatplus\Eveapi\Actions\Eseye\RetrieveEsiDataAction;
-use Seatplus\Eveapi\Containers\EsiRequestContainer;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
+use Seatplus\Eveapi\Traits\RetrieveEsiResponse;
 
 class CorporationInfoAction
 {
+    use RetrieveEsiResponse;
+
     /**
      * @var string
      */
@@ -25,25 +26,12 @@ class CorporationInfoAction
      */
     protected $version = 'v4';
 
-    protected $retrieve_action;
-
-    public function __construct()
-    {
-
-        $this->retrieve_action = new RetrieveEsiDataAction();
-    }
-
     public function execute(int $corporation_id)
     {
 
-        $response = $this->retrieve_action->execute(new EsiRequestContainer([
-            'method'      => $this->method,
-            'version'     => $this->version,
-            'endpoint'    => $this->endpoint,
-            'path_values' => [
-                'corporation_id' => $corporation_id,
-            ],
-        ]));
+        $response = $this->retrieve([
+            'corporation_id' => $corporation_id,
+        ]);
 
         if ($response->isCachedLoad()) return;
 

@@ -39,6 +39,11 @@ class AllianceInfo extends EsiBase
      */
     public function handle()
     {
-        (new AllianceInfoAction())->execute($this->alliance_id);
+        $this->getActionClass()->execute($this->alliance_id);
+    }
+
+    public function getActionClass()
+    {
+        return new AllianceInfoAction;
     }
 }

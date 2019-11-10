@@ -29,7 +29,8 @@
   },
   "require-dev": {
     "orchestra/testbench": "^3.8",
-    "spatie/phpunit-watcher": "^1.11"
+    "spatie/phpunit-watcher": "^1.11",
+    "itsgoingd/clockwork": "^4.0"
   },
   "extra": {
     "laravel": {

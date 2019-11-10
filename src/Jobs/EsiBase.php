@@ -22,9 +22,9 @@ abstract class EsiBase implements ShouldQueue
     public $tries = 1;
 
     /**
-     * @var \Seatplus\Eveapi\Models\RefreshToken
+     * @var \Seatplus\Eveapi\Models\RefreshToken|null
      */
-    protected $refresh_token;
+    public $refresh_token;
 
     /**
      * @var int
@@ -42,9 +42,14 @@ abstract class EsiBase implements ShouldQueue
     public $alliance_id;
 
     /**
+     * @var mixed
+     */
+    public $action_class;
+
+    /**
      * @param \Seatplus\Eveapi\Models\RefreshToken $refresh_token
      */
-    public function setRefreshToken(RefreshToken $refresh_token): void
+    public function setRefreshToken(?RefreshToken $refresh_token): void
     {
 
         $this->refresh_token = $refresh_token;
@@ -93,6 +98,7 @@ abstract class EsiBase implements ShouldQueue
         $this->setCharacterId($job_container->getCharacterId());
         $this->setCorporationId($job_container->getCorporationId());
         $this->setAllianceId($job_container->getAllianceId());
+        $this->setRefreshToken($job_container->getRefreshToken());
     }
 
     public function tags() : array
@@ -112,8 +118,17 @@ abstract class EsiBase implements ShouldQueue
             $tags->push('alliance_id:' . $this->alliance_id);
 
         return $tags->toArray();
-
     }
+
+    public function getRequiredScope() : string
+    {
+        if(property_exists($this, 'required_scope'))
+            return $this->required_scope;
+
+        return '';
+    }
+
+    abstract public function getActionClass();
 
     /**
      * Execute the job.

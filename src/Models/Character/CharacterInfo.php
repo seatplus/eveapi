@@ -46,4 +46,10 @@ class CharacterInfo extends Model
 
         return $this->belongsTo(AllianceInfo::class, 'alliance_id', 'alliance_id');
     }
+
+    public function roles()
+    {
+
+        return $this->hasOne(CharacterRole::class, 'character_id', 'character_id');
+    }
 }

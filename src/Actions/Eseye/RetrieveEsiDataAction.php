@@ -38,7 +38,9 @@ class RetrieveEsiDataAction
     {
         $this->request = $request;
 
-        $this->client = $this->get_eseye_client_action->execute($this->request->refresh_token);
+        $client = $this->get_eseye_client_action->execute($this->request->refresh_token);
+
+        $this->client = $client;
         $this->client->setVersion($this->request->version);
         $this->client->setBody($this->request->request_body);
         $this->client->setQueryString($this->request->query_string);
