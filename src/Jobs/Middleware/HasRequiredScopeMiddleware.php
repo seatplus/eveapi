@@ -4,7 +4,7 @@ namespace Seatplus\Eveapi\Jobs\Middleware;
 
 use Exception;
 
-class HasRefreshTokenMiddleware
+class HasRequiredScopeMiddleware
 {
 
     /**
@@ -17,9 +17,10 @@ class HasRefreshTokenMiddleware
     public function handle($job, $next)
     {
 
-        if($job->refresh_token)
+        if(in_array($job->getActionClass()->required_scope, $job->refresh_token->scopes))
             return $next($job);
 
-        $job->fail(new Exception('Refresh token is missing'));
+
+        $job->fail(new Exception('refresh_token misses required scope: ' . $job->getRequiredScope()));
     }
 }

@@ -29,7 +29,7 @@ class CharacterRoleAction
 
     protected $refresh_token;
 
-    protected $required_scope = 'esi-characters.read_corporation_roles.v1';
+    public $required_scope = 'esi-characters.read_corporation_roles.v1';
 
     public function execute(RefreshToken $refresh_token)
     {
@@ -45,10 +45,10 @@ class CharacterRoleAction
         CharacterRole::updateOrCreate([
             'character_id' => $refresh_token->character_id
         ], [
-            'roles' => json_encode($response->roles),
-            'roles_at_base' => json_encode($response->roles_at_base),
-            'roles_at_hq' => json_encode($response->roles_at_hq),
-            'roles_at_other' => json_encode($response->roles_at_other)
+            'roles' => $response->roles,
+            'roles_at_base' => $response->roles_at_base,
+            'roles_at_hq' => $response->roles_at_hq,
+            'roles_at_other' => $response->roles_at_other
         ]);
 
     }

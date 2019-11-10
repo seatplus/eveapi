@@ -38,7 +38,12 @@ class CharacterInfo extends EsiBase
     public function handle()
     {
 
-        (new CorporationInfoAction())->execute($this->character_id);
+        $this->getActionClass()->execute($this->character_id);
 
+    }
+
+    public function getActionClass()
+    {
+        return new CorporationInfoAction;
     }
 }

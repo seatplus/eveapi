@@ -29,7 +29,7 @@ class GetEseyeClientActionTest extends TestCase
 
         $action = new GetEseyeClientAction;
 
-        $this->assertInstanceOf(Eseye::class,$action->execute());
+        $this->assertInstanceOf(Eseye::class, $action->execute());
     }
 
     /** @test */
@@ -38,7 +38,7 @@ class GetEseyeClientActionTest extends TestCase
 
         $action = new GetEseyeClientAction;
 
-        $this->assertInstanceOf(Eseye::class,$action->execute());
+        $this->assertInstanceOf(Eseye::class, $action->execute());
     }
 
 }

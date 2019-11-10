@@ -20,6 +20,7 @@ class EseyeSetup
         $config->http_user_agent = 'SeAT plus v' . config('eveapi.config.version');
         $config->cache = RedisCache::class;
         $config->redis_cache_location = env('REDIS_HOST', '127.0.0.1');
+        $config->logfile_location = config('eveapi.config.eseye_logfile');
         $config->logger_level = config('eveapi.config.eseye_loglevel');
         $config->esi_scheme = env('EVE_ESI_SCHEME', 'https');
         $config->esi_host = env('EVE_ESI_HOST', 'esi.evetech.net');

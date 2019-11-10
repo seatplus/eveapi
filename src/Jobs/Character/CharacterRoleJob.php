@@ -7,14 +7,10 @@ use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailability;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
+use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 
 class CharacterRoleJob extends EsiBase
 {
-
-    /**
-     * @var array
-     */
-    protected $tags = ['character', 'role'];
 
     /**
      * Get the middleware the job should pass through.
@@ -25,9 +21,20 @@ class CharacterRoleJob extends EsiBase
     {
         return [
             new HasRefreshTokenMiddleware,
+            new HasRequiredScopeMiddleware,
             new EsiRateLimitedMiddleware,
             new EsiAvailability,
         ];
+    }
+
+    public function tags(): array
+    {
+
+        return [
+            'character',
+            'character_id: ' . $this->character_id,
+            'roles'
+            ];
     }
 
     /**
@@ -39,7 +46,12 @@ class CharacterRoleJob extends EsiBase
     public function handle()
     {
 
-        (new CharacterRoleAction())->execute($this->refresh_token);
+        $this->getActionClass()->execute($this->refresh_token);
 
+    }
+
+    public function getActionClass()
+    {
+        return new CharacterRoleAction;
     }
 }
