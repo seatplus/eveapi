@@ -120,14 +120,6 @@ abstract class EsiBase implements ShouldQueue
         return $tags->toArray();
     }
 
-    public function getRequiredScope() : string
-    {
-        if(property_exists($this, 'required_scope'))
-            return $this->required_scope;
-
-        return '';
-    }
-
     abstract public function getActionClass();
 
     /**
