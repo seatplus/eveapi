@@ -25,6 +25,5 @@ class EsiAvailabilityMiddleware
 
         //TODO: introduce release for 15min in case of DT
 
-
     }
 }
