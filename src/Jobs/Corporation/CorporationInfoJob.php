@@ -4,7 +4,7 @@ namespace Seatplus\Eveapi\Jobs\Corporation;
 
 use Seatplus\Eveapi\Actions\Jobs\Corporation\CorporationInfoAction;
 use Seatplus\Eveapi\Jobs\EsiBase;
-use Seatplus\Eveapi\Jobs\Middleware\EsiAvailability;
+use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 
 class CorporationInfoJob extends EsiBase
@@ -25,7 +25,7 @@ class CorporationInfoJob extends EsiBase
     {
         return [
             new EsiRateLimitedMiddleware,
-            new EsiAvailability,
+            new EsiAvailabilityMiddleware,
         ];
     }
 
