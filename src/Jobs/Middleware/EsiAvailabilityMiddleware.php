@@ -2,9 +2,10 @@
 
 namespace Seatplus\Eveapi\Jobs\Middleware;
 
+use Exception;
 use Seatplus\Eveapi\Actions\Esi\GetEsiStatusAction;
 
-class EsiAvailability
+class EsiAvailabilityMiddleware
 {
     /**
      * Process the queued job.
@@ -18,7 +19,11 @@ class EsiAvailability
 
         $status = (new GetEsiStatusAction())->execute();
 
-        if($status === 'ok')
-            $next($job);
+        $status === 'ok'
+            ? $next($job)
+            : $job->fail(new Exception('Esi appears to be down'));
+
+        //TODO: introduce release for 15min in case of DT
+
     }
 }

@@ -16,9 +16,11 @@ class HasRequiredScopeMiddleware
     public function handle($job, $next)
     {
 
-        if(in_array($job->getActionClass()->required_scope, $job->refresh_token->scopes))
+        $required_socpe = $job->getActionClass()->required_scope;
+
+        if(in_array($required_socpe, $job->refresh_token->scopes))
             return $next($job);
 
-        $job->fail(new Exception('refresh_token misses required scope: ' . $job->getRequiredScope()));
+        $job->fail(new Exception('refresh_token misses required scope: ' . $required_socpe));
     }
 }

@@ -4,7 +4,7 @@ namespace Seatplus\Eveapi\Jobs\Character;
 
 use Seatplus\Eveapi\Actions\Jobs\Character\CharacterRoleAction;
 use Seatplus\Eveapi\Jobs\EsiBase;
-use Seatplus\Eveapi\Jobs\Middleware\EsiAvailability;
+use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
@@ -22,7 +22,7 @@ class CharacterRoleJob extends EsiBase
             new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
             new EsiRateLimitedMiddleware,
-            new EsiAvailability,
+            new EsiAvailabilityMiddleware,
         ];
     }
 
