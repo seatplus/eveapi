@@ -10,6 +10,7 @@ use Seatplus\Eveapi\Traits\RetrieveEsiResponse;
 class CharacterInfoAction
 {
     use RetrieveEsiResponse;
+
     /**
      * @var string
      */

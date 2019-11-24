@@ -32,6 +32,7 @@ trait RetrieveEsiResponse
             'endpoint' => $this->endpoint,
             'path_values' => $path_values,
             'refresh_token' => property_exists($this, 'refresh_token') ? $this->refresh_token : null,
+            'page' => property_exists($this, 'page') ? $this->page : null,
         ]);
 
         return $this->retrieve_action->execute($esi_request_container);
