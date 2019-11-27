@@ -9,7 +9,7 @@ use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\src\Actions\Jobs\Assets\CharacterAssetsAction;
+use Seatplus\Eveapi\Actions\Jobs\Assets\CharacterAssetsAction;
 
 class CharacterAssetJob extends EsiBase
 {

@@ -17,9 +17,7 @@ Route::namespace('Seatplus\Eveapi\Http\Controllers\Updates')
             ->group(function () {
 
                 Route::post('info', 'CharacterInfoController@update')->name('update.character_info');
-                Route::get('info', function () {
-                    return collect(['one','two'])->toJson();
-                })->middleware('auth:api');
+                Route::post('assets', 'CharacterAssetController@update')->name('update.character.asset');
                 Route::post('roles', 'CharacterRoleController@update')->name('update.character.role');
             });
 
