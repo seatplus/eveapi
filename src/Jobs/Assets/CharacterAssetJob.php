@@ -1,19 +1,16 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Jobs\Assets;
 
-
+use Seatplus\Eveapi\Actions\Jobs\Assets\CharacterAssetsAction;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Actions\Jobs\Assets\CharacterAssetsAction;
 
 class CharacterAssetJob extends EsiBase
 {
-
     /**
      * Get the middleware the job should pass through.
      *

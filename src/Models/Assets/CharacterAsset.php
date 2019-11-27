@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Models\Assets;
-
 
 use Illuminate\Database\Eloquent\Model;
 use Seatplus\Eveapi\Events\CharacterAssetUpdating;
@@ -25,7 +23,7 @@ class CharacterAsset extends Model
      * @var array
      */
     protected $dispatchesEvents = [
-        'updating' => CharacterAssetUpdating::class
+        'updating' => CharacterAssetUpdating::class,
     ];
 
 }

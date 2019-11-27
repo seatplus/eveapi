@@ -2,10 +2,7 @@
 
 namespace Seatplus\Eveapi\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Seatplus\Web\Models\User;
 
 class EsiScopes extends Model
 {
@@ -35,5 +32,4 @@ class EsiScopes extends Model
      */
     public $incrementing = false;
 
-    
 }

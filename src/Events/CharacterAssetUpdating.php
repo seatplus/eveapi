@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Events;
-
 
 use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
