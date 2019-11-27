@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Actions\Character;
-
 
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 
@@ -35,5 +33,4 @@ class CharacterAssetsCleanupAction
                 $character_asset->delete();
         }
     }
-
 }

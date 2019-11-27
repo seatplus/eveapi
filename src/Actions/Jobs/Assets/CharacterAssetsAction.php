@@ -1,13 +1,11 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Actions\Jobs\Assets;
-
 
 use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Actions\Character\CharacterAssetsCleanupAction;
-use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
+use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Traits\RetrieveEsiResponse;
 
 class CharacterAssetsAction
@@ -46,14 +44,11 @@ class CharacterAssetsAction
      */
     protected $refresh_token;
 
-
     public function execute(RefreshToken $refresh_token)
     {
 
         $this->refresh_token = $refresh_token;
         $this->known_assets = collect();
-
-
 
         while (true)
         {
@@ -69,7 +64,7 @@ class CharacterAssetsAction
                 //TODO create Observer if character_id changed -> transaction
 
                 CharacterAsset::updateOrCreate([
-                    'item_id' => $asset->item_id
+                    'item_id' => $asset->item_id,
                 ], [
                     'character_id' => $this->refresh_token->character_id,
                     'is_blueprint_copy' => optional($asset)->is_blueprint_copy ?? false,
@@ -78,7 +73,7 @@ class CharacterAssetsAction
                     'location_id'        => $asset->location_id,
                     'location_type'          => $asset->location_type,
                     'quantity'   => $asset->quantity,
-                    'type_id' => $asset->type_id
+                    'type_id' => $asset->type_id,
                 ]);
 
             })->pipe(function (Collection $response) {
@@ -104,5 +99,4 @@ class CharacterAssetsAction
         // TODO get names from types that qualifies
 
     }
-
 }
