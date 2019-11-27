@@ -4,6 +4,8 @@
 namespace Seatplus\Eveapi\Actions\Jobs\Assets;
 
 
+use Illuminate\Support\Collection;
+use Seatplus\Eveapi\Actions\Character\CharacterAssetsCleanupAction;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Traits\RetrieveEsiResponse;
@@ -61,12 +63,15 @@ class CharacterAssetsAction
 
             if ($response->isCachedLoad()) return;
 
+            // First update the
             collect($response)->each(function ($asset) {
 
+                //TODO create Observer if character_id changed -> transaction
+
                 CharacterAsset::updateOrCreate([
-                    'character_id' => $this->refresh_token->character_id,
                     'item_id' => $asset->item_id
                 ], [
+                    'character_id' => $this->refresh_token->character_id,
                     'is_blueprint_copy' => optional($asset)->is_blueprint_copy ?? false,
                     'is_singleton'  => $asset->is_singleton,
                     'location_flag'     => $asset->location_flag,
@@ -76,18 +81,27 @@ class CharacterAssetsAction
                     'type_id' => $asset->type_id
                 ]);
 
-                $this->known_assets->push($asset->item_id);
+            })->pipe(function (Collection $response) {
+
+                return $response->pluck('item_id')->each(function ($id) {
+
+                    $this->known_assets->push($id);
+                });
             });
 
+            // Lastly if more pages are present load next page
             if($this->page >= $response->pages)
                 break;
 
             $this->page++;
         }
 
-        //TODO Cleanup Assets that are no longer present
+        // Cleanup old items
+        (new CharacterAssetsCleanupAction)->execute($this->refresh_token->character_id, $this->known_assets->toArray());
 
         // TODO get type from typeID
+
+        // TODO get names from types that qualifies
 
     }
 
