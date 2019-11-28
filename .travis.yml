@@ -6,7 +6,7 @@ language: php
 
 php:
   - '7.3'
-  - 7.2.4
+  - '7.2'
 
 services:
   - redis-server
@@ -17,6 +17,7 @@ addons:
 
 before_install:
   - composer self-update
+  - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 
 install:
   - composer install --no-interaction

@@ -1,45 +1,46 @@
 {
-  "name": "seatplus/eveapi",
-  "description": "API for receiving informations from esi",
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Felix Huber",
-      "email": "felix.a.huber@gmx.net"
+    "name": "seatplus/eveapi",
+    "description": "API for receiving informations from esi",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Felix Huber",
+            "email": "felix.a.huber@gmx.net"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Seatplus\\Eveapi\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Seatplus\\Eveapi\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "alpha",
+    "prefer-stable": true,
+    "require": {
+        "php": ">=7.1",
+        "ext-redis": "*",
+        "laravel/framework": "^6.0",
+        "laravel/horizon": "^3.2",
+        "seatplus/eseye": "^2.0",
+        "spatie/laravel-queueable-action": "^2.1"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^4.3",
+        "spatie/phpunit-watcher": "^1.11",
+        "itsgoingd/clockwork": "^4.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Seatplus\\Eveapi\\EveapiServiceProvider"
+            ]
+        }
+    },
+    "scripts": {
+        "watch": "vendor/bin/phpunit-watcher watch"
     }
-  ],
-  "autoload": {
-    "psr-4": {
-      "Seatplus\\Eveapi\\": "src/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Seatplus\\Eveapi\\Tests\\": "tests/"
-    }
-  },
-  "minimum-stability": "alpha",
-  "prefer-stable": true,
-  "require": {
-    "php": ">=7.1",
-    "laravel/framework": "^6.0",
-    "laravel/horizon": "^3.2",
-    "seatplus/eseye": "^2.0",
-    "spatie/laravel-queueable-action": "^2.1"
-  },
-  "require-dev": {
-    "orchestra/testbench": "^4.3",
-    "spatie/phpunit-watcher": "^1.11",
-    "itsgoingd/clockwork": "^4.0"
-  },
-  "extra": {
-    "laravel": {
-      "providers": [
-        "Seatplus\\Eveapi\\EveapiServiceProvider"
-      ]
-    }
-  },
-  "scripts": {
-    "watch": "vendor/bin/phpunit-watcher watch"
-  }
 }
