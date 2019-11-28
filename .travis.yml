@@ -22,6 +22,7 @@ install:
   - composer install --no-interaction
   - composer dump-autoload
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - pecl install redis
 
 before_script:
   - chmod +x ./cc-test-reporter
