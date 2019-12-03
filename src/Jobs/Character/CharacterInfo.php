@@ -2,7 +2,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Character;
 
-use Seatplus\Eveapi\Actions\Jobs\Corporation\CorporationInfoAction;
+use Seatplus\Eveapi\Actions\Jobs\Character\CharacterInfoAction;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
@@ -44,6 +44,6 @@ class CharacterInfo extends EsiBase
 
     public function getActionClass()
     {
-        return new CorporationInfoAction;
+        return new CharacterInfoAction();
     }
 }

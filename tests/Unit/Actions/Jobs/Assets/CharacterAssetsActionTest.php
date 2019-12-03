@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Seatplus\Eveapi\tests\Unit\Actions\Jobs\Assets;
+namespace Seatplus\Eveapi\Tests\Unit\Actions\Jobs\Assets;
 
 
 use Seatplus\Eveapi\Actions\Jobs\Assets\CharacterAssetsAction;

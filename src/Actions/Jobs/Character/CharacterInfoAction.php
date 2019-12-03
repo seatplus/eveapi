@@ -2,35 +2,38 @@
 
 namespace Seatplus\Eveapi\Actions\Jobs\Character;
 
+use Seatplus\Eveapi\Actions\Jobs\BaseJobAction;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Traits\RetrieveEsiResponse;
 
-class CharacterInfoAction
+class CharacterInfoAction extends BaseJobAction
 {
-    use RetrieveEsiResponse;
 
-    /**
-     * @var string
-     */
-    protected $method = 'get';
+    public function getMethod() :string
+    {
+        return 'get';
+    }
 
-    /**
-     * @var string
-     */
-    protected $endpoint = '/characters/{character_id}/';
+    public function getEndpoint() :string
+    {
+        return '/characters/{character_id}/';
+    }
 
-    /**
-     * @var int
-     */
-    protected $version = 'v4';
+    public function getVersion() :string
+    {
+        return 'v4';
+    }
 
     public function execute(int $character_id)
     {
-        $response = $this->retrieve([
+
+        $this->setPathValues([
             'character_id' => $character_id,
         ]);
+
+        $response = $this->retrieve();
 
         if ($response->isCachedLoad()) return;
 

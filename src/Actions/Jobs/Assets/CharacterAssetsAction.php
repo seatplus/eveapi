@@ -94,7 +94,9 @@ class CharacterAssetsAction
         // Cleanup old items
         (new CharacterAssetsCleanupAction)->execute($this->refresh_token->character_id, $this->known_assets->toArray());
 
-        // TODO get type from typeID
+        //$unknown_types = CharacterAsset::whereDoesntHave('type')->get();
+
+        // TODO get type from typeID by chaining jobs and create new cleanup job
 
         // TODO get names from types that qualifies
 
