@@ -5,10 +5,7 @@ namespace Seatplus\Eveapi\Actions\Jobs\Universe;
 
 
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Config;
-use Seatplus\Eveapi\Actions\Eseye\RetrieveEsiDataAction;
 use Seatplus\Eveapi\Actions\Jobs\BaseJobAction;
-use Seatplus\Eveapi\Containers\EsiRequestContainer;
 use Seatplus\Eveapi\Models\Universe\Names;
 
 class NamesAction extends BaseJobAction

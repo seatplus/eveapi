@@ -4,6 +4,7 @@ namespace Seatplus\Eveapi\Actions\Jobs\Assets;
 
 use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Actions\Character\CharacterAssetsCleanupAction;
+use Seatplus\Eveapi\Actions\Seatplus\GetMissingTypeNamesAction;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Traits\RetrieveEsiResponse;
@@ -94,9 +95,7 @@ class CharacterAssetsAction
         // Cleanup old items
         (new CharacterAssetsCleanupAction)->execute($this->refresh_token->character_id, $this->known_assets->toArray());
 
-        //$unknown_types = CharacterAsset::whereDoesntHave('type')->get();
-
-        // TODO get type from typeID by chaining jobs and create new cleanup job
+        //(new GetMissingTypeNamesAction)->execute(); //TODO write test for this
 
         // TODO get names from types that qualifies
 

@@ -22,7 +22,6 @@ class CharacterAssetsActionTest extends TestCase
     public function retrieveTest()
     {
 
-
         $mock_data = $this->buildMockEsiData();
 
         // Run InfoAction
