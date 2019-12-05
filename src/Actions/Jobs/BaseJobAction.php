@@ -4,7 +4,6 @@
 namespace Seatplus\Eveapi\Actions\Jobs;
 
 
-use Exception;
 use Seat\Eseye\Containers\EsiResponse;
 use Seatplus\Eveapi\Actions\Eseye\RetrieveEsiDataAction;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
@@ -13,23 +12,13 @@ abstract class BaseJobAction implements BaseJobInterface
 {
 
     /**
-     * @var \Seatplus\Eveapi\Actions\Eseye\RetrieveEsiDataAction
-     */
-    private $retrieve_action;
-
-    /**
-     * @var \Seatplus\Eveapi\Containers\EsiRequestContainer
+     * @var \Seatplus\Eveapi\Containers\EsiRequestContainer|null
      */
     private $esi_request_container;
 
-    public function __construct()
-    {
-        $this->retrieve_action = new RetrieveEsiDataAction();
-        $this->esi_request_container = $this->getBaseEsiReuestContainer();
-
-    }
-
     /**
+     * @param int|null $page
+     *
      * @return \Seat\Eseye\Containers\EsiResponse
      * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \Seat\Eseye\Exceptions\EsiScopeAccessDeniedException
@@ -38,12 +27,11 @@ abstract class BaseJobAction implements BaseJobInterface
      * @throws \Seat\Eseye\Exceptions\RequestFailedException
      * @throws \Seat\Eseye\Exceptions\UriDataMissingException
      */
-    public function retrieve() : EsiResponse
+    public function retrieve(?int $page = null) : EsiResponse
     {
-        if(! $this->hasRequiredScope() && isset($this->required_scope))
-            throw new Exception('refresh_token misses required scope: ' . $this->required_scope);
+        $this->builldEsiRequestContainer($page);
 
-        return $this->retrieve_action->execute($this->esi_request_container);
+        return (new RetrieveEsiDataAction)->execute($this->esi_request_container);
     }
 
     private function getBaseEsiReuestContainer() : EsiRequestContainer
@@ -55,24 +43,18 @@ abstract class BaseJobAction implements BaseJobInterface
         ]);
     }
 
-    public function setPathValues(array $path_vaules)
+    private function builldEsiRequestContainer(?int $page)
     {
-        $this->esi_request_container->path_values = $path_vaules;
+        $this->esi_request_container = $this->getBaseEsiReuestContainer();
+
+        if(method_exists($this, 'getPathValues'))
+            $this->esi_request_container->path_values = $this->getPathValues();
+
+        if(method_exists($this, 'getRequestBody'))
+            $this->esi_request_container->request_body = $this->getRequestBody();
+
+        $this->esi_request_container->page = $page;
     }
 
-    public function setRequestBody(array $request_body) :void
-    {
-        $this->esi_request_container->request_body = $request_body;
-    }
-
-    private function hasRequiredScope() : bool
-    {
-        if(isset($this->required_scope))
-            if (isset($this->refresh_token)) {
-                return $this->refresh_token->hasScope($this->required_scope);
-            }
-
-        return true;
-    }
 
 }

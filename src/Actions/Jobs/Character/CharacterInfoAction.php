@@ -3,13 +3,24 @@
 namespace Seatplus\Eveapi\Actions\Jobs\Character;
 
 use Seatplus\Eveapi\Actions\Jobs\BaseJobAction;
+use Seatplus\Eveapi\Actions\Jobs\BaseJobInterface;
+use Seatplus\Eveapi\Actions\Jobs\HasPathValuesInterface;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Seatplus\Eveapi\Traits\RetrieveEsiResponse;
 
-class CharacterInfoAction extends BaseJobAction
+class CharacterInfoAction extends BaseJobAction implements HasPathValuesInterface
 {
+    protected $character_id;
+
+    /**
+     * @param int $character_id
+     */
+    public function setCharacterId(int $character_id): void
+    {
+
+        $this->character_id = $character_id;
+    }
 
     public function getMethod() :string
     {
@@ -26,12 +37,17 @@ class CharacterInfoAction extends BaseJobAction
         return 'v4';
     }
 
-    public function execute(int $character_id)
+    public function getPathValues() : array
     {
 
-        $this->setPathValues([
-            'character_id' => $character_id,
-        ]);
+        return [
+            'character_id' => $this->character_id,
+        ];
+    }
+
+    public function execute(int $character_id)
+    {
+        $this->setCharacterId($character_id);
 
         $response = $this->retrieve();
 
