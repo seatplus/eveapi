@@ -2,14 +2,13 @@
 
 namespace Seatplus\Eveapi\Actions\Jobs\Alliance;
 
+use Seatplus\Eveapi\Actions\Jobs\BaseActionJobAction;
+use Seatplus\Eveapi\Actions\Jobs\HasPathValuesInterface;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Traits\RetrieveEsiResponse;
 
-class AllianceInfoAction
+class AllianceInfoAction extends BaseActionJobAction implements HasPathValuesInterface
 {
-
-    //TODO write unit test
-    use RetrieveEsiResponse;
 
     /**
      * @var string
@@ -26,12 +25,23 @@ class AllianceInfoAction
      */
     protected $version = 'v3';
 
+    protected $alliance_id;
+
+    /**
+     * @param mixed $alliance_id
+     */
+    public function setAllianceId(int $alliance_id): void
+    {
+
+        $this->alliance_id = $alliance_id;
+    }
+
     public function execute(int $alliance_id)
     {
 
-        $response = $this->retrieve([
-                'alliance_id' => $alliance_id,
-            ]);
+        $this->setAllianceId($alliance_id);
+
+        $response = $this->retrieve();
 
         if ($response->isCachedLoad()) return;
 
@@ -44,5 +54,27 @@ class AllianceInfoAction
             'name' => $response->name,
             'ticker' => $response->ticker,
         ])->save();
+    }
+
+    public function getMethod(): string
+    {
+        return $this->method;
+    }
+
+    public function getEndpoint(): string
+    {
+        return $this->endpoint;
+    }
+
+    public function getVersion(): string
+    {
+        return $this->version;
+    }
+
+    public function getPathValues(): array
+    {
+        return [
+            'alliance_id' => $this->alliance_id,
+        ];
     }
 }

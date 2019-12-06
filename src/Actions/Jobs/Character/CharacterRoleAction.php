@@ -2,11 +2,13 @@
 
 namespace Seatplus\Eveapi\Actions\Jobs\Character;
 
+use Seatplus\Eveapi\Actions\Jobs\BaseActionJobInterface;
+use Seatplus\Eveapi\Actions\Jobs\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Models\Character\CharacterRole;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Traits\RetrieveEsiResponse;
 
-class CharacterRoleAction
+class CharacterRoleAction implements BaseActionJobInterface, HasRequiredScopeInterface
 {
     use RetrieveEsiResponse;
     /**
@@ -48,5 +50,30 @@ class CharacterRoleAction
             'roles_at_other' => $response->roles_at_other,
         ]);
 
+    }
+
+    public function getRequiredScope(): string
+    {
+        return $this->required_scope;
+    }
+
+    public function getRefreshToken(): RefreshToken
+    {
+        return $this->refresh_token;
+    }
+
+    public function getMethod(): string
+    {
+        return $this->method;
+    }
+
+    public function getEndpoint(): string
+    {
+        return $this->endpoint;
+    }
+
+    public function getVersion(): string
+    {
+        return $this->version;
     }
 }

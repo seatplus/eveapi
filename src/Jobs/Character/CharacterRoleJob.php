@@ -2,6 +2,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Character;
 
+use Seatplus\Eveapi\Actions\Jobs\BaseActionJobInterface;
 use Seatplus\Eveapi\Actions\Jobs\Character\CharacterRoleAction;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
@@ -42,14 +43,14 @@ class CharacterRoleJob extends EsiBase
      * @return void
      * @throws \Exception
      */
-    public function handle()
+    public function handle() : void
     {
 
         $this->getActionClass()->execute($this->refresh_token);
 
     }
 
-    public function getActionClass()
+    public function getActionClass(): BaseActionJobInterface
     {
         return new CharacterRoleAction;
     }

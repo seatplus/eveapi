@@ -4,14 +4,16 @@ namespace Seatplus\Eveapi\Actions\Jobs\Assets;
 
 use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Actions\Character\CharacterAssetsCleanupAction;
+use Seatplus\Eveapi\Actions\Jobs\BaseActionJobAction;
+use Seatplus\Eveapi\Actions\Jobs\HasPathValuesInterface;
+use Seatplus\Eveapi\Actions\Jobs\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Actions\Seatplus\GetMissingTypeNamesAction;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Traits\RetrieveEsiResponse;
 
-class CharacterAssetsAction
+class CharacterAssetsAction extends BaseActionJobAction implements HasPathValuesInterface,HasRequiredScopeInterface
 {
-    use RetrieveEsiResponse;
 
     /**
      * @var string
@@ -24,14 +26,10 @@ class CharacterAssetsAction
     protected $endpoint = '/characters/{character_id}/assets/';
 
     /**
-     * @var int
+     * @var string
      */
     protected $version = 'v3';
 
-    /**
-     * @var int
-     */
-    protected $page = 1;
 
     public $required_scope = 'esi-assets.read_assets.v1';
 
@@ -45,6 +43,11 @@ class CharacterAssetsAction
      */
     protected $refresh_token;
 
+    /**
+     * @var int
+     */
+    private $page = 1;
+
     public function execute(RefreshToken $refresh_token)
     {
 
@@ -53,9 +56,7 @@ class CharacterAssetsAction
 
         while (true)
         {
-            $response = $this->retrieve([
-                'character_id' => $refresh_token->character_id,
-            ]);
+            $response = $this->retrieve($this->page);
 
             if ($response->isCachedLoad()) return;
 
@@ -99,5 +100,37 @@ class CharacterAssetsAction
 
         // TODO get names from types that qualifies
 
+    }
+
+    public function getMethod(): string
+    {
+        return $this->method;
+    }
+
+    public function getEndpoint(): string
+    {
+        return $this->endpoint;
+    }
+
+    public function getVersion(): string
+    {
+        return $this->endpoint;
+    }
+
+    public function getPathValues(): array
+    {
+        return [
+            'character_id' => $this->refresh_token->character_id,
+        ];
+    }
+
+    public function getRequiredScope(): string
+    {
+        return $this->required_scope;
+    }
+
+    public function getRefreshToken(): RefreshToken
+    {
+        return $this->refresh_token;
     }
 }

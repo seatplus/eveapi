@@ -5,11 +5,11 @@ namespace Seatplus\Eveapi\Actions\Jobs\Universe;
 
 
 use Illuminate\Support\Facades\Cache;
-use Seatplus\Eveapi\Actions\Jobs\BaseJobAction;
+use Seatplus\Eveapi\Actions\Jobs\BaseActionJobAction;
 use Seatplus\Eveapi\Actions\Jobs\HasRequestBodyInterface;
 use Seatplus\Eveapi\Models\Universe\Names;
 
-class NamesAction extends BaseJobAction implements HasRequestBodyInterface
+class NamesAction extends BaseActionJobAction implements HasRequestBodyInterface
 {
 
     protected $request_body;

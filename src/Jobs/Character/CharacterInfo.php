@@ -2,6 +2,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Character;
 
+use Seatplus\Eveapi\Actions\Jobs\BaseActionJobInterface;
 use Seatplus\Eveapi\Actions\Jobs\Character\CharacterInfoAction;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
@@ -35,14 +36,14 @@ class CharacterInfo extends EsiBase
      * @return void
      * @throws \Exception
      */
-    public function handle()
+    public function handle() : void
     {
 
         $this->getActionClass()->execute($this->character_id);
 
     }
 
-    public function getActionClass()
+    public function getActionClass(): BaseActionJobInterface
     {
         return new CharacterInfoAction();
     }

@@ -10,7 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Models\RefreshToken;
 
-abstract class EsiBase implements ShouldQueue
+abstract class EsiBase implements ShouldQueue, BaseJobInterface
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -120,12 +120,7 @@ abstract class EsiBase implements ShouldQueue
         return $tags->toArray();
     }
 
-    abstract public function getActionClass();
+    abstract public function middleware(): array;
 
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
-    abstract public function handle();
+    abstract public function handle(): void;
 }

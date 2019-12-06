@@ -4,7 +4,7 @@
 namespace Seatplus\Eveapi\Actions\Jobs;
 
 
-interface BaseJobInterface
+interface BaseActionJobInterface
 {
     public function getMethod() : string ;
 

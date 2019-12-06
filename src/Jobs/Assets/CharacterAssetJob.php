@@ -3,6 +3,7 @@
 namespace Seatplus\Eveapi\Jobs\Assets;
 
 use Seatplus\Eveapi\Actions\Jobs\Assets\CharacterAssetsAction;
+use Seatplus\Eveapi\Actions\Jobs\BaseActionJobInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
@@ -36,7 +37,7 @@ class CharacterAssetJob extends EsiBase
             ];
     }
 
-    public function getActionClass()
+    public function getActionClass() : BaseActionJobInterface
     {
         return new CharacterAssetsAction;
     }
@@ -46,7 +47,7 @@ class CharacterAssetJob extends EsiBase
      *
      * @return void
      */
-    public function handle()
+    public function handle() :void
     {
         $this->getActionClass()->execute($this->refresh_token);
     }

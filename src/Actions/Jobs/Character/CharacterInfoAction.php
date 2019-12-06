@@ -2,14 +2,14 @@
 
 namespace Seatplus\Eveapi\Actions\Jobs\Character;
 
-use Seatplus\Eveapi\Actions\Jobs\BaseJobAction;
-use Seatplus\Eveapi\Actions\Jobs\BaseJobInterface;
+use Seatplus\Eveapi\Actions\Jobs\BaseActionJobAction;
+use Seatplus\Eveapi\Actions\Jobs\BaseActionJobInterface;
 use Seatplus\Eveapi\Actions\Jobs\HasPathValuesInterface;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
-class CharacterInfoAction extends BaseJobAction implements HasPathValuesInterface
+class CharacterInfoAction extends BaseActionJobAction implements HasPathValuesInterface
 {
     protected $character_id;
 

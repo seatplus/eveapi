@@ -8,7 +8,7 @@ use Seat\Eseye\Containers\EsiResponse;
 use Seatplus\Eveapi\Actions\Eseye\RetrieveEsiDataAction;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
 
-abstract class BaseJobAction implements BaseJobInterface
+abstract class BaseActionJobAction implements BaseActionJobInterface
 {
 
     /**
@@ -52,6 +52,9 @@ abstract class BaseJobAction implements BaseJobInterface
 
         if(method_exists($this, 'getRequestBody'))
             $this->esi_request_container->request_body = $this->getRequestBody();
+
+        if(method_exists($this, 'getRefreshToken'))
+            $this->esi_request_container->refresh_token = $this->getRefreshToken();
 
         $this->esi_request_container->page = $page;
     }

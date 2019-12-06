@@ -2,6 +2,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Corporation;
 
+use Seatplus\Eveapi\Actions\Jobs\BaseActionJobInterface;
 use Seatplus\Eveapi\Actions\Jobs\Corporation\CorporationInfoAction;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
@@ -35,14 +36,14 @@ class CorporationInfoJob extends EsiBase
      * @return void
      * @throws \Exception
      */
-    public function handle()
+    public function handle(): void
     {
 
         $this->getActionClass()->execute($this->corporation_id);
 
     }
 
-    public function getActionClass()
+    public function getActionClass(): BaseActionJobInterface
     {
         return new CorporationInfoAction;
     }
