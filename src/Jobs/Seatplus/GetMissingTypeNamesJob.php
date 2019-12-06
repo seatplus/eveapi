@@ -5,18 +5,26 @@ namespace Seatplus\Eveapi\Jobs\Seatplus;
 
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
 use Seatplus\Eveapi\Actions\Jobs\Universe\NamesAction;
+use Seatplus\Eveapi\Actions\Seatplus\GetMissingTypeNamesAction;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
+use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
 
-class GetMissingTypeNamesJob
+class GetMissingTypeNamesJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    /**
+     * The number of times the job may be attempted.
+     *
+     * @var int
+     */
+    public $tries = 1;
 
     /**
      * @var \Illuminate\Support\Collection
@@ -33,6 +41,7 @@ class GetMissingTypeNamesJob
         return [
             new EsiRateLimitedMiddleware,
             new EsiAvailabilityMiddleware,
+            new RedisFunnelMiddleware
         ];
     }
 

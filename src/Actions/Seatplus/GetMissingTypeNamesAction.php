@@ -11,9 +11,8 @@ class GetMissingTypeNamesAction
 {
     public function execute()
     {
-        $unknown_types = CharacterAsset::whereDoesntHave('type')->get();
 
-        $unknown_type_ids = $unknown_types->pluck('type_id')->unique();
+        $unknown_type_ids = CharacterAsset::whereDoesntHave('type')->pluck('type_id')->unique()->values();
 
         (new CreateOrUpdateMissingTypeIdCache($unknown_type_ids))->handle();
 

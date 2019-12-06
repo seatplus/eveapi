@@ -30,7 +30,9 @@ class CreateOrUpdateMissingTypeIdCache
 
         }
 
-        Cache::put('type_ids_to_resolve', $this->type_ids);
+        Cache::put('type_ids_to_resolve', $this->type_ids->map(function ($id) {
+            return (int) $id;
+        })->values()->all());
 
     }
 

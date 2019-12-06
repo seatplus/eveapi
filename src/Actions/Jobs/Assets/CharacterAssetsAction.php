@@ -8,11 +8,11 @@ use Seatplus\Eveapi\Actions\Jobs\BaseActionJobAction;
 use Seatplus\Eveapi\Actions\Jobs\HasPathValuesInterface;
 use Seatplus\Eveapi\Actions\Jobs\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Actions\Seatplus\GetMissingTypeNamesAction;
+use Seatplus\Eveapi\Jobs\Seatplus\GetMissingTypeNamesJob;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Models\RefreshToken;
-use Seatplus\Eveapi\Traits\RetrieveEsiResponse;
 
-class CharacterAssetsAction extends BaseActionJobAction implements HasPathValuesInterface,HasRequiredScopeInterface
+class CharacterAssetsAction extends BaseActionJobAction implements HasPathValuesInterface, HasRequiredScopeInterface
 {
 
     /**
@@ -96,7 +96,8 @@ class CharacterAssetsAction extends BaseActionJobAction implements HasPathValues
         // Cleanup old items
         (new CharacterAssetsCleanupAction)->execute($this->refresh_token->character_id, $this->known_assets->toArray());
 
-        //(new GetMissingTypeNamesAction)->execute(); //TODO write test for this
+        //TODO write test for this
+        (new GetMissingTypeNamesAction)->execute();
 
         // TODO get names from types that qualifies
 
@@ -114,7 +115,7 @@ class CharacterAssetsAction extends BaseActionJobAction implements HasPathValues
 
     public function getVersion(): string
     {
-        return $this->endpoint;
+        return $this->version;
     }
 
     public function getPathValues(): array
