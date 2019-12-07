@@ -22,8 +22,10 @@ class CreateOrUpdateMissingTypeIdCacheTest extends TestCase
         $test_class->handle();
 
         $this->assertEquals(collect(1337),$test_class->type_ids);
+
         $this->assertTrue(Cache::has('type_ids_to_resolve'));
-        $this->assertEquals(collect(1337),Cache::get('type_ids_to_resolve'));
+
+        $this->assertEquals([1337],Cache::get('type_ids_to_resolve'));
     }
 
     /** @test */
@@ -40,6 +42,7 @@ class CreateOrUpdateMissingTypeIdCacheTest extends TestCase
 
         $this->assertTrue(in_array(1337, $test_class->type_ids->toArray()));
         $this->assertTrue(in_array(42, $test_class->type_ids->toArray()));
+        $this->assertEquals([1337,42],Cache::get('type_ids_to_resolve'));
 
     }
 
