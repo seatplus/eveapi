@@ -26,7 +26,7 @@ class CreateOrUpdateMissingTypeIdCache
         {
             $pending_ids = Cache::pull('type_ids_to_resolve');
 
-            $this->type_ids = $this->type_ids->merge($pending_ids);
+            $this->type_ids = $this->type_ids->merge($pending_ids)->flatten();
 
         }
 
