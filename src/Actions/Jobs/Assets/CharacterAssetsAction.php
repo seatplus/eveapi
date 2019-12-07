@@ -7,7 +7,7 @@ use Seatplus\Eveapi\Actions\Character\CharacterAssetsCleanupAction;
 use Seatplus\Eveapi\Actions\Jobs\BaseActionJobAction;
 use Seatplus\Eveapi\Actions\Jobs\HasPathValuesInterface;
 use Seatplus\Eveapi\Actions\Jobs\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Actions\Seatplus\GetMissingTypeNamesAction;
+use Seatplus\Eveapi\Actions\Seatplus\CacheMissingCharacterTypeIdsAction;
 use Seatplus\Eveapi\Jobs\Seatplus\GetMissingTypeNamesJob;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Models\RefreshToken;
@@ -97,7 +97,7 @@ class CharacterAssetsAction extends BaseActionJobAction implements HasPathValues
         (new CharacterAssetsCleanupAction)->execute($this->refresh_token->character_id, $this->known_assets->toArray());
 
         //TODO write test for this
-        (new GetMissingTypeNamesAction)->execute();
+        (new CacheMissingCharacterTypeIdsAction)->execute();
 
         // TODO get names from types that qualifies
 

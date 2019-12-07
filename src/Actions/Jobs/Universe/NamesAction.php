@@ -65,7 +65,7 @@ class NamesAction extends BaseActionJobAction implements HasRequestBodyInterface
             });
         }
 
-        $this->type_ids->chunk(1000)->each(function ($chunk) {
+        $this->type_ids->unique()->chunk(1000)->each(function (Collection $chunk) {
 
             $this->setRequestBody($chunk->values()->all());
 

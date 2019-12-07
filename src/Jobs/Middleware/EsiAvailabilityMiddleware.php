@@ -7,6 +7,13 @@ use Seatplus\Eveapi\Actions\Esi\GetEsiStatusAction;
 
 class EsiAvailabilityMiddleware
 {
+    public $status;
+
+    public function __construct()
+    {
+        $this->status = (new GetEsiStatusAction)->execute();
+    }
+
     /**
      * Process the queued job.
      *
@@ -17,9 +24,7 @@ class EsiAvailabilityMiddleware
     public function handle($job, $next)
     {
 
-        $status = (new GetEsiStatusAction())->execute();
-
-        $status === 'ok'
+        return $this->status === 'ok'
             ? $next($job)
             : $job->fail(new Exception('Esi appears to be down'));
 

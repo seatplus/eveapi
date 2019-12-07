@@ -19,9 +19,7 @@ class EsiRequestContainerTest extends TestCase
         $this->assertEquals('v4',$esi_request->version);
     }
 
-    /** @test
-     * @throws \Seatplus\Eveapi\Exceptions\InvalidContainerDataException
-     */
+    /** @test     */
     public function canNotSetProppertyTest()
     {
 
