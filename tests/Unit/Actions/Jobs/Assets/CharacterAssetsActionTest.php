@@ -4,6 +4,7 @@
 namespace Seatplus\Eveapi\Tests\Unit\Actions\Jobs\Assets;
 
 
+use Illuminate\Support\Facades\Cache;
 use Seatplus\Eveapi\Actions\Jobs\Assets\CharacterAssetsAction;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Tests\TestCase;
@@ -24,14 +25,78 @@ class CharacterAssetsActionTest extends TestCase
 
         $mock_data = $this->buildMockEsiData();
 
-        // Run InfoAction
+        // Run CharacterAssetsAction
         (new CharacterAssetsAction())->execute($this->test_character->refresh_token);
 
 
-        //Assert that alliance_info is created
-        $this->assertDatabaseHas('character_assets', [
+        foreach ($mock_data as $data)
+            //Assert that character asset created
+            $this->assertDatabaseHas('character_assets', [
+                'character_id' => $this->test_character->character_id,
+                'item_id' => $data->item_id
+            ]);
+    }
+
+    /**
+     * @test
+     * @runTestsInSeparateProcesses
+     */
+    public function it_cleans_up_assets()
+    {
+
+        $old_data = factory(CharacterAsset::class,5)->create([
             'character_id' => $this->test_character->character_id
         ]);
+
+        // assert that old data is present before CharacterAssetsCleanUpAction
+        foreach ($old_data as $data)
+            //Assert that character asset created
+            $this->assertDatabaseHas('character_assets', [
+                'character_id' => $this->test_character->character_id,
+                'item_id' => $data->item_id
+            ]);
+
+
+        $mock_data = $this->buildMockEsiData();
+
+        // Run CharacterAssetsAction
+        (new CharacterAssetsAction())->execute($this->test_character->refresh_token);
+
+
+        foreach ($mock_data as $data)
+            //Assert that character asset created
+            $this->assertDatabaseHas('character_assets', [
+                'character_id' => $this->test_character->character_id,
+                'item_id' => $data->item_id
+            ]);
+
+        // assert if old data has been removed thanks to CharacterAssetsCleanupAction
+        foreach ($old_data as $data)
+            //Assert that character asset created
+            $this->assertDatabaseMissing('character_assets', [
+                'character_id' => $this->test_character->character_id,
+                'item_id' => $data->item_id
+            ]);
+    }
+
+    /**
+     * @test
+     * @runTestsInSeparateProcesses
+     */
+    public function it_caches_missing_type_ids()
+    {
+        $mock_data = $this->buildMockEsiData();
+
+        $this->assertFalse(Cache::has('type_ids_to_resolve'));
+
+        // Run CharacterAssetsAction
+        (new CharacterAssetsAction())->execute($this->test_character->refresh_token);
+
+        $this->assertTrue(Cache::has('type_ids_to_resolve'));
+
+        foreach ($mock_data as $item)
+            $this->assertTrue(in_array($item->type_id, Cache::get('type_ids_to_resolve')));
+
     }
 
     private function buildMockEsiData()

@@ -26,11 +26,6 @@ class GetMissingTypeNamesJob implements ShouldQueue
     public $tries = 1;
 
     /**
-     * @var \Illuminate\Support\Collection
-     */
-    public $type_ids;
-
-    /**
      * Get the middleware the job should pass through.
      *
      * @return array

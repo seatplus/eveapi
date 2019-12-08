@@ -4,6 +4,7 @@
 namespace Seatplus\Eveapi\Tests\Unit\Actions\Jobs\Universe;
 
 
+use Faker\Guesser\Name;
 use Illuminate\Support\Facades\Cache;
 use Seatplus\Eveapi\Actions\Jobs\Universe\NamesAction;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
@@ -46,7 +47,8 @@ class NamesTest extends TestCase
 
         Cache::put('type_ids_to_resolve', collect($mock_data)->pluck('id'));
 
-        $result = (new NamesAction())->execute();
+        $name_action = new NamesAction;
+        $result = $name_action->execute();
 
         foreach ($mock_data as $type) {
             $this->assertDatabaseHas('universe_names', [
@@ -55,6 +57,10 @@ class NamesTest extends TestCase
         }
 
         $this->assertNull($result);
+
+        $this->assertTrue(is_array($name_action->getRequestBody()));
+
+        $this->assertEquals(collect($mock_data)->pluck('id')->all(), $name_action->getRequestBody());
 
     }
 
