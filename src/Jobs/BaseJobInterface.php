@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Jobs;
-
 
 use Seatplus\Eveapi\Actions\Jobs\BaseActionJobInterface;
 
@@ -30,7 +28,4 @@ interface BaseJobInterface
      * @return void
      */
     public function handle(): void;
-
-
-
 }

@@ -29,7 +29,6 @@ class CharacterAssetsAction extends BaseActionJobAction implements HasPathValues
      */
     protected $version = 'v3';
 
-
     public $required_scope = 'esi-assets.read_assets.v1';
 
     /**
