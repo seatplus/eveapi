@@ -2,7 +2,6 @@
 
 namespace Seatplus\Eveapi\Actions\Character;
 
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 
 class CharacterAssetsCleanupAction
