@@ -3,6 +3,7 @@
 namespace Seatplus\Eveapi\Jobs\Alliances;
 
 use Seatplus\Eveapi\Actions\Jobs\Alliance\AllianceInfoAction;
+use Seatplus\Eveapi\Actions\Jobs\BaseActionJobInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
@@ -37,12 +38,12 @@ class AllianceInfo extends EsiBase
      * @throws \Seat\Eseye\Exceptions\RequestFailedException
      * @throws \Seat\Eseye\Exceptions\UriDataMissingException
      */
-    public function handle()
+    public function handle() :void
     {
         $this->getActionClass()->execute($this->alliance_id);
     }
 
-    public function getActionClass()
+    public function getActionClass(): BaseActionJobInterface
     {
         return new AllianceInfoAction;
     }

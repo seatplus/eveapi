@@ -4,6 +4,7 @@ namespace Seatplus\Eveapi\Models\Assets;
 
 use Illuminate\Database\Eloquent\Model;
 use Seatplus\Eveapi\Events\CharacterAssetUpdating;
+use Seatplus\Eveapi\Models\Universe\Names;
 
 class CharacterAsset extends Model
 {
@@ -26,4 +27,8 @@ class CharacterAsset extends Model
         'updating' => CharacterAssetUpdating::class,
     ];
 
+    public function type()
+    {
+        return $this->hasOne(Names::class, 'id', 'type_id');
+    }
 }

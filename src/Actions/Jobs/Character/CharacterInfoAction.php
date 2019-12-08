@@ -2,35 +2,53 @@
 
 namespace Seatplus\Eveapi\Actions\Jobs\Character;
 
+use Seatplus\Eveapi\Actions\Jobs\BaseActionJobAction;
+use Seatplus\Eveapi\Actions\Jobs\HasPathValuesInterface;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Seatplus\Eveapi\Traits\RetrieveEsiResponse;
 
-class CharacterInfoAction
+class CharacterInfoAction extends BaseActionJobAction implements HasPathValuesInterface
 {
-    use RetrieveEsiResponse;
+    protected $character_id;
 
     /**
-     * @var string
+     * @param int $character_id
      */
-    protected $method = 'get';
+    public function setCharacterId(int $character_id): void
+    {
 
-    /**
-     * @var string
-     */
-    protected $endpoint = '/characters/{character_id}/';
+        $this->character_id = $character_id;
+    }
 
-    /**
-     * @var int
-     */
-    protected $version = 'v4';
+    public function getMethod() :string
+    {
+        return 'get';
+    }
+
+    public function getEndpoint() :string
+    {
+        return '/characters/{character_id}/';
+    }
+
+    public function getVersion() :string
+    {
+        return 'v4';
+    }
+
+    public function getPathValues() : array
+    {
+
+        return [
+            'character_id' => $this->character_id,
+        ];
+    }
 
     public function execute(int $character_id)
     {
-        $response = $this->retrieve([
-            'character_id' => $character_id,
-        ]);
+        $this->setCharacterId($character_id);
+
+        $response = $this->retrieve();
 
         if ($response->isCachedLoad()) return;
 

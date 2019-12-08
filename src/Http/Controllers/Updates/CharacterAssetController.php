@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Http\Controllers\Controller;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
+use Seatplus\Eveapi\Jobs\Seatplus\GetMissingTypeNamesJob;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 class CharacterAssetController extends Controller
@@ -21,7 +22,9 @@ class CharacterAssetController extends Controller
             'refresh_token' => RefreshToken::find((int) $validatedData['character_id']),
         ]);
 
-        CharacterAssetJob::dispatch($job_container)->onQueue('default');
+        CharacterAssetJob::withChain([
+            new GetMissingTypeNamesJob,
+        ])->dispatch($job_container)->onQueue('default');
 
         return response('success', 200);
 

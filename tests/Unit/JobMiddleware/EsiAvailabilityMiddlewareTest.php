@@ -39,7 +39,8 @@ class EsiAvailabilityMiddlewareTest extends TestCase
 
         $this->mockJob();
 
-        $this->middleware = new EsiAvailabilityMiddleware();
+        $this->middleware = Mockery::mock('Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware')
+            ->makePartial();
 
     }
 
@@ -50,7 +51,7 @@ class EsiAvailabilityMiddlewareTest extends TestCase
     public function it_handles_the_job_if_esi_available()
     {
 
-        $this->mockGetEsiStatusAction('ok');
+        $this->middleware->status = 'ok';
 
         $this->job->shouldReceive('fire')->times(1);
 
@@ -64,7 +65,7 @@ class EsiAvailabilityMiddlewareTest extends TestCase
     public function it_fails_the_job_if_esi_unavailable()
     {
 
-        $this->mockGetEsiStatusAction('not ok');
+        $this->middleware->status = 'not ok';
 
         $this->job->shouldReceive('fail')->times(1);
 
@@ -81,15 +82,6 @@ class EsiAvailabilityMiddlewareTest extends TestCase
             $job->fire();
         };
 
-    }
-
-    private function mockGetEsiStatusAction(string $string)
-    {
-
-        $mock = Mockery::mock('overload:Seatplus\Eveapi\Actions\Esi\GetEsiStatusAction');
-        $mock->shouldReceive('execute')
-            ->once()
-            ->andReturn($string);
     }
 
 }
