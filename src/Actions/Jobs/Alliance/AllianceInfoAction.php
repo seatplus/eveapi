@@ -5,7 +5,6 @@ namespace Seatplus\Eveapi\Actions\Jobs\Alliance;
 use Seatplus\Eveapi\Actions\Jobs\BaseActionJobAction;
 use Seatplus\Eveapi\Actions\Jobs\HasPathValuesInterface;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
-use Seatplus\Eveapi\Traits\RetrieveEsiResponse;
 
 class AllianceInfoAction extends BaseActionJobAction implements HasPathValuesInterface
 {

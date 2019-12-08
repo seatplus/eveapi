@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Actions\Seatplus;
-
 
 use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
@@ -18,5 +16,4 @@ class CacheMissingCharacterTypeIdsAction
 
         return $unknown_type_ids;
     }
-
 }

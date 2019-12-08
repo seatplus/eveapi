@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Actions\Jobs;
-
 
 use Seat\Eseye\Containers\EsiResponse;
 use Seatplus\Eveapi\Actions\Eseye\RetrieveEsiDataAction;
@@ -58,6 +56,4 @@ abstract class BaseActionJobAction implements BaseActionJobInterface
 
         $this->esi_request_container->page = $page;
     }
-
-
 }

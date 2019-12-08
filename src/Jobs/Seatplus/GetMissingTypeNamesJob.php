@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Jobs\Seatplus;
-
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -35,7 +33,7 @@ class GetMissingTypeNamesJob implements ShouldQueue
         return [
             new EsiRateLimitedMiddleware,
             new EsiAvailabilityMiddleware,
-            new RedisFunnelMiddleware
+            new RedisFunnelMiddleware,
         ];
     }
 
@@ -44,7 +42,7 @@ class GetMissingTypeNamesJob implements ShouldQueue
 
         return [
             'type_names',
-            'cleanup'
+            'cleanup',
         ];
     }
 
@@ -59,5 +57,4 @@ class GetMissingTypeNamesJob implements ShouldQueue
         (new NamesAction)->execute();
 
     }
-
 }

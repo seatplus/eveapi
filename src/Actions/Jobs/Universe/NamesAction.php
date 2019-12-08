@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Actions\Jobs\Universe;
-
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -86,6 +84,4 @@ class NamesAction extends BaseActionJobAction implements HasRequestBodyInterface
         return null;
 
     }
-
-
 }

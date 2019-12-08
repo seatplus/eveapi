@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Models\Universe;
-
 
 use Illuminate\Database\Eloquent\Model;
 

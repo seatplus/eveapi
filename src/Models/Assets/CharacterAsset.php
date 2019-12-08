@@ -29,7 +29,6 @@ class CharacterAsset extends Model
 
     public function type()
     {
-        return $this->hasOne(Names::class,'id', 'type_id');
+        return $this->hasOne(Names::class, 'id', 'type_id');
     }
-
 }

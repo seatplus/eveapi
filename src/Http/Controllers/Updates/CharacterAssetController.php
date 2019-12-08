@@ -23,7 +23,7 @@ class CharacterAssetController extends Controller
         ]);
 
         CharacterAssetJob::withChain([
-            new GetMissingTypeNamesJob
+            new GetMissingTypeNamesJob,
         ])->dispatch($job_container)->onQueue('default');
 
         return response('success', 200);
