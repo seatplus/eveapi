@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Actions\Jobs\Universe\NamesAction;
+use Seatplus\Eveapi\Actions\Jobs\Universe\ResolveUniverseCategoriesByCategoryIdAction;
 use Seatplus\Eveapi\Actions\Jobs\Universe\ResolveUniverseGroupsByGroupIdAction;
 use Seatplus\Eveapi\Actions\Jobs\Universe\ResolveUniverseTypesByTypeIdAction;
 use Seatplus\Eveapi\Actions\Seatplus\CacheMissingCategoryIdsAction;
@@ -15,7 +16,7 @@ use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
 
-class ResolveUniverseGroupsByGroupIdJob implements ShouldQueue
+class ResolveUniverseCategoriesByCategoryIdJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -57,9 +58,7 @@ class ResolveUniverseGroupsByGroupIdJob implements ShouldQueue
     public function handle()
     {
 
-        (new ResolveUniverseGroupsByGroupIdAction)->execute();
-
-        (new CacheMissingCategoryIdsAction)->execute();
+        (new ResolveUniverseCategoriesByCategoryIdAction)->execute();
 
     }
 }

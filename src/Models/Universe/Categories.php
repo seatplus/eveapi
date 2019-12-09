@@ -6,7 +6,7 @@ namespace Seatplus\Eveapi\Models\Universe;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Groups extends Model
+class Categories extends Model
 {
 
     /**
@@ -17,14 +17,14 @@ class Groups extends Model
     /**
      * @var string
      */
-    protected $primaryKey = 'group_id';
+    protected $primaryKey = 'category_id';
 
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'universe_groups';
+    protected $table = 'universe_categories';
 
     /**
      * The attributes that should be cast to native types.
@@ -32,7 +32,6 @@ class Groups extends Model
      * @var array
      */
     protected $casts = [
-        'group_id' => 'integer',
         'category_id' => 'integer',
         'name' => 'string',
         'published' => 'boolean',
@@ -40,11 +39,6 @@ class Groups extends Model
 
     public function types()
     {
-        return $this->hasMany(Types::class, 'group_id', 'group_id');
-    }
-
-    public function category()
-    {
-        return $this->belongsTo(Categories::class,'category_id', 'category_id');
+        return $this->hasMany(Groups::class, 'group_id', 'group_id');
     }
 }
