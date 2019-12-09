@@ -6,4 +6,5 @@ Provide ability to:
 * take advantage of job middlewares
 * `auth:api` guarded endpoints to enable usage as api-only as well as web 
 * high test coverage (original seat has almost none tests)
+* no SDE requirement
 
