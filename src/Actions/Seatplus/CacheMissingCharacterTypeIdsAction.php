@@ -12,7 +12,7 @@ class CacheMissingCharacterTypeIdsAction
 
         $unknown_type_ids = CharacterAsset::whereDoesntHave('type')->pluck('type_id')->unique()->values();
 
-        (new CreateOrUpdateMissingTypeIdCache($unknown_type_ids))->handle();
+        (new CreateOrUpdateMissingIdsCache('type_ids_to_resolve',$unknown_type_ids))->handle();
 
         return $unknown_type_ids;
     }
