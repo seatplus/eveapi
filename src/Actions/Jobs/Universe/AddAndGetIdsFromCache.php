@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Actions\Jobs\Universe;
-
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -45,5 +43,4 @@ class AddAndGetIdsFromCache
 
         return $this->ids_to_return;
     }
-
 }
