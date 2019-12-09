@@ -4,11 +4,7 @@
 namespace Seatplus\Eveapi\Tests\Unit\Actions\Seatplus;
 
 use Seatplus\Eveapi\Actions\Seatplus\CacheMissingCategoryIdsAction;
-use Seatplus\Eveapi\Actions\Seatplus\CacheMissingCharacterTypeIdsAction;
-use Seatplus\Eveapi\Actions\Seatplus\CacheMissingGroupIdsAction;
-use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Models\Universe\Groups;
-use Seatplus\Eveapi\Models\Universe\Types;
 use Seatplus\Eveapi\Tests\TestCase;
 
 class CacheMissingCategoryIdsActionTest extends TestCase

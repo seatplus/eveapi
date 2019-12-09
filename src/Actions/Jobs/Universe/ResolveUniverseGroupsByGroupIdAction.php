@@ -37,19 +37,7 @@ class ResolveUniverseGroupsByGroupIdAction extends BaseActionJobAction implement
 
     public function execute(?int $group_id = null)
     {
-        $this->group_ids = collect();
-
-        if (! is_null($group_id))
-            $this->group_ids->push($group_id);
-
-        if(Cache::has('group_ids_to_resolve'))
-        {
-            $cached_group_ids = Cache::pull('group_ids_to_resolve');
-
-            collect($cached_group_ids)->each(function ($cached_group_id) {
-                $this->group_ids->push($cached_group_id);
-            });
-        }
+        $this->group_ids = (new AddAndGetIdsFromCache('group_ids_to_resolve', $group_id))->execute();
 
         $this->group_ids->unique()->each(function ($group_id) {
 

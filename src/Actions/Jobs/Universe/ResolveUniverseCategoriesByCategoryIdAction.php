@@ -38,19 +38,7 @@ class ResolveUniverseCategoriesByCategoryIdAction extends BaseActionJobAction im
 
     public function execute(?int $category_id = null)
     {
-        $this->category_ids = collect();
-
-        if (! is_null($category_id))
-            $this->category_ids->push($category_id);
-
-        if(Cache::has('category_ids_to_resolve'))
-        {
-            $cached_group_ids = Cache::pull('category_ids_to_resolve');
-
-            collect($cached_group_ids)->each(function ($cached_group_id) {
-                $this->category_ids->push($cached_group_id);
-            });
-        }
+        $this->category_ids = (new AddAndGetIdsFromCache('category_ids_to_resolve', $category_id))->execute();
 
         $this->category_ids->unique()->each(function ($category_id) {
 

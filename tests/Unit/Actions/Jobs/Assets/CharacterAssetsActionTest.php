@@ -79,26 +79,6 @@ class CharacterAssetsActionTest extends TestCase
             ]);
     }
 
-    /**
-     * @test
-     * @runTestsInSeparateProcesses
-     */
-    public function it_caches_missing_type_ids()
-    {
-        $mock_data = $this->buildMockEsiData();
-
-        $this->assertFalse(Cache::has('type_ids_to_resolve'));
-
-        // Run CharacterAssetsAction
-        (new CharacterAssetsAction())->execute($this->test_character->refresh_token);
-
-        $this->assertTrue(Cache::has('type_ids_to_resolve'));
-
-        foreach ($mock_data as $item)
-            $this->assertTrue(in_array($item->type_id, Cache::get('type_ids_to_resolve')));
-
-    }
-
     private function buildMockEsiData()
     {
 

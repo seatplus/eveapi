@@ -48,19 +48,7 @@ class ResolveUniverseTypesByTypeIdAction extends BaseActionJobAction implements 
 
     public function execute(?int $type_id = null)
     {
-        $this->type_ids = collect();
-
-        if (! is_null($type_id))
-            $this->type_ids->push($type_id);
-
-        if(Cache::has('type_ids_to_resolve'))
-        {
-            $cached_type_ids = Cache::pull('type_ids_to_resolve');
-
-            collect($cached_type_ids)->each(function ($cached_type_id) {
-                $this->type_ids->push($cached_type_id);
-            });
-        }
+        $this->type_ids = (new AddAndGetIdsFromCache('type_ids_to_resolve', $type_id))->execute();
 
         $this->type_ids->unique()->each(function ($type_id) {
 
