@@ -2,12 +2,9 @@
 
 namespace Seatplus\Eveapi\Actions\Jobs\Universe;
 
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Seatplus\Eveapi\Actions\Jobs\BaseActionJobAction;
 use Seatplus\Eveapi\Actions\Jobs\HasPathValuesInterface;
-use Seatplus\Eveapi\Actions\Jobs\HasRequestBodyInterface;
-use Seatplus\Eveapi\Models\Universe\Names;
 use Seatplus\Eveapi\Models\Universe\Types;
 
 class ResolveUniverseTypesByTypeIdAction extends BaseActionJobAction implements HasPathValuesInterface
@@ -65,7 +62,7 @@ class ResolveUniverseTypesByTypeIdAction extends BaseActionJobAction implements 
         $this->type_ids->unique()->each(function ($type_id) {
 
             $this->setPathValues([
-                'type_id' => $type_id
+                'type_id' => $type_id,
             ]);
 
             $response = $this->retrieve();
@@ -88,7 +85,7 @@ class ResolveUniverseTypesByTypeIdAction extends BaseActionJobAction implements 
                     'packaged_volume' => $response->optional('packaged_volume'),
                     'portion_size' => $response->optional('portion_size'),
                     'radius' => $response->optional('radius'),
-                    'volume' => $response->optional('volume')
+                    'volume' => $response->optional('volume'),
                 ]
             );
 

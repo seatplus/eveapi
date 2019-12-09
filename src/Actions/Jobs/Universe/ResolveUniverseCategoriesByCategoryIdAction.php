@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Cache;
 use Seatplus\Eveapi\Actions\Jobs\BaseActionJobAction;
 use Seatplus\Eveapi\Actions\Jobs\HasPathValuesInterface;
 use Seatplus\Eveapi\Models\Universe\Categories;
-use Seatplus\Eveapi\Models\Universe\Groups;
 
 class ResolveUniverseCategoriesByCategoryIdAction extends BaseActionJobAction implements HasPathValuesInterface
 {
@@ -19,7 +18,6 @@ class ResolveUniverseCategoriesByCategoryIdAction extends BaseActionJobAction im
      * @var \Illuminate\Support\Collection
      */
     private $category_ids;
-
 
     public function getMethod(): string
     {
@@ -55,7 +53,7 @@ class ResolveUniverseCategoriesByCategoryIdAction extends BaseActionJobAction im
         $this->category_ids->unique()->each(function ($category_id) {
 
             $this->setPathValues([
-                'category_id' => $category_id
+                'category_id' => $category_id,
             ]);
 
             $response = $this->retrieve();

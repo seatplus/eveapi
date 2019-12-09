@@ -4,7 +4,6 @@ namespace Seatplus\Eveapi\Models\Assets;
 
 use Illuminate\Database\Eloquent\Model;
 use Seatplus\Eveapi\Events\CharacterAssetUpdating;
-use Seatplus\Eveapi\Models\Universe\Names;
 use Seatplus\Eveapi\Models\Universe\Types;
 
 class CharacterAsset extends Model

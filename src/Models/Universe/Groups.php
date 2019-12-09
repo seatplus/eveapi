@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Models\Universe;
-
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -45,6 +43,6 @@ class Groups extends Model
 
     public function category()
     {
-        return $this->belongsTo(Categories::class,'category_id', 'category_id');
+        return $this->belongsTo(Categories::class, 'category_id', 'category_id');
     }
 }

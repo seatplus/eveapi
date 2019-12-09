@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Http\Controllers\Controller;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
-use Seatplus\Eveapi\Jobs\Seatplus\GetMissingTypeNamesJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseCategoriesByCategoryIdJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseGroupsByGroupIdJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
@@ -28,7 +27,7 @@ class CharacterAssetController extends Controller
         CharacterAssetJob::withChain([
             new ResolveUniverseTypesByTypeIdJob,
             new ResolveUniverseGroupsByGroupIdJob,
-            new ResolveUniverseCategoriesByCategoryIdJob
+            new ResolveUniverseCategoriesByCategoryIdJob,
         ])->dispatch($job_container)->onQueue('default');
 
         return response('success', 200);
