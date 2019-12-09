@@ -7,7 +7,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Seatplus\Eveapi\Actions\Jobs\Universe\NamesAction;
 use Seatplus\Eveapi\Actions\Jobs\Universe\ResolveUniverseTypesByTypeIdAction;
 use Seatplus\Eveapi\Actions\Seatplus\CacheMissingGroupIdsAction;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;

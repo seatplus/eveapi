@@ -1,12 +1,9 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Actions\Seatplus;
-
 
 use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Models\Universe\Groups;
-use Seatplus\Eveapi\Models\Universe\Types;
 
 class CacheMissingCategoryIdsAction
 {
@@ -18,5 +15,4 @@ class CacheMissingCategoryIdsAction
 
         return $unknown_type_ids;
     }
-
 }
