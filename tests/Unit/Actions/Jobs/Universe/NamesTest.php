@@ -27,28 +27,25 @@ class NamesTest extends TestCase
 
         $first_name = $mock_data->first();
 
-        $result = (new NamesAction())->execute($first_name->id);
+        $result = (new NamesAction())->execute(collect($first_name->id));
 
         $this->assertDatabaseHas('universe_names', [
             'name' => $first_name->name
         ]);
 
-        $this->assertEquals($first_name->name, $result->name);
-
+        $this->assertNUll($result);
     }
 
     /**
      * @test
      * @runTestsInSeparateProcesses
      */
-    public function it_runs_with_cached_ids()
+    public function it_runs_with_multiple_ids()
     {
         $mock_data = $this->buildMockEsiData(5);
 
-        Cache::put('type_ids_to_resolve', collect($mock_data)->pluck('id'));
-
         $name_action = new NamesAction;
-        $result = $name_action->execute();
+        $result = $name_action->execute($mock_data->pluck('id'));
 
         foreach ($mock_data as $type) {
             $this->assertDatabaseHas('universe_names', [

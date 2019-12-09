@@ -129,4 +129,9 @@ class CharacterAssetsAction extends BaseActionJobAction implements HasPathValues
     {
         return $this->refresh_token;
     }
+
+    public function setPathValues(array $array): void
+    {
+
+    }
 }
