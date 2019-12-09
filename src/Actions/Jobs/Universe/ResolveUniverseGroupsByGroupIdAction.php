@@ -19,7 +19,6 @@ class ResolveUniverseGroupsByGroupIdAction extends BaseActionJobAction implement
      */
     private $group_ids;
 
-
     public function getMethod(): string
     {
         return 'get';
@@ -54,7 +53,7 @@ class ResolveUniverseGroupsByGroupIdAction extends BaseActionJobAction implement
         $this->group_ids->unique()->each(function ($group_id) {
 
             $this->setPathValues([
-                'group_id' => $group_id
+                'group_id' => $group_id,
             ]);
 
             $response = $this->retrieve();
