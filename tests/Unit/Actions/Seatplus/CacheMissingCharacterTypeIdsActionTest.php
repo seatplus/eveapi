@@ -3,10 +3,7 @@
 
 namespace Seatplus\Eveapi\Tests\Unit\Actions\Seatplus;
 
-
-use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Actions\Seatplus\CacheMissingCharacterTypeIdsAction;
-use Seatplus\Eveapi\Jobs\Seatplus\GetMissingTypeNamesJob;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Tests\TestCase;
 

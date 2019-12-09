@@ -24,7 +24,10 @@ class AllianceInfoAction extends BaseActionJobAction implements HasPathValuesInt
      */
     protected $version = 'v3';
 
-    protected $alliance_id;
+    /**
+     * @var array|null
+     */
+    private $path_values;
 
     /**
      * @param mixed $alliance_id
@@ -38,7 +41,9 @@ class AllianceInfoAction extends BaseActionJobAction implements HasPathValuesInt
     public function execute(int $alliance_id)
     {
 
-        $this->setAllianceId($alliance_id);
+        $this->setPathValues([
+            'alliance_id' => $alliance_id,
+        ]);
 
         $response = $this->retrieve();
 
@@ -72,8 +77,11 @@ class AllianceInfoAction extends BaseActionJobAction implements HasPathValuesInt
 
     public function getPathValues(): array
     {
-        return [
-            'alliance_id' => $this->alliance_id,
-        ];
+        return $this->path_values;
+    }
+
+    public function setPathValues(array $array): void
+    {
+        $this->path_values = $array;
     }
 }

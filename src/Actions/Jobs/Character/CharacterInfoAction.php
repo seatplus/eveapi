@@ -10,16 +10,7 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
 class CharacterInfoAction extends BaseActionJobAction implements HasPathValuesInterface
 {
-    protected $character_id;
-
-    /**
-     * @param int $character_id
-     */
-    public function setCharacterId(int $character_id): void
-    {
-
-        $this->character_id = $character_id;
-    }
+    protected $path_values;
 
     public function getMethod() :string
     {
@@ -39,14 +30,15 @@ class CharacterInfoAction extends BaseActionJobAction implements HasPathValuesIn
     public function getPathValues() : array
     {
 
-        return [
-            'character_id' => $this->character_id,
-        ];
+        return $this->path_values;
     }
 
     public function execute(int $character_id)
     {
-        $this->setCharacterId($character_id);
+
+        $this->setPathValues([
+            'character_id' => $character_id,
+        ]);
 
         $response = $this->retrieve();
 
@@ -78,5 +70,10 @@ class CharacterInfoAction extends BaseActionJobAction implements HasPathValuesIn
             AllianceInfo::dispatch($job_container)->onQueue('low');
         }
 
+    }
+
+    public function setPathValues(array $array): void
+    {
+        $this->path_values = $array;
     }
 }

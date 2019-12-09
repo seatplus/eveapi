@@ -7,7 +7,6 @@ use Seatplus\Eveapi\Actions\Character\CharacterAssetsCleanupAction;
 use Seatplus\Eveapi\Actions\Jobs\BaseActionJobAction;
 use Seatplus\Eveapi\Actions\Jobs\HasPathValuesInterface;
 use Seatplus\Eveapi\Actions\Jobs\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Actions\Seatplus\CacheMissingCharacterTypeIdsAction;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Models\RefreshToken;
 
@@ -94,8 +93,6 @@ class CharacterAssetsAction extends BaseActionJobAction implements HasPathValues
         // Cleanup old items
         (new CharacterAssetsCleanupAction)->execute($this->refresh_token->character_id, $this->known_assets->toArray());
 
-        (new CacheMissingCharacterTypeIdsAction)->execute();
-
     }
 
     public function getMethod(): string
@@ -128,5 +125,10 @@ class CharacterAssetsAction extends BaseActionJobAction implements HasPathValues
     public function getRefreshToken(): RefreshToken
     {
         return $this->refresh_token;
+    }
+
+    public function setPathValues(array $array): void
+    {
+
     }
 }
