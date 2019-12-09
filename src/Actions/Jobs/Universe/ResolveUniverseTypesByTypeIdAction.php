@@ -2,7 +2,6 @@
 
 namespace Seatplus\Eveapi\Actions\Jobs\Universe;
 
-use Illuminate\Support\Facades\Cache;
 use Seatplus\Eveapi\Actions\Jobs\BaseActionJobAction;
 use Seatplus\Eveapi\Actions\Jobs\HasPathValuesInterface;
 use Seatplus\Eveapi\Models\Universe\Types;
