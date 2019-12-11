@@ -60,8 +60,6 @@ class CharacterAssetsAction extends BaseActionJobAction implements HasPathValues
             // First update the
             collect($response)->each(function ($asset) {
 
-                //TODO create Observer if character_id changed -> transaction
-
                 CharacterAsset::updateOrCreate([
                     'item_id' => $asset->item_id,
                 ], [

@@ -22,7 +22,7 @@ $factory->define(CharacterAsset::class, function (Faker $faker) {
 
     return [
         'character_id' => $faker->numberBetween(99000000,100000000),
-        'item_id' => $faker->randomNumber(),
+        'item_id' => $faker->unique()->randomNumber(),
         'is_blueprint_copy' => false,
         'is_singleton' => $faker->boolean,
         'location_flag'  => $faker->randomElement($location_flag_array),
