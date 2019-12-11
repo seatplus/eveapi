@@ -2,8 +2,8 @@
 
 namespace Seatplus\Eveapi\Actions\Jobs\Universe;
 
-use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
 use Seatplus\Eveapi\Actions\HasPathValuesInterface;
+use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
 use Seatplus\Eveapi\Models\Universe\Groups;
 
 class ResolveUniverseGroupsByGroupIdAction extends RetrieveFromEsiBase implements HasPathValuesInterface
