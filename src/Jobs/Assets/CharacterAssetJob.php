@@ -3,7 +3,7 @@
 namespace Seatplus\Eveapi\Jobs\Assets;
 
 use Seatplus\Eveapi\Actions\Jobs\Assets\CharacterAssetsAction;
-use Seatplus\Eveapi\Actions\Jobs\BaseActionJobInterface;
+use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
 use Seatplus\Eveapi\Actions\Seatplus\CacheMissingCharacterTypeIdsAction;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
@@ -38,7 +38,7 @@ class CharacterAssetJob extends EsiBase
             ];
     }
 
-    public function getActionClass() : BaseActionJobInterface
+    public function getActionClass() : RetrieveFromEsiInterface
     {
         return new CharacterAssetsAction;
     }

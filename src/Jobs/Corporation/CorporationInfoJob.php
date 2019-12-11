@@ -2,8 +2,8 @@
 
 namespace Seatplus\Eveapi\Jobs\Corporation;
 
-use Seatplus\Eveapi\Actions\Jobs\BaseActionJobInterface;
 use Seatplus\Eveapi\Actions\Jobs\Corporation\CorporationInfoAction;
+use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
@@ -42,7 +42,7 @@ class CorporationInfoJob extends EsiBase
 
     }
 
-    public function getActionClass(): BaseActionJobInterface
+    public function getActionClass(): RetrieveFromEsiInterface
     {
         return new CorporationInfoAction;
     }

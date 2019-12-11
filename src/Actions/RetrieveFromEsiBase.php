@@ -1,12 +1,12 @@
 <?php
 
-namespace Seatplus\Eveapi\Actions\Jobs;
+namespace Seatplus\Eveapi\Actions;
 
 use Seat\Eseye\Containers\EsiResponse;
 use Seatplus\Eveapi\Actions\Eseye\RetrieveEsiDataAction;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
 
-abstract class BaseActionJobAction implements BaseActionJobInterface
+abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
 {
 
     /**

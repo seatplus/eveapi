@@ -2,15 +2,16 @@
 
 namespace Seatplus\Eveapi\Actions\Jobs\Character;
 
-use Seatplus\Eveapi\Actions\Jobs\BaseActionJobInterface;
-use Seatplus\Eveapi\Actions\Jobs\HasRequiredScopeInterface;
+use Seatplus\Eveapi\Actions\HasPathValuesInterface;
+use Seatplus\Eveapi\Actions\HasRequiredScopeInterface;
+use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
+use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
 use Seatplus\Eveapi\Models\Character\CharacterRole;
 use Seatplus\Eveapi\Models\RefreshToken;
-use Seatplus\Eveapi\Traits\RetrieveEsiResponse;
 
-class CharacterRoleAction implements BaseActionJobInterface, HasRequiredScopeInterface
+class CharacterRoleAction extends RetrieveFromEsiBase implements RetrieveFromEsiInterface, HasPathValuesInterface, HasRequiredScopeInterface
 {
-    use RetrieveEsiResponse;
+
     /**
      * @var string
      */
@@ -30,14 +31,21 @@ class CharacterRoleAction implements BaseActionJobInterface, HasRequiredScopeInt
 
     public $required_scope = 'esi-characters.read_corporation_roles.v1';
 
+    /**
+     * @var array|null
+     */
+    private $path_values;
+
     public function execute(RefreshToken $refresh_token)
     {
 
         $this->refresh_token = $refresh_token;
 
-        $response = $this->retrieve([
+        $this->setPathValues([
             'character_id' => $refresh_token->character_id,
         ]);
+
+        $response = $this->retrieve();
 
         if ($response->isCachedLoad()) return;
 
@@ -75,5 +83,15 @@ class CharacterRoleAction implements BaseActionJobInterface, HasRequiredScopeInt
     public function getVersion(): string
     {
         return $this->version;
+    }
+
+    public function getPathValues(): array
+    {
+        return $this->path_values;
+    }
+
+    public function setPathValues(array $array): void
+    {
+        $this->path_values = $array;
     }
 }

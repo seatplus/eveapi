@@ -1,8 +1,8 @@
 <?php
 
-namespace Seatplus\Eveapi\Actions\Jobs;
+namespace Seatplus\Eveapi\Actions;
 
-interface BaseActionJobInterface
+interface RetrieveFromEsiInterface
 {
     public function getMethod() : string;
 

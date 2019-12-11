@@ -3,8 +3,8 @@
 namespace Seatplus\Eveapi\Tests\Unit\Actions\Jobs\Character;
 
 use Seatplus\Eveapi\Actions\Jobs\Character\CharacterRoleAction;
+use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
 use Seatplus\Eveapi\Jobs\Character\CharacterRoleJob;
-use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Models\Character\CharacterRole;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Tests\TestCase;
@@ -59,6 +59,7 @@ class CharacterRoleActionTest extends TestCase
         $action_class = (new CharacterRoleJob)->getActionClass();
 
         $this->assertInstanceOf(CharacterRoleAction::class, $action_class);
+        $this->assertInstanceOf(RetrieveFromEsiInterface::class, $action_class);
 
         // Run CharacterRoleAction because somehow that is needed with all the mocking.
         ($action_class)->execute($refresh_token);

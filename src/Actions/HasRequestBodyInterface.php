@@ -1,6 +1,6 @@
 <?php
 
-namespace Seatplus\Eveapi\Actions\Jobs;
+namespace Seatplus\Eveapi\Actions;
 
 interface HasRequestBodyInterface
 {
