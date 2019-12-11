@@ -3,12 +3,12 @@
 namespace Seatplus\Eveapi\Actions\Esi;
 
 use Exception;
+use Seatplus\Eveapi\Actions\Jobs\RetrieveFromEsiBase;
 use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
-use Seatplus\Eveapi\Traits\RetrieveEsiResponse;
 
-class GetEsiStatusAction
+class GetEsiStatusAction extends RetrieveFromEsiBase
 {
-    use RateLimitsEsiCalls, RetrieveEsiResponse;
+    use RateLimitsEsiCalls;
 
     /**
      * @var string
@@ -31,6 +31,7 @@ class GetEsiStatusAction
      * @return void
      * @throws \Exception
      * @throws \Throwable
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function execute() : string
     {
@@ -62,5 +63,20 @@ class GetEsiStatusAction
 
         return $status;
 
+    }
+
+    public function getMethod(): string
+    {
+        return $this->method;
+    }
+
+    public function getEndpoint(): string
+    {
+        return $this->endpoint;
+    }
+
+    public function getVersion(): string
+    {
+        return $this->version;
     }
 }

@@ -2,11 +2,11 @@
 
 namespace Seatplus\Eveapi\Actions\Jobs\Alliance;
 
-use Seatplus\Eveapi\Actions\Jobs\BaseActionJobAction;
-use Seatplus\Eveapi\Actions\Jobs\HasPathValuesInterface;
+use Seatplus\Eveapi\Actions\HasPathValuesInterface;
+use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 
-class AllianceInfoAction extends BaseActionJobAction implements HasPathValuesInterface
+class AllianceInfoAction extends RetrieveFromEsiBase implements HasPathValuesInterface
 {
 
     /**

@@ -2,11 +2,11 @@
 
 namespace Seatplus\Eveapi\Actions\Jobs\Universe;
 
-use Seatplus\Eveapi\Actions\Jobs\BaseActionJobAction;
-use Seatplus\Eveapi\Actions\Jobs\HasPathValuesInterface;
+use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
+use Seatplus\Eveapi\Actions\HasPathValuesInterface;
 use Seatplus\Eveapi\Models\Universe\Groups;
 
-class ResolveUniverseGroupsByGroupIdAction extends BaseActionJobAction implements HasPathValuesInterface
+class ResolveUniverseGroupsByGroupIdAction extends RetrieveFromEsiBase implements HasPathValuesInterface
 {
     /**
      * @var array

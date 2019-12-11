@@ -3,14 +3,14 @@
 namespace Seatplus\Eveapi\Actions\Jobs\Assets;
 
 use Illuminate\Database\Eloquent\Builder;
-use Seatplus\Eveapi\Actions\Jobs\BaseActionJobAction;
-use Seatplus\Eveapi\Actions\Jobs\HasPathValuesInterface;
-use Seatplus\Eveapi\Actions\Jobs\HasRequestBodyInterface;
-use Seatplus\Eveapi\Actions\Jobs\HasRequiredScopeInterface;
+use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
+use Seatplus\Eveapi\Actions\HasPathValuesInterface;
+use Seatplus\Eveapi\Actions\HasRequestBodyInterface;
+use Seatplus\Eveapi\Actions\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Models\RefreshToken;
 
-class GetCharacterAssetsNamesAction extends BaseActionJobAction implements HasPathValuesInterface, HasRequestBodyInterface, HasRequiredScopeInterface
+class GetCharacterAssetsNamesAction extends RetrieveFromEsiBase implements HasPathValuesInterface, HasRequestBodyInterface, HasRequiredScopeInterface
 {
 
     /**

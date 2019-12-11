@@ -3,7 +3,7 @@
 namespace Seatplus\Eveapi\Jobs\Alliances;
 
 use Seatplus\Eveapi\Actions\Jobs\Alliance\AllianceInfoAction;
-use Seatplus\Eveapi\Actions\Jobs\BaseActionJobInterface;
+use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
@@ -43,7 +43,7 @@ class AllianceInfo extends EsiBase
         $this->getActionClass()->execute($this->alliance_id);
     }
 
-    public function getActionClass(): BaseActionJobInterface
+    public function getActionClass(): RetrieveFromEsiInterface
     {
         return new AllianceInfoAction;
     }

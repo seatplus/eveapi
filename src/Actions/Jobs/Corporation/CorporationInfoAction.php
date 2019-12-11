@@ -2,14 +2,14 @@
 
 namespace Seatplus\Eveapi\Actions\Jobs\Corporation;
 
+use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
+use Seatplus\Eveapi\Actions\HasPathValuesInterface;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
-use Seatplus\Eveapi\Traits\RetrieveEsiResponse;
 
-class CorporationInfoAction
+class CorporationInfoAction extends RetrieveFromEsiBase implements HasPathValuesInterface
 {
-    use RetrieveEsiResponse;
 
     /**
      * @var string
@@ -26,12 +26,19 @@ class CorporationInfoAction
      */
     protected $version = 'v4';
 
+    /**
+     * @var array|null
+     */
+    private $path_values;
+
     public function execute(int $corporation_id)
     {
 
-        $response = $this->retrieve([
+        $this->setPathValues([
             'corporation_id' => $corporation_id,
         ]);
+
+        $response = $this->retrieve();
 
         if ($response->isCachedLoad()) return;
 
@@ -60,5 +67,30 @@ class CorporationInfoAction
             AllianceInfo::dispatch($job_container)->onQueue('low');
         }
 
+    }
+
+    public function getMethod(): string
+    {
+        return $this->method;
+    }
+
+    public function getEndpoint(): string
+    {
+        return $this->endpoint;
+    }
+
+    public function getVersion(): string
+    {
+        return $this->version;
+    }
+
+    public function getPathValues(): array
+    {
+        return $this->path_values;
+    }
+
+    public function setPathValues(array $path_values): void
+    {
+        $this->path_values = $path_values;
     }
 }

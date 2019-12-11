@@ -2,7 +2,7 @@
 
 namespace Seatplus\Eveapi\Jobs;
 
-use Seatplus\Eveapi\Actions\Jobs\BaseActionJobInterface;
+use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
 
 interface BaseJobInterface
 {
@@ -20,7 +20,7 @@ interface BaseJobInterface
      */
     public function tags(): array;
 
-    public function getActionClass(): BaseActionJobInterface;
+    public function getActionClass(): RetrieveFromEsiInterface;
 
     /**
      * Execute the job.

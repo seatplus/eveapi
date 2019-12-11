@@ -3,11 +3,11 @@
 namespace Seatplus\Eveapi\Actions\Jobs\Universe;
 
 use Illuminate\Support\Collection;
-use Seatplus\Eveapi\Actions\Jobs\BaseActionJobAction;
-use Seatplus\Eveapi\Actions\Jobs\HasRequestBodyInterface;
+use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
+use Seatplus\Eveapi\Actions\HasRequestBodyInterface;
 use Seatplus\Eveapi\Models\Universe\Names;
 
-class NamesAction extends BaseActionJobAction implements HasRequestBodyInterface
+class NamesAction extends RetrieveFromEsiBase implements HasRequestBodyInterface
 {
 
     protected $request_body;
