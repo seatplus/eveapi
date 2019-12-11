@@ -41,4 +41,16 @@ class Types extends Model
     {
         return $this->hasOne(Groups::class, 'group_id', 'group_id');
     }
+
+    public function category()
+    {
+        return $this->hasOneThrough(
+            Categories::class,
+            Groups::class,
+            'group_id',
+            'category_id',
+            'group_id',
+            'category_id'
+        );
+    }
 }

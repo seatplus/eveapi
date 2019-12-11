@@ -11,7 +11,6 @@ use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 class CorporationInfoJob extends EsiBase
 {
 
-    //TODO Implement JobMiddlewareForRateLimit
     /**
      * @var array
      */

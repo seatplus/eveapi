@@ -35,7 +35,7 @@ class Categories extends Model
         'published' => 'boolean',
     ];
 
-    public function types()
+    public function groups()
     {
         return $this->hasMany(Groups::class, 'group_id', 'group_id');
     }

@@ -60,8 +60,6 @@ class CharacterAssetsAction extends BaseActionJobAction implements HasPathValues
             // First update the
             collect($response)->each(function ($asset) {
 
-                //TODO create Observer if character_id changed -> transaction
-
                 CharacterAsset::updateOrCreate([
                     'item_id' => $asset->item_id,
                 ], [
@@ -92,6 +90,9 @@ class CharacterAssetsAction extends BaseActionJobAction implements HasPathValues
 
         // Cleanup old items
         (new CharacterAssetsCleanupAction)->execute($this->refresh_token->character_id, $this->known_assets->toArray());
+
+        //Get Names for the items
+        (new GetCharacterAssetsNamesAction)->execute($this->refresh_token);
 
     }
 

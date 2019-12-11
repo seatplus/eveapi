@@ -7,6 +7,7 @@ namespace Seatplus\Eveapi\Tests\Unit\Models;
 use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Events\CharacterAssetUpdating;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
+use Seatplus\Eveapi\Models\Universe\Types;
 use Seatplus\Eveapi\Tests\TestCase;
 
 class CharacterAssetModelTest extends TestCase
@@ -52,6 +53,28 @@ class CharacterAssetModelTest extends TestCase
         $character_asset->save();
 
         Event::assertNotDispatched(CharacterAssetUpdating::class);
+    }
+
+    /** @test */
+    public function model_has_types()
+    {
+        $test_asset = factory(CharacterAsset::class)->create();
+
+        $test_asset->type()->save(factory(Types::class)->create());
+
+        $assets = CharacterAsset::has('type')->get();
+
+        $this->assertTrue($assets->contains($test_asset));
+    }
+
+    /** @test */
+    public function model_misses_types()
+    {
+        $test_asset = factory(CharacterAsset::class)->create();
+
+        $assets = CharacterAsset::has('type')->get();
+
+        $this->assertFalse($assets->contains($test_asset));
     }
 
 }
