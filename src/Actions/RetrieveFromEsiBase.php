@@ -4,7 +4,6 @@ namespace Seatplus\Eveapi\Actions;
 
 use Seat\Eseye\Containers\EsiResponse;
 use Seatplus\Eveapi\Actions\Eseye\RetrieveEsiDataAction;
-use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
 
 abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
