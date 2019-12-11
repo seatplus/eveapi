@@ -2,8 +2,8 @@
 
 namespace Seatplus\Eveapi\Actions\Jobs\Universe;
 
-use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
 use Seatplus\Eveapi\Actions\HasPathValuesInterface;
+use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
 use Seatplus\Eveapi\Models\Universe\Types;
 
 class ResolveUniverseTypesByTypeIdAction extends RetrieveFromEsiBase implements HasPathValuesInterface

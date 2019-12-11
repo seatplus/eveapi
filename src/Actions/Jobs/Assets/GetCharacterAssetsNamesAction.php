@@ -3,10 +3,10 @@
 namespace Seatplus\Eveapi\Actions\Jobs\Assets;
 
 use Illuminate\Database\Eloquent\Builder;
-use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
 use Seatplus\Eveapi\Actions\HasPathValuesInterface;
 use Seatplus\Eveapi\Actions\HasRequestBodyInterface;
 use Seatplus\Eveapi\Actions\HasRequiredScopeInterface;
+use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Models\RefreshToken;
 
