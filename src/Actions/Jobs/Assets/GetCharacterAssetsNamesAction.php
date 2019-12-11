@@ -3,7 +3,6 @@
 namespace Seatplus\Eveapi\Actions\Jobs\Assets;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Actions\Jobs\BaseActionJobAction;
 use Seatplus\Eveapi\Actions\Jobs\HasPathValuesInterface;
 use Seatplus\Eveapi\Actions\Jobs\HasRequestBodyInterface;
@@ -57,7 +56,7 @@ class GetCharacterAssetsNamesAction extends BaseActionJobAction implements HasPa
 
         CharacterAsset::whereHas('type.category', function (Builder $query) {
             // Only Celestials, Ships, Deployable, Starbases, Orbitals and Structures might be named
-            $query->whereIn('universe_categories.category_id',[2, 6, 22, 23, 46, 65]);
+            $query->whereIn('universe_categories.category_id', [2, 6, 22, 23, 46, 65]);
         })->where('character_id', $this->refresh_token->character_id)
             ->select('item_id')
             ->where('is_singleton', true)
@@ -124,6 +123,6 @@ class GetCharacterAssetsNamesAction extends BaseActionJobAction implements HasPa
 
     public function setRequestBody(array $array): void
     {
-        $this ->request_body = $array;
+        $this->request_body = $array;
     }
 }
