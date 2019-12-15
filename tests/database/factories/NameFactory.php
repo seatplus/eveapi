@@ -1,9 +1,9 @@
 <?php
 
 use Faker\Generator as Faker;
-use Seatplus\Eveapi\Models\Universe\Names;
+use Seatplus\Eveapi\Models\Universe\Name;
 
-$factory->define(Names::class, function (Faker $faker) {
+$factory->define(Name::class, function (Faker $faker) {
 
     return [
         'id' => $faker->numberBetween(0,10000),
