@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Actions\Jobs\Character;
-
 
 use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Actions\HasRequestBodyInterface;
@@ -79,7 +77,7 @@ class CharacterAffiliationAction extends RetrieveFromEsiBase implements HasReque
                     [
                         'alliance_id' => optional($result)->alliance_id,
                         'faction_id' => optional($result)->faction_id,
-                        'last_pulled' => $timestamp
+                        'last_pulled' => $timestamp,
                     ]
                 );
             })->each(function (CharacterAffiliation $character_affiliation) use ($timestamp) {
@@ -88,7 +86,6 @@ class CharacterAffiliationAction extends RetrieveFromEsiBase implements HasReque
                 $character_affiliation->save();
             });
         });
-
 
         return CharacterAffiliation::find($character_id);
 
