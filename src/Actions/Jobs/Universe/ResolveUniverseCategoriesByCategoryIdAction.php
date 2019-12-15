@@ -4,7 +4,7 @@ namespace Seatplus\Eveapi\Actions\Jobs\Universe;
 
 use Seatplus\Eveapi\Actions\HasPathValuesInterface;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
-use Seatplus\Eveapi\Models\Universe\Categories;
+use Seatplus\Eveapi\Models\Universe\Category;
 
 class ResolveUniverseCategoriesByCategoryIdAction extends RetrieveFromEsiBase implements HasPathValuesInterface
 {
@@ -47,7 +47,7 @@ class ResolveUniverseCategoriesByCategoryIdAction extends RetrieveFromEsiBase im
 
             if ($response->isCachedLoad()) return;
 
-            return Categories::firstOrCreate(
+            return Category::firstOrCreate(
                 ['category_id' => $response->category_id],
                 [
                     'name' => $response->name,
@@ -59,7 +59,7 @@ class ResolveUniverseCategoriesByCategoryIdAction extends RetrieveFromEsiBase im
 
         // If execution was invoked with a specific type_id return the response
         if (! is_null($category_id))
-            return Categories::find($category_id);
+            return Category::find($category_id);
 
         return null;
 
