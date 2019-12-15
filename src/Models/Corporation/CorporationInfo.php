@@ -3,6 +3,7 @@
 namespace Seatplus\Eveapi\Models\Corporation;
 
 use Illuminate\Database\Eloquent\Model;
+use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
 class CorporationInfo extends Model
@@ -30,6 +31,13 @@ class CorporationInfo extends Model
     public function characters()
     {
 
-        return $this->hasMany(CharacterInfo::class, 'corporation_id', 'corporation_id');
+        return $this->hasManyThrough(
+            CharacterInfo::class,
+            CharacterAffiliation::class,
+            'corporation_id',
+            'character_id',
+            'corporation_id',
+            'character_id'
+            );
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Seatplus\Eveapi\Tests\Unit\Models;
 
+use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Tests\TestCase;
@@ -31,7 +32,11 @@ class CorporationInfoTest extends TestCase
     {
         $character = factory(CharacterInfo::class)->make();
 
-        $character->corporation()->associate(factory(CorporationInfo::class)->make());
+        $character_affiliation = $character->character_affiliation()->save(factory(CharacterAffiliation::class)->make());
+
+        $character_affiliation->corporation()->associate(factory(CorporationInfo::class)->create([
+            'corporation_id' => $character_affiliation->corporation_id
+        ]));
 
         $this->assertEquals(
             $character->corporation_id,
@@ -45,9 +50,13 @@ class CorporationInfoTest extends TestCase
     {
         $corporation = factory(CorporationInfo::class)->create();
 
-        $corporation->characters()->createMany(
-            factory(CharacterInfo::class, 3)->make()->toArray()
-        );
+        $characters = factory(CharacterAffiliation::class, 3)->create([
+            'corporation_id' => $corporation->corporation_id,
+            'alliance_id' => $corporation->alliance_id
+        ]);
+
+        foreach ($characters as $character)
+            $character->character()->save(factory(CharacterInfo::class)->create());
 
         $this->assertEquals(3, $corporation->characters()->count());
 
