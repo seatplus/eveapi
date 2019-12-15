@@ -38,7 +38,7 @@ class Group extends Model
 
     public function types()
     {
-        return $this->hasMany(Types::class, 'group_id', 'group_id');
+        return $this->hasMany(Type::class, 'group_id', 'group_id');
     }
 
     public function category()

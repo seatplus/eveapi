@@ -2,7 +2,7 @@
 
 use Faker\Generator as Faker;
 use Seatplus\Eveapi\Models\Universe\Group;
-use Seatplus\Eveapi\Models\Universe\Types;
+use Seatplus\Eveapi\Models\Universe\Type;
 
 $factory->define(Group::class, function (Faker $faker) {
 

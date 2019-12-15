@@ -4,7 +4,7 @@ namespace Seatplus\Eveapi\Actions\Jobs\Universe;
 
 use Seatplus\Eveapi\Actions\HasPathValuesInterface;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
-use Seatplus\Eveapi\Models\Universe\Types;
+use Seatplus\Eveapi\Models\Universe\Type;
 
 class ResolveUniverseTypesByTypeIdAction extends RetrieveFromEsiBase implements HasPathValuesInterface
 {
@@ -56,7 +56,7 @@ class ResolveUniverseTypesByTypeIdAction extends RetrieveFromEsiBase implements 
 
             if ($response->isCachedLoad()) return;
 
-            return Types::firstOrCreate(
+            return Type::firstOrCreate(
                 ['type_id' => $response->type_id],
                 [
                     'group_id' => $response->group_id,
@@ -80,7 +80,7 @@ class ResolveUniverseTypesByTypeIdAction extends RetrieveFromEsiBase implements 
 
         // If execution was invoked with a specific type_id return the response
         if (! is_null($type_id))
-            return Types::find($type_id);
+            return Type::find($type_id);
 
         return null;
 

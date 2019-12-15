@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Cache;
 use Seatplus\Eveapi\Actions\Jobs\Universe\ResolveUniverseGroupsByGroupIdAction;
 use Seatplus\Eveapi\Actions\Jobs\Universe\ResolveUniverseTypesByTypeIdAction;
 use Seatplus\Eveapi\Models\Universe\Group;
-use Seatplus\Eveapi\Models\Universe\Types;
+use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
