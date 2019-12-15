@@ -8,7 +8,7 @@ use Seatplus\Eveapi\Actions\Jobs\Assets\GetCharacterAssetsNamesAction;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Category;
-use Seatplus\Eveapi\Models\Universe\Groups;
+use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Types;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
@@ -44,7 +44,7 @@ class GetCharacterAssetsNamesActionTest extends TestCase
     {
         $type = factory(Types::class)->create();
 
-        $group = factory(Groups::class)->create([
+        $group = factory(Group::class)->create([
             'group_id' => $type->group_id,
             'category_id' => 22
         ]);
@@ -95,7 +95,7 @@ class GetCharacterAssetsNamesActionTest extends TestCase
     {
         $type = factory(Types::class)->create();
 
-        $group = factory(Groups::class)->create([
+        $group = factory(Group::class)->create([
             'group_id' => $type->group_id,
             'category_id' => 11
         ]);
@@ -146,7 +146,7 @@ class GetCharacterAssetsNamesActionTest extends TestCase
     {
         $type = factory(Types::class)->create();
 
-        $group = factory(Groups::class)->create([
+        $group = factory(Group::class)->create([
             'group_id' => $type->group_id,
             'category_id' => 22
         ]);

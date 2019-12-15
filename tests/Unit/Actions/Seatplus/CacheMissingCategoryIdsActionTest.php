@@ -4,7 +4,7 @@
 namespace Seatplus\Eveapi\Tests\Unit\Actions\Seatplus;
 
 use Seatplus\Eveapi\Actions\Seatplus\CacheMissingCategoryIdsAction;
-use Seatplus\Eveapi\Models\Universe\Groups;
+use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Tests\TestCase;
 
 class CacheMissingCategoryIdsActionTest extends TestCase
@@ -12,7 +12,7 @@ class CacheMissingCategoryIdsActionTest extends TestCase
     /** @test */
     public function it_gets_missing_category_realtionship()
     {
-        $groups = factory(Groups::class,5)->create();
+        $groups = factory(Group::class,5)->create();
 
         foreach ($groups as $group)
             //Assert that test character is now created
