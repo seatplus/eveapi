@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Models\Character;
-
 
 use Illuminate\Database\Eloquent\Model;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
@@ -37,7 +35,7 @@ class CharacterAffiliation extends Model
         'corporation_id' => 'integer',
         'alliance_id' => 'integer',
         'faction_id' => 'integer',
-        'last_pulled' => 'datetime'
+        'last_pulled' => 'datetime',
     ];
 
     public function alliance()
@@ -57,6 +55,4 @@ class CharacterAffiliation extends Model
 
         return $this->hasOne(CharacterInfo::class, 'character_id', 'character_id');
     }
-
-
 }
