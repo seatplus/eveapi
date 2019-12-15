@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
-use Seatplus\Eveapi\Models\Universe\Category;
 
 class CharacterInfo extends Model
 {
