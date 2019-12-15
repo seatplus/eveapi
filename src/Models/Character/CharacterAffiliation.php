@@ -37,7 +37,7 @@ class CharacterAffiliation extends Model
         'corporation_id' => 'integer',
         'alliance_id' => 'integer',
         'faction_id' => 'integer',
-        'last_pulled' => 'timestamp'
+        'last_pulled' => 'datetime'
     ];
 
     public function alliance()
