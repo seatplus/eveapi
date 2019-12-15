@@ -4,11 +4,10 @@
 namespace Seatplus\Eveapi\Tests\Unit\Actions\Jobs\Universe;
 
 
-use Faker\Guesser\Name;
 use Illuminate\Support\Facades\Cache;
 use Seatplus\Eveapi\Actions\Jobs\Universe\NamesAction;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
-use Seatplus\Eveapi\Models\Universe\Names;
+use Seatplus\Eveapi\Models\Universe\Name;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
@@ -63,7 +62,7 @@ class NamesTest extends TestCase
 
     private function buildMockEsiData(int $times = 1)
     {
-        $mock_data = factory(Names::class, $times)->make();
+        $mock_data = factory(Name::class, $times)->make();
 
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
 
