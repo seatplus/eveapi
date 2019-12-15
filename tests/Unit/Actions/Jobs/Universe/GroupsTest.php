@@ -8,8 +8,8 @@ namespace Seatplus\Eveapi\Tests\Unit\Actions\Jobs\Universe;
 use Illuminate\Support\Facades\Cache;
 use Seatplus\Eveapi\Actions\Jobs\Universe\ResolveUniverseGroupsByGroupIdAction;
 use Seatplus\Eveapi\Actions\Jobs\Universe\ResolveUniverseTypesByTypeIdAction;
-use Seatplus\Eveapi\Models\Universe\Groups;
-use Seatplus\Eveapi\Models\Universe\Types;
+use Seatplus\Eveapi\Models\Universe\Group;
+use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
@@ -71,7 +71,7 @@ class GroupsTest extends TestCase
 
     private function buildMockEsiData()
     {
-        $mock_data = factory(Groups::class)->make();
+        $mock_data = factory(Group::class)->make();
 
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
 

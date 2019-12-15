@@ -1,10 +1,10 @@
 <?php
 
 use Faker\Generator as Faker;
-use Seatplus\Eveapi\Models\Universe\Groups;
-use Seatplus\Eveapi\Models\Universe\Types;
+use Seatplus\Eveapi\Models\Universe\Group;
+use Seatplus\Eveapi\Models\Universe\Type;
 
-$factory->define(Groups::class, function (Faker $faker) {
+$factory->define(Group::class, function (Faker $faker) {
 
     return [
         'group_id' => $faker->numberBetween(0,10000),

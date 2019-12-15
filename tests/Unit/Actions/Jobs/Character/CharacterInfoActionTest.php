@@ -2,6 +2,8 @@
 
 namespace Seatplus\Eveapi\Tests\Unit\Actions\Jobs\Character;
 
+use Faker\Factory;
+use Faker\Generator;
 use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Actions\Jobs\Character\CharacterInfoAction;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfo;
@@ -27,16 +29,16 @@ class CharacterInfoActionTest extends TestCase
         Bus::fake();
 
         // Run InfoAction
-        (new CharacterInfoAction)->execute($mock_data->character_id);
+        (new CharacterInfoAction)->execute($mock_data['character_id']);
 
 
-        $mock_data->alliance_id
+        $mock_data['alliance_id']
             ? Bus::assertDispatched(AllianceInfo::class)
             : Bus::assertNotDispatched(AllianceInfo::class);
 
         //Assert that test character is now created
         $this->assertDatabaseHas('character_infos', [
-            'name' => $mock_data->name
+            'name' => $mock_data['name']
         ]);
     }
 
@@ -45,7 +47,13 @@ class CharacterInfoActionTest extends TestCase
 
         $mock_data = factory(CharacterInfo::class)->make();
 
-        $this->mockRetrieveEsiDataAction($mock_data->toArray());
+        $faker = Factory::create();
+        $alliance_id = $faker->optional()->numberBetween(99000000,100000000);
+
+        $mock_data = $mock_data->toArray();
+        $mock_data['alliance_id'] = $alliance_id;
+
+        $this->mockRetrieveEsiDataAction($mock_data);
 
         return $mock_data;
     }

@@ -7,7 +7,7 @@ namespace Seatplus\Eveapi\Tests\Unit\Models;
 use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Events\CharacterAssetUpdating;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
-use Seatplus\Eveapi\Models\Universe\Types;
+use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Tests\TestCase;
 
 class CharacterAssetModelTest extends TestCase
@@ -60,7 +60,7 @@ class CharacterAssetModelTest extends TestCase
     {
         $test_asset = factory(CharacterAsset::class)->create();
 
-        $test_asset->type()->save(factory(Types::class)->create());
+        $test_asset->type()->save(factory(Type::class)->create());
 
         $assets = CharacterAsset::has('type')->get();
 

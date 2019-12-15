@@ -4,7 +4,7 @@ namespace Seatplus\Eveapi\Models\Universe;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Types extends Model
+class Type extends Model
 {
 
     /**
@@ -39,14 +39,14 @@ class Types extends Model
 
     public function group()
     {
-        return $this->hasOne(Groups::class, 'group_id', 'group_id');
+        return $this->hasOne(Group::class, 'group_id', 'group_id');
     }
 
     public function category()
     {
         return $this->hasOneThrough(
-            Categories::class,
-            Groups::class,
+            Category::class,
+            Group::class,
             'group_id',
             'category_id',
             'group_id',

@@ -3,10 +3,8 @@
 
 namespace Seatplus\Eveapi\Tests\Unit\Models;
 
-
-use Seatplus\Eveapi\Models\Universe\Categories;
-use Seatplus\Eveapi\Models\Universe\Groups;
-use Seatplus\Eveapi\Models\Universe\Types;
+use Seatplus\Eveapi\Models\Universe\Group;
+use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Tests\TestCase;
 
 class UniverseTypesModelTest extends TestCase
@@ -22,13 +20,13 @@ class UniverseTypesModelTest extends TestCase
 
         parent::setUp();
 
-        $this->type = factory(Types::class)->create();
+        $this->type = factory(Type::class)->create();
     }
 
     /** @test */
     public function it_has_group()
     {
-        $this->type->group()->save(factory(Groups::class)->make());
+        $this->type->group()->save(factory(Group::class)->make());
 
         $this->assertNotNull($this->type->group);
     }
@@ -44,7 +42,7 @@ class UniverseTypesModelTest extends TestCase
     public function it_has_no_category()
     {
 
-        $this->type->group()->save(factory(Groups::class)->create());
+        $this->type->group()->save(factory(Group::class)->create());
 
         $this->assertNull($this->type->category);
     }

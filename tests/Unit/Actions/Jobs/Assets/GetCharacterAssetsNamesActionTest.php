@@ -7,9 +7,9 @@ namespace Seatplus\Eveapi\Tests\Unit\Actions\Jobs\Assets;
 use Seatplus\Eveapi\Actions\Jobs\Assets\GetCharacterAssetsNamesAction;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Models\RefreshToken;
-use Seatplus\Eveapi\Models\Universe\Categories;
-use Seatplus\Eveapi\Models\Universe\Groups;
-use Seatplus\Eveapi\Models\Universe\Types;
+use Seatplus\Eveapi\Models\Universe\Category;
+use Seatplus\Eveapi\Models\Universe\Group;
+use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
@@ -42,14 +42,14 @@ class GetCharacterAssetsNamesActionTest extends TestCase
      */
     public function it_updates_a_name()
     {
-        $type = factory(Types::class)->create();
+        $type = factory(Type::class)->create();
 
-        $group = factory(Groups::class)->create([
+        $group = factory(Group::class)->create([
             'group_id' => $type->group_id,
             'category_id' => 22
         ]);
 
-        $category = factory(Categories::class)->create([
+        $category = factory(Category::class)->create([
             'category_id' => $group->category_id
         ]);
 
@@ -93,14 +93,14 @@ class GetCharacterAssetsNamesActionTest extends TestCase
      */
     public function it_does_not_update_for_wrong_category()
     {
-        $type = factory(Types::class)->create();
+        $type = factory(Type::class)->create();
 
-        $group = factory(Groups::class)->create([
+        $group = factory(Group::class)->create([
             'group_id' => $type->group_id,
             'category_id' => 11
         ]);
 
-        factory(Categories::class)->create([
+        factory(Category::class)->create([
             'category_id' => $group->category_id
         ]);
 
@@ -144,9 +144,9 @@ class GetCharacterAssetsNamesActionTest extends TestCase
      */
     public function it_does_not_run_if_category_is_missing()
     {
-        $type = factory(Types::class)->create();
+        $type = factory(Type::class)->create();
 
-        $group = factory(Groups::class)->create([
+        $group = factory(Group::class)->create([
             'group_id' => $type->group_id,
             'category_id' => 22
         ]);
@@ -191,7 +191,7 @@ class GetCharacterAssetsNamesActionTest extends TestCase
      */
     public function it_does_not_run_if_group_is_missing()
     {
-        $type = factory(Types::class)->create();
+        $type = factory(Type::class)->create();
 
         $asset = factory(CharacterAsset::class)->create([
             'type_id' => $type->type_id,

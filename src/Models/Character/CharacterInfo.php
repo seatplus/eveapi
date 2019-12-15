@@ -38,18 +38,50 @@ class CharacterInfo extends Model
     public function corporation()
     {
 
-        return $this->belongsTo(CorporationInfo::class, 'corporation_id', 'corporation_id');
+        return $this->hasOneThrough(
+            CorporationInfo::class,
+            CharacterAffiliation::class,
+            'character_id',
+            'corporation_id',
+            'character_id',
+            'corporation_id'
+        );
     }
 
     public function alliance()
     {
 
-        return $this->belongsTo(AllianceInfo::class, 'alliance_id', 'alliance_id');
+        return $this->hasOneThrough(
+            AllianceInfo::class,
+            CharacterAffiliation::class,
+            'character_id',
+            'alliance_id',
+            'character_id',
+            'alliance_id'
+        );
     }
 
     public function roles()
     {
 
         return $this->hasOne(CharacterRole::class, 'character_id', 'character_id');
+    }
+
+    public function character_affiliation()
+    {
+
+        return $this->hasOne(CharacterAffiliation::class, 'character_id', 'character_id');
+    }
+
+    public function getCorporationIdAttribute()
+    {
+
+        return $this->character_affiliation->corporation_id;
+    }
+
+    public function getAllianceIdAttribute()
+    {
+
+        return $this->character_affiliation->alliance_id;
     }
 }

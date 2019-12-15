@@ -4,7 +4,7 @@ namespace Seatplus\Eveapi\Models\Assets;
 
 use Illuminate\Database\Eloquent\Model;
 use Seatplus\Eveapi\Events\CharacterAssetUpdating;
-use Seatplus\Eveapi\Models\Universe\Types;
+use Seatplus\Eveapi\Models\Universe\Type;
 
 class CharacterAsset extends Model
 {
@@ -29,6 +29,6 @@ class CharacterAsset extends Model
 
     public function type()
     {
-        return $this->hasOne(Types::class, 'type_id', 'type_id');
+        return $this->hasOne(Type::class, 'type_id', 'type_id');
     }
 }

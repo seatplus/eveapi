@@ -2,6 +2,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Character;
 
+use Seatplus\Eveapi\Actions\Jobs\Character\CharacterAffiliationAction;
 use Seatplus\Eveapi\Actions\Jobs\Character\CharacterInfoAction;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -40,6 +41,7 @@ class CharacterInfo extends EsiBase
     {
 
         $this->getActionClass()->execute($this->character_id);
+        (new CharacterAffiliationAction)->execute($this->character_id);
 
     }
 

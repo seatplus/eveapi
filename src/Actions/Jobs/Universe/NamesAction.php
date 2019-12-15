@@ -5,7 +5,7 @@ namespace Seatplus\Eveapi\Actions\Jobs\Universe;
 use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Actions\HasRequestBodyInterface;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
-use Seatplus\Eveapi\Models\Universe\Names;
+use Seatplus\Eveapi\Models\Universe\Name;
 
 class NamesAction extends RetrieveFromEsiBase implements HasRequestBodyInterface
 {
@@ -53,7 +53,7 @@ class NamesAction extends RetrieveFromEsiBase implements HasRequestBodyInterface
             if ($response->isCachedLoad()) return;
 
             collect($response)->map(function ($result) {
-                return Names::firstOrCreate(
+                return Name::updateOrCreate(
                     ['id' => $result->id],
                     ['name' => $result->name, 'category' => $result->category]
                 );
