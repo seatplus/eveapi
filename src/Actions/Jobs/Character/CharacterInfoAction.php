@@ -49,8 +49,6 @@ class CharacterInfoAction extends RetrieveFromEsiBase implements HasPathValuesIn
         ], [
             'name'            => $response->name,
             'description'     => $response->optional('description'),
-            'corporation_id'  => $response->corporation_id,
-            'alliance_id'     => $response->optional('alliance_id'),
             'birthday'        => $response->birthday,
             'gender'          => $response->gender,
             'race_id'         => $response->race_id,

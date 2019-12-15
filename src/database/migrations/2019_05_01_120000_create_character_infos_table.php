@@ -20,8 +20,6 @@ class CreateCharacterInfosTable extends Migration
 
             $table->string('name');
             $table->text('description')->nullable();
-            $table->bigInteger('corporation_id');
-            $table->bigInteger('alliance_id')->nullable();
             $table->string('birthday');
             $table->string('gender');
             $table->integer('race_id');
