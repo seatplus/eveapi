@@ -6,7 +6,7 @@ namespace Seatplus\Eveapi\Tests\Unit\Actions\Seatplus;
 use Seatplus\Eveapi\Actions\Seatplus\CacheMissingCharacterTypeIdsAction;
 use Seatplus\Eveapi\Actions\Seatplus\CacheMissingGroupIdsAction;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
-use Seatplus\Eveapi\Models\Universe\Types;
+use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Tests\TestCase;
 
 class CacheMissingGroupIdsActionTest extends TestCase
@@ -14,7 +14,7 @@ class CacheMissingGroupIdsActionTest extends TestCase
     /** @test */
     public function it_gets_missing_group_realtionship()
     {
-        $types = factory(Types::class,5)->create();
+        $types = factory(Type::class,5)->create();
 
         foreach ($types as $type)
             //Assert that test character is now created

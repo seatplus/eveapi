@@ -4,7 +4,7 @@ namespace Seatplus\Eveapi\Models\Universe;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Types extends Model
+class Type extends Model
 {
 
     /**

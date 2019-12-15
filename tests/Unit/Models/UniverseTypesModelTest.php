@@ -4,7 +4,7 @@
 namespace Seatplus\Eveapi\Tests\Unit\Models;
 
 use Seatplus\Eveapi\Models\Universe\Group;
-use Seatplus\Eveapi\Models\Universe\Types;
+use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Tests\TestCase;
 
 class UniverseTypesModelTest extends TestCase
@@ -20,7 +20,7 @@ class UniverseTypesModelTest extends TestCase
 
         parent::setUp();
 
-        $this->type = factory(Types::class)->create();
+        $this->type = factory(Type::class)->create();
     }
 
     /** @test */
