@@ -45,7 +45,7 @@ class Types extends Model
     public function category()
     {
         return $this->hasOneThrough(
-            Categories::class,
+            Category::class,
             Groups::class,
             'group_id',
             'category_id',

@@ -3,8 +3,6 @@
 
 namespace Seatplus\Eveapi\Tests\Unit\Models;
 
-
-use Seatplus\Eveapi\Models\Universe\Categories;
 use Seatplus\Eveapi\Models\Universe\Groups;
 use Seatplus\Eveapi\Models\Universe\Types;
 use Seatplus\Eveapi\Tests\TestCase;

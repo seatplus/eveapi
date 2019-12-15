@@ -7,7 +7,7 @@ namespace Seatplus\Eveapi\Tests\Unit\Actions\Jobs\Assets;
 use Seatplus\Eveapi\Actions\Jobs\Assets\GetCharacterAssetsNamesAction;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Models\RefreshToken;
-use Seatplus\Eveapi\Models\Universe\Categories;
+use Seatplus\Eveapi\Models\Universe\Category;
 use Seatplus\Eveapi\Models\Universe\Groups;
 use Seatplus\Eveapi\Models\Universe\Types;
 use Seatplus\Eveapi\Tests\TestCase;
@@ -49,7 +49,7 @@ class GetCharacterAssetsNamesActionTest extends TestCase
             'category_id' => 22
         ]);
 
-        $category = factory(Categories::class)->create([
+        $category = factory(Category::class)->create([
             'category_id' => $group->category_id
         ]);
 
@@ -100,7 +100,7 @@ class GetCharacterAssetsNamesActionTest extends TestCase
             'category_id' => 11
         ]);
 
-        factory(Categories::class)->create([
+        factory(Category::class)->create([
             'category_id' => $group->category_id
         ]);
 

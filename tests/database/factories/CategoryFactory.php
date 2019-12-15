@@ -1,9 +1,9 @@
 <?php
 
 use Faker\Generator as Faker;
-use Seatplus\Eveapi\Models\Universe\Categories;
+use Seatplus\Eveapi\Models\Universe\Category;
 
-$factory->define(Categories::class, function (Faker $faker) {
+$factory->define(Category::class, function (Faker $faker) {
 
     return [
         'category_id' => $faker->numberBetween(0,10000),

@@ -7,8 +7,7 @@ namespace Seatplus\Eveapi\Tests\Unit\Actions\Jobs\Universe;
 
 use Illuminate\Support\Facades\Cache;
 use Seatplus\Eveapi\Actions\Jobs\Universe\ResolveUniverseCategoriesByCategoryIdAction;
-use Seatplus\Eveapi\Models\Universe\Categories;
-use Seatplus\Eveapi\Models\Universe\Groups;
+use Seatplus\Eveapi\Models\Universe\Category;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
@@ -72,7 +71,7 @@ class CategoriesTest extends TestCase
 
     private function buildMockEsiData()
     {
-        $mock_data = factory(Categories::class)->make();
+        $mock_data = factory(Category::class)->make();
 
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
 
