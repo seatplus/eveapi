@@ -53,7 +53,7 @@ class NamesAction extends RetrieveFromEsiBase implements HasRequestBodyInterface
             if ($response->isCachedLoad()) return;
 
             collect($response)->map(function ($result) {
-                return Name::firstOrCreate(
+                return Name::updateOrCreate(
                     ['id' => $result->id],
                     ['name' => $result->name, 'category' => $result->category]
                 );
