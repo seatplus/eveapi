@@ -4,7 +4,7 @@ namespace Seatplus\Eveapi\Actions\Jobs\Universe;
 
 use Seatplus\Eveapi\Actions\HasPathValuesInterface;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
-use Seatplus\Eveapi\Models\Universe\Groups;
+use Seatplus\Eveapi\Models\Universe\Group;
 
 class ResolveUniverseGroupsByGroupIdAction extends RetrieveFromEsiBase implements HasPathValuesInterface
 {
@@ -47,7 +47,7 @@ class ResolveUniverseGroupsByGroupIdAction extends RetrieveFromEsiBase implement
 
             if ($response->isCachedLoad()) return;
 
-            return Groups::firstOrCreate(
+            return Group::firstOrCreate(
                 ['group_id' => $response->group_id],
                 [
                     'category_id' => $response->category_id,
@@ -60,7 +60,7 @@ class ResolveUniverseGroupsByGroupIdAction extends RetrieveFromEsiBase implement
 
         // If execution was invoked with a specific type_id return the response
         if (! is_null($group_id))
-            return Groups::find($group_id);
+            return Group::find($group_id);
 
         return null;
 

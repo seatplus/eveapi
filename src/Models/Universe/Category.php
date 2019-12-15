@@ -37,6 +37,6 @@ class Category extends Model
 
     public function groups()
     {
-        return $this->hasMany(Groups::class, 'group_id', 'group_id');
+        return $this->hasMany(Group::class, 'group_id', 'group_id');
     }
 }
