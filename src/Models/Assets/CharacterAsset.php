@@ -19,6 +19,16 @@ class CharacterAsset extends Model
     protected $primaryKey = 'item_id';
 
     /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'character_id' => 'integer',
+        'type_id' => 'integer'
+    ];
+
+    /**
      * The event map for the model.
      *
      * @var array

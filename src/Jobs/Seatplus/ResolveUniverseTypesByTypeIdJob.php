@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Actions\Jobs\Universe\ResolveUniverseTypesByTypeIdAction;
+use Seatplus\Eveapi\Actions\Seatplus\CacheMissingTypeIdsAction;
 use Seatplus\Eveapi\Actions\Seatplus\CacheMissingGroupIdsAction;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
@@ -54,6 +55,7 @@ class ResolveUniverseTypesByTypeIdJob implements ShouldQueue
      */
     public function handle()
     {
+        (new CacheMissingTypeIdsAction)->execute();
 
         (new ResolveUniverseTypesByTypeIdAction())->execute();
 

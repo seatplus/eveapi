@@ -3,7 +3,7 @@
 
 namespace Seatplus\Eveapi\Tests\Unit\Actions\Seatplus;
 
-use Seatplus\Eveapi\Actions\Seatplus\CacheMissingCharacterTypeIdsAction;
+use Seatplus\Eveapi\Actions\Seatplus\CacheMissingTypeIdsAction;
 use Seatplus\Eveapi\Actions\Seatplus\CacheMissingGroupIdsAction;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Models\Universe\Type;

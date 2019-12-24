@@ -120,7 +120,17 @@ abstract class EsiBase implements ShouldQueue, BaseJobInterface
         return $tags->toArray();
     }
 
+    /**
+     * Get the middleware the job should pass through.
+     *
+     * @return array
+     */
     abstract public function middleware(): array;
 
+    /**
+     * Execute the job.
+     *
+     * @return void
+     */
     abstract public function handle(): void;
 }
