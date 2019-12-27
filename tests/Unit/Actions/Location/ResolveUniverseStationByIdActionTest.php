@@ -5,14 +5,12 @@ namespace Seatplus\Eveapi\Tests\Unit\Actions\Location;
 
 
 use Seatplus\Eveapi\Actions\Location\ResolveUniverseStationByIdAction;
-use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
-use Seatplus\Eveapi\Models\Universe\Structure;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
-class ResolveUniverseStationByActionTest extends TestCase
+class ResolveUniverseStationByIdActionTest extends TestCase
 {
     use MockRetrieveEsiDataAction;
 
@@ -76,7 +74,7 @@ class ResolveUniverseStationByActionTest extends TestCase
 
         $location = Location::find($mock_data->station_id);
 
-        $this->assertInstanceOf(Station::class,$location->locatable);
+        $this->assertInstanceOf(Station::class, $location->locatable);
     }
 
     /**
