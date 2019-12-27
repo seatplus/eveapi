@@ -9,13 +9,13 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Seatplus\Eveapi\Actions\Jobs\Assets\CharacterAssetsLocationAction;
 use Seatplus\Eveapi\Actions\Location\CacheAllPublicStrucutresIdAction;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
-use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 
 class CharacterAssetsLocationJob implements ShouldQueue
 {
@@ -64,15 +64,7 @@ class CharacterAssetsLocationJob implements ShouldQueue
 
     public function handle(): void
     {
-
-        (new CacheAllPublicStrucutresIdAction)->execute();
-
-        CharacterAsset::query()
-            ->select('character_assets.location_id')
-            ->where('character_assets.character_id', $this->refresh_token->character_id)
-            ->leftJoin('universe_locations','character_assets.location_id', '=', 'universe_locations.location_id')
-            ->whereNull('universe_locations.location_id')
-            ->pluck('location_id');
+        (new CharacterAssetsLocationAction($this->refresh_token))->execute();
 
     }
 }
