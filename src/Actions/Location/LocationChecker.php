@@ -20,7 +20,8 @@ abstract class LocationChecker
 
     public function next(Location $location)
     {
-        $this->successor->check($location);
+        if ($this->successor)
+            $this->successor->check($location);
     }
 
 }
