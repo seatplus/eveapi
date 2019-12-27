@@ -87,5 +87,7 @@ class ResolveUniverseStationByIdAction extends RetrieveFromEsiBase implements Ha
             'office_rental_cost'         => $result->office_rental_cost,
         ])->location()->save($location);
 
+        $location->touch();
+
     }
 }
