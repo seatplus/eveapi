@@ -7,6 +7,7 @@ namespace Seatplus\Eveapi\Actions\Jobs\Assets;
 use Seatplus\Eveapi\Actions\Location\AssetSafetyChecker;
 use Seatplus\Eveapi\Actions\Location\StationChecker;
 use Seatplus\Eveapi\Actions\Location\StructureChecker;
+use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Location;
@@ -40,13 +41,6 @@ class CharacterAssetsLocationAction
     {
 
         $this->refresh_token = $refresh_token;
-
-        $this->assert_safety_checker = new AssetSafetyChecker;
-        $this->station_checker = new StationChecker;
-        $this->structure_checker = new StructureChecker($this->refresh_token);
-
-        $this->assert_safety_checker->succeedWith($this->station_checker);
-        $this->station_checker->succeedWith($this->structure_checker);
     }
 
     /**
@@ -74,9 +68,8 @@ class CharacterAssetsLocationAction
     {
 
         $this->location_ids->each(function ($location_id) {
-            $location = Location::firstOrNew(['location_id' => $location_id]);
 
-            $this->assert_safety_checker->check($location);
+            dispatch(new ResolveLocationJob($location_id, $this->refresh_token))->onQueue('default');
         });
     }
 

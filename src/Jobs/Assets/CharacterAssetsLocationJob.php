@@ -10,7 +10,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Actions\Jobs\Assets\CharacterAssetsLocationAction;
-use Seatplus\Eveapi\Actions\Location\CacheAllPublicStrucutresIdAction;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
@@ -64,7 +63,12 @@ class CharacterAssetsLocationJob implements ShouldQueue
 
     public function handle(): void
     {
-        (new CharacterAssetsLocationAction($this->refresh_token))->execute();
+        $action = new CharacterAssetsLocationAction($this->refresh_token);
+        $action->buildLocationIds();
 
+        // Log the location ids
+        logger()->debug('location_ids to be resolved: ' . $action->getLocationIds()->implode(', '));
+
+        $action->execute();
     }
 }

@@ -90,31 +90,32 @@ class ResolveUniverseStructureByIdAction extends RetrieveFromEsiBase implements 
 
     public function execute(int $location_id)
     {
-        $this->location_ids = (new AddAndGetIdsFromCache('new_public_structure_ids', $location_id))->execute();
+        logger()->debug('Resolving Structure: ' . $location_id);
 
-        $this->location_ids->unique()->each(function ($location_id) {
+        // If Rate Limited or required scope is missing skip execution
+        if($this->isEsiRateLimited() || !$this->refresh_token->hasScope($this->getRequiredScope())) return;
 
-            // If Rate Limited or required scope is missing skip execution
-            if($this->isEsiRateLimited() || !$this->refresh_token->hasScope($this->getRequiredScope())) return;
+        $this->setPathValues([
+            'structure_id' => $location_id
+        ]);
 
-            $this->setPathValues([
-                'structure_id' => $location_id
-            ]);
+        $result = $this->retrieve();
 
-            $result = $this->retrieve();
+        Structure::updateOrCreate([
+            'structure_id' => $location_id
+        ], [
+            'name'            => $result->name,
+            'owner_id'        => $result->owner_id,
+            'solar_system_id' => $result->solar_system_id,
+            'type_id'         => $result->type_id ?? null,
+        ])->touch();
 
-            $location = Location::firstOrCreate(['location_id' => $location_id]);
-
-            Structure::updateOrCreate([
-                'structure_id' => $location_id
-            ], [
-                'name'            => $result->name,
-                'owner_id'        => $result->owner_id,
-                'solar_system_id' => $result->solar_system_id,
-                'type_id'         => $result->type_id ?? null,
-            ])->location()->save($location);
-
-        });
+        Location::firstOrCreate([
+            'location_id' => $location_id
+        ], [
+            'locatable_id' => $location_id,
+            'locatable_type' => Structure::class
+        ]);
 
 
     }

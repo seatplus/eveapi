@@ -4,17 +4,14 @@
 namespace Seatplus\Eveapi\Tests\Unit\Actions\Jobs\Assets;
 
 
+use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Actions\Jobs\Assets\CharacterAssetsLocationAction;
+use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
-use Seatplus\Eveapi\Models\Universe\Location;
-use Seatplus\Eveapi\Models\Universe\Station;
-use Seatplus\Eveapi\Models\Universe\Structure;
 use Seatplus\Eveapi\Tests\TestCase;
-use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 class CharacterAssetsLocationActionTest extends TestCase
 {
-    use MockRetrieveEsiDataAction;
 
     /**
      * @var \Seatplus\Eveapi\Actions\Jobs\Assets\CharacterAssetsLocationAction
@@ -45,10 +42,14 @@ class CharacterAssetsLocationActionTest extends TestCase
     }
 
     /** @test */
-    public function it_checks_only_asset_safety_checker()
+    public function it_dispatches_resolve_location_job()
     {
+        Queue::fake();
+
+        // Assert that no jobs were pushed...
+        Queue::assertNothingPushed();
+
         $test_assets = factory(CharacterAsset::class,5)->create([
-            'location_id' => 2004,
             'character_id' => $this->test_character->character_id,
             'location_flag' => 'Hangar',
             'location_type' => 'other'
@@ -56,154 +57,16 @@ class CharacterAssetsLocationActionTest extends TestCase
 
         $this->action->buildLocationIds()->execute();
 
-        $this->assertNull(Location::find(2004));
-    }
+         $test_assets->pluck('location_id')->unique()->each(function ($location_id) {
+             Queue::assertPushed(ResolveLocationJob::class, function ($job) use ($location_id) {
+                 return $job->location_id === $location_id;
+             });
+         });
 
-    /**
-     * @test
-     * @runTestsInSeparateProcesses
-     */
-    public function it_checks_only_station_checker()
-    {
-        $test_assets = factory(CharacterAsset::class,5)->create([
-            'location_id' => 60003760,
-            'character_id' => $this->test_character->character_id,
-            'location_flag' => 'Hangar',
-            'location_type' => 'station'
-        ]);
-
-        $mock_data = factory(Station::class)->make([
-            'station_id' => 60003760,
-        ]);
-
-        $this->mockRetrieveEsiDataAction($mock_data->toArray());
-
-        $this->action->buildLocationIds()->execute();
-
-        $this->assertNotNull(Location::find(60003760));
-    }
-
-    /**
-     * @test
-     * @runTestsInSeparateProcesses
-     */
-    public function it_checks_only_station_older_then_a_wek()
-    {
-        $test_assets = factory(CharacterAsset::class,5)->create([
-            'location_id' => 60003760,
-            'character_id' => $this->test_character->character_id,
-            'location_flag' => 'Hangar',
-            'location_type' => 'station',
-        ]);
-
-        $mock_data = factory(Station::class)->create([
-            'station_id' => 60003760
-        ])->location()->save(factory(Location::class)->create([
-            'location_id' => 60003760,
-            'updated_at' => carbon()->subWeeks(2)
-        ]));
-
-        $this->mockRetrieveEsiDataAction($mock_data->toArray());
-
-        $this->action->buildLocationIds()->execute();
-
-        $this->assertNotNull(Location::find(60003760));
-    }
-
-    /** @test */
-    public function it_checks_no_station_younger_then_a_wek()
-    {
-        $test_assets = factory(CharacterAsset::class,5)->create([
-            'location_id' => 60003760,
-            'character_id' => $this->test_character->character_id,
-            'location_flag' => 'Hangar',
-            'location_type' => 'station',
-        ]);
-
-        factory(Station::class)->create([
-            'station_id' => 60003760
-        ])->location()->save(factory(Location::class)->create([
-            'location_id' => 60003760,
-            'updated_at' => carbon()->subDays(2)
-        ]));
-
-        $this->action->buildLocationIds()->execute();
-
-        $this->assertNotNull(Location::find(60003760));
-    }
-
-    /**
-     * @test
-     * @runTestsInSeparateProcesses
-     */
-    public function it_checks_only_structure_checker()
-    {
-        $test_assets = factory(CharacterAsset::class,5)->create([
-            'location_id' => 1028832949394,
-            'character_id' => $this->test_character->character_id,
-            'location_flag' => 'Hangar',
-            'location_type' => 'station'
-        ]);
-
-        $mock_data = factory(Structure::class)->make([
-            'station_id' => 1028832949394,
-        ]);
-
-        $this->mockRetrieveEsiDataAction($mock_data->toArray());
-
-        $this->action->buildLocationIds()->execute();
-
-        $this->assertNotNull(Location::find(1028832949394));
-    }
+        // Assert a job was pushed once per test asset...
+        Queue::assertPushed(ResolveLocationJob::class, $test_assets->count());
 
 
-    /**
-     * @test
-     * @runTestsInSeparateProcesses
-     */
-    public function it_checks_only_structure_older_then_a_wek()
-    {
-        $test_assets = factory(CharacterAsset::class,5)->create([
-            'location_id' => 1028832949394,
-            'character_id' => $this->test_character->character_id,
-            'location_flag' => 'Hangar',
-            'location_type' => 'station',
-        ]);
-
-        $mock_data = factory(Station::class)->create([
-            'station_id' => 1028832949394
-        ])->location()->save(factory(Location::class)->create([
-            'location_id' => 1028832949394,
-            'updated_at' => carbon()->subWeeks(2)
-        ]));
-
-        $this->mockRetrieveEsiDataAction($mock_data->toArray());
-
-        $this->action->buildLocationIds()->execute();
-
-        $this->assertNotNull(Location::find(1028832949394));
-    }
-
-    /** @test */
-    public function it_checks_no_structure_younger_then_a_wek()
-    {
-        $test_assets = factory(CharacterAsset::class,5)->create([
-            'location_id' => 1028832949394,
-            'character_id' => $this->test_character->character_id,
-            'location_flag' => 'Hangar',
-            'location_type' => 'station',
-        ]);
-
-        factory(Station::class)->create([
-            'station_id' => 1028832949394
-        ])->location()->save(factory(Location::class)->create([
-            'location_id' => 1028832949394,
-            'updated_at' => carbon()->subDays(2)
-        ]));
-
-        $this->action->buildLocationIds()->execute();
-
-        $this->assertNotNull(Location::find(1028832949394));
     }
 
 }

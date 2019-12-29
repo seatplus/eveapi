@@ -71,23 +71,26 @@ class ResolveUniverseStationByIdAction extends RetrieveFromEsiBase implements Ha
 
         $result = $this->retrieve();
 
-        $location = Location::firstOrCreate(['location_id' => $location_id]);
-
         Station::updateOrCreate([
             'station_id' => $location_id
         ], [
             'type_id'                    => $result->type_id,
             'name'                       => $result->name,
-            'owner_id'                      => $result->owner ?? null,
+            'owner_id'                   => $result->owner ?? null,
             'race_id'                    => $result->race_id ?? null,
             'system_id'                  => $result->system_id,
             'reprocessing_efficiency'    => $result->reprocessing_efficiency,
             'reprocessing_stations_take' => $result->reprocessing_stations_take,
             'max_dockable_ship_volume'   => $result->max_dockable_ship_volume,
             'office_rental_cost'         => $result->office_rental_cost,
-        ])->location()->save($location);
+        ])->touch();
 
-        $location->touch();
+        Location::firstOrCreate([
+            'location_id' => $location_id
+        ], [
+            'locatable_id' => $location_id,
+            'locatable_type' => Station::class
+        ]);
 
     }
 }
