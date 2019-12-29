@@ -10,6 +10,7 @@ use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsLocationJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseCategoriesByCategoryIdJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseGroupsByGroupIdJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolvePublicStructureJob;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 class CharacterAssetController extends Controller
@@ -30,6 +31,7 @@ class CharacterAssetController extends Controller
             new ResolveUniverseTypesByTypeIdJob,
             new ResolveUniverseGroupsByGroupIdJob,
             new ResolveUniverseCategoriesByCategoryIdJob,
+            new ResolvePublicStructureJob($job_container)
         ])->dispatch($job_container)->onQueue('default');
 
         return response('success', 200);

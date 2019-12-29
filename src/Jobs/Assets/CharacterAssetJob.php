@@ -4,7 +4,6 @@ namespace Seatplus\Eveapi\Jobs\Assets;
 
 use Seatplus\Eveapi\Actions\Jobs\Assets\CharacterAssetsAction;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
-use Seatplus\Eveapi\Actions\Seatplus\CacheMissingTypeIdsAction;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
