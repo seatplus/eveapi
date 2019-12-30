@@ -1,13 +1,10 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Actions\Location;
-
 
 use Seatplus\Eveapi\Actions\HasPathValuesInterface;
 use Seatplus\Eveapi\Actions\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
-use Seatplus\Eveapi\Actions\Seatplus\AddAndGetIdsFromCache;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Structure;
@@ -93,16 +90,16 @@ class ResolveUniverseStructureByIdAction extends RetrieveFromEsiBase implements 
         logger()->debug('Resolving Structure: ' . $location_id);
 
         // If Rate Limited or required scope is missing skip execution
-        if($this->isEsiRateLimited() || !$this->refresh_token->hasScope($this->getRequiredScope())) return;
+        if($this->isEsiRateLimited() || ! $this->refresh_token->hasScope($this->getRequiredScope())) return;
 
         $this->setPathValues([
-            'structure_id' => $location_id
+            'structure_id' => $location_id,
         ]);
 
         $result = $this->retrieve();
 
         Structure::updateOrCreate([
-            'structure_id' => $location_id
+            'structure_id' => $location_id,
         ], [
             'name'            => $result->name,
             'owner_id'        => $result->owner_id,
@@ -111,12 +108,11 @@ class ResolveUniverseStructureByIdAction extends RetrieveFromEsiBase implements 
         ])->touch();
 
         Location::firstOrCreate([
-            'location_id' => $location_id
+            'location_id' => $location_id,
         ], [
             'locatable_id' => $location_id,
-            'locatable_type' => Structure::class
+            'locatable_type' => Structure::class,
         ]);
-
 
     }
 }

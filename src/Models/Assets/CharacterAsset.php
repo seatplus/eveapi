@@ -29,7 +29,7 @@ class CharacterAsset extends Model
      */
     protected $casts = [
         'character_id' => 'integer',
-        'type_id' => 'integer'
+        'type_id' => 'integer',
     ];
 
     /**
@@ -66,7 +66,6 @@ class CharacterAsset extends Model
     {
         return $this->hasOne(Location::class, 'location_id', 'location_id');
     }
-
 
     public function scopeAssetsLocationIds(Builder $query) : Builder
     {

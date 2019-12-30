@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Models\Universe;
-
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -29,5 +27,4 @@ class Location extends Model
     {
         return $this->morphTo();
     }
-
 }

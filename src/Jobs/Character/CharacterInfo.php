@@ -13,7 +13,6 @@ use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
 class CharacterInfo extends EsiBase
 {
 
-
     /**
      * @var array
      */

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Jobs\Assets;
-
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -57,7 +55,7 @@ class CharacterAssetsLocationJob implements ShouldQueue
             'character',
             'character_id: ' . $this->refresh_token->character_id,
             'assets',
-            'location'
+            'location',
         ];
     }
 

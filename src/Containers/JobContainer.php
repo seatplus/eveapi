@@ -4,7 +4,6 @@ namespace Seatplus\Eveapi\Containers;
 
 use Seatplus\Eveapi\Exceptions\InvalidContainerDataException;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Seatplus\Eveapi\Models\RefreshToken;
 
 class JobContainer
 {
