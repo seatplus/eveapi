@@ -31,8 +31,6 @@ class CharacterAssetController extends Controller
             new ResolveUniverseTypesByTypeIdJob,
             new ResolveUniverseGroupsByGroupIdJob,
             new ResolveUniverseCategoriesByCategoryIdJob,
-            //TODO: remove the public to own endpoint ...
-            new ResolvePublicStructureJob($job_container)
         ])->dispatch($job_container)->onQueue('default');
 
         return response('successfully queued', 200);
