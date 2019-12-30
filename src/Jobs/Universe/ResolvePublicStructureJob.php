@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Jobs\Universe;
-
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -58,23 +56,22 @@ class ResolvePublicStructureJob implements ShouldQueue
 
     public function tags() {
         return [
-            'public structures'
+            'public structures',
         ];
     }
 
     public function handle(): void
     {
 
-        if(!cache()->has($this->cache_string))
+        if(! cache()->has($this->cache_string))
             (new CacheAllPublicStrucutresIdAction)->execute();
 
         $this->location_ids = collect(cache()->pull($this->cache_string));
 
         $this->location_ids->unique()->each(function ($location_id) {
 
-            dispatch(new ResolveLocationJob($location_id,$this->refresh_token))->onQueue('default');
+            dispatch(new ResolveLocationJob($location_id, $this->refresh_token))->onQueue('default');
         });
 
     }
-
 }

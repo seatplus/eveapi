@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Actions\Location;
-
 
 use Seatplus\Eveapi\Actions\HasPathValuesInterface;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
@@ -66,13 +64,13 @@ class ResolveUniverseStationByIdAction extends RetrieveFromEsiBase implements Ha
             return;
 
         $this->setPathValues([
-            'station_id' => $location_id
+            'station_id' => $location_id,
         ]);
 
         $result = $this->retrieve();
 
         Station::updateOrCreate([
-            'station_id' => $location_id
+            'station_id' => $location_id,
         ], [
             'type_id'                    => $result->type_id,
             'name'                       => $result->name,
@@ -86,10 +84,10 @@ class ResolveUniverseStationByIdAction extends RetrieveFromEsiBase implements Ha
         ])->touch();
 
         Location::firstOrCreate([
-            'location_id' => $location_id
+            'location_id' => $location_id,
         ], [
             'locatable_id' => $location_id,
-            'locatable_type' => Station::class
+            'locatable_type' => Station::class,
         ]);
 
     }

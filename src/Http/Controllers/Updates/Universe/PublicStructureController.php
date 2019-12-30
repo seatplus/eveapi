@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Http\Controllers\Updates\Universe;
-
 
 use Illuminate\Http\Request;
 use Seatplus\Eveapi\Containers\JobContainer;
@@ -12,7 +10,6 @@ use Seatplus\Eveapi\Models\RefreshToken;
 
 class PublicStructureController extends Controller
 {
-
     public function update(Request $request)
     {
 
@@ -29,5 +26,4 @@ class PublicStructureController extends Controller
         return response('successfully queued', 200);
 
     }
-
 }

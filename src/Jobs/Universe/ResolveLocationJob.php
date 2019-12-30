@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Jobs\Universe;
-
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -94,5 +92,4 @@ class ResolveLocationJob implements ShouldQueue
 
         $this->assert_safety_checker->check($location);
     }
-
 }

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Models\Universe;
-
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -35,7 +33,7 @@ class Station extends Model
         'name' => 'string',
         'owner_id' => 'integer',
         'solar_system_id' => 'integer',
-        'type_id' => 'integer'
+        'type_id' => 'integer',
     ];
 
     public function location()
@@ -47,5 +45,4 @@ class Station extends Model
     {
         return $this->hasOne(Type::class, 'type_id', 'type_id');
     }
-
 }

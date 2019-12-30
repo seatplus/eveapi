@@ -1,16 +1,10 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Actions\Jobs\Assets;
 
-
-use Seatplus\Eveapi\Actions\Location\AssetSafetyChecker;
-use Seatplus\Eveapi\Actions\Location\StationChecker;
-use Seatplus\Eveapi\Actions\Location\StructureChecker;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Models\RefreshToken;
-use Seatplus\Eveapi\Models\Universe\Location;
 
 class CharacterAssetsLocationAction
 {
@@ -35,7 +29,6 @@ class CharacterAssetsLocationAction
      * @var \Seatplus\Eveapi\Actions\Location\StationChecker
      */
     private $station_checker;
-
 
     public function __construct(RefreshToken $refresh_token)
     {
@@ -72,5 +65,4 @@ class CharacterAssetsLocationAction
             dispatch(new ResolveLocationJob($location_id, $this->refresh_token))->onQueue('default');
         });
     }
-
 }
