@@ -32,7 +32,7 @@ class ResolvePublicStructureJob implements ShouldQueue
     /**
      * @var string
      */
-    private $refresh_token;
+    public $refresh_token;
 
     private $location_ids;
 
@@ -67,14 +67,14 @@ class ResolvePublicStructureJob implements ShouldQueue
     public function handle(): void
     {
 
-        if(cache()->has($this->cache_string))
+        if(!cache()->has($this->cache_string))
             (new CacheAllPublicStrucutresIdAction)->execute();
 
         $this->location_ids = collect(cache()->pull($this->cache_string));
 
         $this->location_ids->unique()->each(function ($location_id) {
 
-            (new ResolveUniverseStructureByIdAction($this->refresh_token))->execute($location_id);
+            dispatch(new ResolveLocationJob($location_id,$this->refresh_token))->onQueue('default');
         });
 
     }

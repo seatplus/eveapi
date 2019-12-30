@@ -82,6 +82,7 @@ class ResolveLocationJob implements ShouldQueue
 
     public function tags() {
         return [
+            'location_resolve',
             'location_id ' . $this->location_id,
             'via character: ' . $this->refresh_token->character_id,
         ];

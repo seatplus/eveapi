@@ -4,19 +4,16 @@
 namespace Seatplus\Eveapi\Tests\Jobs\Universe;
 
 
+use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolvePublicStructureJob;
-use Seatplus\Eveapi\Models\Assets\CharacterAsset;
-use Seatplus\Eveapi\Models\Universe\Location;
-use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\Structure;
 use Seatplus\Eveapi\Tests\TestCase;
-use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 class ResolvePublicStructureJobTest extends TestCase
 {
-    use MockRetrieveEsiDataAction;
 
     protected $location_id;
 
@@ -43,11 +40,16 @@ class ResolvePublicStructureJobTest extends TestCase
 
         cache()->put($this->cache_string, $this->location_id);
 
-        $mock_data = $this->buildMockEsiData();
+        Queue::fake();
+
+        // Assert that no jobs were pushed...
+        Queue::assertNothingPushed();
 
         $this->buildJob()->handle();
 
-        $this->assertNotNull(Location::find($this->location_id)->locatable);
+        // Assert a job was pushed to a given queue...
+        Queue::assertPushedOn('default', ResolveLocationJob::class);
+
     }
 
     private function buildMockEsiData()
