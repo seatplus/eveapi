@@ -15,21 +15,6 @@ class CharacterAssetsLocationAction
 
     private $location_ids;
 
-    /**
-     * @var \Seatplus\Eveapi\Actions\Location\StructureChecker
-     */
-    private $structure_checker;
-
-    /**
-     * @var \Seatplus\Eveapi\Actions\Location\AssetSafetyChecker
-     */
-    private $assert_safety_checker;
-
-    /**
-     * @var \Seatplus\Eveapi\Actions\Location\StationChecker
-     */
-    private $station_checker;
-
     public function __construct(RefreshToken $refresh_token)
     {
 
