@@ -213,6 +213,8 @@ class ResolveLocationJobTest extends TestCase
             'locatable_type' => Structure::class
         ]);
 
+        $this->assertTrue(carbon(Structure::find($location_id)->updated_at)->isAfter(carbon()->subWeek()));
+
         $this->buildJob($location_id)->handle();
 
         $this->assertNotNull(Location::find($location_id)->locatable);

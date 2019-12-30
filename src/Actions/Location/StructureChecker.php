@@ -38,7 +38,6 @@ class StructureChecker extends LocationChecker
             $this->action->execute($location->location_id);
 
 
-
         $this->next($location);
     }
 }
