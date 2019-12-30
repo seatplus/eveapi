@@ -5,10 +5,12 @@ namespace Seatplus\Eveapi\Actions;
 use Seat\Eseye\Containers\EsiResponse;
 use Seatplus\Eveapi\Actions\Eseye\RetrieveEsiDataAction;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
+use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 
 abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
 {
 
+    use RateLimitsEsiCalls;
     /**
      * @var \Seatplus\Eveapi\Containers\EsiRequestContainer|null
      */

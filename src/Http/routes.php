@@ -23,4 +23,10 @@ Route::namespace('Seatplus\Eveapi\Http\Controllers\Updates')
         Route::post('/alliance_info', 'AllianceInfoController@update')->name('update.alliance_info');
         Route::post('/corporation_info', 'CorporationInfoController@update')->name('update.corporation_info');
 
+        Route::namespace('Universe')
+            ->prefix('universe')
+            ->group(function () {
+                Route::post('public_structures', 'PublicStructureController@update')->name('update.public_structures');
+            });
+
     });

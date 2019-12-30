@@ -4,7 +4,6 @@ namespace Seatplus\Eveapi\Jobs\Assets;
 
 use Seatplus\Eveapi\Actions\Jobs\Assets\CharacterAssetsAction;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
-use Seatplus\Eveapi\Actions\Seatplus\CacheMissingCharacterTypeIdsAction;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
@@ -52,6 +51,5 @@ class CharacterAssetJob extends EsiBase
     {
         $this->getActionClass()->execute($this->refresh_token);
 
-        (new CacheMissingCharacterTypeIdsAction)->execute();
     }
 }

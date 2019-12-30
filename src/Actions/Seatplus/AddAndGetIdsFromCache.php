@@ -1,6 +1,6 @@
 <?php
 
-namespace Seatplus\Eveapi\Actions\Jobs\Universe;
+namespace Seatplus\Eveapi\Actions\Seatplus;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;

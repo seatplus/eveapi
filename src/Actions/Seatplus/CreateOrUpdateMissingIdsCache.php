@@ -22,7 +22,7 @@ class CreateOrUpdateMissingIdsCache
 
         $this->ids = $ids;
         $this->cache_string = $cache_string;
-        //group_ids_to_resolve
+
     }
 
     public function handle()

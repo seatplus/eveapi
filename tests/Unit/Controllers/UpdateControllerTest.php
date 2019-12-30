@@ -3,11 +3,13 @@
 namespace Seatplus\Eveapi\Tests\Unit\Controllers;
 
 use Illuminate\Support\Facades\Bus;
+use Seatplus\Eveapi\Http\Controllers\Updates\Universe\PublicStructureController;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfo;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfo;
 use Seatplus\Eveapi\Jobs\Character\CharacterRoleJob;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationInfoJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolvePublicStructureJob;
 use Seatplus\Eveapi\Tests\TestCase;
 
 class UpdateControllerTest extends TestCase
@@ -83,6 +85,19 @@ class UpdateControllerTest extends TestCase
         Bus::assertDispatched(CharacterAssetJob::class, function ($job) {
             return $job->refresh_token = $this->test_character->refresh_token;
         });
+
+        $response->assertStatus(200);
+    }
+
+    /** @test */
+    public function it_dispatches_resolve_public_structure_job()
+    {
+
+        Bus::fake();
+
+        $response = $this->post(route('update.public_structures'));
+
+        Bus::assertDispatched(ResolvePublicStructureJob::class);
 
         $response->assertStatus(200);
     }

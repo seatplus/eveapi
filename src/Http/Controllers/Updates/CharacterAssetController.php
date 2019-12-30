@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Http\Controllers\Controller;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
+use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsLocationJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseCategoriesByCategoryIdJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseGroupsByGroupIdJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
@@ -25,12 +26,13 @@ class CharacterAssetController extends Controller
         ]);
 
         CharacterAssetJob::withChain([
+            new CharacterAssetsLocationJob($job_container),
             new ResolveUniverseTypesByTypeIdJob,
             new ResolveUniverseGroupsByGroupIdJob,
             new ResolveUniverseCategoriesByCategoryIdJob,
         ])->dispatch($job_container)->onQueue('default');
 
-        return response('success', 200);
+        return response('successfully queued', 200);
 
     }
 }

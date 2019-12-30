@@ -7,6 +7,7 @@ namespace Seatplus\Eveapi\Tests\Unit\Models;
 use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Events\CharacterAssetUpdating;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
+use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Tests\TestCase;
 
@@ -76,5 +77,31 @@ class CharacterAssetModelTest extends TestCase
 
         $this->assertFalse($assets->contains($test_asset));
     }
+
+    /** @test */
+    public function model_has_location()
+    {
+        $test_asset = factory(CharacterAsset::class)->create();
+
+        $test_asset->location()->save(factory(Location::class)->create());
+
+        $assets = CharacterAsset::has('location')->get();
+
+        $this->assertTrue($assets->contains($test_asset));
+    }
+
+    /** @test */
+    public function it_has_scopeAssetsLocationIds()
+    {
+        $test_asset = factory(CharacterAsset::class)->create([
+            'location_flag' => 'Hangar',
+            'location_type' => 'other'
+        ]);
+
+        $assets = CharacterAsset::query()->assetsLocationIds()->first();
+
+        $this->assertEquals($assets->location_id, $test_asset->location_id);
+    }
+
 
 }

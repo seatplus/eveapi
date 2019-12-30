@@ -8,11 +8,11 @@ use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
+use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
 
 class CharacterInfo extends EsiBase
 {
 
-    //TODO Implement JobMiddlewareForRateLimit
     /**
      * @var array
      */
@@ -26,6 +26,7 @@ class CharacterInfo extends EsiBase
     public function middleware() : array
     {
         return [
+            new RedisFunnelMiddleware,
             new EsiRateLimitedMiddleware,
             new EsiAvailabilityMiddleware,
         ];
