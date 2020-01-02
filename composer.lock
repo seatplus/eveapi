@@ -1,7 +1,7 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
     "content-hash": "f55c0ba96d1a8de7d440eb4e69124277",
@@ -1571,24 +1571,26 @@
         },
         {
             "name": "spatie/laravel-queueable-action",
-            "version": "2.3.0",
+            "version": "2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-queueable-action.git",
-                "reference": "b52fade4499b6d6ecab7ba56a1f2b37c2b4bda49"
+                "reference": "44755cf10fce5fc81a5d574e2c106eade6f33274"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-queueable-action/zipball/b52fade4499b6d6ecab7ba56a1f2b37c2b4bda49",
-                "reference": "b52fade4499b6d6ecab7ba56a1f2b37c2b4bda49",
+                "url": "https://api.github.com/repos/spatie/laravel-queueable-action/zipball/44755cf10fce5fc81a5d574e2c106eade6f33274",
+                "reference": "44755cf10fce5fc81a5d574e2c106eade6f33274",
                 "shasum": ""
             },
             "require": {
-                "laravel/framework": "~5.8|^6.0",
+                "laravel/framework": "^6.0",
                 "php": "^7.2"
             },
             "require-dev": {
-                "orchestra/testbench": "~3.8|^4.0"
+                "mockery/mockery": "^1.2",
+                "orchestra/testbench": "^4.0",
+                "phpunit/phpunit": "^8.4"
             },
             "type": "library",
             "extra": {
@@ -1639,7 +1641,7 @@
                 "laravel-queueable-action",
                 "spatie"
             ],
-            "time": "2019-09-24T07:41:23+00:00"
+            "time": "2020-01-01T17:10:15+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
