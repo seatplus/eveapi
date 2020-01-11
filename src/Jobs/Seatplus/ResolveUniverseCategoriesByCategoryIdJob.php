@@ -28,7 +28,7 @@ class ResolveUniverseCategoriesByCategoryIdJob implements ShouldQueue
      *
      * @return array
      */
-    public function middleware() : array
+    public function middleware(): array
     {
         return [
             new EsiRateLimitedMiddleware,

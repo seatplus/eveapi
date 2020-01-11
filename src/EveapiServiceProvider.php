@@ -40,6 +40,8 @@ class EveapiServiceProvider extends ServiceProvider
 
         $this->mergeConfigFrom(__DIR__ . '/Config/eveapi.scopes.php', 'eveapi.scopes');
 
+        $this->mergeConfigFrom(__DIR__ . '/Config/eveapi.permissions.php', 'eveapi.permissions');
+
         // Eseye Singleton
         $this->app->singleton('esi-client', function () {
 

@@ -17,7 +17,7 @@ class CharacterRoleJob extends EsiBase
      *
      * @return array
      */
-    public function middleware() : array
+    public function middleware(): array
     {
         return [
             new HasRefreshTokenMiddleware,
@@ -34,7 +34,7 @@ class CharacterRoleJob extends EsiBase
             'character',
             'character_id: ' . $this->character_id,
             'roles',
-            ];
+        ];
     }
 
     /**
@@ -43,7 +43,7 @@ class CharacterRoleJob extends EsiBase
      * @return void
      * @throws \Exception
      */
-    public function handle() : void
+    public function handle(): void
     {
 
         $this->getActionClass()->execute($this->refresh_token);

@@ -26,13 +26,15 @@
         "laravel/framework": "^6.0",
         "laravel/horizon": "^3.2",
         "seatplus/eseye": "^2.0",
+        "seatplus/auth": "dev-develop",
         "spatie/laravel-queueable-action": "^2.1"
     },
     "require-dev": {
         "orchestra/testbench": "^4.3",
         "spatie/phpunit-watcher": "^1.11",
         "itsgoingd/clockwork": "^4.0",
-        "barryvdh/laravel-ide-helper": "^2.6"
+        "barryvdh/laravel-ide-helper": "^2.6",
+        "dms/phpunit-arraysubset-asserts": "^0.1.0"
     },
     "extra": {
         "laravel": {

@@ -65,9 +65,7 @@ class GetCharacterAssetsNamesActionTest extends TestCase
             'name' => null
         ]);
 
-        $refresh_token = factory(RefreshToken::class)->create([
-            'character_id' => $asset->character_id
-        ]);
+        $refresh_token = RefreshToken::find($asset->character_id);
 
         $this->mockRetrieveEsiDataAction([
             [
@@ -116,9 +114,7 @@ class GetCharacterAssetsNamesActionTest extends TestCase
             'name' => null
         ]);
 
-        $refresh_token = factory(RefreshToken::class)->create([
-            'character_id' => $asset->character_id
-        ]);
+        $refresh_token = RefreshToken::find($asset->character_id);
 
         $this->mockRetrieveEsiDataAction([
             [
@@ -163,9 +159,7 @@ class GetCharacterAssetsNamesActionTest extends TestCase
             'name' => null
         ]);
 
-        $refresh_token = factory(RefreshToken::class)->create([
-            'character_id' => $asset->character_id
-        ]);
+        $refresh_token = RefreshToken::find($asset->character_id);
 
         $this->mockRetrieveEsiDataAction([
             [
@@ -205,9 +199,10 @@ class GetCharacterAssetsNamesActionTest extends TestCase
             'name' => null
         ]);
 
-        $refresh_token = factory(RefreshToken::class)->create([
+        /*$refresh_token = factory(RefreshToken::class)->create([
             'character_id' => $asset->character_id
-        ]);
+        ]);*/
+        $refresh_token = RefreshToken::find($asset->character_id);
 
         $this->mockRetrieveEsiDataAction([
             [

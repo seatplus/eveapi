@@ -4,8 +4,11 @@
 namespace Seatplus\Eveapi\Tests\Unit\Models;
 
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
+use Seatplus\Auth\Models\User;
 use Seatplus\Eveapi\Events\CharacterAssetUpdating;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Type;
@@ -101,6 +104,34 @@ class CharacterAssetModelTest extends TestCase
         $assets = CharacterAsset::query()->assetsLocationIds()->first();
 
         $this->assertEquals($assets->location_id, $test_asset->location_id);
+    }
+
+    /** @test */
+    public function it_has_owner_relationship()
+    {
+        $test_asset = factory(CharacterAsset::class)->create();
+
+        $this->assertInstanceOf(CharacterInfo::class, $test_asset->owner);
+    }
+
+    /** @test */
+    public function it_has_scopeAffiliated()
+    {
+        $test_asset = factory(CharacterAsset::class)->create();
+
+        $user_mock = \Mockery::mock(User::class);
+
+        $user_mock->shouldReceive('getAffiliatedCharacterIdsByPermission')
+            ->once()
+            ->andReturn([$test_asset->character_id]);
+
+        Auth::shouldReceive('user')
+            ->once()
+            ->andReturn($user_mock);
+
+        $assets = CharacterAsset::query()->Affiliated()->first();
+
+        $this->assertEquals($assets->item_id, $test_asset->item_id);
     }
 
 

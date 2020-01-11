@@ -23,7 +23,7 @@ class CharacterInfo extends EsiBase
      *
      * @return array
      */
-    public function middleware() : array
+    public function middleware(): array
     {
         return [
             new RedisFunnelMiddleware,
@@ -38,7 +38,7 @@ class CharacterInfo extends EsiBase
      * @return void
      * @throws \Exception
      */
-    public function handle() : void
+    public function handle(): void
     {
 
         $this->getActionClass()->execute($this->character_id);
