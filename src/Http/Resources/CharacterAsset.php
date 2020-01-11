@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Http\Resources;
-
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -29,5 +27,4 @@ class CharacterAsset extends JsonResource
             'owner' => $this->whenLoaded('owner'),
         ];
     }
-
 }

@@ -33,7 +33,7 @@ class GetEsiStatusAction extends RetrieveFromEsiBase
      * @throws \Throwable
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function execute() : string
+    public function execute(): string
     {
         if($this->isEsiRateLimited())
             return 'rate limited';

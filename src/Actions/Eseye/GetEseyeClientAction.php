@@ -23,7 +23,7 @@ class GetEseyeClientAction
      * @return \Seat\Eseye\Eseye
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
      */
-    public function execute(RefreshToken $refresh_token = null) : Eseye
+    public function execute(RefreshToken $refresh_token = null): Eseye
     {
 
         //TODO: Use cache to receive a cached client

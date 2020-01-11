@@ -11,7 +11,7 @@ use Seatplus\Eveapi\Models\Universe\Structure;
 
 class CacheMissingTypeIdsAction
 {
-    public function execute() : Collection
+    public function execute(): Collection
     {
 
         $unknown_type_ids = CharacterAsset::whereDoesntHave('type')->pluck('type_id')->unique()->values();
@@ -23,7 +23,7 @@ class CacheMissingTypeIdsAction
         return $unknown_type_ids;
     }
 
-    private function getMissingTypeIdsFromLocations() : Collection
+    private function getMissingTypeIdsFromLocations(): Collection
     {
         return Location::whereHasMorph(
             'locatable',

@@ -27,7 +27,7 @@ class AddAndGetIdsFromCache
         $this->ids_to_return = collect();
     }
 
-    public function execute() : Collection
+    public function execute(): Collection
     {
         if (! is_null($this->id_to_add))
             $this->ids_to_return->push($this->id_to_add);

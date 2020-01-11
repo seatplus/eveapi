@@ -59,7 +59,7 @@ class RefreshToken extends Model
         return $this->belongsTo(User::class, 'character_id', 'id');
     }
 
-    public function hasScope(string $scope) : bool
+    public function hasScope(string $scope): bool
     {
 
         return in_array($scope, $this->scopes);
