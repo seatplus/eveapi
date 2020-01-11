@@ -2,6 +2,7 @@
 
 use Faker\Generator as Faker;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
 $factory->define(CharacterAsset::class, function (Faker $faker) {
 
@@ -21,7 +22,7 @@ $factory->define(CharacterAsset::class, function (Faker $faker) {
     ];
 
     return [
-        'character_id' => $faker->numberBetween(99000000,100000000),
+        'character_id' => factory(CharacterInfo::class),
         'item_id' => $faker->unique()->randomNumber(),
         'is_blueprint_copy' => false,
         'is_singleton' => $faker->boolean,
