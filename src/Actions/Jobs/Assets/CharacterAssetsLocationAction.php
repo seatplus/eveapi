@@ -34,9 +34,9 @@ class CharacterAssetsLocationAction
     {
         $this->location_ids = CharacterAsset::where('character_id', $this->refresh_token->character_id)
             ->AssetsLocationIds()
-            ->distinct()
             ->inRandomOrder()
             ->pluck('location_id')
+            ->unique()
             ->values();
 
         return $this;

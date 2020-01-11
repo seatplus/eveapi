@@ -5,6 +5,7 @@ namespace Seatplus\Eveapi\Models\Assets;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Seatplus\Eveapi\Events\CharacterAssetUpdating;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Type;
 
@@ -67,15 +68,26 @@ class CharacterAsset extends Model
         return $this->hasOne(Location::class, 'location_id', 'location_id');
     }
 
+    public function owner()
+    {
+        return $this->belongsTo(CharacterInfo::class, 'character_id', 'character_id');
+    }
+
     public function scopeAssetsLocationIds(Builder $query) : Builder
     {
-        return $query->whereDoesntHave('content')
-            ->whereIn('location_flag', ['Hangar', 'AssetSafety', 'Deliveries'])
-            ->select('location_id');
+        return $query->whereIn('location_flag', ['Hangar', 'AssetSafety', 'Deliveries'])
+            ->addSelect('location_id');
     }
 
     public function scopeWithoutAssetSafety(Builder $query) : Builder
     {
         return $query->where('location_id', '<>', self::ASSET_SAFETY);
+    }
+
+    public function scopeAffiliated(Builder $query) : Builder
+    {
+        $permission_name = config('eveapi.permissions.' . get_class($this));
+
+        return $query->whereIn('character_id', auth()->user()->getAffiliatedCharacterIdsByPermission($permission_name));
     }
 }
