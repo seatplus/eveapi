@@ -12,22 +12,22 @@ class CharacterInfoAction extends RetrieveFromEsiBase implements HasPathValuesIn
 {
     protected $path_values;
 
-    public function getMethod() :string
+    public function getMethod(): string
     {
         return 'get';
     }
 
-    public function getEndpoint() :string
+    public function getEndpoint(): string
     {
         return '/characters/{character_id}/';
     }
 
-    public function getVersion() :string
+    public function getVersion(): string
     {
         return 'v4';
     }
 
-    public function getPathValues() : array
+    public function getPathValues(): array
     {
 
         return $this->path_values;

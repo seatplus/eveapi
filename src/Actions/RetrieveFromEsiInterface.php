@@ -4,7 +4,7 @@ namespace Seatplus\Eveapi\Actions;
 
 interface RetrieveFromEsiInterface
 {
-    public function getMethod() : string;
+    public function getMethod(): string;
 
     public function getEndpoint(): string;
 

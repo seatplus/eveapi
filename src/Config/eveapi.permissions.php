@@ -3,5 +3,5 @@
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 
 return [
-    CharacterAsset::class => 'character.assets'
+    CharacterAsset::class => 'character.assets',
 ];

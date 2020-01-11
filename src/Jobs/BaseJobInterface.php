@@ -11,7 +11,7 @@ interface BaseJobInterface
      *
      * @return array
      */
-    public function middleware() : array;
+    public function middleware(): array;
 
     /**
      * Get the tags that should be assigned to the job.

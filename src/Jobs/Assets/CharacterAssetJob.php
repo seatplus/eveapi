@@ -17,7 +17,7 @@ class CharacterAssetJob extends EsiBase
      *
      * @return array
      */
-    public function middleware() : array
+    public function middleware(): array
     {
         return [
             new HasRefreshTokenMiddleware,
@@ -34,10 +34,10 @@ class CharacterAssetJob extends EsiBase
             'character',
             'character_id: ' . $this->character_id,
             'assets',
-            ];
+        ];
     }
 
-    public function getActionClass() : RetrieveFromEsiInterface
+    public function getActionClass(): RetrieveFromEsiInterface
     {
         return new CharacterAssetsAction;
     }
@@ -47,7 +47,7 @@ class CharacterAssetJob extends EsiBase
      *
      * @return void
      */
-    public function handle() :void
+    public function handle(): void
     {
         $this->getActionClass()->execute($this->refresh_token);
 

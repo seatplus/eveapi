@@ -7,7 +7,7 @@ use Seatplus\Eveapi\Models\Universe\Group;
 
 class CacheMissingCategoryIdsAction
 {
-    public function execute() : Collection
+    public function execute(): Collection
     {
         $unknown_type_ids = Group::whereDoesntHave('category')->pluck('category_id')->unique()->values();
 

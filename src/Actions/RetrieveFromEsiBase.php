@@ -27,14 +27,14 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
      * @throws \Seat\Eseye\Exceptions\RequestFailedException
      * @throws \Seat\Eseye\Exceptions\UriDataMissingException
      */
-    public function retrieve(?int $page = null) : EsiResponse
+    public function retrieve(?int $page = null): EsiResponse
     {
         $this->builldEsiRequestContainer($page);
 
         return (new RetrieveEsiDataAction)->execute($this->esi_request_container);
     }
 
-    private function getBaseEsiReuestContainer() : EsiRequestContainer
+    private function getBaseEsiReuestContainer(): EsiRequestContainer
     {
         return new EsiRequestContainer([
             'method' => $this->getMethod(),

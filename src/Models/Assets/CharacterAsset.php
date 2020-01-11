@@ -73,18 +73,18 @@ class CharacterAsset extends Model
         return $this->belongsTo(CharacterInfo::class, 'character_id', 'character_id');
     }
 
-    public function scopeAssetsLocationIds(Builder $query) : Builder
+    public function scopeAssetsLocationIds(Builder $query): Builder
     {
         return $query->whereIn('location_flag', ['Hangar', 'AssetSafety', 'Deliveries'])
             ->addSelect('location_id');
     }
 
-    public function scopeWithoutAssetSafety(Builder $query) : Builder
+    public function scopeWithoutAssetSafety(Builder $query): Builder
     {
         return $query->where('location_id', '<>', self::ASSET_SAFETY);
     }
 
-    public function scopeAffiliated(Builder $query) : Builder
+    public function scopeAffiliated(Builder $query): Builder
     {
         $permission_name = config('eveapi.permissions.' . get_class($this));
 

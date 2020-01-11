@@ -46,7 +46,7 @@ class CharacterRole extends Model
         return $this->belongsTo(CharacterInfo::class, 'character_id', 'character_id');
     }
 
-    public function hasRole(string $scope, string $role) : bool
+    public function hasRole(string $scope, string $role): bool
     {
         if(! in_array($role, $this->roles_array))
             return false;

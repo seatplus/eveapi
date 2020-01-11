@@ -34,7 +34,7 @@ class RetrieveEsiDataAction
      * @throws \Seat\Eseye\Exceptions\UriDataMissingException
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function execute(EsiRequestContainer $request) : EsiResponse
+    public function execute(EsiRequestContainer $request): EsiResponse
     {
         $this->request = $request;
 
@@ -73,7 +73,7 @@ class RetrieveEsiDataAction
         return $result;
     }
 
-    private function getLogWarningAction() : LogWarningsAction
+    private function getLogWarningAction(): LogWarningsAction
     {
 
         return new LogWarningsAction();
@@ -105,9 +105,9 @@ class RetrieveEsiDataAction
         // and error message stating that this is an invalid_token, remove
         // the token from SeAT plus.
         if ($exception->getEsiResponse()->getErrorCode() == 400 && in_array($exception->getEsiResponse()->error(), [
-                'invalid_token: The refresh token is expired.',
-                'invalid_token: The refresh token does not match the client specified.',
-            ])) {
+            'invalid_token: The refresh token is expired.',
+            'invalid_token: The refresh token does not match the client specified.',
+        ])) {
 
             // Remove the invalid token
             if(! is_null($this->request->refresh_token))

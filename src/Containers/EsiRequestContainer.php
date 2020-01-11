@@ -50,7 +50,7 @@ class EsiRequestContainer
         return '';
     }
 
-    public function isPublic() : bool
+    public function isPublic(): bool
     {
         return is_null($this->data['refresh_token']);
     }

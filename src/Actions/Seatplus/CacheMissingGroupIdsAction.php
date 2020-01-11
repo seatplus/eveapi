@@ -7,7 +7,7 @@ use Seatplus\Eveapi\Models\Universe\Type;
 
 class CacheMissingGroupIdsAction
 {
-    public function execute() : Collection
+    public function execute(): Collection
     {
         $unknown_type_ids = Type::whereDoesntHave('group')->pluck('group_id')->unique()->values();
 

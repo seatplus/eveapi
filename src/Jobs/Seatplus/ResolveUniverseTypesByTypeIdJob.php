@@ -30,7 +30,7 @@ class ResolveUniverseTypesByTypeIdJob implements ShouldQueue
      *
      * @return array
      */
-    public function middleware() : array
+    public function middleware(): array
     {
         return [
             new EsiRateLimitedMiddleware,

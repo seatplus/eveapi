@@ -20,7 +20,7 @@ class AllianceInfo extends EsiBase
      *
      * @return array
      */
-    public function middleware() : array
+    public function middleware(): array
     {
         return [
             new EsiRateLimitedMiddleware,
@@ -38,7 +38,7 @@ class AllianceInfo extends EsiBase
      * @throws \Seat\Eseye\Exceptions\RequestFailedException
      * @throws \Seat\Eseye\Exceptions\UriDataMissingException
      */
-    public function handle() :void
+    public function handle(): void
     {
         $this->getActionClass()->execute($this->alliance_id);
     }

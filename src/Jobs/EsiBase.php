@@ -101,7 +101,7 @@ abstract class EsiBase implements ShouldQueue, BaseJobInterface
         $this->setRefreshToken($job_container->getRefreshToken());
     }
 
-    public function tags() : array
+    public function tags(): array
     {
         $tags = collect(property_exists($this, 'tags') ? $this->tags : []);
 

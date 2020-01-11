@@ -16,7 +16,7 @@ class LogWarningsAction
         return $this;
     }
 
-    public function execute(EsiResponse $response, int $page = null) : void
+    public function execute(EsiResponse $response, int $page = null): void
     {
         if (! is_null($response->pages) && $page === null) {
 
