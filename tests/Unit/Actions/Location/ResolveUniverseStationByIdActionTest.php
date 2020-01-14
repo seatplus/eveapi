@@ -4,7 +4,9 @@
 namespace Seatplus\Eveapi\Tests\Unit\Actions\Location;
 
 
+use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Actions\Location\ResolveUniverseStationByIdAction;
+use Seatplus\Eveapi\Events\UniverseStationCreated;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Tests\TestCase;
@@ -20,7 +22,12 @@ class ResolveUniverseStationByIdActionTest extends TestCase
     {
 
         parent::setUp();
+
         $this->refresh_token = $this->test_character->refresh_token;
+
+        Event::fake([
+            UniverseStationCreated::class
+        ]);
     }
 
     /**
