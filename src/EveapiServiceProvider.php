@@ -39,7 +39,7 @@ class EveapiServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(__DIR__ . '/Http/routes.php');
 
         // Add event listeners
-        $this->add_event_listeners();
+        $this->addEventListeners();
     }
 
     public function register()
@@ -106,7 +106,7 @@ class EveapiServiceProvider extends ServiceProvider
         });
     }
 
-    private function add_event_listeners()
+    private function addEventListeners()
     {
         $this->app->events->subscribe(DispatchGetSystemJobSubscriber::class);
         $this->app->events->listen(UniverseSystemCreated::class, DispatchGetConstellationById::class);
