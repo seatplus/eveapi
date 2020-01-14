@@ -58,6 +58,6 @@ class System extends Model
 
     public function structures()
     {
-        return $this->hasMany(Structure::class, 'system_id', 'system_id');
+        return $this->hasMany(Structure::class, 'solar_system_id', 'system_id');
     }
 }
