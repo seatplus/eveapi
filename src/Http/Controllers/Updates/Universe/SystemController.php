@@ -37,7 +37,7 @@ class SystemController extends Controller
 
         $system_ids = Location::all()->map(function (Location $location) {
             return $location->locatable->system_id ?? $location->locatable->solar_system_id;
-        })->unique()->random(3);
+        })->unique();
 
         $job = new ResolveUniverseSystemBySystemIdJob;
 
