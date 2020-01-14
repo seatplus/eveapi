@@ -1,12 +1,9 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Events;
-
 
 use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Models\Universe\Constellation;
-use Seatplus\Eveapi\Models\Universe\System;
 
 class UniverseConstellationCreated
 {
@@ -22,5 +19,4 @@ class UniverseConstellationCreated
 
         $this->constellation = $constellation;
     }
-
 }

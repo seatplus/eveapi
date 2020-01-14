@@ -1,12 +1,8 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Jobs\Universe;
 
-
-use Seatplus\Eveapi\Actions\Jobs\Universe\ResolveUniverseConstellationByConstellationIdAction;
 use Seatplus\Eveapi\Actions\Jobs\Universe\ResolveUniverseRegionByRegionIdAction;
-use Seatplus\Eveapi\Actions\Jobs\Universe\ResolveUniverseSystemsBySystemIdAction;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
@@ -37,7 +33,7 @@ class ResolveUniverseRegionByRegionIdJob extends EsiBase
         ];
     }
 
-    public function tags() : array
+    public function tags(): array
     {
         return [
             'region_resolver',
@@ -67,5 +63,4 @@ class ResolveUniverseRegionByRegionIdJob extends EsiBase
 
         return $this;
     }
-
 }

@@ -1,10 +1,7 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Listeners;
 
-
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Seatplus\Eveapi\Events\UniverseSystemCreated;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseConstellationByConstellationIdJob;
 
@@ -21,5 +18,4 @@ class DispatchGetConstellationById
 
         dispatch($job)->onQueue('default');
     }
-
 }

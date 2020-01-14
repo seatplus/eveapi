@@ -1,11 +1,8 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Models\Universe;
 
-
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\Events\UniverseConstellationCreated;
 
 class Region extends Model
 {
@@ -34,9 +31,7 @@ class Region extends Model
     protected $casts = [
         'region_id' => 'integer',
         'name' => 'string',
-        'description' => 'string'
+        'description' => 'string',
     ];
-
-
 
 }

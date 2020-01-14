@@ -2,13 +2,8 @@
 
 namespace Seatplus\Eveapi\Http\Controllers\Updates\Universe;
 
-use Illuminate\Http\Request;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Http\Controllers\Controller;
-use Seatplus\Eveapi\Http\Resources\CharacterAsset;
-use Seatplus\Eveapi\Jobs\Universe\ResolvePublicStructureJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseSystemBySystemIdJob;
-use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Location;
 
 class SystemController extends Controller

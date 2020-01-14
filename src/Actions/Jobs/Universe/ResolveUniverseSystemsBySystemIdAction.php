@@ -4,9 +4,7 @@ namespace Seatplus\Eveapi\Actions\Jobs\Universe;
 
 use Seatplus\Eveapi\Actions\HasPathValuesInterface;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
-use Seatplus\Eveapi\Actions\Seatplus\AddAndGetIdsFromCache;
 use Seatplus\Eveapi\Models\Universe\System;
-use Seatplus\Eveapi\Models\Universe\Type;
 
 class ResolveUniverseSystemsBySystemIdAction extends RetrieveFromEsiBase implements HasPathValuesInterface
 {

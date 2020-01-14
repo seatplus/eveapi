@@ -6,7 +6,6 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Horizon\Horizon;
 use Seatplus\Eveapi\Events\UniverseConstellationCreated;
-use Seatplus\Eveapi\Events\UniverseStationCreated;
 use Seatplus\Eveapi\Events\UniverseSystemCreated;
 use Seatplus\Eveapi\Helpers\EseyeSetup;
 use Seatplus\Eveapi\Listeners\DispatchGetConstellationById;

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Listeners;
 
 use Seatplus\Eveapi\Events\UniverseStationCreated;
@@ -54,5 +53,4 @@ class DispatchGetSystemJobSubscriber
 
         dispatch($job)->onQueue('default');
     }
-
 }

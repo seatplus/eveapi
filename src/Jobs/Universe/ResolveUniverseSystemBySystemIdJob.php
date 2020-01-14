@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Jobs\Universe;
-
 
 use Seatplus\Eveapi\Actions\Jobs\Universe\ResolveUniverseSystemsBySystemIdAction;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
@@ -35,7 +33,7 @@ class ResolveUniverseSystemBySystemIdJob extends EsiBase
         ];
     }
 
-    public function tags() : array
+    public function tags(): array
     {
         return [
             'system_resolve',
