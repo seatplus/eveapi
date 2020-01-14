@@ -3,6 +3,7 @@
 namespace Seatplus\Eveapi\Models\Universe;
 
 use Illuminate\Database\Eloquent\Model;
+use Seatplus\Eveapi\Events\UniverseStationCreated;
 
 class Station extends Model
 {
@@ -24,6 +25,15 @@ class Station extends Model
     protected $table = 'universe_stations';
 
     /**
+     * The event map for the model.
+     *
+     * @var array
+     */
+    protected $dispatchesEvents = [
+        'created' => UniverseStationCreated::class,
+    ];
+
+    /**
      * The attributes that should be cast to native types.
      *
      * @var array
@@ -32,7 +42,7 @@ class Station extends Model
         'station_id' => 'integer',
         'name' => 'string',
         'owner_id' => 'integer',
-        'solar_system_id' => 'integer',
+        'system_id' => 'integer',
         'type_id' => 'integer',
     ];
 
@@ -44,5 +54,10 @@ class Station extends Model
     public function type()
     {
         return $this->hasOne(Type::class, 'type_id', 'type_id');
+    }
+
+    public function system()
+    {
+        return $this->belongsTo(System::class, 'system_id', 'system_id');
     }
 }

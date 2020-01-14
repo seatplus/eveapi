@@ -27,6 +27,7 @@ Route::namespace('Seatplus\Eveapi\Http\Controllers\Updates')
             ->prefix('universe')
             ->group(function () {
                 Route::post('public_structures', 'PublicStructureController@update')->name('update.public_structures');
+                Route::post('systems', 'SystemController@update')->name('update.systems');
             });
 
     });

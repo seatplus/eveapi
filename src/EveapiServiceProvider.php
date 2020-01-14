@@ -5,7 +5,13 @@ namespace Seatplus\Eveapi;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Horizon\Horizon;
+use Seatplus\Eveapi\Events\UniverseConstellationCreated;
+use Seatplus\Eveapi\Events\UniverseStationCreated;
+use Seatplus\Eveapi\Events\UniverseSystemCreated;
 use Seatplus\Eveapi\Helpers\EseyeSetup;
+use Seatplus\Eveapi\Listeners\DispatchGetConstellationById;
+use Seatplus\Eveapi\Listeners\DispatchGetRegionById;
+use Seatplus\Eveapi\Listeners\DispatchGetSystemJobSubscriber;
 
 class EveapiServiceProvider extends ServiceProvider
 {
@@ -32,6 +38,9 @@ class EveapiServiceProvider extends ServiceProvider
 
         // Add routes
         $this->loadRoutesFrom(__DIR__ . '/Http/routes.php');
+
+        // Add event listeners
+        $this->add_event_listeners();
     }
 
     public function register()
@@ -96,5 +105,12 @@ class EveapiServiceProvider extends ServiceProvider
             $schedule = $this->app->make(Schedule::class);
             $schedule->command('horizon:snapshot')->everyFiveMinutes();
         });
+    }
+
+    private function add_event_listeners()
+    {
+        $this->app->events->subscribe(DispatchGetSystemJobSubscriber::class);
+        $this->app->events->listen(UniverseSystemCreated::class, DispatchGetConstellationById::class);
+        $this->app->events->listen(UniverseConstellationCreated::class, DispatchGetRegionById::class);
     }
 }

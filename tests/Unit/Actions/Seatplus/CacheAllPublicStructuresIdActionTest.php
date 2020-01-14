@@ -4,7 +4,10 @@
 namespace Seatplus\Eveapi\Tests\Unit\Actions\Seatplus;
 
 
+use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Actions\Location\CacheAllPublicStrucutresIdAction;
+use Seatplus\Eveapi\Events\UniverseStationCreated;
+use Seatplus\Eveapi\Events\UniverseStructureCreated;
 use Seatplus\Eveapi\Models\Universe\Structure;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
@@ -23,6 +26,10 @@ class CacheAllPublicStructuresIdActionTest extends TestCase
 
         $this->action = new CacheAllPublicStrucutresIdAction();
         $this->cache_string = 'new_public_structure_ids';
+
+        Event::fake([
+            UniverseStructureCreated::class
+        ]);
     }
 
     /**

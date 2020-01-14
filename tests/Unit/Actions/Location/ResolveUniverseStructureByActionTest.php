@@ -4,7 +4,9 @@
 namespace Seatplus\Eveapi\Tests\Unit\Actions\Location;
 
 
+use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Actions\Location\ResolveUniverseStructureByIdAction;
+use Seatplus\Eveapi\Events\UniverseStructureCreated;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Structure;
@@ -22,6 +24,10 @@ class ResolveUniverseStructureByActionTest extends TestCase
 
         parent::setUp();
         $this->refresh_token = $this->test_character->refresh_token;
+
+        Event::fake([
+            UniverseStructureCreated::class
+        ]);
     }
 
     /**

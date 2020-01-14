@@ -1,11 +1,13 @@
 <?php
 
+
 namespace Seatplus\Eveapi\Models\Universe;
 
-use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\Events\UniverseStructureCreated;
 
-class Structure extends Model
+use Illuminate\Database\Eloquent\Model;
+use Seatplus\Eveapi\Events\UniverseConstellationCreated;
+
+class Constellation extends Model
 {
     /**
      * @var bool
@@ -15,14 +17,14 @@ class Structure extends Model
     /**
      * @var string
      */
-    protected $primaryKey = 'structure_id';
+    protected $primaryKey = 'constellation_id';
 
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'universe_structures';
+    protected $table = 'universe_constellations';
 
     /**
      * The event map for the model.
@@ -30,7 +32,7 @@ class Structure extends Model
      * @var array
      */
     protected $dispatchesEvents = [
-        'created' => UniverseStructureCreated::class,
+        'created' => UniverseConstellationCreated::class,
     ];
 
     /**
@@ -39,20 +41,16 @@ class Structure extends Model
      * @var array
      */
     protected $casts = [
-        'structure_id' => 'integer',
+        'constellation_id' => 'integer',
+        'region_id' => 'integer',
         'name' => 'string',
-        'owner_id' => 'integer',
-        'solar_system_id' => 'integer',
-        'type_id' => 'integer',
     ];
 
-    public function location()
+    public function region()
     {
-        return $this->morphOne(Location::class, 'locatable');
+        return $this->hasOne(Region::class, 'region_id', 'region_id');
     }
 
-    public function type()
-    {
-        return $this->hasOne(Type::class, 'type_id', 'type_id');
-    }
+
+
 }
