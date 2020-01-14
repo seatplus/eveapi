@@ -27,9 +27,9 @@
 namespace Seatplus\Eveapi\Models\Universe;
 
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\Events\UniverseStationCreated;
+use Seatplus\Eveapi\Events\UniverseSystemCreated;
 
-class Station extends Model
+class System extends Model
 {
     /**
      * @var bool
@@ -39,14 +39,14 @@ class Station extends Model
     /**
      * @var string
      */
-    protected $primaryKey = 'station_id';
+    protected $primaryKey = 'system_id';
 
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'universe_stations';
+    protected $table = 'universe_systems';
 
     /**
      * The event map for the model.
@@ -54,7 +54,7 @@ class Station extends Model
      * @var array
      */
     protected $dispatchesEvents = [
-        'created' => UniverseStationCreated::class,
+        'created' => UniverseSystemCreated::class,
     ];
 
     /**
@@ -63,25 +63,25 @@ class Station extends Model
      * @var array
      */
     protected $casts = [
-        'station_id' => 'integer',
-        'name' => 'string',
-        'owner_id' => 'integer',
         'system_id' => 'integer',
-        'type_id' => 'integer',
+        'constellation_id' => 'integer',
+        'name' => 'string',
+        'security_class' => 'string',
+        'security_status' => 'double',
     ];
 
-    public function location()
+    public function constellation()
     {
-        return $this->morphOne(Location::class, 'locatable');
+        return $this->belongsTo(Constellation::class, 'constellation_id', 'constellation_id');
     }
 
-    public function type()
+    public function stations()
     {
-        return $this->hasOne(Type::class, 'type_id', 'type_id');
+        return $this->hasMany(Station::class, 'system_id', 'system_id');
     }
 
-    public function system()
+    public function structures()
     {
-        return $this->belongsTo(System::class, 'system_id', 'system_id');
+        return $this->hasMany(Structure::class, 'solar_system_id', 'system_id');
     }
 }

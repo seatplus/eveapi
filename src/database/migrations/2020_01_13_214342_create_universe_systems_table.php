@@ -24,64 +24,38 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Models\Universe;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\Events\UniverseStationCreated;
-
-class Station extends Model
+class CreateUniverseSystemsTable extends Migration
 {
     /**
-     * @var bool
-     */
-    protected static $unguarded = true;
-
-    /**
-     * @var string
-     */
-    protected $primaryKey = 'station_id';
-
-    /**
-     * The table associated with the model.
+     * Run the migrations.
      *
-     * @var string
+     * @return void
      */
-    protected $table = 'universe_stations';
-
-    /**
-     * The event map for the model.
-     *
-     * @var array
-     */
-    protected $dispatchesEvents = [
-        'created' => UniverseStationCreated::class,
-    ];
-
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'station_id' => 'integer',
-        'name' => 'string',
-        'owner_id' => 'integer',
-        'system_id' => 'integer',
-        'type_id' => 'integer',
-    ];
-
-    public function location()
+    public function up()
     {
-        return $this->morphOne(Location::class, 'locatable');
+        Schema::create('universe_systems', function (Blueprint $table) {
+
+            $table->bigInteger('system_id')->primary();
+            $table->bigInteger('constellation_id');
+            $table->string('name');
+            $table->string('security_class')->nullable();
+            $table->double('security_status');
+
+            $table->timestamps();
+        });
     }
 
-    public function type()
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
     {
-        return $this->hasOne(Type::class, 'type_id', 'type_id');
-    }
-
-    public function system()
-    {
-        return $this->belongsTo(System::class, 'system_id', 'system_id');
+        Schema::dropIfExists('universe_systems');
     }
 }

@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Actions\Eseye;
 
+use Illuminate\Support\Str;
 use Seat\Eseye\Containers\EsiResponse;
 use Seat\Eseye\Exceptions\RequestFailedException;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
@@ -122,8 +123,12 @@ class RetrieveEsiDataAction
     private function handleException(RequestFailedException $exception)
     {
         // If error is in 4xx or 5xx range increase esi rate limit
-        if(($exception->getEsiResponse()->getErrorCode() >= 400) && ($exception->getEsiResponse()->getErrorCode() <= 599))
+        if (($exception->getEsiResponse()->getErrorCode() >= 400) && ($exception->getEsiResponse()->getErrorCode() <= 599))
             $this->incrementEsiRateLimit();
+
+        // If RateLimited directly raise the EsiRateLimit to 80
+        if (Str::contains($exception->getEsiResponse()->error(), 'This software has exceeded the error limit for ESI.'))
+            $this->incrementEsiRateLimit(80);
 
         // If the token can't login and we get an HTTP 400 together with
         // and error message stating that this is an invalid_token, remove

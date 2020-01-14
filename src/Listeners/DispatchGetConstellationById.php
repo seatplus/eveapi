@@ -24,59 +24,22 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Models\Universe;
+namespace Seatplus\Eveapi\Listeners;
 
-use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\Events\UniverseStructureCreated;
+use Seatplus\Eveapi\Events\UniverseSystemCreated;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseConstellationByConstellationIdJob;
 
-class Structure extends Model
+class DispatchGetConstellationById
 {
-    /**
-     * @var bool
-     */
-    protected static $unguarded = true;
-
-    /**
-     * @var string
-     */
-    protected $primaryKey = 'structure_id';
-
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'universe_structures';
-
-    /**
-     * The event map for the model.
-     *
-     * @var array
-     */
-    protected $dispatchesEvents = [
-        'created' => UniverseStructureCreated::class,
-    ];
-
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'structure_id' => 'integer',
-        'name' => 'string',
-        'owner_id' => 'integer',
-        'solar_system_id' => 'integer',
-        'type_id' => 'integer',
-    ];
-
-    public function location()
+    public function handle(UniverseSystemCreated $universe_system_created)
     {
-        return $this->morphOne(Location::class, 'locatable');
-    }
 
-    public function type()
-    {
-        return $this->hasOne(Type::class, 'type_id', 'type_id');
+        if($universe_system_created->system->constellation)
+            return;
+
+        $job = new ResolveUniverseConstellationByConstellationIdJob;
+        $job->setConstellationId($universe_system_created->system->constellation_id);
+
+        dispatch($job)->onQueue('default');
     }
 }

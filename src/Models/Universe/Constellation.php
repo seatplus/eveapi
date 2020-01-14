@@ -27,9 +27,9 @@
 namespace Seatplus\Eveapi\Models\Universe;
 
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\Events\UniverseStationCreated;
+use Seatplus\Eveapi\Events\UniverseConstellationCreated;
 
-class Station extends Model
+class Constellation extends Model
 {
     /**
      * @var bool
@@ -39,14 +39,14 @@ class Station extends Model
     /**
      * @var string
      */
-    protected $primaryKey = 'station_id';
+    protected $primaryKey = 'constellation_id';
 
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'universe_stations';
+    protected $table = 'universe_constellations';
 
     /**
      * The event map for the model.
@@ -54,7 +54,7 @@ class Station extends Model
      * @var array
      */
     protected $dispatchesEvents = [
-        'created' => UniverseStationCreated::class,
+        'created' => UniverseConstellationCreated::class,
     ];
 
     /**
@@ -63,25 +63,13 @@ class Station extends Model
      * @var array
      */
     protected $casts = [
-        'station_id' => 'integer',
+        'constellation_id' => 'integer',
+        'region_id' => 'integer',
         'name' => 'string',
-        'owner_id' => 'integer',
-        'system_id' => 'integer',
-        'type_id' => 'integer',
     ];
 
-    public function location()
+    public function region()
     {
-        return $this->morphOne(Location::class, 'locatable');
-    }
-
-    public function type()
-    {
-        return $this->hasOne(Type::class, 'type_id', 'type_id');
-    }
-
-    public function system()
-    {
-        return $this->belongsTo(System::class, 'system_id', 'system_id');
+        return $this->hasOne(Region::class, 'region_id', 'region_id');
     }
 }

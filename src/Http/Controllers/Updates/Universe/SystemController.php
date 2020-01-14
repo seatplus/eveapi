@@ -24,59 +24,27 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Models\Universe;
+namespace Seatplus\Eveapi\Http\Controllers\Updates\Universe;
 
-use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\Events\UniverseStructureCreated;
+use Seatplus\Eveapi\Http\Controllers\Controller;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseSystemBySystemIdJob;
+use Seatplus\Eveapi\Models\Universe\Location;
 
-class Structure extends Model
+class SystemController extends Controller
 {
-    /**
-     * @var bool
-     */
-    protected static $unguarded = true;
-
-    /**
-     * @var string
-     */
-    protected $primaryKey = 'structure_id';
-
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'universe_structures';
-
-    /**
-     * The event map for the model.
-     *
-     * @var array
-     */
-    protected $dispatchesEvents = [
-        'created' => UniverseStructureCreated::class,
-    ];
-
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'structure_id' => 'integer',
-        'name' => 'string',
-        'owner_id' => 'integer',
-        'solar_system_id' => 'integer',
-        'type_id' => 'integer',
-    ];
-
-    public function location()
+    public function update()
     {
-        return $this->morphOne(Location::class, 'locatable');
-    }
 
-    public function type()
-    {
-        return $this->hasOne(Type::class, 'type_id', 'type_id');
+        $system_ids = Location::all()->map(function (Location $location) {
+            return $location->locatable->system_id ?? $location->locatable->solar_system_id;
+        })->unique();
+
+        $job = new ResolveUniverseSystemBySystemIdJob;
+
+        foreach ($system_ids as $system_id)
+            dispatch($job->setSystemId($system_id))->onQueue('default');
+
+        return response('successfully queued', 200);
+
     }
 }

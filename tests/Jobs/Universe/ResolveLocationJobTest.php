@@ -4,6 +4,9 @@
 namespace Seatplus\Eveapi\Tests\Jobs\Universe;
 
 
+use Illuminate\Support\Facades\Event;
+use Seatplus\Eveapi\Events\UniverseStationCreated;
+use Seatplus\Eveapi\Events\UniverseStructureCreated;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Models\Universe\Location;
@@ -15,6 +18,17 @@ use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 class ResolveLocationJobTest extends TestCase
 {
     use MockRetrieveEsiDataAction;
+
+    public function setUp(): void
+    {
+
+        parent::setUp();
+
+        Event::fake([
+            UniverseStationCreated::class,
+            UniverseStructureCreated::class
+        ]);
+    }
 
     private function buildJob(int $location_id) : ResolveLocationJob
     {

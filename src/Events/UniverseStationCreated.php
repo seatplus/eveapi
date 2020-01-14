@@ -24,59 +24,23 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Models\Universe;
+namespace Seatplus\Eveapi\Events;
 
-use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\Events\UniverseStructureCreated;
+use Illuminate\Queue\SerializesModels;
+use Seatplus\Eveapi\Models\Universe\Station;
 
-class Structure extends Model
+class UniverseStationCreated
 {
-    /**
-     * @var bool
-     */
-    protected static $unguarded = true;
+    use SerializesModels;
 
     /**
-     * @var string
+     * @var \Seatplus\Eveapi\Models\Universe\Station
      */
-    protected $primaryKey = 'structure_id';
+    public $station;
 
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'universe_structures';
-
-    /**
-     * The event map for the model.
-     *
-     * @var array
-     */
-    protected $dispatchesEvents = [
-        'created' => UniverseStructureCreated::class,
-    ];
-
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'structure_id' => 'integer',
-        'name' => 'string',
-        'owner_id' => 'integer',
-        'solar_system_id' => 'integer',
-        'type_id' => 'integer',
-    ];
-
-    public function location()
+    public function __construct(Station $station)
     {
-        return $this->morphOne(Location::class, 'locatable');
-    }
 
-    public function type()
-    {
-        return $this->hasOne(Type::class, 'type_id', 'type_id');
+        $this->station = $station;
     }
 }
