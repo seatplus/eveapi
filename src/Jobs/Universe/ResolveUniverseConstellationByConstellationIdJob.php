@@ -1,11 +1,8 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Jobs\Universe;
 
-
 use Seatplus\Eveapi\Actions\Jobs\Universe\ResolveUniverseConstellationByConstellationIdAction;
-use Seatplus\Eveapi\Actions\Jobs\Universe\ResolveUniverseSystemsBySystemIdAction;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
@@ -36,7 +33,7 @@ class ResolveUniverseConstellationByConstellationIdJob extends EsiBase
         ];
     }
 
-    public function tags() : array
+    public function tags(): array
     {
         return [
             'constellation_resolver',
@@ -66,5 +63,4 @@ class ResolveUniverseConstellationByConstellationIdJob extends EsiBase
 
         return $this;
     }
-
 }

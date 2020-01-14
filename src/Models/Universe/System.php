@@ -1,11 +1,8 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Models\Universe;
 
-
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\Events\UniverseStationCreated;
 use Seatplus\Eveapi\Events\UniverseSystemCreated;
 
 class System extends Model
@@ -63,7 +60,4 @@ class System extends Model
     {
         return $this->hasMany(Structure::class, 'system_id', 'system_id');
     }
-
-
-
 }

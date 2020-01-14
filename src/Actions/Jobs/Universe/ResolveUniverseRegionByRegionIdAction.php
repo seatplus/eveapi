@@ -1,12 +1,9 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Actions\Jobs\Universe;
-
 
 use Seatplus\Eveapi\Actions\HasPathValuesInterface;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
-use Seatplus\Eveapi\Models\Universe\Constellation;
 use Seatplus\Eveapi\Models\Universe\Region;
 
 class ResolveUniverseRegionByRegionIdAction extends RetrieveFromEsiBase implements HasPathValuesInterface
@@ -40,7 +37,7 @@ class ResolveUniverseRegionByRegionIdAction extends RetrieveFromEsiBase implemen
     /**
      * @return mixed
      */
-    public function getPathValues() : array
+    public function getPathValues(): array
     {
 
         return $this->path_values;
@@ -61,7 +58,7 @@ class ResolveUniverseRegionByRegionIdAction extends RetrieveFromEsiBase implemen
             ['region_id' => $region_id],
             [
                 'name' => $response->name,
-                'description' => $response->optional('description')
+                'description' => $response->optional('description'),
             ]
         );
 

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Actions\Jobs\Universe;
-
 
 use Seatplus\Eveapi\Actions\HasPathValuesInterface;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
@@ -39,7 +37,7 @@ class ResolveUniverseConstellationByConstellationIdAction extends RetrieveFromEs
     /**
      * @return mixed
      */
-    public function getPathValues() : array
+    public function getPathValues(): array
     {
 
         return $this->path_values;

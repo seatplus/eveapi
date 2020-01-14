@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Models\Universe;
-
 
 use Illuminate\Database\Eloquent\Model;
 use Seatplus\Eveapi\Events\UniverseConstellationCreated;
@@ -50,7 +48,4 @@ class Constellation extends Model
     {
         return $this->hasOne(Region::class, 'region_id', 'region_id');
     }
-
-
-
 }

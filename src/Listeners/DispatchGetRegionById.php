@@ -1,12 +1,9 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Listeners;
-
 
 use Seatplus\Eveapi\Events\UniverseConstellationCreated;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseRegionByRegionIdJob;
-
 
 class DispatchGetRegionById
 {
@@ -20,5 +17,4 @@ class DispatchGetRegionById
 
         dispatch($job)->onQueue('default');
     }
-
 }

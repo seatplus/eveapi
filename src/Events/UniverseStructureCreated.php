@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Events;
-
 
 use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Models\Universe\Structure;
@@ -21,5 +19,4 @@ class UniverseStructureCreated
 
         $this->structure = $structure;
     }
-
 }
