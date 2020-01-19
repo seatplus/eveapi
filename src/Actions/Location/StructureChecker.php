@@ -53,7 +53,7 @@ class StructureChecker extends LocationChecker
     {
         if (
             // if locatable exists and if locatable is of type Station and if last update is greater then a week
-            (!is_null($location->locatable) && is_a($location->locatable, Structure::class) && $location->locatable->updated_at < carbon()->subWeek())
+            (! is_null($location->locatable) && is_a($location->locatable, Structure::class) && $location->locatable->updated_at < carbon()->subWeek())
             // or if location does not exist and id is not between 60000000 and 64000000
             || (is_null($location->locatable) && ! ($location->location_id > 60000000 && $location->location_id < 64000000))
         )
