@@ -120,7 +120,7 @@ class CharacterAsset extends Model
         return $query->WhereIn('character_id', auth()->user()->getAffiliatedCharacterIdsByPermission($permission_name));
     }
 
-    public function scopeInRegion(Builder $query, int $region_id) : Builder
+    public function scopeInRegion(Builder $query, int $region_id): Builder
     {
         return $query->whereHas('location', function (Builder $query) use ($region_id) {
             $query->whereHasMorph(
@@ -135,7 +135,7 @@ class CharacterAsset extends Model
         });
     }
 
-    public function scopeSearch(Builder $query, string $query_string) : Builder
+    public function scopeSearch(Builder $query, string $query_string): Builder
     {
         /*return $query->where('character_assets.name','like', '%' . $query_string . '%');*/
         return $query->where(function ($query) use ($query_string) {

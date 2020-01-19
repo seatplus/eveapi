@@ -28,7 +28,6 @@ namespace Seatplus\Eveapi\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use Seatplus\Eveapi\Http\Resources\Type as TypeResource;
-use Seatplus\Eveapi\Http\Resources\Location as LocationResource;
 
 class CharacterAsset extends JsonResource
 {
