@@ -209,5 +209,35 @@ class CharacterAssetModelTest extends TestCase
         $this->assertEquals($assets->item_id, $test_asset->item_id);
     }
 
+    /** @test */
+    public function it_has_content_relationship()
+    {
+        $test_asset = factory(CharacterAsset::class)->create([
+            'location_flag' => 'Hangar'
+        ]);
+
+        //Create Content
+        $test_asset->content()->save(factory(CharacterAsset::class)->create([
+            'location_flag' => 'cargo'
+        ]));
+
+        $this->assertInstanceOf(CharacterAsset::class, $test_asset->content->first());
+    }
+
+    /** @test */
+    public function it_has_container_relationship()
+    {
+        $test_asset = factory(CharacterAsset::class)->create([
+            'location_flag' => 'Hangar'
+        ]);
+
+        //Create Content
+        $test_asset->content()->save(factory(CharacterAsset::class)->create([
+            'location_flag' => 'cargo'
+        ]));
+
+        $this->assertInstanceOf(CharacterAsset::class, $test_asset->content->first()->container);
+    }
+
 
 }
