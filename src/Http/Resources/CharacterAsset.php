@@ -3,7 +3,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019, 2020 seatplus
+ * Copyright (c) 2019, 2020 Felix Huber
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@
 namespace Seatplus\Eveapi\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Seatplus\Eveapi\Http\Resources\Type as TypeResource;
 
 class CharacterAsset extends JsonResource
 {
@@ -41,13 +42,13 @@ class CharacterAsset extends JsonResource
 
         return [
             'quantity' => $this->quantity,
-            'type' => $this->whenLoaded('type'),
+            'type' => TypeResource::make($this->type),
             'name' => $this->name,
             'location_id' => $this->location_id,
             'location' => $this->whenLoaded('location'),
             'is_singleton' => $this->is_singleton,
             'is_blueprint_copy' => $this->is_blueprint_copy,
-            'content' => $this::collection($this->whenLoaded('content')),
+            'content' => $this::collection($this->content),
             'owner' => $this->whenLoaded('owner'),
         ];
     }

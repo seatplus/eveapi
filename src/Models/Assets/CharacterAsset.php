@@ -3,7 +3,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019, 2020 seatplus
+ * Copyright (c) 2019, 2020 Felix Huber
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -76,7 +76,7 @@ class CharacterAsset extends Model
      */
     public function container()
     {
-        return $this->belongsTo(CharacterAsset::class, 'item_id', 'location_id');
+        return $this->belongsTo(CharacterAsset::class, 'location_id', 'item_id');
     }
 
     /**
@@ -89,6 +89,7 @@ class CharacterAsset extends Model
 
     public function location()
     {
+        //Todo create morphTo relation
         return $this->hasOne(Location::class, 'location_id', 'location_id');
     }
 
@@ -108,10 +109,63 @@ class CharacterAsset extends Model
         return $query->where('location_id', '<>', self::ASSET_SAFETY);
     }
 
-    public function scopeAffiliated(Builder $query): Builder
+    public function scopeAffiliated(Builder $query, ?int $charcter_id = null): Builder
     {
+
+        if($charcter_id)
+            return $query->where('character_id', $charcter_id);
+
         $permission_name = config('eveapi.permissions.' . get_class($this));
 
-        return $query->whereIn('character_id', auth()->user()->getAffiliatedCharacterIdsByPermission($permission_name));
+        return $query->WhereIn('character_id', auth()->user()->getAffiliatedCharacterIdsByPermission($permission_name));
+    }
+
+    public function scopeInRegion(Builder $query, int $region_id): Builder
+    {
+        return $query->whereHas('location', function (Builder $query) use ($region_id) {
+            $query->whereHasMorph(
+                'locatable',
+                '*',
+                function (Builder $query) use ($region_id) {
+                    $query->whereHas('system.region', function (Builder $query) use ($region_id) {
+
+                        $query->where('universe_regions.region_id', $region_id);
+                    });
+                });
+        });
+    }
+
+    public function scopeSearch(Builder $query, string $query_string): Builder
+    {
+        /*return $query->where('character_assets.name','like', '%' . $query_string . '%');*/
+        return $query->where(function ($query) use ($query_string) {
+            $query->where('name', 'like', '%' . $query_string . '%')
+                ->orWhereHas('type', function (Builder $query) use ($query_string) {
+                    $query->where('name', 'like', '%' . $query_string . '%');
+                })
+                ->orWhereHas('type.group', function (Builder $query) use ($query_string) {
+                    $query->where('name', 'like', '%' . $query_string . '%');
+                })
+                // Content
+                ->orWhereHas('content', function (Builder $query) use ($query_string) {
+                    $query->where('name', 'like', '%' . $query_string . '%');
+                })
+                ->orWhereHas('content.type', function (Builder $query) use ($query_string) {
+                    $query->where('name', 'like', '%' . $query_string . '%');
+                })
+                ->orWhereHas('content.type.group', function (Builder $query) use ($query_string) {
+                    $query->where('name', 'like', '%' . $query_string . '%');
+                })
+                // Content Content
+                ->orWhereHas('content.content', function (Builder $query) use ($query_string) {
+                    $query->where('name', 'like', '%' . $query_string . '%');
+                })
+                ->orWhereHas('content.content.type', function (Builder $query) use ($query_string) {
+                    $query->where('name', 'like', '%' . $query_string . '%');
+                })
+                ->orWhereHas('content.content.type.group', function (Builder $query) use ($query_string) {
+                    $query->where('name', 'like', '%' . $query_string . '%');
+                });
+        });
     }
 }

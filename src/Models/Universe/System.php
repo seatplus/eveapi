@@ -3,7 +3,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019, 2020 seatplus
+ * Copyright (c) 2019, 2020 Felix Huber
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -73,6 +73,18 @@ class System extends Model
     public function constellation()
     {
         return $this->belongsTo(Constellation::class, 'constellation_id', 'constellation_id');
+    }
+
+    public function region()
+    {
+        return $this->hasOneThrough(
+            Region::class,
+            Constellation::class,
+            'constellation_id',
+            'region_id',
+            'constellation_id',
+            'region_id'
+            );
     }
 
     public function stations()

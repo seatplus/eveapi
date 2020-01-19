@@ -3,7 +3,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019, 2020 seatplus
+ * Copyright (c) 2019, 2020 Felix Huber
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -78,5 +78,10 @@ class Structure extends Model
     public function type()
     {
         return $this->hasOne(Type::class, 'type_id', 'type_id');
+    }
+
+    public function system()
+    {
+        return $this->belongsTo(System::class, 'solar_system_id', 'system_id');
     }
 }

@@ -24,42 +24,27 @@
  * SOFTWARE.
  */
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+namespace Seatplus\Eveapi\Http\Resources;
 
-class CreateAllianceInfosTable extends Migration
+use Illuminate\Http\Resources\Json\JsonResource;
+use Seatplus\Eveapi\Http\Resources\Group as GroupResource;
+
+class Type extends JsonResource
 {
     /**
-     * Run the migrations.
+     * Transform the resource into an array.
      *
-     * @return void
+     * @param  \Illuminate\Http\Request
+     * @return array
      */
-    public function up()
+    public function toArray($request)
     {
-        Schema::create('alliance_infos', function (Blueprint $table) {
-            $table->bigInteger('alliance_id')->primary();
 
-            $table->bigInteger('creator_corporation_id');
-            $table->bigInteger('creator_id');
-            $table->date('date_founded');
-            $table->bigInteger('executor_corporation_id')->nullable();
-            $table->bigInteger('faction_id')->nullable();
-            $table->string('name');
-            $table->string('ticker');
-
-            $table->timestamps();
-
-        });
-    }
-
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        Schema::dropIfExists('alliance_infos');
+        return [
+            'type_id' => $this->type_id,
+            'volume' => $this->volume,
+            'name' => $this->name,
+            'group' => GroupResource::make($this->group),
+        ];
     }
 }

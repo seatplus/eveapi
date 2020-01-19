@@ -3,7 +3,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019, 2020 seatplus
+ * Copyright (c) 2019, 2020 Felix Huber
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -53,9 +53,9 @@ class StructureChecker extends LocationChecker
     {
         if (
             // if locatable exists and if locatable is of type Station and if last update is greater then a week
-            ($location->exists && is_a($location->locatable, Structure::class) && $location->locatable->updated_at < carbon()->subWeek())
+            (! is_null($location->locatable) && is_a($location->locatable, Structure::class) && $location->locatable->updated_at < carbon()->subWeek())
             // or if location does not exist and id is not between 60000000 and 64000000
-            || (! $location->exists && ! ($location->location_id > 60000000 && $location->location_id < 64000000))
+            || (is_null($location->locatable) && ! ($location->location_id > 60000000 && $location->location_id < 64000000))
         )
             $this->action->execute($location->location_id);
 
