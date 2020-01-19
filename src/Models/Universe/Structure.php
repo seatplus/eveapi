@@ -79,4 +79,9 @@ class Structure extends Model
     {
         return $this->hasOne(Type::class, 'type_id', 'type_id');
     }
+
+    public function system()
+    {
+        return $this->belongsTo(System::class, 'solar_system_id', 'system_id');
+    }
 }
