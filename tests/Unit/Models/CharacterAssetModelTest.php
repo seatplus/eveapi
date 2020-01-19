@@ -64,6 +64,8 @@ class CharacterAssetModelTest extends TestCase
     {
         $test_asset = factory(CharacterAsset::class)->create();
 
+        $test_asset->type()->save(factory(Type::class)->create());
+
         $assets = CharacterAsset::has('type')->get();
 
         $this->assertTrue($assets->contains($test_asset));
@@ -72,7 +74,7 @@ class CharacterAssetModelTest extends TestCase
     /** @test */
     public function model_misses_types()
     {
-        $test_asset = factory(CharacterAsset::class)->state('withoutType')->create();
+        $test_asset = factory(CharacterAsset::class)->create();
 
         $assets = CharacterAsset::has('type')->get();
 
@@ -113,7 +115,7 @@ class CharacterAssetModelTest extends TestCase
     }
 
     /** @test */
-    public function it_has_scopeAffiliated_whereIn()
+    public function it_has_scopeAffiliated()
     {
         $test_asset = factory(CharacterAsset::class)->create();
 
@@ -128,83 +130,6 @@ class CharacterAssetModelTest extends TestCase
             ->andReturn($user_mock);
 
         $assets = CharacterAsset::query()->Affiliated()->first();
-
-        $this->assertEquals($assets->item_id, $test_asset->item_id);
-    }
-
-    /** @test */
-    public function it_has_scopeAffiliated_where()
-    {
-        $test_asset = factory(CharacterAsset::class)->create();
-
-        $assets = CharacterAsset::query()->Affiliated($test_asset->character_id)->first();
-
-        $this->assertEquals($assets->item_id, $test_asset->item_id);
-    }
-
-    /** @test */
-    public function it_has_scopeSearch_asset_name()
-    {
-        $test_asset = factory(CharacterAsset::class)->state('withName')->create();
-
-        $assets = CharacterAsset::query()->Search($test_asset->name)->first();
-
-        $this->assertEquals($assets->item_id, $test_asset->item_id);
-    }
-
-    /** @test */
-    public function it_has_scopeSearch_asset_type()
-    {
-        $test_asset = factory(CharacterAsset::class)->state('withName')->create();
-
-        $assets = CharacterAsset::query()->search($test_asset->name)->first();
-
-        $this->assertEquals($assets->item_id, $test_asset->item_id);
-    }
-
-    /** @test */
-    public function it_has_scopeSearch_asset_content()
-    {
-        $test_asset = factory(CharacterAsset::class)->create([
-            'location_flag' => 'Hangar'
-        ]);
-
-        //Create Content
-        $test_asset->content()->save(factory(CharacterAsset::class)->state('withName')->create([
-            'location_flag' => 'cargo'
-        ]));
-
-        $assets = CharacterAsset::query()
-            ->Search($test_asset->content->first()->name)
-            ->whereIn('location_flag', ['Hangar', 'AssetSafety', 'Deliveries'])
-            ->first();
-
-        $this->assertEquals($assets->item_id, $test_asset->item_id);
-    }
-
-    /** @test */
-    public function it_has_scopeSearch_asset_content_content()
-    {
-        $test_asset = factory(CharacterAsset::class)->create([
-            'location_flag' => 'Hangar'
-        ]);
-
-        //Create Content
-        $test_asset->content()->save(factory(CharacterAsset::class)->create([
-            'location_flag' => 'cargo'
-        ]));
-
-        $content = $test_asset->content->first();
-
-            //Create Content Content
-        $content->content()->save(factory(CharacterAsset::class)->state('withName')->create());
-
-        $content_content = $content->content->first();
-
-        $assets = CharacterAsset::query()
-            ->Search($content_content->name)
-            ->whereIn('location_flag', ['Hangar', 'AssetSafety', 'Deliveries'])
-            ->first();
 
         $this->assertEquals($assets->item_id, $test_asset->item_id);
     }

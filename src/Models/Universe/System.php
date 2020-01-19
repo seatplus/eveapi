@@ -75,18 +75,6 @@ class System extends Model
         return $this->belongsTo(Constellation::class, 'constellation_id', 'constellation_id');
     }
 
-    public function region()
-    {
-        return $this->hasOneThrough(
-            Region::class,
-            Constellation::class,
-            'constellation_id',
-            'region_id',
-            'constellation_id',
-            'region_id'
-            );
-    }
-
     public function stations()
     {
         return $this->hasMany(Station::class, 'system_id', 'system_id');
