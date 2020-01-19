@@ -70,7 +70,7 @@ class CacheMissingTypeIdsActionTest extends TestCase
     public function it_creates_one_flat_chached_type_ids_object()
     {
         $stations = factory(Station::class,5)->create();
-        $assets = factory(CharacterAsset::class,5)->state('withoutType')->create();
+        $assets = factory(CharacterAsset::class,5)->create();
 
         foreach ($stations as $station) {
 

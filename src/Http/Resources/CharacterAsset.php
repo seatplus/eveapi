@@ -27,7 +27,6 @@
 namespace Seatplus\Eveapi\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use Seatplus\Eveapi\Http\Resources\Type as TypeResource;
 
 class CharacterAsset extends JsonResource
 {
@@ -42,13 +41,13 @@ class CharacterAsset extends JsonResource
 
         return [
             'quantity' => $this->quantity,
-            'type' => TypeResource::make($this->type),
+            'type' => $this->whenLoaded('type'),
             'name' => $this->name,
             'location_id' => $this->location_id,
             'location' => $this->whenLoaded('location'),
             'is_singleton' => $this->is_singleton,
             'is_blueprint_copy' => $this->is_blueprint_copy,
-            'content' => $this::collection($this->content),
+            'content' => $this::collection($this->whenLoaded('content')),
             'owner' => $this->whenLoaded('owner'),
         ];
     }
