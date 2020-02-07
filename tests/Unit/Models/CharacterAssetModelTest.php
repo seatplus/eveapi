@@ -11,7 +11,6 @@ use Seatplus\Eveapi\Events\CharacterAssetUpdating;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Models\Universe\Location;
-use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Tests\TestCase;
 
 class CharacterAssetModelTest extends TestCase

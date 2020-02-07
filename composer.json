@@ -21,7 +21,7 @@
     "minimum-stability": "alpha",
     "prefer-stable": true,
     "require": {
-        "php": ">=7.1",
+        "php": "^7.4",
         "ext-redis": "*",
         "laravel/framework": "^6.0",
         "laravel/horizon": "^3.2",
