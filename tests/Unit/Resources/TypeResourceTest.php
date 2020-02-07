@@ -11,8 +11,10 @@ use Seatplus\Eveapi\Tests\TestCase;
 
 class TypeResourceTest extends TestCase
 {
+    /** @test */
     public function testCorrectDataIsReturnedInResponse()
     {
+
         $resource = (new TypeResource($type = factory(Type::class)->create()))->jsonSerialize();
 
         Assert::assertArraySubset([

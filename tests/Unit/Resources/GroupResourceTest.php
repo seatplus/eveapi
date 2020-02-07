@@ -11,6 +11,7 @@ use Seatplus\Eveapi\Tests\TestCase;
 
 class GroupResourceTest extends TestCase
 {
+    /** @test */
     public function testCorrectDataIsReturnedInResponse()
     {
         $resource = (new GroupResource($group = factory(Group::class)->create()))->jsonSerialize();

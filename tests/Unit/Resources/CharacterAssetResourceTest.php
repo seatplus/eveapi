@@ -11,6 +11,7 @@ use Seatplus\Eveapi\Tests\TestCase;
 
 class CharacterAssetResourceTest extends TestCase
 {
+    /** @test */
     public function testCorrectDataIsReturnedInResponse()
     {
         $resource = (new CharacterAssetRessource($character_asset = factory(CharacterAsset::class)->create()))->jsonSerialize();

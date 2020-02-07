@@ -25,6 +25,9 @@
  */
 
 use Illuminate\Support\Facades\Route;
+use Seatplus\Eveapi\Http\Controllers\Alliance\InfoController as AllianceInfoController;
+use Seatplus\Eveapi\Http\Controllers\Character\InfoController;
+use Seatplus\Eveapi\Http\Controllers\Corporation\InfoController as CorporationInfoController;
 
 Route::namespace('Seatplus\Eveapi\Http\Controllers\Updates')
     ->prefix('eveapi')
@@ -39,12 +42,23 @@ Route::namespace('Seatplus\Eveapi\Http\Controllers\Updates')
         Route::prefix('character')
             ->group(function () {
 
+                Route::get('info', [InfoController::class, 'index'])->name('get.character_info');
+
                 Route::post('info', 'CharacterInfoController@update')->name('update.character_info');
                 Route::post('assets', 'CharacterAssetController@update')->name('update.character.asset');
                 Route::post('roles', 'CharacterRoleController@update')->name('update.character.role');
             });
 
+        Route::prefix('corporation')->group(function () {
+            Route::get('info', [CorporationInfoController::class, 'index'])->name('get.corporation_info');
+        });
+
+        Route::prefix('alliance')->group(function () {
+            Route::get('info', [AllianceInfoController::class, 'index'])->name('get.alliance_info');
+        });
+
         Route::post('/alliance_info', 'AllianceInfoController@update')->name('update.alliance_info');
+
         Route::post('/corporation_info', 'CorporationInfoController@update')->name('update.corporation_info');
 
         Route::namespace('Universe')
