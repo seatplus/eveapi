@@ -4,9 +4,11 @@
 namespace Seatplus\Eveapi\Tests;
 
 use Clockwork\Support\Laravel\ClockworkServiceProvider;
+use Illuminate\Support\Facades\Event;
 use Laravel\Horizon\HorizonServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use Seatplus\Eveapi\EveapiServiceProvider;
+use Seatplus\Eveapi\Events\RefreshTokenCreated;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
 abstract class TestCase extends OrchestraTestCase
@@ -26,7 +28,9 @@ abstract class TestCase extends OrchestraTestCase
         // setup factories
         $this->withFactories(__DIR__ . '/database/factories');
 
-        $this->test_character = factory(CharacterInfo::class)->create();
+        Event::fakeFor(function () {
+            $this->test_character = factory(CharacterInfo::class)->create();
+        });
 
         //dump(class_basename($this));
     }

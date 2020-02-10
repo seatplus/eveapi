@@ -2,6 +2,7 @@
 
 
 use Faker\Generator as Faker;
+use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
@@ -39,6 +40,9 @@ $factory->afterCreating(CharacterInfo::class, function ($character_info, $faker)
         'alliance_id' => $character_affiliation->alliance_id
     ]));
 
-    $character_info->refresh_token()->save(factory(RefreshToken::class)->create());
+    Event::fakeFor(function () use ($character_info) {
+        $character_info->refresh_token()->save(factory(RefreshToken::class)->create());
+    });
+
     $character_info->roles()->save(factory(CharacterRole::class)->create());
 });

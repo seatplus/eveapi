@@ -3,6 +3,7 @@
 namespace Seatplus\Eveapi\Tests\Unit\Containers;
 
 
+use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Exceptions\InvalidContainerDataException;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
@@ -49,6 +50,8 @@ class JobContainerTest extends TestCase
     /** @test */
     public function getCharacterIdViaRefreshToken()
     {
+        Event::fake();
+
         $refresh_token = factory(RefreshToken::class)->create([
             'expires_on' => now()->addDay()
         ]);
