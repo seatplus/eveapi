@@ -29,7 +29,8 @@ namespace Seatplus\Eveapi\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Seatplus\Web\Models\User;
+use Seatplus\Auth\Models\User;
+use Seatplus\Eveapi\Events\RefreshTokenSaved;
 
 class RefreshToken extends Model
 {
@@ -56,6 +57,10 @@ class RefreshToken extends Model
      * @var array
      */
     protected $fillable = ['character_id', 'refresh_token', 'scopes', 'expires_on', 'token'];
+
+    protected $dispatchesEvents = [
+        'saved' => RefreshTokenSaved::class,
+    ];
 
     /**
      * Only return a token value if it is not already

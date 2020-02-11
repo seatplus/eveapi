@@ -2,6 +2,7 @@
 
 namespace Seatplus\Eveapi\Tests\Unit\Actions;
 
+use Illuminate\Support\Facades\Event;
 use Seat\Eseye\Eseye;
 use Seatplus\Eveapi\Actions\Eseye\GetEseyeClientAction;
 use Seatplus\Eveapi\Models\RefreshToken;
@@ -16,9 +17,11 @@ class GetEseyeClientActionTest extends TestCase
 
         parent::setUp();
 
-        $this->refresh_token = factory(RefreshToken::class)->create([
-            'expires_on' => now()->addMinutes(5)
-        ]);
+        Event::fakeFor(function () {
+            $this->refresh_token = factory(RefreshToken::class)->create([
+                'expires_on' => now()->addMinutes(5)
+            ]);
+        });
 
 
     }
