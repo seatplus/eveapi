@@ -29,7 +29,7 @@ namespace Seatplus\Eveapi;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Horizon\Horizon;
-use Seatplus\Eveapi\Events\RefreshTokenCreated;
+use Seatplus\Eveapi\Events\RefreshTokenSaved;
 use Seatplus\Eveapi\Events\UniverseConstellationCreated;
 use Seatplus\Eveapi\Events\UniverseSystemCreated;
 use Seatplus\Eveapi\Helpers\EseyeSetup;
@@ -137,6 +137,6 @@ class EveapiServiceProvider extends ServiceProvider
         $this->app->events->subscribe(DispatchGetSystemJobSubscriber::class);
         $this->app->events->listen(UniverseSystemCreated::class, DispatchGetConstellationById::class);
         $this->app->events->listen(UniverseConstellationCreated::class, DispatchGetRegionById::class);
-        $this->app->events->listen(RefreshTokenCreated::class, ReactOnFreshRefreshToken::class);
+        $this->app->events->listen(RefreshTokenSaved::class, ReactOnFreshRefreshToken::class);
     }
 }

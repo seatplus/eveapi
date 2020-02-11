@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Event;
 use Laravel\Horizon\HorizonServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use Seatplus\Eveapi\EveapiServiceProvider;
-use Seatplus\Eveapi\Events\RefreshTokenCreated;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
 abstract class TestCase extends OrchestraTestCase
