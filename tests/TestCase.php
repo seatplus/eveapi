@@ -30,8 +30,6 @@ abstract class TestCase extends OrchestraTestCase
         Event::fakeFor(function () {
             $this->test_character = factory(CharacterInfo::class)->create();
         });
-
-        //dump(class_basename($this));
     }
 
     /**

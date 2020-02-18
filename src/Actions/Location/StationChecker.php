@@ -42,7 +42,7 @@ class StationChecker extends LocationChecker
         )
             return (new ResolveUniverseStationByIdAction)->execute($location->location_id);
 
-        if($location->location_id > 60000000 || $location->location_id > 64000000)
+        if($location->location_id < 60000000 || $location->location_id > 64000000)
             $this->next($location);
     }
 }

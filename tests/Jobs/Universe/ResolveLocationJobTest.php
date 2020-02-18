@@ -5,10 +5,12 @@ namespace Seatplus\Eveapi\Tests\Jobs\Universe;
 
 
 use Illuminate\Support\Facades\Event;
+use Seatplus\Eveapi\Events\RefreshTokenCreated;
 use Seatplus\Eveapi\Events\UniverseStationCreated;
 use Seatplus\Eveapi\Events\UniverseStructureCreated;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
+use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\Structure;
@@ -26,13 +28,18 @@ class ResolveLocationJobTest extends TestCase
 
         Event::fake([
             UniverseStationCreated::class,
-            UniverseStructureCreated::class
+            UniverseStructureCreated::class,
+            RefreshTokenCreated::class
         ]);
     }
 
     private function buildJob(int $location_id) : ResolveLocationJob
     {
-        return new ResolveLocationJob($location_id, $this->test_character->refresh_token);
+        $refresh_token = factory(RefreshToken::class)->create([
+            'scopes' => ['esi-universe.read_structures.v1']
+        ]);
+
+        return new ResolveLocationJob($location_id, $refresh_token);
     }
 
     /** @test */

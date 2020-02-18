@@ -29,7 +29,7 @@ namespace Seatplus\Eveapi\Events;
 use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Models\RefreshToken;
 
-class RefreshTokenSaved
+class RefreshTokenCreated
 {
     use SerializesModels;
 
