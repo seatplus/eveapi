@@ -3,6 +3,7 @@
 namespace Seatplus\Eveapi\Tests\Unit\Controllers;
 
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Http\Controllers\Updates\Universe\PublicStructureController;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfo;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
@@ -10,6 +11,7 @@ use Seatplus\Eveapi\Jobs\Character\CharacterInfo;
 use Seatplus\Eveapi\Jobs\Character\CharacterRoleJob;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationInfoJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolvePublicStructureJob;
+use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Tests\TestCase;
 
 class UpdateControllerTest extends TestCase
@@ -67,8 +69,11 @@ class UpdateControllerTest extends TestCase
 
         $response = $this->post(route('update.character.role'),['character_id' => $this->test_character->character_id]);
 
+        $this->test_character->refresh_token->scopes = ['esi-characters.read_corporation_roles.v1'];
+        $this->test_character->refresh_token->save();
+
         Bus::assertDispatched(CharacterRoleJob::class, function ($job) {
-            return $job->refresh_token = $this->test_character->refresh_token;
+            return $job->refresh_token = $this->test_character->refresh_token->refresh();
         });
 
         $response->assertStatus(200);
@@ -92,6 +97,11 @@ class UpdateControllerTest extends TestCase
     /** @test */
     public function it_dispatches_resolve_public_structure_job()
     {
+        Event::fakeFor(function () {
+            factory(RefreshToken::class)->create([
+                'scopes' => ['esi-universe.read_structures.v1']
+            ]);
+        });
 
         Bus::fake();
 

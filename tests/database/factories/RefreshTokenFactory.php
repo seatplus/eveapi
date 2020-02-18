@@ -2,6 +2,7 @@
 
 use Faker\Generator as Faker;
 
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 $factory->define(RefreshToken::class, function (Faker $faker) {

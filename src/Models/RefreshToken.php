@@ -30,7 +30,8 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Seatplus\Auth\Models\User;
-use Seatplus\Eveapi\Events\RefreshTokenSaved;
+use Seatplus\Eveapi\Events\RefreshTokenCreated;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
 class RefreshToken extends Model
 {
@@ -59,7 +60,7 @@ class RefreshToken extends Model
     protected $fillable = ['character_id', 'refresh_token', 'scopes', 'expires_on', 'token'];
 
     protected $dispatchesEvents = [
-        'saved' => RefreshTokenSaved::class,
+        'created' => RefreshTokenCreated::class,
     ];
 
     /**
@@ -82,10 +83,10 @@ class RefreshToken extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function user()
+    public function character()
     {
 
-        return $this->belongsTo(User::class, 'character_id', 'id');
+        return $this->belongsTo(CharacterInfo::class, 'character_id', 'character_id');
     }
 
     public function hasScope(string $scope): bool
