@@ -29,7 +29,7 @@ return [
     'minimum' => ['publicData'],
     'character' => [
         'assets' => ['esi-assets.read_assets.v1',  'esi-universe.read_structures.v1'],
-        'title' => ['esi-characters.read_titles.v1']
+        'title' => ['esi-characters.read_titles.v1'],
     ],
     'corporation' => [
         'requirement' => ['esi-characters.read_corporation_roles.v1'],
