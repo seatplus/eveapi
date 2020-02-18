@@ -29,7 +29,6 @@ namespace Seatplus\Eveapi\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Seatplus\Auth\Models\User;
 use Seatplus\Eveapi\Events\RefreshTokenCreated;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
