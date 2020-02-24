@@ -48,5 +48,4 @@ class SsoScopes extends Model
     {
         return $this->morphTo();
     }
-
 }
