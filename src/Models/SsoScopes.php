@@ -28,32 +28,25 @@ namespace Seatplus\Eveapi\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class EsiScopes extends Model
+class SsoScopes extends Model
 {
     /**
-     * The table associated with the model.
+     * The attributes that are mass assignable.
      *
-     * @var string
+     * @var array
      */
-    protected $table = 'esi_scopes';
+    protected $fillable = ['selected_scopes', 'morphable_type', 'morphable_id'];
 
     /**
      * @var array
      */
     protected $casts = [
-        'scopes' => 'array',
+        'selected_scopes' => 'array',
     ];
 
-    /**
-     * @var string
-     */
-    protected $primaryKey = null;
-
-    /**
-     * Indicates if the IDs are auto-incrementing.
-     *
-     * @var bool
-     */
-    public $incrementing = false;
+    public function morphable()
+    {
+        return $this->morphTo();
+    }
 
 }

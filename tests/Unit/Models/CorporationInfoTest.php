@@ -5,6 +5,7 @@ namespace Seatplus\Eveapi\Tests\Unit\Models;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
+use Seatplus\Eveapi\Models\SsoScopes;
 use Seatplus\Eveapi\Tests\TestCase;
 
 class CorporationInfoTest extends TestCase
@@ -59,7 +60,16 @@ class CorporationInfoTest extends TestCase
             $character->character()->save(factory(CharacterInfo::class)->create());
 
         $this->assertEquals(3, $corporation->characters()->count());
+    }
 
+    /** @test */
+    public function it_has_morphable_sso_scope()
+    {
+        $corporation_info = factory(CorporationInfo::class)->create();
+
+        $corporation_info->ssoScopes()->save(factory(SsoScopes::class)->make());
+
+        $this->assertInstanceOf(SsoScopes::class, $corporation_info->refresh()->ssoScopes);
     }
 
 
