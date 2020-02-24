@@ -28,6 +28,7 @@ namespace Seatplus\Eveapi\Models\Alliance;
 
 use Illuminate\Database\Eloquent\Model;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
+use Seatplus\Eveapi\Models\SsoScopes;
 
 class AllianceInfo extends Model
 {
@@ -55,5 +56,10 @@ class AllianceInfo extends Model
     {
 
         return $this->hasMany(CorporationInfo::class, 'corporation_id', 'corporation_id');
+    }
+
+    public function ssoScopes()
+    {
+        return $this->morphOne(SsoScopes::class, 'morphable');
     }
 }

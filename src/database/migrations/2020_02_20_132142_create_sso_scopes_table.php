@@ -24,50 +24,35 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Models\Corporation;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Seatplus\Eveapi\Models\SsoScopes;
-
-class CorporationInfo extends Model
+class CreateSsoScopesTable extends Migration
 {
     /**
-     * @var bool
-     */
-    protected static $unguarded = true;
-
-    /**
-     * @var string
-     */
-    protected $primaryKey = 'corporation_id';
-
-    /**
-     * The attributes that should be cast to native types.
+     * Run the migrations.
      *
-     * @var array
+     * @return void
      */
-    protected $casts = [
-        'corporation_id' => 'integer',
-        'alliance_id' => 'integer',
-    ];
-
-    public function characters()
+    public function up()
     {
+        Schema::create('sso_scopes', function (Blueprint $table) {
 
-        return $this->hasManyThrough(
-            CharacterInfo::class,
-            CharacterAffiliation::class,
-            'corporation_id',
-            'character_id',
-            'corporation_id',
-            'character_id'
-            );
+            $table->increments('id');
+            $table->morphs('morphable');
+            $table->json('selected_scopes');
+            $table->timestamps();
+        });
     }
 
-    public function ssoScopes()
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
     {
-        return $this->morphOne(SsoScopes::class, 'morphable');
+        Schema::dropIfExists('sso_scopes');
     }
 }
