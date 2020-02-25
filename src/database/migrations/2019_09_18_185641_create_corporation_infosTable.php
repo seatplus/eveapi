@@ -48,7 +48,7 @@ class CreateCorporationInfosTable extends Migration
 
             $table->bigInteger('alliance_id')->nullable();
             $table->dateTime('date_founded')->nullable();
-            $table->string('description')->nullable();
+            $table->text('description')->nullable();
             $table->bigInteger('faction_id')->nullable();
             $table->bigInteger('home_station_id')->nullable();
             $table->bigInteger('shares')->nullable();
