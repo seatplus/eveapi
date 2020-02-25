@@ -74,7 +74,7 @@ class CorporationInfoAction extends RetrieveFromEsiBase implements HasPathValues
             'creator_id'      => $response->creator_id,
             'tax_rate'        => $response->tax_rate,
             'alliance_id'     => $response->optional('alliance_id'),
-            'date_founded'    => property_exists($response,'date_founded') ?
+            'date_founded'    => property_exists($response, 'date_founded') ?
                 carbon($response->date_founded) : null,
             'description'     => $response->optional('description'),
             'faction_id'      => $response->optional('faction_id'),
