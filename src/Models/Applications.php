@@ -24,16 +24,13 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Models\Corporation;
+namespace Seatplus\Eveapi\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
-use Seatplus\Eveapi\Models\Applications;
-use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Seatplus\Eveapi\Models\SsoScopes;
+use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
-class CorporationInfo extends Model
+class Applications extends Model
 {
     /**
      * @var bool
@@ -41,45 +38,22 @@ class CorporationInfo extends Model
     protected static $unguarded = true;
 
     /**
-     * @var string
-     */
-    protected $primaryKey = 'corporation_id';
-
-    /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
     protected $casts = [
+        'character_id' => 'integer',
         'corporation_id' => 'integer',
-        'alliance_id' => 'integer',
     ];
 
-    public function characters()
+    public function corporation()
     {
-
-        return $this->hasManyThrough(
-            CharacterInfo::class,
-            CharacterAffiliation::class,
-            'corporation_id',
-            'character_id',
-            'corporation_id',
-            'character_id'
-            );
+        return $this->belongsTo(CorporationInfo::class, 'corporation_id', 'corporation_id');
     }
 
-    public function ssoScopes()
+    public function character()
     {
-        return $this->morphOne(SsoScopes::class, 'morphable');
-    }
-
-    public function alliance()
-    {
-        return $this->belongsTo(AllianceInfo::class, 'alliance_id', 'alliance_id');
-    }
-
-    public function candidates()
-    {
-        return $this->hasMany(Applications::class, 'corporation_id', 'corporation_id');
+        return $this->hasOne(CharacterInfo::class, 'character_id', 'character_id');
     }
 }

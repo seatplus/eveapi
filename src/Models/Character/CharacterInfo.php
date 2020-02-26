@@ -28,6 +28,7 @@ namespace Seatplus\Eveapi\Models\Character;
 
 use Illuminate\Database\Eloquent\Model;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
+use Seatplus\Eveapi\Models\Applications;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 
@@ -95,6 +96,11 @@ class CharacterInfo extends Model
     {
 
         return $this->hasOne(CharacterAffiliation::class, 'character_id', 'character_id');
+    }
+
+    public function application()
+    {
+        return $this->hasOne(Applications::class, 'character_id', 'character_id');
     }
 
     public function getCorporationIdAttribute()

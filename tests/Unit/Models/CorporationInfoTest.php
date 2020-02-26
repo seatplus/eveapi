@@ -2,6 +2,8 @@
 
 namespace Seatplus\Eveapi\Tests\Unit\Models;
 
+use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
+use Seatplus\Eveapi\Models\Applications;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
@@ -70,6 +72,31 @@ class CorporationInfoTest extends TestCase
         $corporation_info->ssoScopes()->save(factory(SsoScopes::class)->make());
 
         $this->assertInstanceOf(SsoScopes::class, $corporation_info->refresh()->ssoScopes);
+    }
+
+    /** @test */
+    public function it_has_recruits_relationship()
+    {
+        $corporation_info = factory(CorporationInfo::class)->create();
+
+        factory(Applications::class, 5)->create([
+            'corporation_id' => $corporation_info->corporation_id
+        ]);
+
+        foreach($corporation_info->refresh()->candidates as $candidate)
+            $this->assertInstanceOf(Applications::class, $candidate);
+
+        $this->assertEquals(5,$corporation_info->refresh()->candidates->count());
+    }
+
+    /** @test */
+    public function it_has_alliance_relationship()
+    {
+        $corporation_info = factory(CorporationInfo::class)->create([
+            'alliance_id' => factory(AllianceInfo::class)
+        ]);
+
+        $this->assertInstanceOf(AllianceInfo::class, $corporation_info->alliance);
     }
 
 

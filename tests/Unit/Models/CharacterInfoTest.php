@@ -6,6 +6,7 @@ namespace Seatplus\Eveapi\Tests\Unit\Models;
 
 use Faker\Factory;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
+use Seatplus\Eveapi\Models\Applications;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
@@ -48,9 +49,14 @@ class CharacterInfoTest extends TestCase
         $this->assertInstanceOf(CorporationInfo::class, $this->test_character->corporation);
     }
 
-    public function it_has_corporation_id()
+    /** @test */
+    public function it_has_application_relationship()
     {
-        $this->assertTrue(true);
+        $application = factory(Applications::class)->create();
+
+        $character = $application->character;
+
+        $this->assertInstanceOf(Applications::class, $character->application);
     }
 
 }
