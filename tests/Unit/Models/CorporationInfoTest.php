@@ -2,6 +2,7 @@
 
 namespace Seatplus\Eveapi\Tests\Unit\Models;
 
+use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Applications;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
@@ -86,6 +87,16 @@ class CorporationInfoTest extends TestCase
             $this->assertInstanceOf(Applications::class, $candidate);
 
         $this->assertEquals(5,$corporation_info->refresh()->candidates->count());
+    }
+
+    /** @test */
+    public function it_has_alliance_relationship()
+    {
+        $corporation_info = factory(CorporationInfo::class)->create([
+            'alliance_id' => factory(AllianceInfo::class)
+        ]);
+
+        $this->assertInstanceOf(AllianceInfo::class, $corporation_info->alliance);
     }
 
 
