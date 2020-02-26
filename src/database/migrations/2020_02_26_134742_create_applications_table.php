@@ -24,56 +24,38 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Models\Corporation;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\Models\Applications;
-use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Seatplus\Eveapi\Models\SsoScopes;
-
-class CorporationInfo extends Model
+class CreateApplicationsTable extends Migration
 {
     /**
-     * @var bool
-     */
-    protected static $unguarded = true;
-
-    /**
-     * @var string
-     */
-    protected $primaryKey = 'corporation_id';
-
-    /**
-     * The attributes that should be cast to native types.
+     * Run the migrations.
      *
-     * @var array
+     * @return void
      */
-    protected $casts = [
-        'corporation_id' => 'integer',
-        'alliance_id' => 'integer',
-    ];
-
-    public function characters()
+    public function up()
     {
+        Schema::create('applications', function (Blueprint $table) {
 
-        return $this->hasManyThrough(
-            CharacterInfo::class,
-            CharacterAffiliation::class,
-            'corporation_id',
-            'character_id',
-            'corporation_id',
-            'character_id'
-            );
+            $table->increments('id');
+            $table->bigInteger('character_id')->unsigned();
+            $table->bigInteger('corporation_id')->unsigned();
+            $table->timestamps();
+
+            $table->foreign('character_id')->references('character_id')->on('character_infos')->onDelete('cascade');
+            $table->foreign('corporation_id')->references('corporation_id')->on('corporation_infos')->onDelete('cascade');
+        });
     }
 
-    public function ssoScopes()
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
     {
-        return $this->morphOne(SsoScopes::class, 'morphable');
-    }
-
-    public function candidates()
-    {
-        return $this->hasMany(Applications::class, 'corporation_id', 'corporation_id');
+        Schema::dropIfExists('applications');
     }
 }
