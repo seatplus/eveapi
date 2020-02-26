@@ -114,6 +114,4 @@ class CharacterInfo extends Model
 
         return $this->character_affiliation->alliance_id;
     }
-
-
 }
