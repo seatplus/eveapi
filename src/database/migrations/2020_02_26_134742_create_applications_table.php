@@ -40,12 +40,9 @@ class CreateApplicationsTable extends Migration
         Schema::create('applications', function (Blueprint $table) {
 
             $table->increments('id');
-            $table->bigInteger('character_id')->unsigned();
-            $table->bigInteger('corporation_id')->unsigned();
+            $table->bigInteger('character_id');
+            $table->bigInteger('corporation_id');
             $table->timestamps();
-
-            $table->foreign('character_id')->references('character_id')->on('character_infos')->onDelete('cascade');
-            $table->foreign('corporation_id')->references('corporation_id')->on('corporation_infos')->onDelete('cascade');
         });
     }
 
