@@ -48,7 +48,7 @@ class CharacterAssetsCleanupAction
 
         // Take advantage of new LazyCollection
         $character_assets = CharacterAsset::cursor()->filter(function ($character_asset) {
-            return $character_asset->character_id = $this->character_id;
+            return $character_asset->character_id === $this->character_id;
         });
 
         // Delete character items if no longer present
