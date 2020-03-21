@@ -54,9 +54,18 @@ class RefreshToken extends Model
     protected $primaryKey = 'character_id';
 
     /**
+     * Indicates if the IDs are auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
+
+    /**
+     * The attributes that aren't mass assignable.
+     *
      * @var array
      */
-    protected $fillable = ['character_id', 'refresh_token', 'scopes', 'expires_on', 'token'];
+    protected $guarded = [];
 
     protected $dispatchesEvents = [
         'created' => RefreshTokenCreated::class,
