@@ -38,7 +38,6 @@ class CreateCharacterAssetsTable extends Migration
     public function up()
     {
         Schema::create('character_assets', function (Blueprint $table) {
-
             $table->bigInteger('item_id')->primary();
             $table->bigInteger('character_id');
             $table->boolean('is_blueprint_copy')->default(false);

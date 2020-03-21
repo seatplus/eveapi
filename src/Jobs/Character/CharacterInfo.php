@@ -64,10 +64,8 @@ class CharacterInfo extends EsiBase
      */
     public function handle(): void
     {
-
         $this->getActionClass()->execute($this->character_id);
         (new CharacterAffiliationAction)->execute($this->character_id);
-
     }
 
     public function getActionClass(): RetrieveFromEsiInterface

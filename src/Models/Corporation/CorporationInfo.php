@@ -57,7 +57,6 @@ class CorporationInfo extends Model
 
     public function characters()
     {
-
         return $this->hasManyThrough(
             CharacterInfo::class,
             CharacterAffiliation::class,

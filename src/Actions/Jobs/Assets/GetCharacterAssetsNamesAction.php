@@ -71,7 +71,6 @@ class GetCharacterAssetsNamesAction extends RetrieveFromEsiBase implements HasPa
 
     public function execute(RefreshToken $refresh_token)
     {
-
         $this->refresh_token = $refresh_token;
 
         $this->setPathValues([
@@ -86,7 +85,6 @@ class GetCharacterAssetsNamesAction extends RetrieveFromEsiBase implements HasPa
             ->where('is_singleton', true)
             ->pluck('item_id')
             ->chunk(1000)->each(function ($item_ids) {
-
                 $this->setRequestBody($item_ids->all());
 
                 $responses = $this->retrieve();
@@ -94,15 +92,15 @@ class GetCharacterAssetsNamesAction extends RetrieveFromEsiBase implements HasPa
                 collect($responses)->each(function ($response) {
 
                     // "None" seems to indidate that no name is set.
-                    if ($response->name === 'None')
+                    if ($response->name === 'None') {
                         return;
+                    }
 
                     CharacterAsset::where('character_id', $this->refresh_token->character_id)
                         ->where('item_id', $response->item_id)
                         ->update(['name' => $response->name]);
                 });
             });
-
     }
 
     public function getMethod(): string

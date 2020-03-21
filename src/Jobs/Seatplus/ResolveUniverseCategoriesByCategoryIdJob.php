@@ -63,7 +63,6 @@ class ResolveUniverseCategoriesByCategoryIdJob implements ShouldQueue
 
     public function tags(): array
     {
-
         return [
             'type',
             'informations',
@@ -77,8 +76,6 @@ class ResolveUniverseCategoriesByCategoryIdJob implements ShouldQueue
      */
     public function handle()
     {
-
         (new ResolveUniverseCategoriesByCategoryIdAction)->execute();
-
     }
 }

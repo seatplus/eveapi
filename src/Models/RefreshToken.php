@@ -81,9 +81,9 @@ class RefreshToken extends Model
      */
     public function getTokenAttribute($value)
     {
-
-        if ($this->expires_on->gt(Carbon::now()))
+        if ($this->expires_on->gt(Carbon::now())) {
             return $value;
+        }
 
         return null;
     }
@@ -93,13 +93,11 @@ class RefreshToken extends Model
      */
     public function character()
     {
-
         return $this->belongsTo(CharacterInfo::class, 'character_id', 'character_id');
     }
 
     public function hasScope(string $scope): bool
     {
-
         return in_array($scope, $this->scopes);
     }
 }

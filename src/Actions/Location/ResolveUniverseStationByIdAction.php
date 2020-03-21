@@ -84,8 +84,9 @@ class ResolveUniverseStationByIdAction extends RetrieveFromEsiBase implements Ha
     {
 
         // If rate limited or not within ids range skip execution
-        if($this->isEsiRateLimited() || ($location_id < head(self::STATION_IDS_RANGE) || $location_id > last(self::STATION_IDS_RANGE)))
+        if ($this->isEsiRateLimited() || ($location_id < head(self::STATION_IDS_RANGE) || $location_id > last(self::STATION_IDS_RANGE))) {
             return;
+        }
 
         $this->setPathValues([
             'station_id' => $location_id,
@@ -113,6 +114,5 @@ class ResolveUniverseStationByIdAction extends RetrieveFromEsiBase implements Ha
             'locatable_id' => $location_id,
             'locatable_type' => Station::class,
         ]);
-
     }
 }

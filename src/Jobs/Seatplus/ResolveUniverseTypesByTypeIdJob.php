@@ -65,7 +65,6 @@ class ResolveUniverseTypesByTypeIdJob implements ShouldQueue
 
     public function tags(): array
     {
-
         return [
             'type',
             'informations',
@@ -84,6 +83,5 @@ class ResolveUniverseTypesByTypeIdJob implements ShouldQueue
         (new ResolveUniverseTypesByTypeIdAction())->execute();
 
         (new CacheMissingGroupIdsAction)->execute();
-
     }
 }

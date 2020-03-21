@@ -39,7 +39,6 @@ class Type extends JsonResource
      */
     public function toArray($request)
     {
-
         return [
             'type_id' => $this->type_id,
             'volume' => $this->volume,

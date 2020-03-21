@@ -42,7 +42,6 @@ class ResolveUniverseSystemsBySystemIdAction extends RetrieveFromEsiBase impleme
      */
     public function setRequestBody(array $request_body): void
     {
-
         $this->request_body = $request_body;
     }
 
@@ -63,14 +62,15 @@ class ResolveUniverseSystemsBySystemIdAction extends RetrieveFromEsiBase impleme
 
     public function execute(int $system_id)
     {
-
         $this->setPathValues([
             'system_id' => $system_id,
         ]);
 
         $response = $this->retrieve();
 
-        if ($response->isCachedLoad()) return;
+        if ($response->isCachedLoad()) {
+            return;
+        }
 
         return System::firstOrCreate(
             ['system_id' => $system_id],
@@ -82,7 +82,6 @@ class ResolveUniverseSystemsBySystemIdAction extends RetrieveFromEsiBase impleme
                 'security_class' => $response->optional('security_class'),
             ]
         );
-
     }
 
     public function getPathValues(): array

@@ -38,7 +38,6 @@ class CharacterInfoResource extends JsonResource
      */
     public function toArray($request)
     {
-
         return [
             'character_id' => $this->character_id,
             'name' => $this->name,

@@ -40,7 +40,6 @@ class CharacterAssetController extends Controller
 {
     public function update(Request $request)
     {
-
         $validatedData = $request->validate([
             'character_id' => 'required',
         ]);
@@ -57,6 +56,5 @@ class CharacterAssetController extends Controller
         ])->dispatch($job_container)->onQueue('default');
 
         return response('successfully queued', 200);
-
     }
 }

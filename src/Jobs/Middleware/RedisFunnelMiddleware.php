@@ -39,16 +39,12 @@ class RedisFunnelMiddleware
      */
     public function handle($job, $next)
     {
-
         $key = (string) get_class($job) . ':' . implode($job->tags());
 
         Redis::funnel($key)->limit(1)->then(function () use ($job, $next) {
-
             return $next($job);
-
         });
 
         return $job->delete();
-
     }
 }

@@ -38,7 +38,6 @@ class CreateUniverseTypesTable extends Migration
     public function up()
     {
         Schema::create('universe_types', function (Blueprint $table) {
-
             $table->bigInteger('type_id')->primary();
             $table->bigInteger('group_id');
             $table->string('name');

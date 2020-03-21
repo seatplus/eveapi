@@ -37,7 +37,6 @@ class CharacterRoleController extends Controller
 {
     public function update(Request $request)
     {
-
         $validatedData = $request->validate([
             'character_id' => 'required',
         ]);
@@ -51,6 +50,5 @@ class CharacterRoleController extends Controller
         CharacterRoleJob::dispatch($job_container)->onQueue('default');
 
         return response('success', 200);
-
     }
 }

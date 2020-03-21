@@ -37,7 +37,6 @@ class CacheMissingTypeIdsAction
 {
     public function execute(): Collection
     {
-
         $unknown_type_ids = CharacterAsset::whereDoesntHave('type')->pluck('type_id')->unique()->values();
 
         $unknown_type_ids = $unknown_type_ids->merge($this->getMissingTypeIdsFromLocations());

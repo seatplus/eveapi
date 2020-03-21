@@ -54,7 +54,6 @@ class AllianceInfo extends Model
 
     public function corporations()
     {
-
         return $this->hasMany(CorporationInfo::class, 'corporation_id', 'corporation_id');
     }
 

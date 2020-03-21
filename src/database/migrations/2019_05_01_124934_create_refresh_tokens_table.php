@@ -37,9 +37,7 @@ class CreateRefreshTokensTable extends Migration
      */
     public function up()
     {
-
         Schema::create('refresh_tokens', function (Blueprint $table) {
-
             $table->bigInteger('character_id')->primary();
 
             $table->mediumText('refresh_token');
@@ -59,7 +57,6 @@ class CreateRefreshTokensTable extends Migration
      */
     public function down()
     {
-
         Schema::dropIfExists('refresh_tokens');
     }
 }

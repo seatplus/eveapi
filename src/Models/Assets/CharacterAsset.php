@@ -111,9 +111,9 @@ class CharacterAsset extends Model
 
     public function scopeAffiliated(Builder $query, ?int $charcter_id = null): Builder
     {
-
-        if($charcter_id)
+        if ($charcter_id) {
             return $query->where('character_id', $charcter_id);
+        }
 
         $permission_name = config('eveapi.permissions.' . get_class($this));
 
@@ -128,7 +128,6 @@ class CharacterAsset extends Model
                 '*',
                 function (Builder $query) use ($region_id) {
                     $query->whereHas('system.region', function (Builder $query) use ($region_id) {
-
                         $query->where('universe_regions.region_id', $region_id);
                     });
                 });

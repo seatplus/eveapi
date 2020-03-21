@@ -44,5 +44,4 @@ class CharacterAssetUpdating
     }
 
     //TODO implement Listener to track item transactions https://stackoverflow.com/a/48793801
-
 }

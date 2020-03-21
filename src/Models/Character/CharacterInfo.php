@@ -56,13 +56,11 @@ class CharacterInfo extends Model
 
     public function refresh_token()
     {
-
         return $this->hasOne(RefreshToken::class, 'character_id', 'character_id');
     }
 
     public function corporation()
     {
-
         return $this->hasOneThrough(
             CorporationInfo::class,
             CharacterAffiliation::class,
@@ -75,7 +73,6 @@ class CharacterInfo extends Model
 
     public function alliance()
     {
-
         return $this->hasOneThrough(
             AllianceInfo::class,
             CharacterAffiliation::class,
@@ -88,13 +85,11 @@ class CharacterInfo extends Model
 
     public function roles()
     {
-
         return $this->hasOne(CharacterRole::class, 'character_id', 'character_id');
     }
 
     public function character_affiliation()
     {
-
         return $this->hasOne(CharacterAffiliation::class, 'character_id', 'character_id');
     }
 
@@ -105,13 +100,11 @@ class CharacterInfo extends Model
 
     public function getCorporationIdAttribute()
     {
-
         return $this->character_affiliation->corporation_id;
     }
 
     public function getAllianceIdAttribute()
     {
-
         return $this->character_affiliation->alliance_id;
     }
 }

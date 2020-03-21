@@ -36,7 +36,6 @@ class PublicStructureController extends Controller
 {
     public function update(Request $request)
     {
-
         $refresh_token = RefreshToken::all()->filter(function (RefreshToken $refresh_token) {
             return $refresh_token->hasScope('esi-universe.read_structures.v1');
         })->random();
@@ -48,6 +47,5 @@ class PublicStructureController extends Controller
         dispatch(new ResolvePublicStructureJob($job_container))->onQueue('default');
 
         return response('successfully queued', 200);
-
     }
 }

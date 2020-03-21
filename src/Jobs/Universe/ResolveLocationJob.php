@@ -89,7 +89,6 @@ class ResolveLocationJob implements ShouldQueue
 
     public function __construct(int $location_id, RefreshToken $refresh_token)
     {
-
         $this->location_id = $location_id;
         $this->refresh_token = $refresh_token;
 
@@ -99,10 +98,10 @@ class ResolveLocationJob implements ShouldQueue
 
         $this->assert_safety_checker->succeedWith($this->station_checker);
         $this->station_checker->succeedWith($this->structure_checker);
-
     }
 
-    public function tags() {
+    public function tags()
+    {
         return [
             'location_resolve',
             'location_id:' . $this->location_id,

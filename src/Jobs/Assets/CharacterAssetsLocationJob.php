@@ -74,7 +74,8 @@ class CharacterAssetsLocationJob implements ShouldQueue
         ];
     }
 
-    public function tags() {
+    public function tags()
+    {
         return [
             'character',
             'character_id: ' . $this->refresh_token->character_id,

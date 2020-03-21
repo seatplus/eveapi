@@ -39,7 +39,6 @@ class CharacterAsset extends JsonResource
      */
     public function toArray($request)
     {
-
         return [
             'quantity' => $this->quantity,
             'type' => TypeResource::make($this->type),
