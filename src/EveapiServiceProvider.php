@@ -37,6 +37,7 @@ use Seatplus\Eveapi\Listeners\DispatchGetConstellationById;
 use Seatplus\Eveapi\Listeners\DispatchGetRegionById;
 use Seatplus\Eveapi\Listeners\DispatchGetSystemJobSubscriber;
 use Seatplus\Eveapi\Listeners\ReactOnFreshRefreshToken;
+use Seatplus\Eveapi\Models\Schedules;
 
 class EveapiServiceProvider extends ServiceProvider
 {
@@ -60,6 +61,9 @@ class EveapiServiceProvider extends ServiceProvider
 
         // Add Horizon Snapshot schedule
         $this->addHorizonSnapshotSchedule();
+
+        // Add other schedules
+        $this->addSchedules();
 
         // Add routes
         $this->loadRoutesFrom(__DIR__ . '/Http/routes.php');
@@ -138,5 +142,16 @@ class EveapiServiceProvider extends ServiceProvider
         $this->app->events->listen(UniverseSystemCreated::class, DispatchGetConstellationById::class);
         $this->app->events->listen(UniverseConstellationCreated::class, DispatchGetRegionById::class);
         $this->app->events->listen(RefreshTokenCreated::class, ReactOnFreshRefreshToken::class);
+    }
+
+    private function addSchedules()
+    {
+        $this->app->booted(function () {
+            $schedule = $this->app->make(Schedule::class);
+
+            Schedules::cursor()->each(function ($entry) use ($schedule) {
+                $schedule->job(new $entry->job)->cron($entry->expression);
+            });
+        });
     }
 }
