@@ -41,6 +41,6 @@ class Schedules extends Model
      * @var array
      */
     protected $casts = [
-        'expression' => 'string'
+        'expression' => 'string',
     ];
 }
