@@ -26,7 +26,10 @@
 
 namespace Seatplus\Eveapi;
 
+use Exception;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Horizon\Horizon;
 use Seatplus\Eveapi\Events\RefreshTokenCreated;
@@ -148,6 +151,23 @@ class EveapiServiceProvider extends ServiceProvider
     {
         $this->app->booted(function () {
             $schedule = $this->app->make(Schedule::class);
+
+            // Check that the schedules table exists. This
+            // could cause a fatal error if the app is
+            // still being setup or the db has not yet
+            // been configured. This is a relatively ugly
+            // hack as this schedule() method is core to
+            // the framework.
+            try {
+
+                DB::connection();
+                if (! Schema::hasTable('schedules'))
+                    throw new Exception('Schema schedules does not exist');
+
+            } catch (Exception $e) {
+
+                return;
+            }
 
             Schedules::cursor()->each(function ($entry) use ($schedule) {
                 $schedule->job(new $entry->job)->cron($entry->expression);
