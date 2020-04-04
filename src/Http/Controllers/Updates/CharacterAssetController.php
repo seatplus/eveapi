@@ -49,6 +49,7 @@ class CharacterAssetController extends Controller
             'refresh_token' => RefreshToken::find((int) $validatedData['character_id']),
         ]);
 
+        //TODO with refactoring to use events: rework this
         CharacterAssetJob::withChain([
             new CharacterAssetsLocationJob($job_container),
             new ResolveUniverseTypesByTypeIdJob,
