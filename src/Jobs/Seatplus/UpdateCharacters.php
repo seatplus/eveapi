@@ -24,40 +24,39 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Http\Controllers\Updates;
+namespace Seatplus\Eveapi\Jobs\Seatplus;
 
-use Illuminate\Http\Request;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Http\Controllers\Controller;
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsLocationJob;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseCategoriesByCategoryIdJob;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseGroupsByGroupIdJob;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
 use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Services\Pipes\CharacterAssets;
+use Seatplus\Eveapi\Services\Pipes\CharacterInfo;
 
-class CharacterAssetController extends Controller
+class UpdateCharacters implements ShouldQueue
 {
-    public function update(Request $request)
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    private array $pipes = [
+        CharacterInfo::class,
+    ];
+
+    public function handle()
     {
 
-        $validatedData = $request->validate([
-            'character_id' => 'required',
-        ]);
+        RefreshToken::cursor()->each(function ($token) {
 
-        $job_container = new JobContainer([
-            'refresh_token' => RefreshToken::find((int) $validatedData['character_id']),
-        ]);
+            $job_container = new JobContainer([
+                'refresh_token' => $token,
+            ]);
 
-        //TODO with refactoring to use events: rework this
-        CharacterAssetJob::withChain([
-            new CharacterAssetsLocationJob($job_container),
-            new ResolveUniverseTypesByTypeIdJob,
-            new ResolveUniverseGroupsByGroupIdJob,
-            new ResolveUniverseCategoriesByCategoryIdJob,
-        ])->dispatch($job_container)->onQueue('default');
+            (new CharacterAssets)
+                ->through($this->pipes)
+                ->handle($job_container);
 
-        return response('successfully queued', 200);
-
+        });
     }
 }

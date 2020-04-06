@@ -85,6 +85,7 @@ class CharacterAssetsLocationJob implements ShouldQueue
 
     public function handle(): void
     {
+        // TODO: ADD HAS REQUIRED SCOPE MIDDLEWARE
         $action = new CharacterAssetsLocationAction($this->refresh_token);
         $action->buildLocationIds();
 

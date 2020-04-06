@@ -24,34 +24,18 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Http\Resources;
+namespace Seatplus\Eveapi\Services\Pipes;
 
-use Illuminate\Http\Resources\Json\JsonResource;
-use Seatplus\Eveapi\Http\Resources\Type as TypeResource;
+use Seatplus\Eveapi\Jobs\Character\CharacterInfo as CharacterInfoJob;
 
-class CharacterAsset extends JsonResource
+class CharacterInfo extends Pipe
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @param  \Illuminate\Http\Request
-     * @return array
-     */
-    public function toArray($request)
+    public function handle($job_container)
     {
 
-        return [
-            'item_id' => $this->item_id,
-            'quantity' => $this->quantity,
-            'type' => TypeResource::make($this->type),
-            'name' => $this->name,
-            'location_id' => $this->location_id,
-            'location' => $this->whenLoaded('location'),
-            'location_flag' => $this->location_flag,
-            'is_singleton' => $this->is_singleton,
-            'is_blueprint_copy' => $this->is_blueprint_copy,
-            'content' => $this::collection($this->content),
-            'owner' => $this->whenLoaded('owner'),
-        ];
+        CharacterInfoJob::dispatch($job_container)->onQueue('default');
+
+        $this->next($job_container);
+
     }
 }

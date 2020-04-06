@@ -83,6 +83,8 @@ class CharacterInfoAction extends RetrieveFromEsiBase implements HasPathValuesIn
             'title' => $response->optional('title'),
         ]);
 
+        //TODO Dispatch or react on this update/create to dispatch corporationInfo Job
+
         if (! empty($response->optional('alliance_id')))
         {
             $job_container = new JobContainer([

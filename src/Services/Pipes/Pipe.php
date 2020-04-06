@@ -24,34 +24,29 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Http\Resources;
+namespace Seatplus\Eveapi\Services\Pipes;
 
-use Illuminate\Http\Resources\Json\JsonResource;
-use Seatplus\Eveapi\Http\Resources\Type as TypeResource;
+use Seatplus\Eveapi\Containers\JobContainer;
 
-class CharacterAsset extends JsonResource
+abstract class Pipe
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @param  \Illuminate\Http\Request
-     * @return array
-     */
-    public function toArray($request)
-    {
+    protected array $successors;
 
-        return [
-            'item_id' => $this->item_id,
-            'quantity' => $this->quantity,
-            'type' => TypeResource::make($this->type),
-            'name' => $this->name,
-            'location_id' => $this->location_id,
-            'location' => $this->whenLoaded('location'),
-            'location_flag' => $this->location_flag,
-            'is_singleton' => $this->is_singleton,
-            'is_blueprint_copy' => $this->is_blueprint_copy,
-            'content' => $this::collection($this->content),
-            'owner' => $this->whenLoaded('owner'),
-        ];
+    abstract public function handle(JobContainer $job_container);
+
+    public function through(array $successors): Pipe
+    {
+        $this->successors = $successors;
+
+        return $this;
+    }
+
+    public function next(JobContainer $job_container)
+    {
+        if ($this->successors) {
+            $next_pipe = array_shift($this->successors);
+            (new $next_pipe)->through($this->successors)->handle($job_container);
+        }
+
     }
 }

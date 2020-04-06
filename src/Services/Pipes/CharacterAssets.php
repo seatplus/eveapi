@@ -24,40 +24,29 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Http\Controllers\Updates;
+namespace Seatplus\Eveapi\Services\Pipes;
 
-use Illuminate\Http\Request;
-use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Http\Controllers\Controller;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsLocationJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseCategoriesByCategoryIdJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseGroupsByGroupIdJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
-use Seatplus\Eveapi\Models\RefreshToken;
 
-class CharacterAssetController extends Controller
+class CharacterAssets extends Pipe
 {
-    public function update(Request $request)
+    public function handle($job_container)
     {
 
-        $validatedData = $request->validate([
-            'character_id' => 'required',
-        ]);
+        if(in_array('esi-assets.read_assets.v1', $job_container->refresh_token->scopes))
+            //TODO with refactoring to use events: rework this
+            CharacterAssetJob::withChain([
+                new CharacterAssetsLocationJob($job_container),
+                new ResolveUniverseTypesByTypeIdJob,
+                new ResolveUniverseGroupsByGroupIdJob,
+                new ResolveUniverseCategoriesByCategoryIdJob,
+            ])->dispatch($job_container)->onQueue('default');
 
-        $job_container = new JobContainer([
-            'refresh_token' => RefreshToken::find((int) $validatedData['character_id']),
-        ]);
-
-        //TODO with refactoring to use events: rework this
-        CharacterAssetJob::withChain([
-            new CharacterAssetsLocationJob($job_container),
-            new ResolveUniverseTypesByTypeIdJob,
-            new ResolveUniverseGroupsByGroupIdJob,
-            new ResolveUniverseCategoriesByCategoryIdJob,
-        ])->dispatch($job_container)->onQueue('default');
-
-        return response('successfully queued', 200);
+        $this->next($job_container);
 
     }
 }
