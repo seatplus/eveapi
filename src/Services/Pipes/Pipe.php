@@ -4,9 +4,26 @@
 namespace Seatplus\Eveapi\Services\Pipes;
 
 
-use Closure;
+use Seatplus\Eveapi\Containers\JobContainer;
 
-interface Pipe
+abstract class Pipe
 {
-    public function handle($content, Closure $next);
+    protected array $successors;
+
+    abstract public function handle(JobContainer $job_container);
+
+    public function through(array $successors) : Pipe
+    {
+        $this->successors = $successors;
+        return $this;
+    }
+
+    public function next(JobContainer $job_container)
+    {
+        if ($this->successors) {
+            $next_pipe = array_shift($this->successors);
+            (new $next_pipe)->through($this->successors)->handle($job_container);
+        }
+
+    }
 }
