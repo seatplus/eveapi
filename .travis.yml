@@ -1,6 +1,7 @@
 env:
   global:
     - CC_TEST_REPORTER_ID=afe50b57038790ac97669452ea4967d142354893104f32a33fdc54de112dc1d1
+    - COMPOSER_ROOT_VERSION=dev-develop
 
 language: php
 
