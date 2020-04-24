@@ -45,7 +45,7 @@ class CreateCharacterAssetsTable extends Migration
             $table->boolean('is_singleton');
             $table->string('location_flag');
             $table->bigInteger('location_id');
-            $table->enum('location_type', ['station', 'solar_system', 'other']);
+            $table->enum('location_type', ['station', 'solar_system','item', 'other']);
             $table->integer('quantity');
             $table->integer('type_id');
             $table->string('name')->nullable();
