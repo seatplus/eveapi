@@ -44,7 +44,7 @@ class EseyeSetup
         $config = Configuration::getInstance();
         $config->http_user_agent = 'SeAT plus v' . config('eveapi.config.version');
 
-        $config->cache = FileCache::class;//RedisCache::class;
+        $config->cache = FileCache::class; //RedisCache::class;
         /*$config->redis_cache_location = env('REDIS_HOST', '127.0.0.1');
         $config->logfile_location = config('eveapi.config.eseye_logfile');
         $config->logger_level = config('eveapi.config.eseye_loglevel');*/
@@ -68,7 +68,6 @@ class EseyeSetup
         $config->sso_scheme = config('eveapi.config.eseye_sso_scheme');
         $config->sso_host = config('eveapi.config.eseye_sso_host');
         $config->sso_port = config('eveapi.config.eseye_sso_port');
-
 
     }
 
