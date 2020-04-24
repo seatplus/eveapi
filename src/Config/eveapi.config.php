@@ -32,5 +32,14 @@ return [
     'enable_joblog' => false,
 
     'eseye_logfile'         => storage_path('logs'),
+    'eseye_cache'           => storage_path('eseye'),
     'eseye_loglevel' => 'info', // valid entries are RFC 5424 levels ('debug', 'info', 'warn', 'error')
+
+    'eseye_esi_scheme'      => env('EVE_ESI_SCHEME', 'https'),
+    'eseye_esi_host'        => env('EVE_ESI_HOST', 'esi.evetech.net'),
+    'eseye_esi_port'        => env('EVE_ESI_PORT', 443),
+    'eseye_esi_datasource'  => env('EVE_ESI_DATASOURCE', 'tranquility'),
+    'eseye_sso_scheme'      => env('EVE_SSO_SCHEME', 'https'),
+    'eseye_sso_host'        => env('EVE_SSO_HOST', 'login.eveonline.com'),
+    'eseye_sso_port'        => env('EVE_SSO_PORT', 443),
 ];
