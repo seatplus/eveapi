@@ -50,7 +50,7 @@ class CharacterAssetsAction extends RetrieveFromEsiBase implements HasPathValues
     /**
      * @var string
      */
-    protected $version = 'v3';
+    protected $version = 'v5';
 
     public $required_scope = 'esi-assets.read_assets.v1';
 
