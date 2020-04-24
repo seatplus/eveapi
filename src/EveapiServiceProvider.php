@@ -124,6 +124,17 @@ class EveapiServiceProvider extends ServiceProvider
                     'tries'      => 1,
                     'timeout'    => 900, // 15 minutes
                 ],
+                'production' => [
+                    'seatplus-workers' => [
+                        'connection' => 'redis',
+                        'queue' => ['high', 'medium', 'low', 'default'],
+                        'balance' => 'auto',
+                        'minProcesses' => 1,
+                        'maxProcesses' => (int) env(self::QUEUE_BALANCING_WORKERS, 4),
+                        'tries' => 1,
+                        'timeout'    => 900, // 15 minutes
+                    ],
+                ],
             ],
         ];
 
