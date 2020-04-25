@@ -1,6 +1,6 @@
 {
     "name": "seatplus/eveapi",
-    "description": "API for receiving informations from esi",
+    "description": "API for receiving information from esi",
     "license": "MIT",
     "authors": [
         {
@@ -26,7 +26,7 @@
         "laravel/framework": "^6.0",
         "laravel/horizon": "^3.2",
         "seatplus/eseye": "^2.0",
-        "seatplus/auth": "dev-develop",
+        "seatplus/auth": "^0",
         "spatie/laravel-queueable-action": "^2.1"
     },
     "require-dev": {
