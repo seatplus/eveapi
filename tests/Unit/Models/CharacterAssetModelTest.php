@@ -6,7 +6,6 @@ namespace Seatplus\Eveapi\Tests\Unit\Models;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
-use Seatplus\Auth\Models\User;
 use Seatplus\Eveapi\Events\CharacterAssetUpdating;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
@@ -116,7 +115,7 @@ class CharacterAssetModelTest extends TestCase
     {
         $test_asset = factory(CharacterAsset::class)->create();
 
-        $user_mock = \Mockery::mock(User::class);
+        $user_mock = \Mockery::mock('Seatplus\Auth\Models\User');
 
         $user_mock->shouldReceive('getAffiliatedCharacterIdsByPermission')
             ->once()
