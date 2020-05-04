@@ -44,7 +44,7 @@ class Type extends JsonResource
             'type_id' => $this->type_id,
             'volume' => $this->volume,
             'name' => $this->name,
-            'group' => GroupResource::make($this->group),
+            'group' => GroupResource::make($this->whenLoaded('group')) ?? 'unknown',
         ];
     }
 }
