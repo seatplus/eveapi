@@ -28,21 +28,19 @@ namespace Seatplus\Eveapi\Listeners;
 
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Events\RefreshTokenCreated;
+use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfo;
+use Seatplus\Eveapi\Jobs\Corporation\CorporationInfoJob;
+use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
+use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacters;
 
 class ReactOnFreshRefreshToken
 {
     public function handle(RefreshTokenCreated $refresh_token_event)
     {
 
-        $character_id = $refresh_token_event->refresh_token->character_id;
+        $refresh_token = $refresh_token_event->refresh_token;
 
-        $job_container = new JobContainer([
-            'character_id' => $character_id,
-        ]);
-
-        //TODO queue all character job and before corporation with chain, the members to check if user has access to certain corp informations.
-        CharacterInfo::dispatch($job_container)->onQueue('high');
-
+        UpdateCharacter::dispatch($refresh_token)->onQueue('high');
     }
 }

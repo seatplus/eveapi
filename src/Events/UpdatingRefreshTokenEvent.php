@@ -24,39 +24,20 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Jobs\Seatplus;
+namespace Seatplus\Eveapi\Events;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Models\RefreshToken;
-use Seatplus\Eveapi\Services\Pipes\CharacterAssets;
-use Seatplus\Eveapi\Services\Pipes\CharacterInfo;
 
-class UpdateCharacters implements ShouldQueue
+class UpdatingRefreshTokenEvent
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use SerializesModels;
 
-    private array $pipes = [
-        CharacterInfo::class,
-    ];
+    public RefreshToken $refresh_token;
 
-    public function handle()
+    public function __construct(RefreshToken $refresh_token)
     {
 
-        RefreshToken::cursor()->each(function ($token) {
-
-            $job_container = new JobContainer([
-                'refresh_token' => $token,
-            ]);
-
-            (new CharacterAssets)
-                ->through($this->pipes)
-                ->handle($job_container);
-
-        });
+        $this->refresh_token = $refresh_token;
     }
 }

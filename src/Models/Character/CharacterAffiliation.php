@@ -27,6 +27,7 @@
 namespace Seatplus\Eveapi\Models\Character;
 
 use Illuminate\Database\Eloquent\Model;
+use Seatplus\Eveapi\Events\CharacterAffiliationCreated;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
@@ -41,6 +42,8 @@ class CharacterAffiliation extends Model
      * @var string
      */
     protected $primaryKey = 'character_id';
+
+    public $incrementing = false;
 
     /**
      * The table associated with the model.

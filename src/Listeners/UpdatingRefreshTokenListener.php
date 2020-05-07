@@ -24,29 +24,19 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Services\Pipes;
+namespace Seatplus\Eveapi\Listeners;
 
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsLocationJob;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseCategoriesByCategoryIdJob;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseGroupsByGroupIdJob;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
+use Seatplus\Eveapi\Events\RefreshTokenCreated;
+use Seatplus\Eveapi\Events\UpdatingRefreshTokenEvent;
+use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
 
-class CharacterAssets extends Pipe
+class UpdatingRefreshTokenListener
 {
-    public function handle($job_container)
+    public function handle(UpdatingRefreshTokenEvent $refresh_token_event)
     {
+        $refresh_token = $refresh_token_event->refresh_token;
 
-        if(in_array('esi-assets.read_assets.v1', $job_container->refresh_token->scopes))
-            //TODO with refactoring to use events: rework this
-            CharacterAssetJob::withChain([
-                new CharacterAssetsLocationJob($job_container),
-                new ResolveUniverseTypesByTypeIdJob,
-                new ResolveUniverseGroupsByGroupIdJob,
-                new ResolveUniverseCategoriesByCategoryIdJob,
-            ])->dispatch($job_container)->onQueue('default');
-
-        $this->next($job_container);
-
+        if($refresh_token->isDirty('scopes'))
+            UpdateCharacter::dispatch($refresh_token)->onQueue('high');
     }
 }

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfo as CharacterInfoJob;
-use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacters;
+use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Tests\TestCase;
 
@@ -25,7 +25,7 @@ class CharacterUpdatePipeTest extends TestCase
 
         Bus::fake();
 
-        (new UpdateCharacters)->handle();
+        (new UpdateCharacter)->handle();
 
         Bus::assertDispatched(CharacterAssetJob::class, function ($job) use ($refresh_token) {
             return $refresh_token->character_id === $job->character_id;
@@ -37,7 +37,7 @@ class CharacterUpdatePipeTest extends TestCase
     {
         Bus::fake();
 
-        (new UpdateCharacters)->handle();
+        (new UpdateCharacter)->handle();
 
         Bus::assertDispatched(CharacterInfoJob::class, function ($job) {
             return $this->test_character->refresh_token->character_id === $job->refresh_token->character_id;
@@ -49,7 +49,7 @@ class CharacterUpdatePipeTest extends TestCase
     {
         Bus::fake();
 
-        (new UpdateCharacters)->handle();
+        (new UpdateCharacter)->handle();
 
         Bus::assertNotDispatched(CharacterAssetJob::class);
     }

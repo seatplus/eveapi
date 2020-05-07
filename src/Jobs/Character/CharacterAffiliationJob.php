@@ -24,22 +24,23 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Jobs\Corporation;
+namespace Seatplus\Eveapi\Jobs\Character;
 
-use Seatplus\Eveapi\Actions\Jobs\Corporation\CorporationInfoAction;
+use Seatplus\Eveapi\Actions\Jobs\Character\CharacterAffiliationAction;
+use Seatplus\Eveapi\Actions\Jobs\Character\CharacterInfoAction;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
 
-class CorporationInfoJob extends EsiBase
+class CharacterAffiliationJob extends EsiBase
 {
 
     /**
      * @var array
      */
-    protected $tags = ['corporation', 'info'];
+    protected $tags = ['character', 'affiliation'];
 
     /**
      * Get the middleware the job should pass through.
@@ -59,17 +60,16 @@ class CorporationInfoJob extends EsiBase
      * Execute the job.
      *
      * @return void
-     * @throws \Exceptionf
+     * @throws \Exception
      */
     public function handle(): void
     {
 
-        $this->getActionClass()->execute($this->getCorporationId());
-
+        $this->getActionClass()->execute($this->character_id);
     }
 
     public function getActionClass(): RetrieveFromEsiInterface
     {
-        return new CorporationInfoAction;
+        return new CharacterAffiliationAction();
     }
 }
