@@ -36,7 +36,6 @@ use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
 
 class CharacterAssetsPipe implements Pipe
 {
-
     public function handle(JobContainer $job_container, Closure $next)
     {
 

@@ -33,13 +33,11 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Horizon\Horizon;
 use Seatplus\Eveapi\Commands\ClearCache;
-use Seatplus\Eveapi\Events\CharacterAffiliationCreated;
 use Seatplus\Eveapi\Events\RefreshTokenCreated;
 use Seatplus\Eveapi\Events\UniverseConstellationCreated;
 use Seatplus\Eveapi\Events\UniverseSystemCreated;
 use Seatplus\Eveapi\Events\UpdatingRefreshTokenEvent;
 use Seatplus\Eveapi\Helpers\EseyeSetup;
-use Seatplus\Eveapi\Listeners\Character\Affiliations;
 use Seatplus\Eveapi\Listeners\DispatchGetConstellationById;
 use Seatplus\Eveapi\Listeners\DispatchGetRegionById;
 use Seatplus\Eveapi\Listeners\DispatchGetSystemJobSubscriber;
@@ -204,10 +202,10 @@ class EveapiServiceProvider extends ServiceProvider
         });
     }
 
-    private function addCommands() : void
+    private function addCommands(): void
     {
         $this->commands([
-            ClearCache::class
+            ClearCache::class,
         ]);
     }
 }

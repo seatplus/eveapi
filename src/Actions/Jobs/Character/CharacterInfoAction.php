@@ -28,8 +28,6 @@ namespace Seatplus\Eveapi\Actions\Jobs\Character;
 
 use Seatplus\Eveapi\Actions\HasPathValuesInterface;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
-use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Jobs\Alliances\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
 class CharacterInfoAction extends RetrieveFromEsiBase implements HasPathValuesInterface

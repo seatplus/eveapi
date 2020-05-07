@@ -70,7 +70,7 @@ class RefreshToken extends Model
 
     protected $dispatchesEvents = [
         'created' => RefreshTokenCreated::class,
-        'updating' => UpdatingRefreshTokenEvent::class
+        'updating' => UpdatingRefreshTokenEvent::class,
     ];
 
     /**
