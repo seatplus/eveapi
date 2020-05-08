@@ -26,7 +26,6 @@
 
 namespace Seatplus\Eveapi\Listeners;
 
-use Seatplus\Eveapi\Events\RefreshTokenCreated;
 use Seatplus\Eveapi\Events\UpdatingRefreshTokenEvent;
 use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
 
