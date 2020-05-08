@@ -32,15 +32,22 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Horizon\Horizon;
+use Seatplus\Eveapi\Commands\ClearCache;
 use Seatplus\Eveapi\Events\RefreshTokenCreated;
 use Seatplus\Eveapi\Events\UniverseConstellationCreated;
 use Seatplus\Eveapi\Events\UniverseSystemCreated;
+use Seatplus\Eveapi\Events\UpdatingRefreshTokenEvent;
 use Seatplus\Eveapi\Helpers\EseyeSetup;
 use Seatplus\Eveapi\Listeners\DispatchGetConstellationById;
 use Seatplus\Eveapi\Listeners\DispatchGetRegionById;
 use Seatplus\Eveapi\Listeners\DispatchGetSystemJobSubscriber;
 use Seatplus\Eveapi\Listeners\ReactOnFreshRefreshToken;
+use Seatplus\Eveapi\Listeners\UpdatingRefreshTokenListener;
+use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Schedules;
+use Seatplus\Eveapi\Observers\CharacterAffiliationObserver;
+use Seatplus\Eveapi\Observers\CharacterInfoObserver;
 
 class EveapiServiceProvider extends ServiceProvider
 {
@@ -60,7 +67,7 @@ class EveapiServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations/');
 
         // Configure the queue dashboard
-        $this->configure_horizon();
+        $this->configureHorizon();
 
         // Add Horizon Snapshot schedule
         $this->addHorizonSnapshotSchedule();
@@ -73,6 +80,9 @@ class EveapiServiceProvider extends ServiceProvider
 
         // Add event listeners
         $this->addEventListeners();
+
+        // Add commands
+        $this->addCommands();
     }
 
     public function register()
@@ -98,7 +108,7 @@ class EveapiServiceProvider extends ServiceProvider
      * This includes the access rules for the dashboard, as
      * well as the number of workers to use for the job processor.
      */
-    public function configure_horizon()
+    public function configureHorizon()
     {
         // Require the queue_manager role to view the dashboard
         Horizon::auth(function ($request) {
@@ -130,7 +140,7 @@ class EveapiServiceProvider extends ServiceProvider
             'production' => [
                 'seatplus-workers' => [
                     'connection' => 'redis',
-                    'queue' => ['high', 'medium', 'low', 'default'],
+                    'queue' => ['high', 'default'],
                     'balance' => 'auto',
                     'minProcesses' => 1,
                     'maxProcesses' => (int) env(self::QUEUE_BALANCING_WORKERS, 4),
@@ -158,6 +168,10 @@ class EveapiServiceProvider extends ServiceProvider
         $this->app->events->listen(UniverseSystemCreated::class, DispatchGetConstellationById::class);
         $this->app->events->listen(UniverseConstellationCreated::class, DispatchGetRegionById::class);
         $this->app->events->listen(RefreshTokenCreated::class, ReactOnFreshRefreshToken::class);
+        $this->app->events->listen(UpdatingRefreshTokenEvent::class, UpdatingRefreshTokenListener::class);
+
+        CharacterInfo::observe(CharacterInfoObserver::class);
+        CharacterAffiliation::observe(CharacterAffiliationObserver::class);
     }
 
     private function addSchedules()
@@ -186,5 +200,12 @@ class EveapiServiceProvider extends ServiceProvider
                 $schedule->job(new $entry->job)->cron($entry->expression);
             });
         });
+    }
+
+    private function addCommands(): void
+    {
+        $this->commands([
+            ClearCache::class,
+        ]);
     }
 }

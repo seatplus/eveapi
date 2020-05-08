@@ -29,11 +29,6 @@ class CorporationInfoActionTest extends TestCase
         // Run InfoAction
         (new CorporationInfoAction)->execute($mock_data->corporation_id);
 
-
-        $mock_data->alliance_id
-            ? Bus::assertDispatched(AllianceInfo::class)
-            : Bus::assertNotDispatched(AllianceInfo::class);
-
         //Assert that test character is now created
         $this->assertDatabaseHas('corporation_infos', [
             'name' => $mock_data->name

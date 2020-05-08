@@ -30,6 +30,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Seatplus\Eveapi\Events\RefreshTokenCreated;
+use Seatplus\Eveapi\Events\UpdatingRefreshTokenEvent;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
 class RefreshToken extends Model
@@ -69,6 +70,7 @@ class RefreshToken extends Model
 
     protected $dispatchesEvents = [
         'created' => RefreshTokenCreated::class,
+        'updating' => UpdatingRefreshTokenEvent::class,
     ];
 
     /**

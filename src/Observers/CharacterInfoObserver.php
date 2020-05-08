@@ -24,61 +24,43 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Models\Character;
+namespace Seatplus\Eveapi\Observers;
 
-use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
-use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
+use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
-class CharacterAffiliation extends Model
+class CharacterInfoObserver
 {
     /**
-     * @var bool
-     */
-    protected static $unguarded = true;
-
-    /**
-     * @var string
-     */
-    protected $primaryKey = 'character_id';
-
-    public $incrementing = false;
-
-    /**
-     * The table associated with the model.
+     * Handle the User "created" event.
      *
-     * @var string
-     */
-    protected $table = 'character_affiliations';
-
-    /**
-     * The attributes that should be cast to native types.
+     * @param \Seatplus\Eveapi\Models\Character\CharacterInfo $character_info
      *
-     * @var array
+     * @return void
+     * @throws \Seatplus\Eveapi\Exceptions\InvalidContainerDataException
      */
-    protected $casts = [
-        'character_id' => 'integer',
-        'corporation_id' => 'integer',
-        'alliance_id' => 'integer',
-        'faction_id' => 'integer',
-        'last_pulled' => 'datetime',
-    ];
-
-    public function alliance()
+    public function created(CharacterInfo $character_info)
     {
 
-        return $this->belongsTo(AllianceInfo::class, 'alliance_id', 'alliance_id');
+        $job = new JobContainer(['character_id' => $character_info->character_id]);
+
+        CharacterAffiliationJob::dispatch($job)->onQueue('high');
     }
 
-    public function corporation()
+    /**
+     * Handle the User "updating" event.
+     *
+     * @param \Seatplus\Eveapi\Models\Character\CharacterInfo $character_info
+     *
+     * @return void
+     * @throws \Seatplus\Eveapi\Exceptions\InvalidContainerDataException
+     */
+    public function updating(CharacterInfo $character_info)
     {
 
-        return $this->belongsTo(CorporationInfo::class, 'corporation_id', 'corporation_id');
-    }
+        $job = new JobContainer(['character_id' => $character_info->character_id]);
 
-    public function character()
-    {
-
-        return $this->hasOne(CharacterInfo::class, 'character_id', 'character_id');
+        CharacterAffiliationJob::dispatch($job)->onQueue('high');
     }
 }

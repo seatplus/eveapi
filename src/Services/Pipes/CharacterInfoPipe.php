@@ -26,16 +26,18 @@
 
 namespace Seatplus\Eveapi\Services\Pipes;
 
+use Closure;
+use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfo as CharacterInfoJob;
 
-class CharacterInfo extends Pipe
+class CharacterInfoPipe implements Pipe
 {
-    public function handle($job_container)
+    public function handle(JobContainer $job_container, Closure $next)
     {
 
-        CharacterInfoJob::dispatch($job_container)->onQueue('default');
+        CharacterInfoJob::dispatch($job_container)->onQueue($job_container->queue);
 
-        $this->next($job_container);
+        return $next($job_container);
 
     }
 }

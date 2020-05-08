@@ -31,6 +31,7 @@ use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
+use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
 
 class CorporationInfoJob extends EsiBase
 {
@@ -48,6 +49,7 @@ class CorporationInfoJob extends EsiBase
     public function middleware(): array
     {
         return [
+            new RedisFunnelMiddleware,
             new EsiRateLimitedMiddleware,
             new EsiAvailabilityMiddleware,
         ];
@@ -57,12 +59,12 @@ class CorporationInfoJob extends EsiBase
      * Execute the job.
      *
      * @return void
-     * @throws \Exception
+     * @throws \Exceptionf
      */
     public function handle(): void
     {
 
-        $this->getActionClass()->execute($this->corporation_id);
+        $this->getActionClass()->execute($this->getCorporationId());
 
     }
 

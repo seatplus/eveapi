@@ -24,8 +24,8 @@
  * SOFTWARE.
  */
 
-use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacters;
+use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
 
 return [
-    UpdateCharacters::class,
+    UpdateCharacter::class,
 ];

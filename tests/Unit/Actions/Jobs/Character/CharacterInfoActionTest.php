@@ -32,10 +32,6 @@ class CharacterInfoActionTest extends TestCase
         (new CharacterInfoAction)->execute($mock_data['character_id']);
 
 
-        $mock_data['alliance_id']
-            ? Bus::assertDispatched(AllianceInfo::class)
-            : Bus::assertNotDispatched(AllianceInfo::class);
-
         //Assert that test character is now created
         $this->assertDatabaseHas('character_infos', [
             'name' => $mock_data['name']

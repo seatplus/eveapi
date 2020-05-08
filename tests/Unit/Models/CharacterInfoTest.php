@@ -5,6 +5,8 @@ namespace Seatplus\Eveapi\Tests\Unit\Models;
 
 
 use Faker\Factory;
+use Illuminate\Support\Facades\Queue;
+use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Applications;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
@@ -57,6 +59,16 @@ class CharacterInfoTest extends TestCase
         $character = $application->character;
 
         $this->assertInstanceOf(Applications::class, $character->application);
+    }
+
+    /** @test */
+    public function upon_creation_dispatch_affiliation_job()
+    {
+        Queue::fake();
+
+        $character = factory(CharacterInfo::class)->create();
+
+        Queue::assertPushedOn('high', CharacterAffiliationJob::class);
     }
 
 }

@@ -36,6 +36,7 @@ class JobContainer
         'character_id' => null,
         'corporation_id' => null,
         'alliance_id' => null,
+        'queue' => 'default',
     ];
 
     public function __construct(array $data = null)

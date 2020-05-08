@@ -70,6 +70,7 @@ class CharacterAffiliationAction extends RetrieveFromEsiBase implements HasReque
 
             });
         })->pipe(function (Collection $collection) {
+            //Check all other character affiliations present in DB that are younger then 60 minutes
             $character_affiliations = CharacterAffiliation::cursor()->filter(function ($character_affiliation) {
                 return $character_affiliation->last_pulled->diffInMinutes(now()) > 60;
             });
