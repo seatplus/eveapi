@@ -24,61 +24,51 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Models\Character;
+namespace Seatplus\Eveapi\Jobs\Character;
 
-use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
-use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
+use Seatplus\Eveapi\Actions\Jobs\Character\CharacterAffiliationAction;
+use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
+use Seatplus\Eveapi\Jobs\EsiBase;
+use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
+use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
+use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
 
-class CharacterAffiliation extends Model
+class CharacterAffiliationJob extends EsiBase
 {
-    /**
-     * @var bool
-     */
-    protected static $unguarded = true;
 
     /**
-     * @var string
-     */
-    protected $primaryKey = 'character_id';
-
-    public $incrementing = false;
-
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'character_affiliations';
-
-    /**
-     * The attributes that should be cast to native types.
-     *
      * @var array
      */
-    protected $casts = [
-        'character_id' => 'integer',
-        'corporation_id' => 'integer',
-        'alliance_id' => 'integer',
-        'faction_id' => 'integer',
-        'last_pulled' => 'datetime',
-    ];
+    protected $tags = ['character', 'affiliation'];
 
-    public function alliance()
+    /**
+     * Get the middleware the job should pass through.
+     *
+     * @return array
+     */
+    public function middleware(): array
     {
-
-        return $this->belongsTo(AllianceInfo::class, 'alliance_id', 'alliance_id');
+        return [
+            new RedisFunnelMiddleware,
+            new EsiRateLimitedMiddleware,
+            new EsiAvailabilityMiddleware,
+        ];
     }
 
-    public function corporation()
+    /**
+     * Execute the job.
+     *
+     * @return void
+     * @throws \Exception
+     */
+    public function handle(): void
     {
 
-        return $this->belongsTo(CorporationInfo::class, 'corporation_id', 'corporation_id');
+        $this->getActionClass()->execute($this->character_id);
     }
 
-    public function character()
+    public function getActionClass(): RetrieveFromEsiInterface
     {
-
-        return $this->hasOne(CharacterInfo::class, 'character_id', 'character_id');
+        return new CharacterAffiliationAction();
     }
 }

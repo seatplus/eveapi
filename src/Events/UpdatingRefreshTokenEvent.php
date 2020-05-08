@@ -24,18 +24,20 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Listeners;
+namespace Seatplus\Eveapi\Events;
 
-use Seatplus\Eveapi\Events\RefreshTokenCreated;
-use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
+use Illuminate\Queue\SerializesModels;
+use Seatplus\Eveapi\Models\RefreshToken;
 
-class ReactOnFreshRefreshToken
+class UpdatingRefreshTokenEvent
 {
-    public function handle(RefreshTokenCreated $refresh_token_event)
+    use SerializesModels;
+
+    public RefreshToken $refresh_token;
+
+    public function __construct(RefreshToken $refresh_token)
     {
 
-        $refresh_token = $refresh_token_event->refresh_token;
-
-        UpdateCharacter::dispatch($refresh_token)->onQueue('high');
+        $this->refresh_token = $refresh_token;
     }
 }

@@ -39,6 +39,8 @@ class CharacterInfo extends Model
      */
     protected static $unguarded = true;
 
+    public $incrementing = false;
+
     /**
      * @var string
      */
@@ -106,12 +108,12 @@ class CharacterInfo extends Model
     public function getCorporationIdAttribute()
     {
 
-        return $this->character_affiliation->corporation_id;
+        return optional($this->character_affiliation)->corporation_id;
     }
 
     public function getAllianceIdAttribute()
     {
 
-        return $this->character_affiliation->alliance_id;
+        return optional($this->character_affiliation)->alliance_id;
     }
 }

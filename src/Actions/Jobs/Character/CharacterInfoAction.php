@@ -28,8 +28,6 @@ namespace Seatplus\Eveapi\Actions\Jobs\Character;
 
 use Seatplus\Eveapi\Actions\HasPathValuesInterface;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
-use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Jobs\Alliances\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
 class CharacterInfoAction extends RetrieveFromEsiBase implements HasPathValuesInterface
@@ -82,17 +80,6 @@ class CharacterInfoAction extends RetrieveFromEsiBase implements HasPathValuesIn
             'faction_id'      => $response->optional('faction_id'),
             'title' => $response->optional('title'),
         ]);
-
-        //TODO Dispatch or react on this update/create to dispatch corporationInfo Job
-
-        if (! empty($response->optional('alliance_id')))
-        {
-            $job_container = new JobContainer([
-                'alliance_id' => $response->alliance_id,
-            ]);
-
-            AllianceInfo::dispatch($job_container)->onQueue('low');
-        }
 
     }
 

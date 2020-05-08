@@ -32,6 +32,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 abstract class EsiBase implements ShouldQueue, BaseJobInterface
@@ -59,6 +60,15 @@ abstract class EsiBase implements ShouldQueue, BaseJobInterface
      * @var int
      */
     public $corporation_id;
+
+    /**
+     * @return int
+     */
+    public function getCorporationId(): int
+    {
+
+        return $this->corporation_id ?? optional(CharacterAffiliation::find($this->character_id))->corporation_id;
+    }
 
     /**
      * @var int
