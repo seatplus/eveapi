@@ -17,7 +17,7 @@ class ClearCache extends Command
      *
      * @var string
      */
-    protected $signature = 'seatplus:cache:clear';
+    protected $signature = 'seatplus:cache:clear {--force}';
 
     /**
      * The console command description.
@@ -31,23 +31,31 @@ class ClearCache extends Command
         $this->line('SeAT plus Cache Clearing Tool');
         $this->line('');
 
-        if (! $this->confirm('Are you sure you want to clear ALL caches (file/redis)?', true)) {
+        if(!$this->option('force'))
+            if (! $this->confirm('Are you sure you want to clear ALL caches (file/redis)?', true)) {
 
-            $this->warn('Exiting without clearing cache');
+                $this->warn('Exiting without clearing cache');
 
-            return;
-        }
+                return;
+            }
 
         $this->flushRedis();
+
         $this->removeFileCache();
+
         $this->clearArtisanCache();
 
+        $this->info('success');
     }
 
     private function flushRedis()
     {
+        $this->info('Clearing the Redis Cache');
+
         try {
             RedisHelper::flushall();
+
+
         } catch (Exception $exception) {
             $this->error('Failed to clear the Redis Cache. Error: ' . $exception->getMessage());
         }
@@ -55,22 +63,24 @@ class ClearCache extends Command
 
     private function removeFileCache()
     {
+
         // Eseye Cache Clearing
         $eseye_cache = config('eveapi.config.eseye_cache');
 
-
-        if (File::isWritable($eseye_cache)) {
-            $this->info('Clearing the Eseye Cache at: ' . $eseye_cache);
-
-            if (! File::deleteDirectory($eseye_cache, true))
-                $this->error('Failed to clear the Eseye Cache directory. Check permissions.');
-        } else {
-            $this->warn('Eseye Cache directory at ' . $eseye_cache . ' is not writable');
+        if(!File::isWritable($eseye_cache)) {
+            $this->error('Eseye Cache directory at ' . $eseye_cache . ' is not writable');
+            return;
         }
+
+        $this->info('Clearing the Eseye Cache at: ' . $eseye_cache);
+
+        if (! File::deleteDirectory($eseye_cache, true))
+            $this->error('Failed to clear the Eseye Cache directory. Check permissions.');
     }
 
     private function clearArtisanCache()
     {
+        $this->info('Clearing the Artisan Cache');
         Artisan::call('cache:clear');
     }
 

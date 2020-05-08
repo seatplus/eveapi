@@ -24,10 +24,10 @@ class CharacterAffiliationObserver
         $this->handle($character_affiliation);
     }
 
-    public function updated(CharacterAffiliation $character_affiliation)
+    public function updating(CharacterAffiliation $character_affiliation)
     {
-
-        $this->handle($character_affiliation);
+        if($character_affiliation->isDirty(['corporation_id', 'alliance_id']))
+            $this->handle($character_affiliation);
     }
 
     private function handle(CharacterAffiliation $character_affiliation)
@@ -44,10 +44,10 @@ class CharacterAffiliationObserver
             return;
 
         if(!$character_affiliation->corporation)
-            CorporationInfoJob::dispatchNow($job);
+            CorporationInfoJob::dispatch($job)->onQueue('high');
 
         if(!$character_affiliation->alliance)
-            AllianceInfo::dispatchNow($job);
+            AllianceInfo::dispatch($job)->onQueue('high');
 
     }
 
