@@ -26,13 +26,8 @@
 
 namespace Seatplus\Eveapi\Listeners;
 
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Events\RefreshTokenCreated;
-use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
-use Seatplus\Eveapi\Jobs\Character\CharacterInfo;
-use Seatplus\Eveapi\Jobs\Corporation\CorporationInfoJob;
 use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
-use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacters;
 
 class ReactOnFreshRefreshToken
 {

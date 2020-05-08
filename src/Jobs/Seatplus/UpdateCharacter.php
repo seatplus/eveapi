@@ -43,7 +43,7 @@ class UpdateCharacter implements ShouldQueue
 
     private array $pipes = [
         CharacterInfoPipe::class,
-        CharacterAssetsPipe::class
+        CharacterAssetsPipe::class,
     ];
 
     /**
@@ -78,7 +78,7 @@ class UpdateCharacter implements ShouldQueue
             ->send($job_container)
             ->through($this->pipes)
             ->then(
-                fn($jobcontainer) => logger()->info(sprintf('RefreshToken of %s updated!',
+                fn ($jobcontainer) => logger()->info(sprintf('RefreshToken of %s updated!',
                         optional($refresh_token->refresh()->character)->name ?? $refresh_token->character_id
                     )
                 )
