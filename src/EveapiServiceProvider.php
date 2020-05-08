@@ -67,7 +67,7 @@ class EveapiServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations/');
 
         // Configure the queue dashboard
-        $this->configure_horizon();
+        $this->configureHorizon();
 
         // Add Horizon Snapshot schedule
         $this->addHorizonSnapshotSchedule();
@@ -108,7 +108,7 @@ class EveapiServiceProvider extends ServiceProvider
      * This includes the access rules for the dashboard, as
      * well as the number of workers to use for the job processor.
      */
-    public function configure_horizon()
+    public function configureHorizon()
     {
         // Require the queue_manager role to view the dashboard
         Horizon::auth(function ($request) {
