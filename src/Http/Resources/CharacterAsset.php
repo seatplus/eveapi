@@ -43,14 +43,15 @@ class CharacterAsset extends JsonResource
         return [
             'item_id' => $this->item_id,
             'quantity' => $this->quantity,
-            'type' => TypeResource::make($this->type),
+            'type_id' => $this->type_id,
+            'type' => TypeResource::make($this->whenLoaded('type')),
             'name' => $this->name,
             'location_id' => $this->location_id,
             'location' => $this->whenLoaded('location'),
             'location_flag' => $this->location_flag,
             'is_singleton' => $this->is_singleton,
             'is_blueprint_copy' => $this->is_blueprint_copy,
-            'content' => $this::collection($this->content),
+            'content' => $this::collection($this->whenLoaded('content')),
             'owner' => $this->whenLoaded('owner'),
         ];
     }
