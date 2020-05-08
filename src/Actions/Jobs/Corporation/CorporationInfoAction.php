@@ -84,14 +84,6 @@ class CorporationInfoAction extends RetrieveFromEsiBase implements HasPathValues
             'war_eligible'    => $response->optional('war_eligible'),
         ])->save();
 
-        if (! empty($response->optional('alliance_id'))) {
-            $job_container = new JobContainer([
-                'alliance_id' => $response->alliance_id,
-            ]);
-
-            AllianceInfo::dispatch($job_container)->onQueue('low');
-        }
-
     }
 
     public function getMethod(): string
