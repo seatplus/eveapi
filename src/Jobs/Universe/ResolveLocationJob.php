@@ -37,6 +37,7 @@ use Seatplus\Eveapi\Actions\Location\StructureChecker;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
+use Seatplus\Eveapi\Jobs\Middleware\RateLimitedJobMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Location;
@@ -60,7 +61,7 @@ class ResolveLocationJob implements ShouldQueue
     /**
      * @var \Seatplus\Eveapi\Actions\Location\AssetSafetyChecker
      */
-    private $assert_safety_checker;
+    private $asset_safety_checker;
 
     /**
      * @var \Seatplus\Eveapi\Actions\Location\StationChecker
@@ -79,11 +80,18 @@ class ResolveLocationJob implements ShouldQueue
 
     public function middleware(): array
     {
+
+        $rate_limited_middleare = (new RateLimitedJobMiddleware)
+            ->setKey((string) $this->location_id)
+            ->setViaCharacterId($this->refresh_token->character_id)
+            ->setDuration(7200);
+
         return [
             new RedisFunnelMiddleware,
             new HasRefreshTokenMiddleware,
             new EsiRateLimitedMiddleware,
             new EsiAvailabilityMiddleware,
+            $rate_limited_middleare,
         ];
     }
 
@@ -93,11 +101,11 @@ class ResolveLocationJob implements ShouldQueue
         $this->location_id = $location_id;
         $this->refresh_token = $refresh_token;
 
-        $this->assert_safety_checker = new AssetSafetyChecker;
+        $this->asset_safety_checker = new AssetSafetyChecker;
         $this->station_checker = new StationChecker;
         $this->structure_checker = new StructureChecker($this->refresh_token);
 
-        $this->assert_safety_checker->succeedWith($this->station_checker);
+        $this->asset_safety_checker->succeedWith($this->station_checker);
         $this->station_checker->succeedWith($this->structure_checker);
 
     }
@@ -114,6 +122,6 @@ class ResolveLocationJob implements ShouldQueue
     {
         $location = Location::firstOrNew(['location_id' => $this->location_id]);
 
-        $this->assert_safety_checker->check($location);
+        $this->asset_safety_checker->check($location);
     }
 }
