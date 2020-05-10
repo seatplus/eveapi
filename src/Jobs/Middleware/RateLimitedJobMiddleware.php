@@ -26,32 +26,77 @@
 
 namespace Seatplus\Eveapi\Jobs\Middleware;
 
+use Closure;
 use Illuminate\Support\Facades\Redis;
 
-class RedisFunnelMiddleware
+class RateLimitedJobMiddleware
 {
+    private string $key;
+
+    private int $duration;
+
+    private int $viaCharacterId;
+
     /**
      * Process the queued job.
      *
      * @param mixed    $job
-     * @param callable $next
+     * @param \Closure $next
      *
      * @return mixed
      * @throws \Illuminate\Contracts\Redis\LimiterTimeoutException
      */
-    public function handle($job, $next)
+    public function handle($job, Closure $next)
+    {
+        $redisKey = sprintf('%s:%s', $this->key, $this->viaCharacterId);
+
+        Redis::throttle($redisKey)
+            ->block(0)->allow(1)->every($this->duration)
+            ->then(function () use ($job, $next) {
+
+                return $next($job);
+                }, function () use ($job) {
+
+                $job->delete();
+            });
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return RateLimitedJobMiddleware
+     */
+    public function setKey(string $key): RateLimitedJobMiddleware
     {
 
-        $key = sprintf('%s:%s:%s', (string) get_class($job), implode($job->tags()), $job->queue);
+        $this->key = $key;
 
-        Redis::funnel($key)->limit(1)->then(function () use ($job, $next) {
+        return $this;
+    }
 
-            return $next($job);
+    /**
+     * @param int $duration
+     *
+     * @return RateLimitedJobMiddleware
+     */
+    public function setDuration(int $duration): RateLimitedJobMiddleware
+    {
 
-        }, function () use ($job) {
+        $this->duration = $duration;
 
-            $job->delete();
-        });
+        return $this;
+    }
 
+    /**
+     * @param int $viaCharacterId
+     *
+     * @return RateLimitedJobMiddleware
+     */
+    public function setViaCharacterId(int $viaCharacterId): RateLimitedJobMiddleware
+    {
+
+        $this->viaCharacterId = $viaCharacterId;
+
+        return $this;
     }
 }
