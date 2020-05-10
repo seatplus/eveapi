@@ -33,9 +33,11 @@ class RedisFunnelMiddleware
     /**
      * Process the queued job.
      *
-     * @param  mixed  $job
-     * @param  callable  $next
+     * @param mixed    $job
+     * @param callable $next
+     *
      * @return mixed
+     * @throws \Illuminate\Contracts\Redis\LimiterTimeoutException
      */
     public function handle($job, $next)
     {
@@ -46,9 +48,10 @@ class RedisFunnelMiddleware
 
             return $next($job);
 
-        });
+        }, function () use ($job) {
 
-        return $job->delete();
+            $job->delete();
+        });
 
     }
 }

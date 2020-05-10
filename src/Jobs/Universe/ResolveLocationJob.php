@@ -83,6 +83,7 @@ class ResolveLocationJob implements ShouldQueue
 
         $rate_limited_middleare = (new RateLimitedJobMiddleware)
             ->setKey((string) $this->location_id)
+            ->setViaCharacterId($this->refresh_token->character_id)
             ->setDuration(7200);
 
         return [

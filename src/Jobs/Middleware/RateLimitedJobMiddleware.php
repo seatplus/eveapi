@@ -14,6 +14,8 @@ class RateLimitedJobMiddleware
 
     private int $duration;
 
+    private int $viaCharacterId;
+
     /**
      * Process the queued job.
      *
@@ -23,9 +25,9 @@ class RateLimitedJobMiddleware
      * @return mixed
      * @throws \Illuminate\Contracts\Redis\LimiterTimeoutException
      */
-    public function handle(EsiBase $job, Closure $next)
+    public function handle($job, Closure $next)
     {
-        $redisKey = sprintf('%s:%s', $this->key, $job->character_id);
+        $redisKey = sprintf('%s:%s', $this->key, $this->viaCharacterId);
 
         Redis::throttle($redisKey)
             ->block(0)->allow(1)->every($this->duration)
@@ -60,6 +62,19 @@ class RateLimitedJobMiddleware
     {
 
         $this->duration = $duration;
+
+        return $this;
+    }
+
+    /**
+     * @param int $viaCharacterId
+     *
+     * @return RateLimitedJobMiddleware
+     */
+    public function setViaCharacterId(int $viaCharacterId): RateLimitedJobMiddleware
+    {
+
+        $this->viaCharacterId = $viaCharacterId;
 
         return $this;
     }
