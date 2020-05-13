@@ -81,7 +81,7 @@ class ResolveLocationJob implements ShouldQueue
     public function middleware(): array
     {
 
-        $rate_limited_middleare = (new RateLimitedJobMiddleware)
+        $rate_limited_job_middleware = (new RateLimitedJobMiddleware)
             ->setKey((string) $this->location_id)
             ->setViaCharacterId($this->refresh_token->character_id)
             ->setDuration(7200);
@@ -91,7 +91,7 @@ class ResolveLocationJob implements ShouldQueue
             new HasRefreshTokenMiddleware,
             new EsiRateLimitedMiddleware,
             new EsiAvailabilityMiddleware,
-            $rate_limited_middleare
+            $rate_limited_job_middleware
         ];
     }
 
