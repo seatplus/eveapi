@@ -91,7 +91,7 @@ class ResolveLocationJob implements ShouldQueue
             new HasRefreshTokenMiddleware,
             new EsiRateLimitedMiddleware,
             new EsiAvailabilityMiddleware,
-            $rate_limited_job_middleware
+            $rate_limited_job_middleware,
         ];
     }
 
