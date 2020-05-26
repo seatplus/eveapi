@@ -33,6 +33,7 @@ use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
+use Seatplus\Eveapi\Jobs\Middleware\RateLimitedJobMiddleware;
 
 class CharacterAssetJob extends EsiBase
 {
@@ -43,11 +44,18 @@ class CharacterAssetJob extends EsiBase
      */
     public function middleware(): array
     {
+
+        $rate_limited_middleare = (new RateLimitedJobMiddleware)
+            ->setKey(self::class)
+            ->setViaCharacterId($this->refresh_token->character_id)
+            ->setDuration(3600);
+
         return [
             new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
             new EsiRateLimitedMiddleware,
             new EsiAvailabilityMiddleware,
+            $rate_limited_middleare,
         ];
     }
 
