@@ -27,5 +27,5 @@
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
 
 return [
-    'character.assets' => CharacterAssetJob::class
+    'character.assets' => CharacterAssetJob::class,
 ];
