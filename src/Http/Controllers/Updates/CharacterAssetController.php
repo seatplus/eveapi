@@ -30,8 +30,6 @@ use Illuminate\Http\Request;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Http\Controllers\Controller;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsLocationJob;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 class CharacterAssetController extends Controller

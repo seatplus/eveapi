@@ -26,11 +26,7 @@
 
 namespace Seatplus\Eveapi\Observers;
 
-use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Jobs\Alliances\AllianceInfo;
-use Seatplus\Eveapi\Jobs\Corporation\CorporationInfoJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseGroupsByGroupIdJob;
-use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Universe\Type;
 
 class TypeObserver
