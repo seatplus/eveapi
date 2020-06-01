@@ -43,11 +43,17 @@ use Seatplus\Eveapi\Listeners\DispatchGetRegionById;
 use Seatplus\Eveapi\Listeners\DispatchGetSystemJobSubscriber;
 use Seatplus\Eveapi\Listeners\ReactOnFreshRefreshToken;
 use Seatplus\Eveapi\Listeners\UpdatingRefreshTokenListener;
+use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Schedules;
+use Seatplus\Eveapi\Models\Universe\Group;
+use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Observers\CharacterAffiliationObserver;
+use Seatplus\Eveapi\Observers\CharacterAssetObserver;
 use Seatplus\Eveapi\Observers\CharacterInfoObserver;
+use Seatplus\Eveapi\Observers\GroupObserver;
+use Seatplus\Eveapi\Observers\TypeObserver;
 
 class EveapiServiceProvider extends ServiceProvider
 {
@@ -176,6 +182,9 @@ class EveapiServiceProvider extends ServiceProvider
 
         CharacterInfo::observe(CharacterInfoObserver::class);
         CharacterAffiliation::observe(CharacterAffiliationObserver::class);
+        CharacterAsset::observe(CharacterAssetObserver::class);
+        Type::observe(TypeObserver::class);
+        Group::observe(GroupObserver::class);
     }
 
     private function addSchedules()

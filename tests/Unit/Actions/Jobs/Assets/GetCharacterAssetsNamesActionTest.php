@@ -4,6 +4,7 @@
 namespace Seatplus\Eveapi\Tests\Unit\Actions\Jobs\Assets;
 
 
+use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Actions\Jobs\Assets\GetCharacterAssetsNamesAction;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Models\RefreshToken;
@@ -44,10 +45,10 @@ class GetCharacterAssetsNamesActionTest extends TestCase
     {
         $type = factory(Type::class)->create();
 
-        $group = factory(Group::class)->create([
+        $group = Event::fakeFor(fn () => factory(Group::class)->create([
             'group_id' => $type->group_id,
             'category_id' => 22
-        ]);
+        ]));
 
         $category = factory(Category::class)->create([
             'category_id' => $group->category_id
@@ -93,10 +94,10 @@ class GetCharacterAssetsNamesActionTest extends TestCase
     {
         $type = factory(Type::class)->create();
 
-        $group = factory(Group::class)->create([
+        $group = Event::fakeFor(fn () => factory(Group::class)->create([
             'group_id' => $type->group_id,
             'category_id' => 11
-        ]);
+        ]));
 
         factory(Category::class)->create([
             'category_id' => $group->category_id
@@ -142,10 +143,10 @@ class GetCharacterAssetsNamesActionTest extends TestCase
     {
         $type = factory(Type::class)->create();
 
-        $group = factory(Group::class)->create([
+        $group = Event::fakeFor(fn () => factory(Group::class)->create([
             'group_id' => $type->group_id,
             'category_id' => 22
-        ]);
+        ]));
 
         $asset = factory(CharacterAsset::class)->create([
             'type_id' => $type->type_id,

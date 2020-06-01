@@ -24,32 +24,33 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Http\Controllers\Updates;
+namespace Seatplus\Eveapi\Observers;
 
-use Illuminate\Http\Request;
 use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Http\Controllers\Controller;
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsLocationJob;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
-use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Jobs\Alliances\AllianceInfo;
+use Seatplus\Eveapi\Jobs\Corporation\CorporationInfoJob;
+use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseCategoriesByCategoryIdJob;
+use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseGroupsByGroupIdJob;
+use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
+use Seatplus\Eveapi\Models\Universe\Group;
+use Seatplus\Eveapi\Models\Universe\Type;
 
-class CharacterAssetController extends Controller
+class GroupObserver
 {
-    public function update(Request $request)
+    /**
+     * Handle the User "created" event.
+     *
+     * @param \Seatplus\Eveapi\Models\Universe\Group $group
+     *
+     * @return void
+     */
+    public function created(Group $group)
     {
 
-        $validatedData = $request->validate([
-            'character_id' => 'required',
-        ]);
+        if($group->category)
+            return;
 
-        $job_container = new JobContainer([
-            'refresh_token' => RefreshToken::find((int) $validatedData['character_id']),
-        ]);
-
-        CharacterAssetJob::dispatch($job_container)->onQueue('default');
-
-        return response('successfully queued', 200);
+        ResolveUniverseCategoriesByCategoryIdJob::dispatch($group->category_id)->onQueue('high');
 
     }
 }

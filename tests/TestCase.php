@@ -5,6 +5,7 @@ namespace Seatplus\Eveapi\Tests;
 
 use Clockwork\Support\Laravel\ClockworkServiceProvider;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Queue;
 use Laravel\Horizon\HorizonServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use Seatplus\Eveapi\EveapiServiceProvider;
@@ -20,6 +21,9 @@ abstract class TestCase extends OrchestraTestCase
     {
 
         parent::setUp();
+
+        // Fake Queue by default so nothing gets queued during tests
+        Queue::fake();
 
         // setup database
         $this->setupDatabase($this->app);

@@ -6,6 +6,7 @@ namespace Seatplus\Eveapi\Tests\Unit\Actions\Jobs\Universe;
 
 
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Actions\Jobs\Universe\ResolveUniverseGroupsByGroupIdAction;
 use Seatplus\Eveapi\Actions\Jobs\Universe\ResolveUniverseTypesByTypeIdAction;
 use Seatplus\Eveapi\Models\Universe\Group;
@@ -37,7 +38,8 @@ class GroupsTest extends TestCase
     {
         $mock_data = $this->buildMockEsiData();
 
-        $result = $this->action->execute($mock_data->group_id);
+        //$result = $this->action->execute($mock_data->group_id);
+        $result = $this->execute($mock_data->group_id);
 
         $this->assertDatabaseHas('universe_groups', [
             'name' => $mock_data->name
@@ -57,7 +59,7 @@ class GroupsTest extends TestCase
 
         Cache::put('group_ids_to_resolve', collect($mock_data)->pluck('group_id')->all());
 
-        $result = $this->action->execute();
+        $result = $this->execute();
 
         $this->assertDatabaseHas('universe_groups', [
             'name' => $mock_data->name,
@@ -71,11 +73,17 @@ class GroupsTest extends TestCase
 
     private function buildMockEsiData()
     {
-        $mock_data = factory(Group::class)->make();
+        $mock_data = Event::fakeFor(fn () => factory(Group::class)->make());//factory(Group::class)->make();
 
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
 
         return $mock_data;
+    }
+
+    private function execute(int $id = null)
+    {
+
+        return Event::fakeFor(fn () => $this->action->execute($id));
     }
 
 
