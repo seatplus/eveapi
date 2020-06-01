@@ -29,14 +29,19 @@ namespace Seatplus\Eveapi\Jobs\Seatplus;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Pipeline\Pipeline;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Seatplus\Eveapi\Actions\Jobs\Universe\ResolveUniverseGroupsByGroupIdAction;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
+use Seatplus\Eveapi\Services\Maintenance\GetMissingCategorysPipe;
+use Seatplus\Eveapi\Services\Maintenance\GetMissingGroupsPipe;
+use Seatplus\Eveapi\Services\Maintenance\GetMissingLocationFromAssetsPipe;
+use Seatplus\Eveapi\Services\Maintenance\GetMissingTypesFromCharacterAssetsPipe;
+use Seatplus\Eveapi\Services\Maintenance\GetMissingTypesFromLocationsPipe;
 
-class ResolveUniverseGroupsByGroupIdJob implements ShouldQueue
+class MaintenanceJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -46,6 +51,14 @@ class ResolveUniverseGroupsByGroupIdJob implements ShouldQueue
      * @var int
      */
     public $tries = 1;
+
+    private array $pipes = [
+        GetMissingTypesFromCharacterAssetsPipe::class,
+        GetMissingTypesFromLocationsPipe::class,
+        GetMissingGroupsPipe::class,
+        GetMissingCategorysPipe::class,
+        GetMissingLocationFromAssetsPipe::class,
+    ];
 
     /**
      * Get the middleware the job should pass through.
@@ -65,8 +78,7 @@ class ResolveUniverseGroupsByGroupIdJob implements ShouldQueue
     {
 
         return [
-            'type',
-            'informations',
+            'Maintenance',
         ];
     }
 
@@ -75,9 +87,13 @@ class ResolveUniverseGroupsByGroupIdJob implements ShouldQueue
      *
      * @return void
      */
-    public function handle(?int $group_id = null)
+    public function handle()
     {
 
-        (new ResolveUniverseGroupsByGroupIdAction)->execute($group_id);
+        app(Pipeline::class)
+            ->send(null)
+            ->through($this->pipes)
+            ->then(fn () => logger()->info('Maintenance job finished'));
+
     }
 }

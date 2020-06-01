@@ -24,19 +24,36 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Actions\Seatplus;
+namespace Seatplus\Eveapi\Services\Maintenance;
 
-use Illuminate\Support\Collection;
-use Seatplus\Eveapi\Models\Universe\Group;
+use Closure;
+use Illuminate\Database\Eloquent\Builder;
+use Seatplus\Eveapi\Actions\Seatplus\CreateOrUpdateMissingIdsCache;
+use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
+use Seatplus\Eveapi\Models\Universe\Location;
+use Seatplus\Eveapi\Models\Universe\Station;
+use Seatplus\Eveapi\Models\Universe\Structure;
 
-class CacheMissingCategoryIdsAction
+class GetMissingTypesFromLocationsPipe
 {
-    public function execute(): Collection
+    public function handle($payload, Closure $next)
     {
-        $unknown_type_ids = Group::whereDoesntHave('category')->pluck('category_id')->unique()->values();
 
-        (new CreateOrUpdateMissingIdsCache('category_ids_to_resolve', $unknown_type_ids))->handle();
+        $type_ids = Location::whereHasMorph(
+            'locatable',
+            [Station::class, Structure::class],
+            function (Builder $query) {
+                $query->whereDoesntHave('type')->addSelect('type_id');
+            }
+        )->with('locatable')->get()->map(function ($location) {
+            return $location->locatable->type_id;
+        })->unique()->values();
 
-        return $unknown_type_ids;
+        if($type_ids->isNotEmpty())
+            (new CreateOrUpdateMissingIdsCache('type_ids_to_resolve', $type_ids))->handle();
+
+        ResolveUniverseTypesByTypeIdJob::dispatch()->onQueue('high');
+
+        return $next($payload);
     }
 }
