@@ -76,10 +76,10 @@ class ResolveUniverseGroupsByGroupIdJob implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(?int $group_id = null)
     {
 
-        (new ResolveUniverseGroupsByGroupIdAction)->execute();
+        (new ResolveUniverseGroupsByGroupIdAction)->execute($group_id);
 
         (new CacheMissingCategoryIdsAction)->execute();
 

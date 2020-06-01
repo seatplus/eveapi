@@ -75,13 +75,15 @@ class ResolveUniverseTypesByTypeIdJob implements ShouldQueue
     /**
      * Execute the job.
      *
+     * @param int|null $type_id
+     *
      * @return void
      */
-    public function handle()
+    public function handle(?int $type_id = null)
     {
         (new CacheMissingTypeIdsAction)->execute();
 
-        (new ResolveUniverseTypesByTypeIdAction())->execute();
+        (new ResolveUniverseTypesByTypeIdAction())->execute($type_id);
 
         (new CacheMissingGroupIdsAction)->execute();
 

@@ -24,35 +24,27 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Jobs\Middleware;
+namespace Seatplus\Eveapi\Observers;
 
-use Exception;
-use Seatplus\Eveapi\Actions\Esi\GetEsiStatusAction;
+use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseCategoriesByCategoryIdJob;
+use Seatplus\Eveapi\Models\Universe\Group;
 
-class EsiAvailabilityMiddleware
+class GroupObserver
 {
-    public $status;
-
-    public function __construct()
-    {
-        $this->status = (new GetEsiStatusAction)->execute();
-    }
-
     /**
-     * Process the queued job.
+     * Handle the User "created" event.
      *
-     * @param  mixed  $job
-     * @param  callable  $next
-     * @return mixed
+     * @param \Seatplus\Eveapi\Models\Universe\Group $group
+     *
+     * @return void
      */
-    public function handle($job, $next)
+    public function created(Group $group)
     {
 
-        return $this->status === 'ok'
-            ? $next($job)
-            : $job->fail(new Exception($this->status === 'rate limited' ? 'Esi rate limited' : 'Esi appears to be down'));
+        if($group->category)
+            return;
 
-        //TODO: introduce release for 15min in case of DT
+        ResolveUniverseCategoriesByCategoryIdJob::dispatch($group->category_id)->onQueue('high');
 
     }
 }
