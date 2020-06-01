@@ -39,7 +39,7 @@ class EsiAvailabilityMiddlewareTest extends TestCase
 
         $this->mockJob();
 
-        $this->middleware = Mockery::mock('Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware')
+        $this->middleware = Mockery::mock(EsiAvailabilityMiddleware::class)
             ->makePartial();
 
     }
@@ -55,6 +55,7 @@ class EsiAvailabilityMiddlewareTest extends TestCase
 
         $this->job->shouldReceive('fire')->times(1);
 
+
         $this->middleware->handle($this->job, $this->next);
     }
 
@@ -66,6 +67,20 @@ class EsiAvailabilityMiddlewareTest extends TestCase
     {
 
         $this->middleware->status = 'not ok';
+
+        $this->job->shouldReceive('fail')->times(1);
+
+        $this->middleware->handle($this->job, $this->next);
+    }
+
+    /**
+     * @test
+     * @runTestsInSeparateProcesses
+     */
+    public function it_fails_the_job_if_esi_is_rate_limited()
+    {
+
+        $this->middleware->shouldReceive('isEsiRateLimited')->andReturnTrue();
 
         $this->job->shouldReceive('fail')->times(1);
 
