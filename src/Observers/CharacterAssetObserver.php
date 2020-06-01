@@ -27,17 +27,10 @@
 namespace Seatplus\Eveapi\Observers;
 
 use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Jobs\Alliances\AllianceInfo;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsLocationJob;
-use Seatplus\Eveapi\Jobs\Corporation\CorporationInfoJob;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseCategoriesByCategoryIdJob;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseGroupsByGroupIdJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
-use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\RefreshToken;
-use Seatplus\Eveapi\Models\Universe\Group;
-use Seatplus\Eveapi\Models\Universe\Type;
 
 class CharacterAssetObserver
 {
@@ -79,8 +72,6 @@ class CharacterAssetObserver
             $this->handleLocations();
     }
 
-
-
     private function handleTypes()
     {
         if($this->character_asset->type)
@@ -97,7 +88,7 @@ class CharacterAssetObserver
 
         $job_container = new JobContainer([
             'refresh_token' => RefreshToken::find($this->character_asset->character_id),
-            'queue' => 'high'
+            'queue' => 'high',
         ]);
 
         CharacterAssetsLocationJob::dispatch($job_container)->onQueue('high');
