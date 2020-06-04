@@ -29,6 +29,6 @@ use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
 
 return [
     UpdateCharacter::class,
-    MaintenanceJob::class
+    MaintenanceJob::class,
 
 ];
