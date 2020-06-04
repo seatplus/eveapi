@@ -24,8 +24,11 @@
  * SOFTWARE.
  */
 
+use Seatplus\Eveapi\Jobs\Seatplus\MaintenanceJob;
 use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
 
 return [
     UpdateCharacter::class,
+    MaintenanceJob::class
+
 ];
