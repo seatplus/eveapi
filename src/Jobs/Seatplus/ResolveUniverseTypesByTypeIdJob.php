@@ -47,6 +47,14 @@ class ResolveUniverseTypesByTypeIdJob implements ShouldQueue
      */
     public $tries = 1;
 
+    public ?int $type_id = null;
+
+    public function __construct(?int $type_id = null)
+    {
+
+        $this->type_id = $type_id;
+    }
+
     /**
      * Get the middleware the job should pass through.
      *
@@ -67,6 +75,7 @@ class ResolveUniverseTypesByTypeIdJob implements ShouldQueue
         return [
             'type',
             'informations',
+            sprintf('type_id:%s', $this->type_id ?? '')
         ];
     }
 
@@ -77,9 +86,9 @@ class ResolveUniverseTypesByTypeIdJob implements ShouldQueue
      *
      * @return void
      */
-    public function handle(?int $type_id = null)
+    public function handle()
     {
 
-        (new ResolveUniverseTypesByTypeIdAction)->execute($type_id);
+        (new ResolveUniverseTypesByTypeIdAction)->execute($this->type_id);
     }
 }
