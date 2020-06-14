@@ -20,9 +20,32 @@ class CharacterAssetLifeCycleTest extends TestCase
     /** @test */
     public function it_dispatches_type_job()
     {
-        $asset = factory(CharacterAsset::class)->create();
+        $asset = factory(CharacterAsset::class)->make();
+
+        Queue::assertNotPushed('high', ResolveUniverseTypesByTypeIdJob::class);
+
+        $this->assertDatabaseMissing('character_assets', ['item_id' => $asset->item_id]);
+
+        CharacterAsset::updateOrCreate([
+            'item_id' => $asset->item_id,
+        ], [
+            'character_id' => $asset->character_id,
+            'is_blueprint_copy' => optional($asset)->is_blueprint_copy ?? false,
+            'is_singleton'  => $asset->is_singleton,
+            'location_flag'     => $asset->location_flag,
+            'location_id'        => $asset->location_id,
+            'location_type'          => $asset->location_type,
+            'quantity'   => $asset->quantity,
+            'type_id' => $asset->type_id,
+        ]);
+
+        $this->assertDatabaseHas('character_assets', ['item_id' => $asset->item_id]);
 
         Queue::assertPushedOn('high', ResolveUniverseTypesByTypeIdJob::class);
+
+        Queue::assertPushed(ResolveUniverseTypesByTypeIdJob::class, function ($job) use ($asset){
+            return in_array(sprintf('type_id:%s', $asset->type_id), $job->tags());
+        });
     }
 
     /** @test */
