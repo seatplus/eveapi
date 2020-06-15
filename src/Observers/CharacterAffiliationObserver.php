@@ -68,7 +68,7 @@ class CharacterAffiliationObserver
         if(! $character_affiliation->corporation)
             CorporationInfoJob::dispatch($job)->onQueue('high');
 
-        if(! $character_affiliation->alliance)
+        if($character_affiliation->alliance_id && !$character_affiliation->alliance)
             AllianceInfo::dispatch($job)->onQueue('high');
 
     }
