@@ -24,19 +24,27 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Actions\Seatplus;
+namespace Seatplus\Eveapi\Observers;
 
-use Illuminate\Support\Collection;
+use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseCategoriesByCategoryIdJob;
 use Seatplus\Eveapi\Models\Universe\Group;
 
-class CacheMissingCategoryIdsAction
+class GroupObserver
 {
-    public function execute(): Collection
+    /**
+     * Handle the User "created" event.
+     *
+     * @param \Seatplus\Eveapi\Models\Universe\Group $group
+     *
+     * @return void
+     */
+    public function created(Group $group)
     {
-        $unknown_type_ids = Group::whereDoesntHave('category')->pluck('category_id')->unique()->values();
 
-        (new CreateOrUpdateMissingIdsCache('category_ids_to_resolve', $unknown_type_ids))->handle();
+        if($group->category)
+            return;
 
-        return $unknown_type_ids;
+        ResolveUniverseCategoriesByCategoryIdJob::dispatch($group->category_id)->onQueue('high');
+
     }
 }

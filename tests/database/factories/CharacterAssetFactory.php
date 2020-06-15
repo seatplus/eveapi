@@ -31,7 +31,7 @@ $factory->define(CharacterAsset::class, function (Faker $faker) {
         'location_id' => $faker->randomNumber(),
         'location_type' => $faker->randomElement(['station', 'solar_system', 'other']),
         'quantity' => $faker->randomDigit,
-        'type_id' => factory(Type::class)
+        'type_id' => $faker->numberBetween(5,10000)
     ];
 });
 
@@ -44,5 +44,11 @@ $factory->state(CharacterAsset::class, 'withName', function (Faker $faker) {
 $factory->state(CharacterAsset::class, 'withoutType', function (Faker $faker) {
     return [
         'type_id' => $faker->numberBetween(5,10000)
+    ];
+});
+
+$factory->state(CharacterAsset::class, 'withType', function (Faker $faker) {
+    return [
+        'type_id' => factory(Type::class)
     ];
 });

@@ -14,7 +14,7 @@ class CharacterAssetResourceTest extends TestCase
     /** @test */
     public function testCorrectDataIsReturnedInResponse()
     {
-        $resource = (new CharacterAssetRessource($character_asset = factory(CharacterAsset::class)->create()))->jsonSerialize();
+        $resource = (new CharacterAssetRessource($character_asset = factory(CharacterAsset::class)->states('withoutType')->create()))->jsonSerialize();
 
         Assert::assertArraySubset([
             'location_id' => $character_asset->location_id,

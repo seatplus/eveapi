@@ -32,8 +32,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Actions\Jobs\Universe\ResolveUniverseTypesByTypeIdAction;
-use Seatplus\Eveapi\Actions\Seatplus\CacheMissingGroupIdsAction;
-use Seatplus\Eveapi\Actions\Seatplus\CacheMissingTypeIdsAction;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
@@ -48,6 +46,14 @@ class ResolveUniverseTypesByTypeIdJob implements ShouldQueue
      * @var int
      */
     public $tries = 1;
+
+    public ?int $type_id = null;
+
+    public function __construct(?int $type_id = null)
+    {
+
+        $this->type_id = $type_id;
+    }
 
     /**
      * Get the middleware the job should pass through.
@@ -69,21 +75,20 @@ class ResolveUniverseTypesByTypeIdJob implements ShouldQueue
         return [
             'type',
             'informations',
+            sprintf('type_id:%s', $this->type_id ?? ''),
         ];
     }
 
     /**
      * Execute the job.
      *
+     * @param int|null $type_id
+     *
      * @return void
      */
     public function handle()
     {
-        (new CacheMissingTypeIdsAction)->execute();
 
-        (new ResolveUniverseTypesByTypeIdAction())->execute();
-
-        (new CacheMissingGroupIdsAction)->execute();
-
+        (new ResolveUniverseTypesByTypeIdAction)->execute($this->type_id);
     }
 }

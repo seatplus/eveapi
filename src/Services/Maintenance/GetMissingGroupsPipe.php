@@ -24,35 +24,26 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Jobs\Middleware;
+namespace Seatplus\Eveapi\Services\Maintenance;
 
-use Exception;
-use Seatplus\Eveapi\Actions\Esi\GetEsiStatusAction;
+use Closure;
+use Seatplus\Eveapi\Actions\Seatplus\CreateOrUpdateMissingIdsCache;
+use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseGroupsByGroupIdJob;
+use Seatplus\Eveapi\Models\Universe\Type;
 
-class EsiAvailabilityMiddleware
+class GetMissingGroupsPipe
 {
-    public $status;
-
-    public function __construct()
-    {
-        $this->status = (new GetEsiStatusAction)->execute();
-    }
-
-    /**
-     * Process the queued job.
-     *
-     * @param  mixed  $job
-     * @param  callable  $next
-     * @return mixed
-     */
-    public function handle($job, $next)
+    public function handle($payload, Closure $next)
     {
 
-        return $this->status === 'ok'
-            ? $next($job)
-            : $job->fail(new Exception($this->status === 'rate limited' ? 'Esi rate limited' : 'Esi appears to be down'));
+        $unknown_type_ids = Type::whereDoesntHave('group')->pluck('group_id')->unique()->values();
 
-        //TODO: introduce release for 15min in case of DT
+        if($unknown_type_ids->isNotEmpty()) {
+            (new CreateOrUpdateMissingIdsCache('group_ids_to_resolve', $unknown_type_ids))->handle();
 
+            ResolveUniverseGroupsByGroupIdJob::dispatch()->onQueue('high');
+        }
+
+        return $next($payload);
     }
 }

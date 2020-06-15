@@ -24,19 +24,27 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Actions\Seatplus;
+namespace Seatplus\Eveapi\Observers;
 
-use Illuminate\Support\Collection;
+use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseGroupsByGroupIdJob;
 use Seatplus\Eveapi\Models\Universe\Type;
 
-class CacheMissingGroupIdsAction
+class TypeObserver
 {
-    public function execute(): Collection
+    /**
+     * Handle the User "created" event.
+     *
+     * @param \Seatplus\Eveapi\Models\Universe\Type $type
+     *
+     * @return void
+     */
+    public function created(Type $type)
     {
-        $unknown_type_ids = Type::whereDoesntHave('group')->pluck('group_id')->unique()->values();
 
-        (new CreateOrUpdateMissingIdsCache('group_ids_to_resolve', $unknown_type_ids))->handle();
+        if($type->group)
+            return;
 
-        return $unknown_type_ids;
+        ResolveUniverseGroupsByGroupIdJob::dispatch($type->group_id)->onQueue('high');
+
     }
 }

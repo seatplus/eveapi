@@ -75,10 +75,10 @@ class ResolveUniverseCategoriesByCategoryIdJob implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(?int $category_id = null)
     {
 
-        (new ResolveUniverseCategoriesByCategoryIdAction)->execute();
+        (new ResolveUniverseCategoriesByCategoryIdAction)->execute($category_id);
 
     }
 }

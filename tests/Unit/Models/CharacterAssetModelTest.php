@@ -18,7 +18,7 @@ class CharacterAssetModelTest extends TestCase
     /** @test */
     public function it_creates_an_event_upon_updating()
     {
-        $asset = factory(CharacterAsset::class)->create([
+        $asset = factory(CharacterAsset::class)->states('withoutType')->create([
             'character_id' => 42
         ]);
 
@@ -60,7 +60,7 @@ class CharacterAssetModelTest extends TestCase
     /** @test */
     public function model_has_types()
     {
-        $test_asset = factory(CharacterAsset::class)->create();
+        $test_asset = factory(CharacterAsset::class)->states('withType')->create();
 
         $assets = CharacterAsset::has('type')->get();
 
@@ -183,19 +183,19 @@ class CharacterAssetModelTest extends TestCase
     /** @test */
     public function it_has_scopeSearch_asset_content_content()
     {
-        $test_asset = factory(CharacterAsset::class)->create([
+        $test_asset = factory(CharacterAsset::class)->states('withoutType')->create([
             'location_flag' => 'Hangar'
         ]);
 
         //Create Content
-        $test_asset->content()->save(factory(CharacterAsset::class)->create([
+        $test_asset->content()->save(factory(CharacterAsset::class)->states('withoutType')->create([
             'location_flag' => 'cargo'
         ]));
 
         $content = $test_asset->content->first();
 
             //Create Content Content
-        $content->content()->save(factory(CharacterAsset::class)->state('withName')->create());
+        $content->content()->save(factory(CharacterAsset::class)->states('withName', 'withoutType')->create());
 
         $content_content = $content->content->first();
 
@@ -210,12 +210,12 @@ class CharacterAssetModelTest extends TestCase
     /** @test */
     public function it_has_content_relationship()
     {
-        $test_asset = factory(CharacterAsset::class)->create([
+        $test_asset = factory(CharacterAsset::class)->states('withoutType')->create([
             'location_flag' => 'Hangar'
         ]);
 
         //Create Content
-        $test_asset->content()->save(factory(CharacterAsset::class)->create([
+        $test_asset->content()->save(factory(CharacterAsset::class)->states('withoutType')->create([
             'location_flag' => 'cargo'
         ]));
 
@@ -225,12 +225,12 @@ class CharacterAssetModelTest extends TestCase
     /** @test */
     public function it_has_container_relationship()
     {
-        $test_asset = factory(CharacterAsset::class)->create([
+        $test_asset = factory(CharacterAsset::class)->states('withoutType')->create([
             'location_flag' => 'Hangar'
         ]);
 
         //Create Content
-        $test_asset->content()->save(factory(CharacterAsset::class)->create([
+        $test_asset->content()->save(factory(CharacterAsset::class)->states('withoutType')->create([
             'location_flag' => 'cargo'
         ]));
 

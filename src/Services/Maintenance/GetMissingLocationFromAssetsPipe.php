@@ -24,35 +24,30 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Jobs\Middleware;
+namespace Seatplus\Eveapi\Services\Maintenance;
 
-use Exception;
-use Seatplus\Eveapi\Actions\Esi\GetEsiStatusAction;
+use Closure;
+use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
+use Seatplus\Eveapi\Models\Assets\CharacterAsset;
+use Seatplus\Eveapi\Models\RefreshToken;
 
-class EsiAvailabilityMiddleware
+class GetMissingLocationFromAssetsPipe
 {
-    public $status;
-
-    public function __construct()
-    {
-        $this->status = (new GetEsiStatusAction)->execute();
-    }
-
-    /**
-     * Process the queued job.
-     *
-     * @param  mixed  $job
-     * @param  callable  $next
-     * @return mixed
-     */
-    public function handle($job, $next)
+    public function handle($payload, Closure $next)
     {
 
-        return $this->status === 'ok'
-            ? $next($job)
-            : $job->fail(new Exception($this->status === 'rate limited' ? 'Esi rate limited' : 'Esi appears to be down'));
+        CharacterAsset::doesntHave('location')
+            ->AssetsLocationIds()
+            ->inRandomOrder()
+            ->addSelect('character_id')
+            ->get()
+            ->each(function ($asset) {
 
-        //TODO: introduce release for 15min in case of DT
+                $refresh_token = RefreshToken::find($asset->character_id);
 
+                dispatch(new ResolveLocationJob($asset->location_id, $refresh_token))->onQueue('high');
+            });
+
+        return $next($payload);
     }
 }

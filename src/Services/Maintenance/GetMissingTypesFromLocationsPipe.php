@@ -24,35 +24,36 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Jobs\Middleware;
+namespace Seatplus\Eveapi\Services\Maintenance;
 
-use Exception;
-use Seatplus\Eveapi\Actions\Esi\GetEsiStatusAction;
+use Closure;
+use Illuminate\Database\Eloquent\Builder;
+use Seatplus\Eveapi\Actions\Seatplus\CreateOrUpdateMissingIdsCache;
+use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
+use Seatplus\Eveapi\Models\Universe\Location;
+use Seatplus\Eveapi\Models\Universe\Station;
+use Seatplus\Eveapi\Models\Universe\Structure;
 
-class EsiAvailabilityMiddleware
+class GetMissingTypesFromLocationsPipe
 {
-    public $status;
-
-    public function __construct()
-    {
-        $this->status = (new GetEsiStatusAction)->execute();
-    }
-
-    /**
-     * Process the queued job.
-     *
-     * @param  mixed  $job
-     * @param  callable  $next
-     * @return mixed
-     */
-    public function handle($job, $next)
+    public function handle($payload, Closure $next)
     {
 
-        return $this->status === 'ok'
-            ? $next($job)
-            : $job->fail(new Exception($this->status === 'rate limited' ? 'Esi rate limited' : 'Esi appears to be down'));
+        $type_ids = Location::whereHasMorph(
+            'locatable',
+            [Station::class, Structure::class],
+            function (Builder $query) {
+                $query->whereDoesntHave('type')->addSelect('type_id');
+            }
+        )->with('locatable')->get()->map(function ($location) {
+            return $location->locatable->type_id;
+        })->unique()->values();
 
-        //TODO: introduce release for 15min in case of DT
+        if($type_ids->isNotEmpty())
+            (new CreateOrUpdateMissingIdsCache('type_ids_to_resolve', $type_ids))->handle();
 
+        ResolveUniverseTypesByTypeIdJob::dispatch()->onQueue('high');
+
+        return $next($payload);
     }
 }

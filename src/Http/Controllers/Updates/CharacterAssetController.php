@@ -30,10 +30,6 @@ use Illuminate\Http\Request;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Http\Controllers\Controller;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsLocationJob;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseCategoriesByCategoryIdJob;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseGroupsByGroupIdJob;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 class CharacterAssetController extends Controller
@@ -49,13 +45,7 @@ class CharacterAssetController extends Controller
             'refresh_token' => RefreshToken::find((int) $validatedData['character_id']),
         ]);
 
-        //TODO with refactoring to use events: rework this
-        CharacterAssetJob::withChain([
-            new CharacterAssetsLocationJob($job_container),
-            new ResolveUniverseTypesByTypeIdJob,
-            new ResolveUniverseGroupsByGroupIdJob,
-            new ResolveUniverseCategoriesByCategoryIdJob,
-        ])->dispatch($job_container)->onQueue('default');
+        CharacterAssetJob::dispatch($job_container)->onQueue('default');
 
         return response('successfully queued', 200);
 
