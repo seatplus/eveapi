@@ -29,7 +29,8 @@ jobs:
     - name: Test & publish code coverage
       uses: paambaati/codeclimate-action@v2.6.0
       env:
-        CC_TEST_REPORTER_ID: 1ba66b56bc5a04c17474d52e94124cb04d4a520c7c46a01ace9ce25e7b58b85d
+        CC_TEST_REPORTER_ID: afe50b57038790ac97669452ea4967d142354893104f32a33fdc54de112dc1d1
+        COMPOSER_ROOT_VERSION: dev-develop
       with:
         coverageCommand: vendor/bin/phpunit --coverage-clover build/logs/clover.xml
         debug: false
