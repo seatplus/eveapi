@@ -1,6 +1,7 @@
 <?php
 
 use Faker\Generator as Faker;
+use Seatplus\Eveapi\Jobs\Alliances\AllianceInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
 $factory->define(CorporationInfo::class, function (Faker $faker) {
@@ -14,5 +15,11 @@ $factory->define(CorporationInfo::class, function (Faker $faker) {
         'creator_id' => $faker->numberBetween(90000000, 98000000),
         'tax_rate' => $faker->randomFloat(2,0,1),
         'alliance_id' => $faker->optional()->numberBetween(99000000,100000000)
+    ];
+});
+
+$factory->state(CorporationInfo::class, 'withAlliance', function ($faker) {
+    return [
+        'alliance_id' => factory(AllianceInfo::class),
     ];
 });

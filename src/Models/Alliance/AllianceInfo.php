@@ -27,6 +27,8 @@
 namespace Seatplus\Eveapi\Models\Alliance;
 
 use Illuminate\Database\Eloquent\Model;
+use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\SsoScopes;
 
@@ -51,6 +53,19 @@ class AllianceInfo extends Model
     protected $casts = [
         'alliance_id' => 'integer',
     ];
+
+    public function characters()
+    {
+
+        return $this->hasManyThrough(
+            CharacterInfo::class,
+            CharacterAffiliation::class,
+            'alliance_id',
+            'character_id',
+            'alliance_id',
+            'character_id'
+        );
+    }
 
     public function corporations()
     {
