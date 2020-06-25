@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
+use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfo as CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
 use Seatplus\Eveapi\Models\RefreshToken;
@@ -74,6 +75,24 @@ class CharacterUpdatePipeTest extends TestCase
 
             return $refresh_token->character_id === $job->refresh_token->character_id;
         });
+    }
+
+    /** @test */
+    public function it_dispatches_name_job_as_chain()
+    {
+        $refresh_token = Event::fakeFor( function () {
+            return factory(RefreshToken::class)->create([
+                'scopes' => ['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1']
+            ]);
+        });
+
+        Queue::fake();
+
+        (new UpdateCharacter)->handle();
+
+        Queue::assertPushedWithChain(CharacterAssetJob::class, [
+            CharacterAssetsNameJob::class
+        ]);
     }
 
 }

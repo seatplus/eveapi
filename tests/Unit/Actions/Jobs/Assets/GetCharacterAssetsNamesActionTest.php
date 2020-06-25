@@ -139,13 +139,13 @@ class GetCharacterAssetsNamesActionTest extends TestCase
      * @test
      * @runTestsInSeparateProcesses
      */
-    public function it_does_not_run_if_category_is_missing()
+    public function it_does_not_run_if_category_id_is_out_of_scope()
     {
         $type = factory(Type::class)->create();
 
         $group = Event::fakeFor(fn () => factory(Group::class)->create([
             'group_id' => $type->group_id,
-            'category_id' => 22
+            'category_id' => 5 //Only Celestials, Ships, Deployable, Starbases, Orbitals and Structures might be named
         ]));
 
         $asset = factory(CharacterAsset::class)->create([

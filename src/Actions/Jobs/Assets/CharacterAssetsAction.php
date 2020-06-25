@@ -31,6 +31,7 @@ use Seatplus\Eveapi\Actions\Character\CharacterAssetsCleanupAction;
 use Seatplus\Eveapi\Actions\HasPathValuesInterface;
 use Seatplus\Eveapi\Actions\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
+use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Models\RefreshToken;
 
@@ -114,9 +115,6 @@ class CharacterAssetsAction extends RetrieveFromEsiBase implements HasPathValues
 
         // Cleanup old items
         (new CharacterAssetsCleanupAction)->execute($this->refresh_token->character_id, $this->known_assets->toArray());
-
-        //Get Names for the items
-        (new GetCharacterAssetsNamesAction)->execute($this->refresh_token);
 
     }
 

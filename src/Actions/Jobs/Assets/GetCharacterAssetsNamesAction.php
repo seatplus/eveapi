@@ -78,9 +78,9 @@ class GetCharacterAssetsNamesAction extends RetrieveFromEsiBase implements HasPa
             'character_id' => $this->refresh_token->character_id,
         ]);
 
-        CharacterAsset::whereHas('type.category', function (Builder $query) {
+        CharacterAsset::whereHas('type.group', function (Builder $query) {
             // Only Celestials, Ships, Deployable, Starbases, Orbitals and Structures might be named
-            $query->whereIn('universe_categories.category_id', [2, 6, 22, 23, 46, 65]);
+            $query->whereIn('category_id', [2, 6, 22, 23, 46, 65]);
         })->where('character_id', $this->refresh_token->character_id)
             ->select('item_id')
             ->where('is_singleton', true)
