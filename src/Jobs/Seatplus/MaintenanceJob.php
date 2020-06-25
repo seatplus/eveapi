@@ -35,6 +35,7 @@ use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
+use Seatplus\Eveapi\Services\Maintenance\GetMissingAssetsNamesPipe;
 use Seatplus\Eveapi\Services\Maintenance\GetMissingCategorysPipe;
 use Seatplus\Eveapi\Services\Maintenance\GetMissingGroupsPipe;
 use Seatplus\Eveapi\Services\Maintenance\GetMissingLocationFromAssetsPipe;
@@ -58,6 +59,7 @@ class MaintenanceJob implements ShouldQueue
         GetMissingGroupsPipe::class,
         GetMissingCategorysPipe::class,
         GetMissingLocationFromAssetsPipe::class,
+        GetMissingAssetsNamesPipe::class
     ];
 
     /**
