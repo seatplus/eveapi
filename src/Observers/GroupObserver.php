@@ -26,11 +26,22 @@
 
 namespace Seatplus\Eveapi\Observers;
 
+use Illuminate\Database\Eloquent\Builder;
+use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseCategoriesByCategoryIdJob;
+use Seatplus\Eveapi\Models\Assets\CharacterAsset;
+use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Group;
 
 class GroupObserver
 {
+
+    /**
+     * @var \Seatplus\Eveapi\Models\Universe\Group|null
+     */
+    private Group $group;
+
     /**
      * Handle the User "created" event.
      *
@@ -41,10 +52,41 @@ class GroupObserver
     public function created(Group $group)
     {
 
-        if($group->category)
+        $this->group = $group;
+
+        $this->handleCategory();
+        $this->handleAssetsName();
+
+    }
+
+    private function handleCategory()
+    {
+        if($this->group->category)
             return;
 
-        ResolveUniverseCategoriesByCategoryIdJob::dispatch($group->category_id)->onQueue('high');
+        ResolveUniverseCategoriesByCategoryIdJob::dispatch($this->group->category_id)->onQueue('high');
+    }
 
+    private function handleAssetsName()
+    {
+
+        CharacterAsset::whereHas('type.group', function (Builder $query) {
+            // Only Celestials, Ships, Deployable, Starbases, Orbitals and Structures might be named
+            $query->where('group_id', $this->group->group_id)
+                ->whereIn('category_id', [2, 6, 22, 23, 46, 65]);
+        })
+            ->pluck('character_id')
+            ->unique()
+            ->whenNotEmpty(function ($collection) {
+
+                $collection->each(function ($character_id) {
+
+                    $job_container = new JobContainer([
+                        'refresh_token' => RefreshToken::find($character_id),
+                    ]);
+
+                    CharacterAssetsNameJob::dispatch($job_container)->onQueue('high');
+                });
+            });
     }
 }
