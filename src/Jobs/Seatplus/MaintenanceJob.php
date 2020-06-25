@@ -59,7 +59,7 @@ class MaintenanceJob implements ShouldQueue
         GetMissingGroupsPipe::class,
         GetMissingCategorysPipe::class,
         GetMissingLocationFromAssetsPipe::class,
-        GetMissingAssetsNamesPipe::class
+        GetMissingAssetsNamesPipe::class,
     ];
 
     /**
