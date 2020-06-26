@@ -74,7 +74,7 @@ class ResolveUniverseGroupsByGroupIdJob implements ShouldQueue
         return [
             'group',
             'information',
-            sprintf('group_id:%s', $this->group_id ?? '')
+            sprintf('group_id:%s', $this->group_id ?? ''),
         ];
     }
 
