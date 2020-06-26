@@ -70,6 +70,9 @@ class GroupObserver
     private function handleAssetsName()
     {
 
+        if(!in_array($this->group->category_id, [2, 6, 22, 23, 46, 65]))
+            return;
+
         CharacterAsset::whereHas('type.group', function (Builder $query) {
             // Only Celestials, Ships, Deployable, Starbases, Orbitals and Structures might be named
             $query->where('group_id', $this->group->group_id)
