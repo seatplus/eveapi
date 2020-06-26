@@ -75,7 +75,7 @@ class ResolveUniverseCategoriesByCategoryIdJob implements ShouldQueue
         return [
             'type',
             'informations',
-            sprintf('category_id:%s', $this->category_id ?? '')
+            sprintf('category_id:%s', $this->category_id ?? ''),
         ];
     }
 
