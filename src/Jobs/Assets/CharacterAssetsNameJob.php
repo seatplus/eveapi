@@ -24,36 +24,18 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Jobs\Seatplus;
+namespace Seatplus\Eveapi\Jobs\Assets;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Seatplus\Eveapi\Actions\Jobs\Universe\ResolveUniverseGroupsByGroupIdAction;
+use Seatplus\Eveapi\Actions\Jobs\Assets\GetCharacterAssetsNamesAction;
+use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
+use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
+use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 
-class ResolveUniverseGroupsByGroupIdJob implements ShouldQueue
+class CharacterAssetsNameJob extends EsiBase
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-    /**
-     * The number of times the job may be attempted.
-     *
-     * @var int
-     */
-    public $tries = 1;
-
-    private ?int $group_id;
-
-    public function __construct(?int $group_id = null)
-    {
-        $this->group_id = $group_id;
-    }
-
     /**
      * Get the middleware the job should pass through.
      *
@@ -62,9 +44,10 @@ class ResolveUniverseGroupsByGroupIdJob implements ShouldQueue
     public function middleware(): array
     {
         return [
+            new HasRefreshTokenMiddleware,
+            new HasRequiredScopeMiddleware,
             new EsiRateLimitedMiddleware,
             new EsiAvailabilityMiddleware,
-            new RedisFunnelMiddleware,
         ];
     }
 
@@ -72,10 +55,16 @@ class ResolveUniverseGroupsByGroupIdJob implements ShouldQueue
     {
 
         return [
-            'group',
-            'information',
-            sprintf('group_id:%s', $this->group_id ?? ''),
+            'character',
+            'character_id: ' . $this->character_id,
+            'assets',
+            'name',
         ];
+    }
+
+    public function getActionClass(): RetrieveFromEsiInterface
+    {
+        return new GetCharacterAssetsNamesAction;
     }
 
     /**
@@ -83,9 +72,8 @@ class ResolveUniverseGroupsByGroupIdJob implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle(): void
     {
-
-        (new ResolveUniverseGroupsByGroupIdAction)->execute($this->group_id);
+        $this->getActionClass()->execute($this->refresh_token);
     }
 }

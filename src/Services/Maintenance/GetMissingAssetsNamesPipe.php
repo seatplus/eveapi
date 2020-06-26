@@ -24,59 +24,23 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Observers;
+namespace Seatplus\Eveapi\Services\Maintenance;
 
+use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseCategoriesByCategoryIdJob;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Models\RefreshToken;
-use Seatplus\Eveapi\Models\Universe\Group;
 
-class GroupObserver
+class GetMissingAssetsNamesPipe
 {
-
-    /**
-     * @var \Seatplus\Eveapi\Models\Universe\Group|null
-     */
-    private Group $group;
-
-    /**
-     * Handle the User "created" event.
-     *
-     * @param \Seatplus\Eveapi\Models\Universe\Group $group
-     *
-     * @return void
-     */
-    public function created(Group $group)
+    public function handle($payload, Closure $next)
     {
-
-        $this->group = $group;
-
-        $this->handleCategory();
-        $this->handleAssetsName();
-
-    }
-
-    private function handleCategory()
-    {
-        if($this->group->category)
-            return;
-
-        ResolveUniverseCategoriesByCategoryIdJob::dispatch($this->group->category_id)->onQueue('high');
-    }
-
-    private function handleAssetsName()
-    {
-
-        if(! in_array($this->group->category_id, [2, 6, 22, 23, 46, 65]))
-            return;
 
         CharacterAsset::whereHas('type.group', function (Builder $query) {
             // Only Celestials, Ships, Deployable, Starbases, Orbitals and Structures might be named
-            $query->where('group_id', $this->group->group_id)
-                ->whereIn('category_id', [2, 6, 22, 23, 46, 65]);
+            $query->whereIn('category_id', [2, 6, 22, 23, 46, 65]);
         })
             ->pluck('character_id')
             ->unique()
@@ -91,5 +55,7 @@ class GroupObserver
                     CharacterAssetsNameJob::dispatch($job_container)->onQueue('high');
                 });
             });
+
+        return $next($payload);
     }
 }

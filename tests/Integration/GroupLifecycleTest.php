@@ -3,9 +3,12 @@
 
 namespace Seatplus\Eveapi\Tests\Integration;
 
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Queue;
+use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseCategoriesByCategoryIdJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseGroupsByGroupIdJob;
+use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Models\Universe\Category;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Type;
@@ -36,6 +39,30 @@ class GroupLifecycleTest extends TestCase
         ]);
 
         Queue::assertNotPushed(ResolveUniverseCategoriesByCategoryIdJob::class);
+    }
+
+    /** @test */
+    public function it_dispatches_assets_name_job()
+    {
+
+        $type = factory(Type::class)->create();
+
+        $asset = factory(CharacterAsset::class)->create([
+            'character_id' => $this->test_character->character_id,
+            'type_id' => $type->type_id,
+            'is_singleton' => true,
+        ]);
+
+        Queue::fake();
+
+        $group = factory(Group::class)->create([
+            'group_id' => $type->group_id,
+            'category_id' => 6
+        ]);
+
+
+        Queue::assertPushedOn('high', CharacterAssetsNameJob::class);
+
     }
 
 }

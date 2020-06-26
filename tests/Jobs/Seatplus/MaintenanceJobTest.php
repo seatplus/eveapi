@@ -6,6 +6,7 @@ namespace Seatplus\Eveapi\Tests\Jobs\Seatplus;
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
+use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Seatplus\MaintenanceJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseCategoriesByCategoryIdJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseGroupsByGroupIdJob;
@@ -100,6 +101,24 @@ class MaintenanceJobTest extends TestCase
         $this->job->handle();
 
         Queue::assertPushedOn('high', ResolveLocationJob::class);
+    }
+
+    /** @test */
+    public function it_dispatch_resolve_missing_assets_name_jog()
+    {
+        $character_asset = Event::fakeFor(fn() => factory(CharacterAsset::class)->create([
+            'character_id' => $this->test_character->character_id,
+            'location_flag' => 'Hangar'
+        ]));
+
+        $type = Event::fakeFor(fn() => factory(Type::class)->create([
+            'type_id' => $character_asset->type_id,
+            'group_id' => factory(Group::class)->create(['category_id' => 2])
+        ]));
+
+        $this->job->handle();
+
+        Queue::assertPushedOn('high', CharacterAssetsNameJob::class);
     }
 
 }

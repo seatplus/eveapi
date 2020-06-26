@@ -74,7 +74,7 @@ class ResolveUniverseTypesByTypeIdJob implements ShouldQueue
 
         return [
             'type',
-            'informations',
+            'information',
             sprintf('type_id:%s', $this->type_id ?? ''),
         ];
     }
