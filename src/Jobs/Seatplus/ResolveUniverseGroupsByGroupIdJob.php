@@ -47,6 +47,13 @@ class ResolveUniverseGroupsByGroupIdJob implements ShouldQueue
      */
     public $tries = 1;
 
+    private ?int $group_id;
+
+    public function __construct(?int $group_id = null)
+    {
+        $this->group_id = $group_id;
+    }
+
     /**
      * Get the middleware the job should pass through.
      *
@@ -65,8 +72,9 @@ class ResolveUniverseGroupsByGroupIdJob implements ShouldQueue
     {
 
         return [
-            'type',
-            'informations',
+            'group',
+            'information',
+            sprintf('group_id:%s', $this->group_id ?? '')
         ];
     }
 
@@ -75,9 +83,9 @@ class ResolveUniverseGroupsByGroupIdJob implements ShouldQueue
      *
      * @return void
      */
-    public function handle(?int $group_id = null)
+    public function handle()
     {
 
-        (new ResolveUniverseGroupsByGroupIdAction)->execute($group_id);
+        (new ResolveUniverseGroupsByGroupIdAction)->execute($this->group_id);
     }
 }

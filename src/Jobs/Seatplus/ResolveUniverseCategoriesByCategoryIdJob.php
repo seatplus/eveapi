@@ -47,6 +47,14 @@ class ResolveUniverseCategoriesByCategoryIdJob implements ShouldQueue
      */
     public $tries = 1;
 
+    private ?int $category_id;
+
+    public function __construct(?int $category_id = null)
+    {
+
+        $this->category_id = $category_id;
+    }
+
     /**
      * Get the middleware the job should pass through.
      *
@@ -67,6 +75,7 @@ class ResolveUniverseCategoriesByCategoryIdJob implements ShouldQueue
         return [
             'type',
             'informations',
+            sprintf('category_id:%s', $this->category_id ?? '')
         ];
     }
 
@@ -75,10 +84,10 @@ class ResolveUniverseCategoriesByCategoryIdJob implements ShouldQueue
      *
      * @return void
      */
-    public function handle(?int $category_id = null)
+    public function handle()
     {
 
-        (new ResolveUniverseCategoriesByCategoryIdAction)->execute($category_id);
+        (new ResolveUniverseCategoriesByCategoryIdAction)->execute($this->category_id);
 
     }
 }

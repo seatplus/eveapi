@@ -45,18 +45,11 @@ class CharacterAssetsNameJob extends EsiBase
      */
     public function middleware(): array
     {
-
-        $rate_limited_middleare = (new RateLimitedJobMiddleware)
-            ->setKey(self::class)
-            ->setViaCharacterId($this->refresh_token->character_id)
-            ->setDuration(3600);
-
         return [
             new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
             new EsiRateLimitedMiddleware,
             new EsiAvailabilityMiddleware,
-            $rate_limited_middleare,
         ];
     }
 
@@ -84,6 +77,5 @@ class CharacterAssetsNameJob extends EsiBase
     public function handle(): void
     {
         $this->getActionClass()->execute($this->refresh_token);
-
     }
 }

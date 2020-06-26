@@ -84,6 +84,8 @@ class GetCharacterAssetsNamesActionTest extends TestCase
             'name' => $this->name_to_create
         ]);
 
+        $this->assertNotNull(cache()->store('file')->get($asset->item_id));
+
     }
 
     /**
