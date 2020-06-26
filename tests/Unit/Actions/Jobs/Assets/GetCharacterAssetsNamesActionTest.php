@@ -6,6 +6,8 @@ namespace Seatplus\Eveapi\Tests\Unit\Actions\Jobs\Assets;
 
 use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Actions\Jobs\Assets\GetCharacterAssetsNamesAction;
+use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Category;
@@ -218,6 +220,55 @@ class GetCharacterAssetsNamesActionTest extends TestCase
 
         //Assert that character asset created has no name
         $this->assertDatabaseMissing('character_assets', [
+            'character_id' => $asset->character_id,
+            'item_id' => $asset->item_id,
+            'name' => $this->name_to_create
+        ]);
+
+    }
+
+    /**
+     * @test
+     * @runTestsInSeparateProcesses
+     */
+    public function it_runs_the_job()
+    {
+        $type = Event::fakeFor( fn() => factory(Type::class)->create());
+
+        $group = Event::fakeFor(fn () => factory(Group::class)->create([
+            'group_id' => $type->group_id,
+            'category_id' => 22
+        ]));
+
+        $asset = Event::fakeFor( fn() => factory(CharacterAsset::class)->create([
+            'type_id' => $type->type_id,
+            'is_singleton' => true,
+        ]));
+
+
+        //Assert that character asset created has no name
+        $this->assertDatabaseHas('character_assets', [
+            'character_id' => $asset->character_id,
+            'item_id' => $asset->item_id,
+            'name' => null
+        ]);
+
+        $refresh_token = RefreshToken::find($asset->character_id);
+
+        $this->mockRetrieveEsiDataAction([
+            [
+                'item_id' => $asset->item_id,
+                'name' => $this->name_to_create
+            ]
+        ]);
+
+        $job_container = new JobContainer(['refresh_token' => $refresh_token]);
+
+        $job = new CharacterAssetsNameJob($job_container);
+        $job->handle();
+
+        //Assert that character asset created has no name
+        $this->assertDatabaseHas('character_assets', [
             'character_id' => $asset->character_id,
             'item_id' => $asset->item_id,
             'name' => $this->name_to_create
