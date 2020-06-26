@@ -26,7 +26,6 @@
 
 namespace Seatplus\Eveapi\Jobs\Assets;
 
-use Seatplus\Eveapi\Actions\Jobs\Assets\CharacterAssetsAction;
 use Seatplus\Eveapi\Actions\Jobs\Assets\GetCharacterAssetsNamesAction;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -34,7 +33,6 @@ use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\RateLimitedJobMiddleware;
 
 class CharacterAssetsNameJob extends EsiBase
 {
@@ -60,7 +58,7 @@ class CharacterAssetsNameJob extends EsiBase
             'character',
             'character_id: ' . $this->character_id,
             'assets',
-            'name'
+            'name',
         ];
     }
 

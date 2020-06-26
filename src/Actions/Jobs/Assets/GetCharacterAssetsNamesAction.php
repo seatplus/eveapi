@@ -85,7 +85,7 @@ class GetCharacterAssetsNamesAction extends RetrieveFromEsiBase implements HasPa
             ->select('item_id')
             ->where('is_singleton', true)
             ->pluck('item_id')
-            ->filter(fn($item_id) => is_null(cache()->store('file')->get($item_id)))
+            ->filter(fn ($item_id) => is_null(cache()->store('file')->get($item_id)))
             ->chunk(1000)->each(function ($item_ids) {
 
                 $this->setRequestBody($item_ids->all());
@@ -99,7 +99,7 @@ class GetCharacterAssetsNamesAction extends RetrieveFromEsiBase implements HasPa
                         return;
 
                     //cache items for 1 hrs
-                    cache()->store('file')->put($response->item_id,$response->name, 3600);
+                    cache()->store('file')->put($response->item_id, $response->name, 3600);
 
                     CharacterAsset::where('character_id', $this->refresh_token->character_id)
                         ->where('item_id', $response->item_id)
