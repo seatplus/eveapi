@@ -99,7 +99,7 @@ class EveapiServiceProvider extends ServiceProvider
 
         $this->mergeConfigFrom(__DIR__ . '/Config/eveapi.permissions.php', 'eveapi.permissions');
 
-        $this->mergeConfigFrom(__DIR__ . '/Config/eveapi.updateJobs.php', 'eveapi.updateJobs');
+        $this->mergeConfigFrom(__DIR__ . '/Config/eveapi.updateJobs.php', 'seatplus.updateJobs');
 
         $this->mergeConfigFrom(__DIR__ . '/Config/eveapi.jobs.php', 'eveapi.jobs');
 
