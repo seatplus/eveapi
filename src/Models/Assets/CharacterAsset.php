@@ -116,7 +116,7 @@ class CharacterAsset extends Model
         $affiliated_character_ids = auth()->user()->getAffiliatedCharacterIdsByPermission($permission_name);
 
         if($character_ids)
-            return $query->whereIn('character_id', collect($character_ids)->map(fn($character_id) => intval($character_id))->intersect($affiliated_character_ids)->toArray());
+            return $query->whereIn('character_id', collect($character_ids)->map(fn ($character_id) => intval($character_id))->intersect($affiliated_character_ids)->toArray());
 
         return $query->whereIn('character_id', auth()->user()->characters->pluck('character_id')->toArray());
     }
