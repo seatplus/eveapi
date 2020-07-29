@@ -41,17 +41,12 @@ class RedisFunnelMiddleware
      */
     public function handle($job, $next)
     {
-
         $key = sprintf('%s:%s:%s', (string) get_class($job), implode($job->tags()), $job->queue);
 
         Redis::funnel($key)->limit(1)->then(function () use ($job, $next) {
-
             return $next($job);
-
         }, function () use ($job) {
-
             $job->delete();
         });
-
     }
 }

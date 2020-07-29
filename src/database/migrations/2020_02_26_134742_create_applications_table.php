@@ -38,7 +38,6 @@ class CreateApplicationsTable extends Migration
     public function up()
     {
         Schema::create('applications', function (Blueprint $table) {
-
             $table->increments('id');
             $table->bigInteger('character_id');
             $table->bigInteger('corporation_id');

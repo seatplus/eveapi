@@ -38,7 +38,6 @@ class CreateUniverseStationsTable extends Migration
     public function up()
     {
         Schema::create('universe_stations', function (Blueprint $table) {
-
             $table->bigInteger('station_id')->primary();
             $table->string('name');
             $table->double('max_dockable_ship_volume');

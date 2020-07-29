@@ -64,7 +64,6 @@ class CacheAllPublicStrucutresIdAction extends RetrieveFromEsiBase
 
     public function execute()
     {
-
         $public_structure_ids = collect($this->retrieve());
 
         // Get structure ids younger then a week

@@ -39,7 +39,6 @@ class CharacterAsset extends JsonResource
      */
     public function toArray($request)
     {
-
         return [
             'item_id' => $this->item_id,
             'quantity' => $this->quantity,

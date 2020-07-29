@@ -63,14 +63,15 @@ class ResolveUniverseCategoriesByCategoryIdAction extends RetrieveFromEsiBase im
         $this->category_ids = (new AddAndGetIdsFromCache('category_ids_to_resolve', $category_id))->execute();
 
         $this->category_ids->unique()->each(function ($category_id) {
-
             $this->setPathValues([
                 'category_id' => $category_id,
             ]);
 
             $response = $this->retrieve();
 
-            if ($response->isCachedLoad()) return;
+            if ($response->isCachedLoad()) {
+                return;
+            }
 
             return Category::firstOrCreate(
                 ['category_id' => $response->category_id],
@@ -79,15 +80,14 @@ class ResolveUniverseCategoriesByCategoryIdAction extends RetrieveFromEsiBase im
                     'published' => $response->published,
                 ]
             );
-
         });
 
         // If execution was invoked with a specific type_id return the response
-        if (! is_null($category_id))
+        if (! is_null($category_id)) {
             return Category::find($category_id);
+        }
 
         return null;
-
     }
 
     public function getPathValues(): array

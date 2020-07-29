@@ -42,7 +42,6 @@ class EsiRateLimitedMiddleware
      */
     public function handle($job, $next)
     {
-
         return $this->isEsiRateLimited()
             ? $job->fail(new Exception('Hitting Esi Rate Limit. Probably the scope is missing or refresh_token was deleted'))
             : $next($job);

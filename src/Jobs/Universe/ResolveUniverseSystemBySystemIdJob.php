@@ -35,7 +35,6 @@ use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
 
 class ResolveUniverseSystemBySystemIdJob extends EsiBase
 {
-
     private $system_id;
 
     public function getActionClass(): RetrieveFromEsiInterface
@@ -82,9 +81,8 @@ class ResolveUniverseSystemBySystemIdJob extends EsiBase
      */
     public function setSystemId(int $system_id)
     {
-
         $this->system_id = $system_id;
 
         return $this;
-}
+    }
 }

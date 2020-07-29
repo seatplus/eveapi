@@ -40,7 +40,6 @@ class UniverseStructureCreated
 
     public function __construct(Structure $structure)
     {
-
         $this->structure = $structure;
     }
 }

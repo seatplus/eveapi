@@ -37,9 +37,7 @@ class CreateCharacterInfosTable extends Migration
      */
     public function up()
     {
-
         Schema::create('character_infos', function (Blueprint $table) {
-
             $table->bigInteger('character_id')->primary();
 
             $table->string('name');
@@ -54,7 +52,6 @@ class CreateCharacterInfosTable extends Migration
             $table->string('title')->nullable();
 
             $table->timestamps();
-
         });
     }
 
@@ -65,7 +62,6 @@ class CreateCharacterInfosTable extends Migration
      */
     public function down()
     {
-
         Schema::dropIfExists('character_infos');
     }
 }

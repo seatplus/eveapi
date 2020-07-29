@@ -78,7 +78,6 @@ class MaintenanceJob implements ShouldQueue
 
     public function tags(): array
     {
-
         return [
             'Maintenance',
         ];
@@ -91,11 +90,9 @@ class MaintenanceJob implements ShouldQueue
      */
     public function handle()
     {
-
         app(Pipeline::class)
             ->send(null)
             ->through($this->pipes)
             ->then(fn () => logger()->info('Maintenance job finished'));
-
     }
 }

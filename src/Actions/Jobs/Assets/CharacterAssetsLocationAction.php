@@ -41,7 +41,6 @@ class CharacterAssetsLocationAction
 
     public function __construct(RefreshToken $refresh_token)
     {
-
         $this->refresh_token = $refresh_token;
     }
 
@@ -50,7 +49,6 @@ class CharacterAssetsLocationAction
      */
     public function getLocationIds()
     {
-
         return $this->location_ids;
     }
 
@@ -68,9 +66,7 @@ class CharacterAssetsLocationAction
 
     public function execute()
     {
-
         $this->location_ids->each(function ($location_id) {
-
             dispatch(new ResolveLocationJob($location_id, $this->refresh_token))->onQueue('default');
         });
     }

@@ -33,16 +33,17 @@ class StationChecker extends LocationChecker
 {
     public function check(Location $location)
     {
-
         if (
             // if locatable exists and if locatable is of type Station and if last update is greater then a week
             (! is_null($location->locatable) && is_a($location->locatable, Station::class) && $location->locatable->updated_at < carbon()->subWeek())
             // or if location does not exist and id is between 60000000 and 64000000
             || (is_null($location->locatable) && $location->location_id > 60000000 && $location->location_id < 64000000)
-        )
+        ) {
             return (new ResolveUniverseStationByIdAction)->execute($location->location_id);
+        }
 
-        if($location->location_id < 60000000 || $location->location_id > 64000000)
+        if ($location->location_id < 60000000 || $location->location_id > 64000000) {
             $this->next($location);
+        }
     }
 }

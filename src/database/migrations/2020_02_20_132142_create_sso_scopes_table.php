@@ -38,7 +38,6 @@ class CreateSsoScopesTable extends Migration
     public function up()
     {
         Schema::create('sso_scopes', function (Blueprint $table) {
-
             $table->increments('id');
             $table->morphs('morphable');
             $table->json('selected_scopes');

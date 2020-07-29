@@ -37,7 +37,6 @@ class UpdatingRefreshTokenEvent
 
     public function __construct(RefreshToken $refresh_token)
     {
-
         $this->refresh_token = $refresh_token;
     }
 }

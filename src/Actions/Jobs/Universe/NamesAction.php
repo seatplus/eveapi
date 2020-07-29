@@ -33,7 +33,6 @@ use Seatplus\Eveapi\Models\Universe\Name;
 
 class NamesAction extends RetrieveFromEsiBase implements HasRequestBodyInterface
 {
-
     protected $request_body;
 
     /**
@@ -41,7 +40,6 @@ class NamesAction extends RetrieveFromEsiBase implements HasRequestBodyInterface
      */
     public function setRequestBody(array $request_body): void
     {
-
         $this->request_body = $request_body;
     }
 
@@ -67,14 +65,14 @@ class NamesAction extends RetrieveFromEsiBase implements HasRequestBodyInterface
 
     public function execute(Collection $type_ids)
     {
-
         $type_ids->unique()->chunk(1000)->each(function (Collection $chunk) {
-
             $this->setRequestBody($chunk->values()->all());
 
             $response = $this->retrieve();
 
-            if ($response->isCachedLoad()) return;
+            if ($response->isCachedLoad()) {
+                return;
+            }
 
             collect($response)->map(function ($result) {
                 return Name::updateOrCreate(
@@ -85,6 +83,5 @@ class NamesAction extends RetrieveFromEsiBase implements HasRequestBodyInterface
         });
 
         return null;
-
     }
 }

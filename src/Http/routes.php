@@ -32,16 +32,12 @@ use Seatplus\Eveapi\Http\Controllers\Corporation\InfoController as CorporationIn
 Route::namespace('Seatplus\Eveapi\Http\Controllers\Updates')
     ->prefix('eveapi')
     ->group(function () {
-
         Route::get('scopes', function () {
-
             return config('eveapi.scopes.selected');
-
         })->middleware('auth:api');
 
         Route::prefix('character')
             ->group(function () {
-
                 Route::get('info', [InfoController::class, 'index'])->name('get.character_info');
 
                 Route::post('info', 'CharacterInfoController@update')->name('update.character_info');
@@ -67,5 +63,4 @@ Route::namespace('Seatplus\Eveapi\Http\Controllers\Updates')
                 Route::post('public_structures', 'PublicStructureController@update')->name('update.public_structures');
                 Route::post('systems', 'SystemController@update')->name('update.systems');
             });
-
     });

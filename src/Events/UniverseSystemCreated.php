@@ -40,7 +40,6 @@ class UniverseSystemCreated
 
     public function __construct(System $system)
     {
-
         $this->system = $system;
     }
 }
