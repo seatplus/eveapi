@@ -63,7 +63,6 @@ class ResolvePublicStructureJob implements ShouldQueue
 
     public function __construct(JobContainer $job_container)
     {
-
         $this->refresh_token = $job_container->getRefreshToken();
         $this->cache_string = 'new_public_structure_ids';
     }
@@ -78,7 +77,8 @@ class ResolvePublicStructureJob implements ShouldQueue
         ];
     }
 
-    public function tags() {
+    public function tags()
+    {
         return [
             'public structures',
         ];
@@ -86,16 +86,14 @@ class ResolvePublicStructureJob implements ShouldQueue
 
     public function handle(): void
     {
-
-        if(! cache()->has($this->cache_string))
+        if (! cache()->has($this->cache_string)) {
             (new CacheAllPublicStrucutresIdAction)->execute();
+        }
 
         $this->location_ids = collect(cache()->pull($this->cache_string));
 
         $this->location_ids->unique()->each(function ($location_id) {
-
             dispatch(new ResolveLocationJob($location_id, $this->refresh_token))->onQueue('default');
         });
-
     }
 }

@@ -38,7 +38,6 @@ class CreateUniverseSystemsTable extends Migration
     public function up()
     {
         Schema::create('universe_systems', function (Blueprint $table) {
-
             $table->bigInteger('system_id')->primary();
             $table->bigInteger('constellation_id');
             $table->string('name');

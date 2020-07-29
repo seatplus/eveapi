@@ -51,7 +51,6 @@ class ResolveUniverseCategoriesByCategoryIdJob implements ShouldQueue
 
     public function __construct(?int $category_id = null)
     {
-
         $this->category_id = $category_id;
     }
 
@@ -71,7 +70,6 @@ class ResolveUniverseCategoriesByCategoryIdJob implements ShouldQueue
 
     public function tags(): array
     {
-
         return [
             'type',
             'informations',
@@ -86,8 +84,6 @@ class ResolveUniverseCategoriesByCategoryIdJob implements ShouldQueue
      */
     public function handle()
     {
-
         (new ResolveUniverseCategoriesByCategoryIdAction)->execute($this->category_id);
-
     }
 }

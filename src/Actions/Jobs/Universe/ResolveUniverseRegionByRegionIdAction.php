@@ -54,7 +54,6 @@ class ResolveUniverseRegionByRegionIdAction extends RetrieveFromEsiBase implemen
      */
     public function setPathValues(array $path_values): void
     {
-
         $this->path_values = $path_values;
     }
 
@@ -63,20 +62,20 @@ class ResolveUniverseRegionByRegionIdAction extends RetrieveFromEsiBase implemen
      */
     public function getPathValues(): array
     {
-
         return $this->path_values;
     }
 
     public function execute(int $region_id)
     {
-
         $this->setPathValues([
             'region_id' => $region_id,
         ]);
 
         $response = $this->retrieve();
 
-        if ($response->isCachedLoad()) return;
+        if ($response->isCachedLoad()) {
+            return;
+        }
 
         return Region::firstOrCreate(
             ['region_id' => $region_id],
@@ -85,6 +84,5 @@ class ResolveUniverseRegionByRegionIdAction extends RetrieveFromEsiBase implemen
                 'description' => $response->optional('description'),
             ]
         );
-
     }
 }

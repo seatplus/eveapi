@@ -38,7 +38,6 @@ class AllianceInfoResource extends JsonResource
      */
     public function toArray($request)
     {
-
         return [
             'alliance_id' => $this->alliance_id,
             'name' => $this->name,

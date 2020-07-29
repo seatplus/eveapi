@@ -44,7 +44,6 @@ class StructureChecker extends LocationChecker
 
     public function __construct(RefreshToken $refresh_token)
     {
-
         $this->refresh_token = $refresh_token;
         $this->action = new ResolveUniverseStructureByIdAction($refresh_token);
     }
@@ -56,8 +55,9 @@ class StructureChecker extends LocationChecker
             (! is_null($location->locatable) && is_a($location->locatable, Structure::class) && $location->locatable->updated_at < carbon()->subWeek())
             // or if location does not exist and id is not between 60000000 and 64000000
             || (is_null($location->locatable) && ! ($location->location_id > 60000000 && $location->location_id < 64000000))
-        )
+        ) {
             $this->action->execute($location->location_id);
+        }
 
         $this->next($location);
     }

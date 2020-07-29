@@ -53,7 +53,6 @@ class CharacterRoleJob extends EsiBase
 
     public function tags(): array
     {
-
         return [
             'character',
             'character_id: ' . $this->character_id,
@@ -69,9 +68,7 @@ class CharacterRoleJob extends EsiBase
      */
     public function handle(): void
     {
-
         $this->getActionClass()->execute($this->refresh_token);
-
     }
 
     public function getActionClass(): RetrieveFromEsiInterface

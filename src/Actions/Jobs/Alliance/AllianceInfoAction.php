@@ -58,20 +58,20 @@ class AllianceInfoAction extends RetrieveFromEsiBase implements HasPathValuesInt
      */
     public function setAllianceId(int $alliance_id): void
     {
-
         $this->alliance_id = $alliance_id;
     }
 
     public function execute(int $alliance_id)
     {
-
         $this->setPathValues([
             'alliance_id' => $alliance_id,
         ]);
 
         $response = $this->retrieve();
 
-        if ($response->isCachedLoad()) return;
+        if ($response->isCachedLoad()) {
+            return;
+        }
 
         AllianceInfo::firstOrNew(['alliance_id' => $alliance_id])->fill([
             'creator_corporation_id' => $response->creator_corporation_id,

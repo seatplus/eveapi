@@ -48,7 +48,6 @@ class ResolveUniverseTypesByTypeIdAction extends RetrieveFromEsiBase implements 
      */
     public function setRequestBody(array $request_body): void
     {
-
         $this->request_body = $request_body;
     }
 
@@ -72,14 +71,15 @@ class ResolveUniverseTypesByTypeIdAction extends RetrieveFromEsiBase implements 
         $this->type_ids = (new AddAndGetIdsFromCache('type_ids_to_resolve', $type_id))->execute();
 
         $this->type_ids->unique()->each(function ($type_id) {
-
             $this->setPathValues([
                 'type_id' => $type_id,
             ]);
 
             $response = $this->retrieve();
 
-            if ($response->isCachedLoad()) return;
+            if ($response->isCachedLoad()) {
+                return;
+            }
 
             return Type::firstOrCreate(
                 ['type_id' => $response->type_id],
@@ -100,15 +100,14 @@ class ResolveUniverseTypesByTypeIdAction extends RetrieveFromEsiBase implements 
                     'volume' => $response->optional('volume'),
                 ]
             );
-
         });
 
         // If execution was invoked with a specific type_id return the response
-        if (! is_null($type_id))
+        if (! is_null($type_id)) {
             return Type::find($type_id);
+        }
 
         return null;
-
     }
 
     public function getPathValues(): array

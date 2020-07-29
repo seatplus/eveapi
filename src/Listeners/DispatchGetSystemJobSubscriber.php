@@ -69,8 +69,9 @@ class DispatchGetSystemJobSubscriber
 
     private function handleSystemId()
     {
-        if(System::find($this->system_id))
+        if (System::find($this->system_id)) {
             return;
+        }
 
         $job = new ResolveUniverseSystemBySystemIdJob;
         $job->setSystemId($this->system_id);

@@ -53,10 +53,8 @@ class RateLimitedJobMiddleware
         Redis::throttle($redisKey)
             ->block(0)->allow(1)->every($this->duration)
             ->then(function () use ($job, $next) {
-
                 return $next($job);
-                }, function () use ($job) {
-
+            }, function () use ($job) {
                 $job->delete();
             });
     }
@@ -68,7 +66,6 @@ class RateLimitedJobMiddleware
      */
     public function setKey(string $key): RateLimitedJobMiddleware
     {
-
         $this->key = $key;
 
         return $this;
@@ -81,7 +78,6 @@ class RateLimitedJobMiddleware
      */
     public function setDuration(int $duration): RateLimitedJobMiddleware
     {
-
         $this->duration = $duration;
 
         return $this;
@@ -94,7 +90,6 @@ class RateLimitedJobMiddleware
      */
     public function setViaCharacterId(int $viaCharacterId): RateLimitedJobMiddleware
     {
-
         $this->viaCharacterId = $viaCharacterId;
 
         return $this;

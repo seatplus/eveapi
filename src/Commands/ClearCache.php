@@ -53,13 +53,13 @@ class ClearCache extends Command
         $this->line('SeAT plus Cache Clearing Tool');
         $this->line('');
 
-        if(! $this->option('force'))
+        if (! $this->option('force')) {
             if (! $this->confirm('Are you sure you want to clear ALL caches (file/redis)?', true)) {
-
                 $this->warn('Exiting without clearing cache');
 
                 return;
             }
+        }
 
         $this->flushRedis();
 
@@ -76,7 +76,6 @@ class ClearCache extends Command
 
         try {
             RedisHelper::flushall();
-
         } catch (Exception $exception) {
             $this->error('Failed to clear the Redis Cache. Error: ' . $exception->getMessage());
         }
@@ -88,7 +87,7 @@ class ClearCache extends Command
         // Eseye Cache Clearing
         $eseye_cache = config('eveapi.config.eseye_cache');
 
-        if(! File::isWritable($eseye_cache)) {
+        if (! File::isWritable($eseye_cache)) {
             $this->error('Eseye Cache directory at ' . $eseye_cache . ' is not writable');
 
             return;
@@ -96,8 +95,9 @@ class ClearCache extends Command
 
         $this->info('Clearing the Eseye Cache at: ' . $eseye_cache);
 
-        if (! File::deleteDirectory($eseye_cache, true))
+        if (! File::deleteDirectory($eseye_cache, true)) {
             $this->error('Failed to clear the Eseye Cache directory. Check permissions.');
+        }
     }
 
     private function clearArtisanCache()

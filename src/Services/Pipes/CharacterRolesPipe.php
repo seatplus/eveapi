@@ -34,9 +34,9 @@ class CharacterRolesPipe implements Pipe
 {
     public function handle(JobContainer $job_container, Closure $next)
     {
-
-        if(in_array('esi-characters.read_corporation_roles.v1', $job_container->refresh_token->refresh()->scopes))
+        if (in_array('esi-characters.read_corporation_roles.v1', $job_container->refresh_token->refresh()->scopes)) {
             CharacterRoleJob::dispatch($job_container)->onQueue($job_container->queue);
+        }
 
         return $next($job_container);
     }

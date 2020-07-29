@@ -35,11 +35,11 @@ class CharacterAssetsPipe implements Pipe
 {
     public function handle(JobContainer $job_container, Closure $next)
     {
-
-        if(in_array('esi-assets.read_assets.v1', $job_container->refresh_token->refresh()->scopes))
+        if (in_array('esi-assets.read_assets.v1', $job_container->refresh_token->refresh()->scopes)) {
             CharacterAssetJob::withChain([
                 new CharacterAssetsNameJob($job_container),
             ])->dispatch($job_container)->onQueue($job_container->queue);
+        }
 
         return $next($job_container);
     }

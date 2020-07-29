@@ -38,7 +38,6 @@ class CreateUniverseConstellationsTable extends Migration
     public function up()
     {
         Schema::create('universe_constellations', function (Blueprint $table) {
-
             $table->bigInteger('constellation_id')->primary();
             $table->bigInteger('region_id');
             $table->string('name');

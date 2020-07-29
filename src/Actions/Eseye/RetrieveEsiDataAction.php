@@ -34,7 +34,6 @@ use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 
 class RetrieveEsiDataAction
 {
-
     use RateLimitsEsiCalls;
 
     protected $get_eseye_client_action;
@@ -71,14 +70,13 @@ class RetrieveEsiDataAction
         $this->client->setQueryString($this->request->query_string);
 
         // Configure the page to get
-        if (! is_null($this->request->page))
+        if (! is_null($this->request->page)) {
             $this->client->page($this->request->page);
+        }
 
         try {
-
             $result = $this->client->invoke($this->request->method, $this->request->endpoint, $this->request->path_values);
         } catch (RequestFailedException $exception) {
-
             $this->handleException($exception);
 
             // Rethrow the exception
@@ -87,8 +85,9 @@ class RetrieveEsiDataAction
 
         // If this is a cached load, don't bother with any further
         // processing.
-        if ($result->isCachedLoad())
+        if ($result->isCachedLoad()) {
             return $result;
+        }
 
         // Perform error checking
         $this->getLogWarningAction()->setEseyeClient($this->client)->execute($result, $this->request->page);
@@ -100,15 +99,14 @@ class RetrieveEsiDataAction
 
     private function getLogWarningAction(): LogWarningsAction
     {
-
         return new LogWarningsAction();
     }
 
     private function updateRefreshToken()
     {
-
-        if(is_null($this->client) || $this->request->isPublic())
+        if (is_null($this->client) || $this->request->isPublic()) {
             return;
+        }
 
         $auth = $this->client->getAuthentication();
 
@@ -117,18 +115,19 @@ class RetrieveEsiDataAction
         $refresh_token->expires_on = $auth->token_expires;
 
         $refresh_token->save();
-
     }
 
     private function handleException(RequestFailedException $exception)
     {
         // If error is in 4xx or 5xx range increase esi rate limit
-        if (($exception->getEsiResponse()->getErrorCode() >= 400) && ($exception->getEsiResponse()->getErrorCode() <= 599))
+        if (($exception->getEsiResponse()->getErrorCode() >= 400) && ($exception->getEsiResponse()->getErrorCode() <= 599)) {
             $this->incrementEsiRateLimit();
+        }
 
         // If RateLimited directly raise the EsiRateLimit to 80
-        if (Str::contains($exception->getEsiResponse()->error(), 'This software has exceeded the error limit for ESI.'))
+        if (Str::contains($exception->getEsiResponse()->error(), 'This software has exceeded the error limit for ESI.')) {
             $this->incrementEsiRateLimit(80);
+        }
 
         // If the token can't login and we get an HTTP 400 together with
         // and error message stating that this is an invalid_token, remove
@@ -139,8 +138,9 @@ class RetrieveEsiDataAction
         ])) {
 
             // Remove the invalid token
-            if(! is_null($this->request->refresh_token))
+            if (! is_null($this->request->refresh_token)) {
                 $this->request->refresh_token->delete();
+            }
         }
     }
 }

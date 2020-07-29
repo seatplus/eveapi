@@ -38,7 +38,6 @@ class CreateUniverseNamesTable extends Migration
     public function up()
     {
         Schema::create('universe_names', function (Blueprint $table) {
-
             $table->bigInteger('id')->primary();
             $table->string('category');
             $table->string('name');

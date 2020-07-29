@@ -66,7 +66,6 @@ abstract class EsiBase implements ShouldQueue, BaseJobInterface
      */
     public function getCorporationId(): int
     {
-
         return $this->corporation_id ?? optional(CharacterAffiliation::find($this->character_id))->corporation_id;
     }
 
@@ -85,7 +84,6 @@ abstract class EsiBase implements ShouldQueue, BaseJobInterface
      */
     public function setRefreshToken(?RefreshToken $refresh_token): void
     {
-
         $this->refresh_token = $refresh_token;
     }
 
@@ -94,7 +92,6 @@ abstract class EsiBase implements ShouldQueue, BaseJobInterface
      */
     public function setCharacterId(?int $character_id): void
     {
-
         $this->character_id = $character_id;
     }
 
@@ -103,7 +100,6 @@ abstract class EsiBase implements ShouldQueue, BaseJobInterface
      */
     public function setCorporationId(?int $corporation_id): void
     {
-
         $this->corporation_id = $corporation_id;
     }
 
@@ -114,7 +110,6 @@ abstract class EsiBase implements ShouldQueue, BaseJobInterface
      */
     public function setAllianceId(?int $alliance_id): void
     {
-
         $this->alliance_id = $alliance_id;
     }
 
@@ -139,17 +134,21 @@ abstract class EsiBase implements ShouldQueue, BaseJobInterface
     {
         $tags = collect(property_exists($this, 'tags') ? $this->tags : []);
 
-        if(is_null($this->refresh_token))
+        if (is_null($this->refresh_token)) {
             $tags->push('public');
+        }
 
-        if($this->character_id)
+        if ($this->character_id) {
             $tags->push('character_id:' . $this->character_id);
+        }
 
-        if($this->corporation_id)
+        if ($this->corporation_id) {
             $tags->push('corporation_id:' . $this->corporation_id);
+        }
 
-        if($this->alliance_id)
+        if ($this->alliance_id) {
             $tags->push('alliance_id:' . $this->alliance_id);
+        }
 
         return $tags->toArray();
     }

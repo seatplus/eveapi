@@ -43,15 +43,13 @@ class EsiRequestContainer
 
     public function __construct(array $data = null)
     {
-
         if (! is_null($data)) {
-
             foreach ($data as $key => $value) {
-
-                if (! array_key_exists($key, $this->data))
+                if (! array_key_exists($key, $this->data)) {
                     throw new InvalidContainerDataException(
                         'Key ' . $key . ' is not valid for this container'
                     );
+                }
 
                 $this->$key = $value;
             }
@@ -60,16 +58,16 @@ class EsiRequestContainer
 
     public function __set($key, $value): void
     {
-
-        if (array_key_exists($key, $this->data))
+        if (array_key_exists($key, $this->data)) {
             $this->data[$key] = $value;
-
+        }
     }
 
     public function __get($key)
     {
-        if (array_key_exists($key, $this->data))
+        if (array_key_exists($key, $this->data)) {
             return $this->data[$key];
+        }
 
         return '';
     }

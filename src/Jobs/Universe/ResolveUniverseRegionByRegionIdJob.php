@@ -35,7 +35,6 @@ use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
 
 class ResolveUniverseRegionByRegionIdJob extends EsiBase
 {
-
     private $region_id;
 
     public function getActionClass(): RetrieveFromEsiInterface
@@ -82,7 +81,6 @@ class ResolveUniverseRegionByRegionIdJob extends EsiBase
      */
     public function setRegionId(int $region_id)
     {
-
         $this->region_id = $region_id;
 
         return $this;

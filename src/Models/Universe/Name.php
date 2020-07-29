@@ -57,5 +57,4 @@ class Name extends Model
         'category' => 'string',
         'name' => 'string',
     ];
-
 }
