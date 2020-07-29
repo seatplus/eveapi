@@ -36,6 +36,7 @@ use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\Pipes\CharacterAssetsPipe;
 use Seatplus\Eveapi\Services\Pipes\CharacterInfoPipe;
+use Seatplus\Eveapi\Services\Pipes\CharacterRolesPipe;
 
 class UpdateCharacter implements ShouldQueue
 {
@@ -44,6 +45,7 @@ class UpdateCharacter implements ShouldQueue
     private array $pipes = [
         CharacterInfoPipe::class,
         CharacterAssetsPipe::class,
+        CharacterRolesPipe::class
     ];
 
     /**
@@ -63,7 +65,7 @@ class UpdateCharacter implements ShouldQueue
         if($this->refresh_token)
             return $this->execute($this->refresh_token, 'high');
 
-        RefreshToken::cursor()->each(function ($token) {
+        return RefreshToken::cursor()->each(function ($token) {
 
             $this->execute($token);
         });
