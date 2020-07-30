@@ -35,7 +35,6 @@ class CorporationInfoController extends Controller
 {
     public function update(Request $request)
     {
-
         $validatedData = $request->validate([
             'corporation_id' => 'required',
         ]);
@@ -47,6 +46,5 @@ class CorporationInfoController extends Controller
         CorporationInfoJob::dispatch($job_container)->onQueue('default');
 
         return response('success', 200);
-
     }
 }

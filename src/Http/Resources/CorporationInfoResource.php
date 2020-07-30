@@ -38,7 +38,6 @@ class CorporationInfoResource extends JsonResource
      */
     public function toArray($request)
     {
-
         return [
             'corporation_id' => $this->corporation_id,
             'name' => $this->name,

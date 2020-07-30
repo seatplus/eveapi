@@ -49,7 +49,6 @@ class CreateAllianceInfosTable extends Migration
             $table->string('ticker');
 
             $table->timestamps();
-
         });
     }
 

@@ -62,7 +62,6 @@ class CharacterRoleAction extends RetrieveFromEsiBase implements RetrieveFromEsi
 
     public function execute(RefreshToken $refresh_token)
     {
-
         $this->refresh_token = $refresh_token;
 
         $this->setPathValues([
@@ -71,7 +70,9 @@ class CharacterRoleAction extends RetrieveFromEsiBase implements RetrieveFromEsi
 
         $response = $this->retrieve();
 
-        if ($response->isCachedLoad()) return;
+        if ($response->isCachedLoad()) {
+            return;
+        }
 
         CharacterRole::updateOrCreate([
             'character_id' => $refresh_token->character_id,
@@ -81,7 +82,6 @@ class CharacterRoleAction extends RetrieveFromEsiBase implements RetrieveFromEsi
             'roles_at_hq' => $response->roles_at_hq,
             'roles_at_other' => $response->roles_at_other,
         ]);
-
     }
 
     public function getRequiredScope(): string

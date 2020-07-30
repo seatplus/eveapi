@@ -40,7 +40,6 @@ class EseyeSetup
      */
     public function __construct()
     {
-
         $config = Configuration::getInstance();
         $config->http_user_agent = 'SeAT plus v' . config('eveapi.config.version');
 
@@ -68,7 +67,6 @@ class EseyeSetup
         $config->sso_scheme = config('eveapi.config.eseye_sso_scheme');
         $config->sso_host = config('eveapi.config.eseye_sso_host');
         $config->sso_port = config('eveapi.config.eseye_sso_port');
-
     }
 
     /**
@@ -84,11 +82,8 @@ class EseyeSetup
      */
     public function get(EsiAuthentication $authentication = null): Eseye
     {
-
         if ($authentication) {
-
             tap($authentication, function ($auth) {
-
                 $auth->client_id = env('EVE_CLIENT_ID');
                 $auth->secret = env('EVE_CLIENT_SECRET');
             });

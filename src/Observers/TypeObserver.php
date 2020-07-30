@@ -40,11 +40,10 @@ class TypeObserver
      */
     public function created(Type $type)
     {
-
-        if($type->group)
+        if ($type->group) {
             return;
+        }
 
         ResolveUniverseGroupsByGroupIdJob::dispatch($type->group_id)->onQueue('high');
-
     }
 }

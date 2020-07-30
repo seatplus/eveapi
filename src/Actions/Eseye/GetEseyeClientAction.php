@@ -55,8 +55,9 @@ class GetEseyeClientAction
 
         $this->refresh_token = $refresh_token;
 
-        if (is_null($this->refresh_token))
+        if (is_null($this->refresh_token)) {
             return $this->client = $this->client->get();
+        }
 
         // retrieve up-to-date token
         $this->refresh_token = $this->refresh_token->fresh();
@@ -67,6 +68,5 @@ class GetEseyeClientAction
             'token_expires' => $this->refresh_token->expires_on,
             'scopes'        => $this->refresh_token->scopes,
         ]));
-
     }
 }

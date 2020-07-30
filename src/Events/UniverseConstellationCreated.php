@@ -40,7 +40,6 @@ class UniverseConstellationCreated
 
     public function __construct(Constellation $constellation)
     {
-
         $this->constellation = $constellation;
     }
 }

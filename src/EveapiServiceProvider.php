@@ -105,7 +105,6 @@ class EveapiServiceProvider extends ServiceProvider
 
         // Eseye Singleton
         $this->app->singleton('esi-client', function () {
-
             return new EseyeSetup;
         });
     }
@@ -121,9 +120,9 @@ class EveapiServiceProvider extends ServiceProvider
 
         // Require the queue_manager role to view the dashboard
         Horizon::auth(function ($request) {
-
-            if (is_null($request->user()))
+            if (is_null($request->user())) {
                 return false;
+            }
 
             return $request->user()->can('queue_manager');
         });
@@ -132,8 +131,9 @@ class EveapiServiceProvider extends ServiceProvider
         $balancing_mode = filter_var(env(self::QUEUE_BALANCING_MODE, false), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
 
         // in case the variable cannot be parsed into a boolean, assign the environment value itself
-        if (is_null($balancing_mode))
+        if (is_null($balancing_mode)) {
             $balancing_mode = env(self::QUEUE_BALANCING_MODE, false);
+        }
 
         // Configure the workers for SeAT plus.
         $horizon_environments = [
@@ -199,13 +199,11 @@ class EveapiServiceProvider extends ServiceProvider
             // hack as this schedule() method is core to
             // the framework.
             try {
-
                 DB::connection();
-                if (! Schema::hasTable('schedules'))
+                if (! Schema::hasTable('schedules')) {
                     throw new Exception('Schema schedules does not exist');
-
+                }
             } catch (Exception $e) {
-
                 return;
             }
 

@@ -53,7 +53,6 @@ class CharacterAssetsNameJob extends EsiBase
 
     public function tags(): array
     {
-
         return [
             'character',
             'character_id: ' . $this->character_id,

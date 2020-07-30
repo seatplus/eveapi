@@ -39,9 +39,9 @@ class HasRefreshTokenMiddleware
      */
     public function handle($job, $next)
     {
-
-        if($job->refresh_token)
+        if ($job->refresh_token) {
             return $next($job);
+        }
 
         $job->fail(new Exception('Refresh token is missing'));
     }

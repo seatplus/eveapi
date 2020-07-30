@@ -53,8 +53,9 @@ class CharacterAssetsCleanupAction
 
         // Delete character items if no longer present
         foreach ($character_assets as $character_asset) {
-            if (! in_array($character_asset->item_id, $this->known_assets))
+            if (! in_array($character_asset->item_id, $this->known_assets)) {
                 $character_asset->delete();
+            }
         }
     }
 }

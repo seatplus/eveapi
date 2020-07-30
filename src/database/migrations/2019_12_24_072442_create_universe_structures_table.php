@@ -38,7 +38,6 @@ class CreateUniverseStructuresTable extends Migration
     public function up()
     {
         Schema::create('universe_structures', function (Blueprint $table) {
-
             $table->bigInteger('structure_id')->primary();
             $table->string('name');
             $table->bigInteger('owner_id');

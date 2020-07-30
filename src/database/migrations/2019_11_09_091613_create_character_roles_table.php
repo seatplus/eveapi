@@ -38,7 +38,6 @@ class CreateCharacterRolesTable extends Migration
     public function up()
     {
         Schema::create('character_roles', function (Blueprint $table) {
-
             $table->bigInteger('character_id')->primary();
             $table->json('roles')->nullable();
             $table->json('roles_at_base')->nullable();

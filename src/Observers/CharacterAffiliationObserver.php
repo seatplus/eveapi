@@ -42,19 +42,18 @@ class CharacterAffiliationObserver
      */
     public function created(CharacterAffiliation $character_affiliation)
     {
-
         $this->handle($character_affiliation);
     }
 
     public function updating(CharacterAffiliation $character_affiliation)
     {
-        if($character_affiliation->isDirty(['corporation_id', 'alliance_id']))
+        if ($character_affiliation->isDirty(['corporation_id', 'alliance_id'])) {
             $this->handle($character_affiliation);
+        }
     }
 
     private function handle(CharacterAffiliation $character_affiliation)
     {
-
         $job = new JobContainer([
             'character_id' => $character_affiliation->character_id,
             'corporation_id' => $character_affiliation->corporation_id,
@@ -62,14 +61,16 @@ class CharacterAffiliationObserver
         ]);
 
         // if character is not present in db don't even bother about corporation or alliance
-        if (! $character_affiliation->character)
+        if (! $character_affiliation->character) {
             return;
+        }
 
-        if(! $character_affiliation->corporation)
+        if (! $character_affiliation->corporation) {
             CorporationInfoJob::dispatch($job)->onQueue('high');
+        }
 
-        if($character_affiliation->alliance_id && ! $character_affiliation->alliance)
+        if ($character_affiliation->alliance_id && ! $character_affiliation->alliance) {
             AllianceInfo::dispatch($job)->onQueue('high');
-
+        }
     }
 }

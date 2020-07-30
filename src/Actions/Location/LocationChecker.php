@@ -30,7 +30,6 @@ use Seatplus\Eveapi\Models\Universe\Location;
 
 abstract class LocationChecker
 {
-
     protected $successor;
 
     abstract public function check(Location $location);
@@ -42,7 +41,8 @@ abstract class LocationChecker
 
     public function next(Location $location)
     {
-        if ($this->successor)
+        if ($this->successor) {
             $this->successor->check($location);
+        }
     }
 }

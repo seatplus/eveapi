@@ -56,7 +56,6 @@ class AllianceInfo extends Model
 
     public function characters()
     {
-
         return $this->hasManyThrough(
             CharacterInfo::class,
             CharacterAffiliation::class,
@@ -69,7 +68,6 @@ class AllianceInfo extends Model
 
     public function corporations()
     {
-
         return $this->hasMany(CorporationInfo::class, 'corporation_id', 'corporation_id');
     }
 

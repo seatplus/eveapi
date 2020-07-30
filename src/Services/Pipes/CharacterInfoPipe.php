@@ -34,10 +34,8 @@ class CharacterInfoPipe implements Pipe
 {
     public function handle(JobContainer $job_container, Closure $next)
     {
-
         CharacterInfoJob::dispatch($job_container)->onQueue($job_container->queue);
 
         return $next($job_container);
-
     }
 }

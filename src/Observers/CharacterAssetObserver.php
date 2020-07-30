@@ -48,12 +48,10 @@ class CharacterAssetObserver
      */
     public function created(CharacterAsset $character_asset)
     {
-
         $this->character_asset = $character_asset;
 
         $this->handleTypes();
         $this->handleLocations();
-
     }
 
     /**
@@ -65,26 +63,27 @@ class CharacterAssetObserver
      */
     public function updating(CharacterAsset $character_asset)
     {
-
         $this->character_asset = $character_asset;
 
-        if($character_asset->isDirty('location_id'))
+        if ($character_asset->isDirty('location_id')) {
             $this->handleLocations();
+        }
     }
 
     private function handleTypes()
     {
-        if($this->character_asset->type)
+        if ($this->character_asset->type) {
             return;
+        }
 
         ResolveUniverseTypesByTypeIdJob::dispatch($this->character_asset->type_id)->onQueue('high');
     }
 
     private function handleLocations()
     {
-
-        if($this->character_asset->location)
+        if ($this->character_asset->location) {
             return;
+        }
 
         $job_container = new JobContainer([
             'refresh_token' => RefreshToken::find($this->character_asset->character_id),

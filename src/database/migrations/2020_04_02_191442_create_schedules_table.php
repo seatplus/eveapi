@@ -38,7 +38,6 @@ class CreateSchedulesTable extends Migration
     public function up()
     {
         Schema::create('schedules', function (Blueprint $table) {
-
             $table->increments('id');
             $table->string('job');
             $table->string('expression');

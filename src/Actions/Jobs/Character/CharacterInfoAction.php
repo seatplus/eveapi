@@ -51,20 +51,20 @@ class CharacterInfoAction extends RetrieveFromEsiBase implements HasPathValuesIn
 
     public function getPathValues(): array
     {
-
         return $this->path_values;
     }
 
     public function execute(int $character_id)
     {
-
         $this->setPathValues([
             'character_id' => $character_id,
         ]);
 
         $response = $this->retrieve();
 
-        if ($response->isCachedLoad()) return;
+        if ($response->isCachedLoad()) {
+            return;
+        }
 
         CharacterInfo::updateOrCreate([
             'character_id' => $character_id,
@@ -80,7 +80,6 @@ class CharacterInfoAction extends RetrieveFromEsiBase implements HasPathValuesIn
             'faction_id'      => $response->optional('faction_id'),
             'title' => $response->optional('title'),
         ]);
-
     }
 
     public function setPathValues(array $array): void

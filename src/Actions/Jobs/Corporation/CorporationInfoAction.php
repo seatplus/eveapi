@@ -55,14 +55,15 @@ class CorporationInfoAction extends RetrieveFromEsiBase implements HasPathValues
 
     public function execute(int $corporation_id)
     {
-
         $this->setPathValues([
             'corporation_id' => $corporation_id,
         ]);
 
         $response = $this->retrieve();
 
-        if ($response->isCachedLoad()) return;
+        if ($response->isCachedLoad()) {
+            return;
+        }
 
         CorporationInfo::firstOrNew(['corporation_id' => $corporation_id])->fill([
             'ticker'          => $response->ticker,
@@ -81,7 +82,6 @@ class CorporationInfoAction extends RetrieveFromEsiBase implements HasPathValues
             'url'             => $response->optional('url'),
             'war_eligible'    => $response->optional('war_eligible'),
         ])->save();
-
     }
 
     public function getMethod(): string

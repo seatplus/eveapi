@@ -51,27 +51,26 @@ class GroupObserver
      */
     public function created(Group $group)
     {
-
         $this->group = $group;
 
         $this->handleCategory();
         $this->handleAssetsName();
-
     }
 
     private function handleCategory()
     {
-        if($this->group->category)
+        if ($this->group->category) {
             return;
+        }
 
         ResolveUniverseCategoriesByCategoryIdJob::dispatch($this->group->category_id)->onQueue('high');
     }
 
     private function handleAssetsName()
     {
-
-        if(! in_array($this->group->category_id, [2, 6, 22, 23, 46, 65]))
+        if (! in_array($this->group->category_id, [2, 6, 22, 23, 46, 65])) {
             return;
+        }
 
         CharacterAsset::whereHas('type.group', function (Builder $query) {
             // Only Celestials, Ships, Deployable, Starbases, Orbitals and Structures might be named
@@ -81,9 +80,7 @@ class GroupObserver
             ->pluck('character_id')
             ->unique()
             ->whenNotEmpty(function ($collection) {
-
                 $collection->each(function ($character_id) {
-
                     $job_container = new JobContainer([
                         'refresh_token' => RefreshToken::find($character_id),
                     ]);
