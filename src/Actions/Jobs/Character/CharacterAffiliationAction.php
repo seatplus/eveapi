@@ -77,38 +77,39 @@ class CharacterAffiliationAction extends RetrieveFromEsiBase implements HasReque
             }
 
             return $collection;
-        })->unique()->chunk(1000)->each(function (Collection $chunk) {
-            if ($chunk->isEmpty()) {
-                return;
-            }
+        })->unique()
+            ->chunk(1000)
+            ->whenNotEmpty(function ($collection) {
+                $collection->each(function (Collection $chunk) {
 
-            $this->setRequestBody($chunk->values()->all());
+                    $this->setRequestBody($chunk->values()->all());
 
-            $response = $this->retrieve();
+                    $response = $this->retrieve();
 
-            if ($response->isCachedLoad()) {
-                return;
-            }
+                    if ($response->isCachedLoad()) {
+                        return;
+                    }
 
-            $timestamp = now();
+                    $timestamp = now();
 
-            collect($response)->map(function ($result) use ($timestamp) {
-                return CharacterAffiliation::updateOrCreate(
-                    [
-                        'character_id' => $result->character_id,
-                    ],
-                    [
-                        'corporation_id' => $result->corporation_id,
-                        'alliance_id' => optional($result)->alliance_id,
-                        'faction_id' => optional($result)->faction_id,
-                        'last_pulled' => $timestamp,
-                    ]
-                );
-            })->each(function (CharacterAffiliation $character_affiliation) use ($timestamp) {
-                $character_affiliation->last_pulled = $timestamp;
-                $character_affiliation->save();
+                    collect($response)->map(function ($result) use ($timestamp) {
+                        return CharacterAffiliation::updateOrCreate(
+                            [
+                                'character_id' => $result->character_id,
+                            ],
+                            [
+                                'corporation_id' => $result->corporation_id,
+                                'alliance_id' => optional($result)->alliance_id,
+                                'faction_id' => optional($result)->faction_id,
+                                'last_pulled' => $timestamp,
+                            ]
+                        );
+                    })->each(function (CharacterAffiliation $character_affiliation) use ($timestamp) {
+                        $character_affiliation->last_pulled = $timestamp;
+                        $character_affiliation->save();
+                    });
+                });
             });
-        });
 
         return CharacterAffiliation::find($character_id);
     }
