@@ -66,6 +66,12 @@ class CharacterRoleActionTest extends TestCase
 
     }
 
+    /** @test */
+    public function getRequiredScope()
+    {
+        $this->assertEquals('esi-characters.read_corporation_roles.v1',(new CharacterRoleAction)->getRequiredScope() );
+    }
+
     private function buildMockEsiData()
     {
 

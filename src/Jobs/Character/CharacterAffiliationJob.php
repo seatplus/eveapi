@@ -63,7 +63,6 @@ class CharacterAffiliationJob extends EsiBase
      */
     public function handle(): void
     {
-
         $this->getActionClass()->execute($this->character_id);
     }
 

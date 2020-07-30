@@ -38,7 +38,6 @@ class CreateUniverseLocationsTable extends Migration
     public function up()
     {
         Schema::create('universe_locations', function (Blueprint $table) {
-
             $table->bigInteger('location_id')->primary();
             $table->bigInteger('locatable_id')->nullable();
             $table->string('locatable_type')->nullable();

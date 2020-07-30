@@ -57,5 +57,4 @@ class Region extends Model
         'name' => 'string',
         'description' => 'string',
     ];
-
 }

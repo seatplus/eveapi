@@ -33,7 +33,6 @@ class ReactOnFreshRefreshToken
 {
     public function handle(RefreshTokenCreated $refresh_token_event)
     {
-
         $refresh_token = $refresh_token_event->refresh_token;
 
         UpdateCharacter::dispatch($refresh_token)->onQueue('high');

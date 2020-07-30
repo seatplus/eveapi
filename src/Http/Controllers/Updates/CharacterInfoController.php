@@ -35,7 +35,6 @@ class CharacterInfoController extends Controller
 {
     public function update(Request $request)
     {
-
         $validatedData = $request->validate([
             'character_id' => 'required',
         ]);
@@ -47,6 +46,5 @@ class CharacterInfoController extends Controller
         CharacterInfo::dispatch($job_container)->onQueue('default');
 
         return response('success', 200);
-
     }
 }

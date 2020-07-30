@@ -33,8 +33,9 @@ class DispatchGetRegionById
 {
     public function handle(UniverseConstellationCreated $universe_constellation_created)
     {
-        if($universe_constellation_created->constellation->region)
+        if ($universe_constellation_created->constellation->region) {
             return;
+        }
 
         $job = new ResolveUniverseRegionByRegionIdJob;
         $job->setRegionId($universe_constellation_created->constellation->region_id);

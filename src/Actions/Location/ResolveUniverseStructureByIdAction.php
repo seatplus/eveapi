@@ -69,7 +69,6 @@ class ResolveUniverseStructureByIdAction extends RetrieveFromEsiBase implements 
 
     public function __construct(RefreshToken $refresh_token)
     {
-
         $this->refresh_token = $refresh_token;
         $this->location_ids = collect();
     }
@@ -114,7 +113,9 @@ class ResolveUniverseStructureByIdAction extends RetrieveFromEsiBase implements 
         logger()->debug('Resolving Structure: ' . $location_id);
 
         // If Rate Limited or required scope is missing skip execution
-        if($this->isEsiRateLimited() || ! $this->refresh_token->hasScope($this->getRequiredScope())) return;
+        if ($this->isEsiRateLimited() || ! $this->refresh_token->hasScope($this->getRequiredScope())) {
+            return;
+        }
 
         $this->setPathValues([
             'structure_id' => $location_id,
@@ -137,6 +138,5 @@ class ResolveUniverseStructureByIdAction extends RetrieveFromEsiBase implements 
             'locatable_id' => $location_id,
             'locatable_type' => Structure::class,
         ]);
-
     }
 }

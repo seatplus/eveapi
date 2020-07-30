@@ -56,9 +56,7 @@ class CharacterAffiliationAction extends RetrieveFromEsiBase implements HasReque
 
     public function execute(?int $character_id = null)
     {
-
         collect($character_id)->pipe(function (Collection $collection) {
-
             return $collection->isEmpty() ? $collection : $collection->filter(function ($value) {
 
                 // Remove $character_id that is already in DB and younger then 60minutes
@@ -67,7 +65,6 @@ class CharacterAffiliationAction extends RetrieveFromEsiBase implements HasReque
                 return $db_entry
                     ? $db_entry->last_pulled->diffInMinutes(now()) > 60
                     : true;
-
             });
         })->pipe(function (Collection $collection) {
             //Check all other character affiliations present in DB that are younger then 60 minutes
@@ -75,45 +72,45 @@ class CharacterAffiliationAction extends RetrieveFromEsiBase implements HasReque
                 return $character_affiliation->last_pulled->diffInMinutes(now()) > 60;
             });
 
-            foreach ($character_affiliations as $character_affiliation)
+            foreach ($character_affiliations as $character_affiliation) {
                 $collection->push($character_affiliation->character_id);
+            }
 
             return $collection;
+        })->unique()
+            ->chunk(1000)
+            ->whenNotEmpty(function ($collection) {
+                $collection->each(function (Collection $chunk) {
+                    $this->setRequestBody($chunk->values()->all());
 
-        })->unique()->chunk(1000)->each(function (Collection $chunk) {
+                    $response = $this->retrieve();
 
-            if($chunk->isEmpty()) return;
+                    if ($response->isCachedLoad()) {
+                        return;
+                    }
 
-            $this->setRequestBody($chunk->values()->all());
+                    $timestamp = now();
 
-            $response = $this->retrieve();
-
-            if ($response->isCachedLoad()) return;
-
-            $timestamp = now();
-
-            collect($response)->map(function ($result) use ($timestamp) {
-
-                return CharacterAffiliation::updateOrCreate(
-                    [
-                        'character_id' => $result->character_id,
-                        'corporation_id' => $result->corporation_id,
-                    ],
-                    [
-                        'alliance_id' => optional($result)->alliance_id,
-                        'faction_id' => optional($result)->faction_id,
-                        'last_pulled' => $timestamp,
-                    ]
-                );
-            })->each(function (CharacterAffiliation $character_affiliation) use ($timestamp) {
-
-                $character_affiliation->last_pulled = $timestamp;
-                $character_affiliation->save();
+                    collect($response)->map(function ($result) use ($timestamp) {
+                        return CharacterAffiliation::updateOrCreate(
+                            [
+                                'character_id' => $result->character_id,
+                            ],
+                            [
+                                'corporation_id' => $result->corporation_id,
+                                'alliance_id' => optional($result)->alliance_id,
+                                'faction_id' => optional($result)->faction_id,
+                                'last_pulled' => $timestamp,
+                            ]
+                        );
+                    })->each(function (CharacterAffiliation $character_affiliation) use ($timestamp) {
+                        $character_affiliation->last_pulled = $timestamp;
+                        $character_affiliation->save();
+                    });
+                });
             });
-        });
 
         return CharacterAffiliation::find($character_id);
-
     }
 
     public function getRequestBody(): array

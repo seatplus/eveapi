@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfo as CharacterInfoJob;
+use Seatplus\Eveapi\Jobs\Character\CharacterRoleJob;
 use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Tests\TestCase;
@@ -93,6 +94,27 @@ class CharacterUpdatePipeTest extends TestCase
         Queue::assertPushedWithChain(CharacterAssetJob::class, [
             CharacterAssetsNameJob::class
         ]);
+    }
+
+    /** @test */
+    public function it_dispatches_character_role_job()
+    {
+        $refresh_token = Event::fakeFor( function () {
+            return factory(RefreshToken::class)->create([
+                'scopes' => ['esi-characters.read_corporation_roles.v1']
+            ]);
+        });
+
+        Queue::fake();
+
+        (new UpdateCharacter($refresh_token))->handle();
+
+        Queue::assertPushedOn('high', CharacterRoleJob::class);
+
+        Queue::assertPushed(CharacterRoleJob::class, function ($job) use ($refresh_token){
+
+            return $refresh_token->character_id === $job->refresh_token->character_id;
+        });
     }
 
 }

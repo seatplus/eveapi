@@ -24,34 +24,20 @@
  * SOFTWARE.
  */
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+namespace Seatplus\Eveapi\Services\Pipes;
 
-class CreateApplicationsTable extends Migration
+use Closure;
+use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Jobs\Character\CharacterRoleJob;
+
+class CharacterRolesPipe implements Pipe
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
+    public function handle(JobContainer $job_container, Closure $next)
     {
-        Schema::create('applications', function (Blueprint $table) {
-            $table->increments('id');
-            $table->bigInteger('character_id');
-            $table->bigInteger('corporation_id');
-            $table->timestamps();
-        });
-    }
+        if (in_array('esi-characters.read_corporation_roles.v1', $job_container->refresh_token->refresh()->scopes)) {
+            CharacterRoleJob::dispatch($job_container)->onQueue($job_container->queue);
+        }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        Schema::dropIfExists('applications');
+        return $next($job_container);
     }
 }

@@ -38,7 +38,6 @@ class CreateCharacterAffiliationsTable extends Migration
     public function up()
     {
         Schema::create('character_affiliations', function (Blueprint $table) {
-
             $table->bigInteger('character_id')->primary();
             $table->bigInteger('corporation_id');
             $table->bigInteger('alliance_id')->nullable();

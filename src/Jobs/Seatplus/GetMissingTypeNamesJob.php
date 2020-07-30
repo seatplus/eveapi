@@ -63,7 +63,6 @@ class GetMissingTypeNamesJob implements ShouldQueue
 
     public function tags(): array
     {
-
         return [
             'type_names',
             'cleanup',
@@ -77,8 +76,6 @@ class GetMissingTypeNamesJob implements ShouldQueue
      */
     public function handle()
     {
-
         (new NamesAction)->execute();
-
     }
 }

@@ -35,14 +35,12 @@ class GetMissingLocationFromAssetsPipe
 {
     public function handle($payload, Closure $next)
     {
-
         CharacterAsset::doesntHave('location')
             ->AssetsLocationIds()
             ->inRandomOrder()
             ->addSelect('character_id')
             ->get()
             ->each(function ($asset) {
-
                 $refresh_token = RefreshToken::find($asset->character_id);
 
                 dispatch(new ResolveLocationJob($asset->location_id, $refresh_token))->onQueue('high');

@@ -38,7 +38,6 @@ class CreateUniverseRegionsTable extends Migration
     public function up()
     {
         Schema::create('universe_regions', function (Blueprint $table) {
-
             $table->bigInteger('region_id')->primary();
             $table->string('name');
             $table->text('description')->nullable();

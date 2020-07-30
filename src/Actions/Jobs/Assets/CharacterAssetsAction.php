@@ -71,19 +71,18 @@ class CharacterAssetsAction extends RetrieveFromEsiBase implements HasPathValues
 
     public function execute(RefreshToken $refresh_token)
     {
-
         $this->refresh_token = $refresh_token;
         $this->known_assets = collect();
 
-        while (true)
-        {
+        while (true) {
             $response = $this->retrieve($this->page);
 
-            if ($response->isCachedLoad()) return;
+            if ($response->isCachedLoad()) {
+                return;
+            }
 
             // First update the
             collect($response)->each(function ($asset) {
-
                 CharacterAsset::updateOrCreate([
                     'item_id' => $asset->item_id,
                 ], [
@@ -96,25 +95,22 @@ class CharacterAssetsAction extends RetrieveFromEsiBase implements HasPathValues
                     'quantity'   => $asset->quantity,
                     'type_id' => $asset->type_id,
                 ]);
-
             })->pipe(function (Collection $response) {
-
                 return $response->pluck('item_id')->each(function ($id) {
-
                     $this->known_assets->push($id);
                 });
             });
 
             // Lastly if more pages are present load next page
-            if($this->page >= $response->pages)
+            if ($this->page >= $response->pages) {
                 break;
+            }
 
             $this->page++;
         }
 
         // Cleanup old items
         (new CharacterAssetsCleanupAction)->execute($this->refresh_token->character_id, $this->known_assets->toArray());
-
     }
 
     public function getMethod(): string
@@ -151,6 +147,5 @@ class CharacterAssetsAction extends RetrieveFromEsiBase implements HasPathValues
 
     public function setPathValues(array $array): void
     {
-
     }
 }

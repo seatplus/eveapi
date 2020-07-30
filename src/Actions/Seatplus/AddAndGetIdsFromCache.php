@@ -45,7 +45,6 @@ class AddAndGetIdsFromCache
 
     public function __construct(string $cache_key, ?int $id_to_add = null)
     {
-
         $this->cache_key = $cache_key;
         $this->id_to_add = $id_to_add;
         $this->ids_to_return = collect();
@@ -53,11 +52,11 @@ class AddAndGetIdsFromCache
 
     public function execute(): Collection
     {
-        if (! is_null($this->id_to_add))
+        if (! is_null($this->id_to_add)) {
             $this->ids_to_return->push($this->id_to_add);
+        }
 
-        if(Cache::has($this->cache_key))
-        {
+        if (Cache::has($this->cache_key)) {
             $cached_group_ids = Cache::pull($this->cache_key);
 
             collect($cached_group_ids)->each(function ($cached_group_id) {

@@ -59,9 +59,9 @@ trait RateLimitsEsiCalls
      */
     public function isEsiRateLimited(): bool
     {
-
-        if (cache()->get($this->ratelimit_key) < $this->ratelimit)
+        if (cache()->get($this->ratelimit_key) < $this->ratelimit) {
             return false;
+        }
 
         return true;
     }
@@ -73,13 +73,9 @@ trait RateLimitsEsiCalls
      */
     public function incrementEsiRateLimit(int $amount = 1)
     {
-
         if ($this->getRateLimitKeyTtl() > 3) {
-
             cache()->increment($this->ratelimit_key, $amount);
-
         } else {
-
             cache()->set($this->ratelimit_key, $amount, carbon('now')
                 ->addMinutes($this->ratelimit_duration));
         }
@@ -90,7 +86,6 @@ trait RateLimitsEsiCalls
      */
     public function getRateLimitKeyTtl()
     {
-
         return Redis::ttl('seat:' . $this->ratelimit_key);
     }
 }

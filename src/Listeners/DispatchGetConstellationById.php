@@ -33,9 +33,9 @@ class DispatchGetConstellationById
 {
     public function handle(UniverseSystemCreated $universe_system_created)
     {
-
-        if($universe_system_created->system->constellation)
+        if ($universe_system_created->system->constellation) {
             return;
+        }
 
         $job = new ResolveUniverseConstellationByConstellationIdJob;
         $job->setConstellationId($universe_system_created->system->constellation_id);

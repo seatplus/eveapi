@@ -33,7 +33,6 @@ use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 
 abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
 {
-
     use RateLimitsEsiCalls;
     /**
      * @var \Seatplus\Eveapi\Containers\EsiRequestContainer|null
@@ -71,14 +70,17 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
     {
         $this->esi_request_container = $this->getBaseEsiReuestContainer();
 
-        if(method_exists($this, 'getPathValues'))
+        if (method_exists($this, 'getPathValues')) {
             $this->esi_request_container->path_values = $this->getPathValues();
+        }
 
-        if(method_exists($this, 'getRequestBody'))
+        if (method_exists($this, 'getRequestBody')) {
             $this->esi_request_container->request_body = $this->getRequestBody();
+        }
 
-        if(method_exists($this, 'getRefreshToken'))
+        if (method_exists($this, 'getRefreshToken')) {
             $this->esi_request_container->refresh_token = $this->getRefreshToken();
+        }
 
         $this->esi_request_container->page = $page;
     }

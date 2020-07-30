@@ -35,7 +35,6 @@ use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
 
 class ResolveUniverseConstellationByConstellationIdJob extends EsiBase
 {
-
     private $constellation_id;
 
     public function getActionClass(): RetrieveFromEsiInterface
@@ -82,7 +81,6 @@ class ResolveUniverseConstellationByConstellationIdJob extends EsiBase
      */
     public function setConstellationId(int $constellation_id)
     {
-
         $this->constellation_id = $constellation_id;
 
         return $this;

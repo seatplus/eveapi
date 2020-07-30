@@ -51,7 +51,6 @@ class ResolveUniverseTypesByTypeIdJob implements ShouldQueue
 
     public function __construct(?int $type_id = null)
     {
-
         $this->type_id = $type_id;
     }
 
@@ -71,7 +70,6 @@ class ResolveUniverseTypesByTypeIdJob implements ShouldQueue
 
     public function tags(): array
     {
-
         return [
             'type',
             'information',
@@ -88,7 +86,6 @@ class ResolveUniverseTypesByTypeIdJob implements ShouldQueue
      */
     public function handle()
     {
-
         (new ResolveUniverseTypesByTypeIdAction)->execute($this->type_id);
     }
 }
