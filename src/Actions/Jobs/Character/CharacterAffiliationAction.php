@@ -81,7 +81,6 @@ class CharacterAffiliationAction extends RetrieveFromEsiBase implements HasReque
             ->chunk(1000)
             ->whenNotEmpty(function ($collection) {
                 $collection->each(function (Collection $chunk) {
-
                     $this->setRequestBody($chunk->values()->all());
 
                     $response = $this->retrieve();
