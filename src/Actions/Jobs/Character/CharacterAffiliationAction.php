@@ -97,9 +97,9 @@ class CharacterAffiliationAction extends RetrieveFromEsiBase implements HasReque
                 return CharacterAffiliation::updateOrCreate(
                     [
                         'character_id' => $result->character_id,
-                        'corporation_id' => $result->corporation_id,
                     ],
                     [
+                        'corporation_id' => $result->corporation_id,
                         'alliance_id' => optional($result)->alliance_id,
                         'faction_id' => optional($result)->faction_id,
                         'last_pulled' => $timestamp,
