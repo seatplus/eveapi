@@ -31,7 +31,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Seatplus\Eveapi\Events\RefreshTokenCreated;
 use Seatplus\Eveapi\Events\UpdatingRefreshTokenEvent;
+use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
 class RefreshToken extends Model
 {
@@ -96,6 +98,23 @@ class RefreshToken extends Model
     public function character()
     {
         return $this->belongsTo(CharacterInfo::class, 'character_id', 'character_id');
+    }
+
+    public function corporation()
+    {
+        return $this->hasOneThrough(
+            CorporationInfo::class,
+            CharacterAffiliation::class,
+            'character_id',
+            'corporation_id',
+            'character_id',
+            'corporation_id'
+        );
+    }
+
+    public function getCorporationIdAttribute()
+    {
+        return $this->corporation->corporation_id;
     }
 
     public function hasScope(string $scope): bool
