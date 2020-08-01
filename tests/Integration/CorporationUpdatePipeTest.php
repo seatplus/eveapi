@@ -15,6 +15,7 @@ use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
 use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
 use Seatplus\Eveapi\Jobs\Seatplus\UpdateCorporation;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Character\CharacterRole;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
@@ -25,51 +26,31 @@ class CorporationUpdatePipeTest extends TestCase
     /** @test */
     public function it_dispatches_corporation_member_tracking_as_non_director()
     {
-        $refresh_token = Event::fakeFor( function () {
-            return factory(RefreshToken::class)->create([
-                'scopes' => ['esi-corporations.track_members.v1']
-            ]);
-        });
-
-        factory(CharacterAffiliation::class)->create([
-            'character_id' => $refresh_token->character_id,
-            'corporation_id' => factory(CorporationInfo::class)
-        ]);
+        $this->test_character->refresh_token()->update(['scopes' => ['esi-corporations.track_members.v1']]);
+        $this->test_character->roles()->update(['roles' => []]);
 
         Bus::fake();
 
         (new UpdateCorporation())->handle();
 
-        Bus::assertDispatched(CorporationMemberTrackingJob::class, function ($job) use ($refresh_token) {
-            return $refresh_token->character_id === $job->character_id;
+        Bus::assertDispatched(CorporationMemberTrackingJob::class, function ($job){
+            return $this->test_character->character_id === $job->character_id;
         });
     }
 
     /** @test */
     public function it_dispatches_corporation_member_tracking_as_director()
     {
-        $refresh_token = Event::fakeFor( function () {
-            return factory(RefreshToken::class)->create([
-                'scopes' => ['esi-corporations.track_members.v1']
-            ]);
-        });
 
-        factory(CharacterAffiliation::class)->create([
-            'character_id' => $refresh_token->character_id,
-            'corporation_id' => factory(CorporationInfo::class)
-        ]);
-
-        factory(CharacterRole::class)->create([
-            'character_id' => $refresh_token->character_id,
-            'roles' => ['Director']
-        ]);
+        $this->test_character->refresh_token()->update(['scopes' => ['esi-corporations.track_members.v1']]);
+        $this->test_character->roles()->update(['roles' => ['Director']]);
 
         Bus::fake();
 
         (new UpdateCorporation())->handle();
 
-        Bus::assertDispatched(CorporationMemberTrackingJob::class, function ($job) use ($refresh_token) {
-            return $refresh_token->character_id === $job->character_id;
+        Bus::assertDispatched(CorporationMemberTrackingJob::class, function ($job) {
+            return $this->test_character->character_id === $job->character_id;
         });
     }
 }

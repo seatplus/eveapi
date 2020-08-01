@@ -65,12 +65,12 @@ class UpdateCorporation implements ShouldQueue
             return $this->handleDirectUpdate();
         }
 
-        return RefreshToken::with('corporation')
+        return RefreshToken::with('corporation', 'character.roles')
             ->cursor()
             ->shuffle()
             ->each(function (RefreshToken $token) {
                 // perform director level update
-                if($token->hasScope('Director'))
+                if(optional($token->character)->roles ? $token->character->roles->hasRole('roles','Director') : false)
                     $this->directorUpdate($token);
             })
             ->reject(fn($token) => $this->processed_corporation_ids->contains($token->corporation_id))

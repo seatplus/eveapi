@@ -13,7 +13,7 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
 abstract class TestCase extends OrchestraTestCase
 {
-    protected $test_character;
+    protected CharacterInfo $test_character;
 
     protected function setUp(): void
     {
