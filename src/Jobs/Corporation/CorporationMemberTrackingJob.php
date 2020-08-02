@@ -59,7 +59,7 @@ class CorporationMemberTrackingJob extends EsiBase
     {
         return [
             'corporation',
-            'corporation_id' . $this->corporation_id,
+            'corporation_id: ' . $this->corporation_id,
             'member',
             'tracking'
         ];
