@@ -28,8 +28,6 @@ namespace Seatplus\Eveapi\Services\Pipes\Corporation;
 
 use Closure;
 use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
 use Seatplus\Eveapi\Services\Pipes\Pipe;
 

@@ -26,7 +26,6 @@
 
 namespace Seatplus\Eveapi\Jobs\Corporation;
 
-use Seatplus\Eveapi\Actions\Jobs\Corporation\CorporationInfoAction;
 use Seatplus\Eveapi\Actions\Jobs\Corporation\CorporationMemberTrackingAction;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -38,7 +37,6 @@ use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
 
 class CorporationMemberTrackingJob extends EsiBase
 {
-
     /**
      * Get the middleware the job should pass through.
      *
@@ -55,13 +53,13 @@ class CorporationMemberTrackingJob extends EsiBase
         ];
     }
 
-    public function tags() : array
+    public function tags(): array
     {
         return [
             'corporation',
             'corporation_id: ' . $this->corporation_id,
             'member',
-            'tracking'
+            'tracking',
         ];
     }
 
