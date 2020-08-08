@@ -11,7 +11,10 @@
     "autoload": {
         "psr-4": {
             "Seatplus\\Eveapi\\": "src/"
-        }
+        },
+        "files": [
+            "src/Helpers/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
