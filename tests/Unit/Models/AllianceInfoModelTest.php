@@ -46,4 +46,18 @@ class AllianceInfoModelTest extends TestCase
 
     }
 
+    /** @test */
+    public function it_has_corporations_relation()
+    {
+        $character_affiliation = $this->test_character->character_affiliation;
+        $character_affiliation->alliance_id = factory(AllianceInfo::class)->create()->alliance_id;
+        $character_affiliation->save();
+
+        $corporation = $this->test_character->corporation;
+        $corporation->alliance_id  = $character_affiliation->alliance_id;
+        $corporation->save();
+
+        $this->assertInstanceOf(CorporationInfo::class, $this->test_character->alliance->corporations->first());
+    }
+
 }

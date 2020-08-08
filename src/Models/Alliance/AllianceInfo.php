@@ -68,7 +68,7 @@ class AllianceInfo extends Model
 
     public function corporations()
     {
-        return $this->hasMany(CorporationInfo::class, 'corporation_id', 'corporation_id');
+        return $this->hasMany(CorporationInfo::class, 'alliance_id', 'alliance_id');
     }
 
     public function ssoScopes()
