@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Models\Corporation;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Universe\Location;
@@ -67,5 +68,16 @@ class CorporationMemberTracking extends Model
     public function location()
     {
         return $this->hasOne(Location::class, 'location_id', 'location_id');
+    }
+
+    public function scopeAffiliated(Builder $query, ?array $corporation_ids = []): Builder
+    {
+        $affiliated_ids = getAffiliatedIdsByClass(get_class($this), 'Director');
+
+        if ($corporation_ids) {
+            return $query->whereIn('corporation_id', collect($corporation_ids)->map(fn ($corporation_id) => intval($corporation_id))->intersect($affiliated_ids)->toArray());
+        }
+
+        return $query->whereIn('corporation_id', $affiliated_ids);
     }
 }
