@@ -63,7 +63,7 @@ class MaintenanceJob implements ShouldQueue
         GetMissingLocationFromAssetsPipe::class,
         GetMissingAssetsNamesPipe::class,
         GetMissingTypesFromCorporationMemberTrackingPipe::class,
-        GetMissingLocationFromCorporationMemberTrackingPipe::class
+        GetMissingLocationFromCorporationMemberTrackingPipe::class,
     ];
 
     /**

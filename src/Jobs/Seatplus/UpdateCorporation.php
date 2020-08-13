@@ -42,7 +42,7 @@ class UpdateCorporation implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     private array $pipes = [
-        CorporationMemberTrackingPipe::class
+        CorporationMemberTrackingPipe::class,
     ];
 
     /**
@@ -60,7 +60,6 @@ class UpdateCorporation implements ShouldQueue
 
     public function handle()
     {
-
         if ($this->refresh_token) {
             return $this->handleDirectUpdate();
         }
@@ -70,16 +69,19 @@ class UpdateCorporation implements ShouldQueue
             ->shuffle()
             ->each(function (RefreshToken $token) {
                 // perform director level update
-                if(optional($token->character)->roles ? $token->character->roles->hasRole('roles','Director') : false)
+                if (optional($token->character)->roles ? $token->character->roles->hasRole('roles', 'Director') : false) {
                     $this->directorUpdate($token);
+                }
             })
-            ->reject(fn($token) => $this->processed_corporation_ids->contains($token->corporation_id))
-            ->each(fn($token) => $this->nonDirectorUpdate($token));
+            ->reject(fn ($token) => $this->processed_corporation_ids->contains($token->corporation_id))
+            ->each(fn ($token) => $this->nonDirectorUpdate($token));
     }
 
     private function directorUpdate(RefreshToken $refresh_token, string $queue = 'default')
     {
-        if($this->hasAlreadyProcessed($refresh_token)) return;
+        if ($this->hasAlreadyProcessed($refresh_token)) {
+            return;
+        }
 
         $job_container = new JobContainer(['refresh_token' => $refresh_token, 'queue' => $queue]);
 

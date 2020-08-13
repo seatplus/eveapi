@@ -29,7 +29,6 @@ namespace Seatplus\Eveapi\Services\Maintenance;
 use Closure;
 use Seatplus\Eveapi\Actions\Seatplus\CreateOrUpdateMissingIdsCache;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
-use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 
 class GetMissingTypesFromCorporationMemberTrackingPipe

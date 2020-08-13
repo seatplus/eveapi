@@ -34,6 +34,6 @@ return [
     ],
     'corporation' => [
         'assets' => ['esi-assets.read_corporation_assets.v1'],
-        'membertracking' => ['esi-corporations.track_members.v1']
+        'membertracking' => ['esi-corporations.track_members.v1'],
     ],
 ];
