@@ -18,7 +18,7 @@ $factory->define(CharacterRole::class, function (Faker $faker) {
 
     return [
         'character_id' => $faker->numberBetween(99000000,100000000),
-        'roles'  => $faker->optional()->randomElements($roles_array, $count = $faker->randomDigitNotNull),
+        'roles'  => $faker->optional()->randomElements($roles_array, $count = $faker->randomDigitNotNull) ?? [],
         'roles_at_base' => $faker->optional()->randomElements($roles_array, $count = $faker->randomDigitNotNull),
         'roles_at_hq' => $faker->optional()->randomElements($roles_array, $count = $faker->randomDigitNotNull),
         'roles_at_other'  => $faker->optional()->randomElements($roles_array, $count = $faker->randomDigitNotNull),

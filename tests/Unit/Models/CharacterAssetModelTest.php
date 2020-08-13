@@ -116,28 +116,7 @@ class CharacterAssetModelTest extends TestCase
     {
         $test_asset = factory(CharacterAsset::class)->create();
 
-        $user_mock = \Mockery::mock('Seatplus\Auth\Models\User');
-
-        $user_mock->shouldReceive('getAffiliatedCharacterIdsByPermission')
-            ->once()
-            ->andReturn([$test_asset->character_id]);
-
-        $characters_mock = \Mockery::mock(Collection::class);
-        $characters_mock->shouldReceive('pluck')
-            ->once()
-            ->andReturn(collect($test_asset->character_id));
-
-        $user_mock->characters = $characters_mock;
-
-        $user_mock->characters->shouldReceive('pluck')->andReturn('test');
-
-        Auth::shouldReceive('user')
-            ->twice()
-            ->andReturn($user_mock);
-
-        //dd(auth()->user()->characters->pluck('character_id')->toArray());
-
-        $assets = CharacterAsset::query()->Affiliated()->first();
+        $assets = CharacterAsset::query()->entityFilter([$test_asset->character_id])->first();
 
         $this->assertEquals($assets->item_id, $test_asset->item_id);
     }
@@ -147,17 +126,7 @@ class CharacterAssetModelTest extends TestCase
     {
         $test_asset = factory(CharacterAsset::class)->create();
 
-        $user_mock = \Mockery::mock('Seatplus\Auth\Models\User');
-
-        $user_mock->shouldReceive('getAffiliatedCharacterIdsByPermission')
-            ->once()
-            ->andReturn([$test_asset->character_id]);
-
-        Auth::shouldReceive('user')
-            ->once()
-            ->andReturn($user_mock);
-
-        $assets = CharacterAsset::query()->Affiliated([$test_asset->character_id])->first();
+        $assets = CharacterAsset::query()->entityFilter([$test_asset->character_id])->first();
 
         $this->assertEquals($assets->item_id, $test_asset->item_id);
     }

@@ -30,6 +30,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Universe\Location;
+use Seatplus\Eveapi\Models\Universe\Type;
 
 class CorporationMemberTracking extends Model
 {
@@ -68,6 +69,11 @@ class CorporationMemberTracking extends Model
     public function location()
     {
         return $this->hasOne(Location::class, 'location_id', 'location_id');
+    }
+
+    public function ship()
+    {
+        return $this->hasOne(Type::class, 'type_id', 'ship_type_id');
     }
 
     public function scopeAffiliated(Builder $query, ?array $corporation_ids = []): Builder

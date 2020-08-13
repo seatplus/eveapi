@@ -24,51 +24,30 @@
  * SOFTWARE.
  */
 
-use Illuminate\Database\Eloquent\Collection;
-use Seatplus\Auth\Actions\GetAffiliatedIdsByPermissionArray;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
+namespace Seatplus\Eveapi\Services\Maintenance;
 
-if (! function_exists('getAffiliatedIdsByClass')) {
+use Closure;
+use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
+use Seatplus\Eveapi\Models\Assets\CharacterAsset;
+use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
+use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 
-    /**
-     * A helper to get all affiliated Characters.
-     *
-     * @param string $class
-     *
-     * @param string $role
-     *
-     * @return array
-     */
-    function getAffiliatedIdsByClass(string $class, string $role = ''): array
+class GetMissingLocationFromCorporationMemberTrackingPipe
+{
+    public function handle($payload, Closure $next)
     {
+        $find_corporation_refresh_token = new FindCorporationRefreshToken;
 
-        $permission_name = config('eveapi.permissions.' . $class);
+        CorporationMemberTracking::doesntHave('location')
+            ->inRandomOrder()
+            ->get()
+            ->each(function (CorporationMemberTracking $corporation_member_tracking) use ($find_corporation_refresh_token) {
+                $refresh_token = $find_corporation_refresh_token($corporation_member_tracking->corporation_id) ?? RefreshToken::find($corporation_member_tracking->character_id);
 
-        return getAffiliatedIdsByPermission($permission_name, $role);
-    }
-}
+                dispatch(new ResolveLocationJob($corporation_member_tracking->location_id, $refresh_token))->onQueue('high');
+            });
 
-if (! function_exists('getAffiliatedIdsByPermission')) {
-
-    /**
-     * A helper to get all affiliated Characters.
-     *
-     * @param string $class
-     *
-     * @param string $role
-     *
-     * @return array
-     */
-    function getAffiliatedIdsByPermission(string $permission, string $role = ''): array
-    {
-
-        try {
-            $ids = (new GetAffiliatedIdsByPermissionArray($permission, $role))->execute();
-        } catch (Exception $exception) {
-            report($exception);
-            $ids = [];
-        }
-
-        return $ids;
+        return $next($payload);
     }
 }

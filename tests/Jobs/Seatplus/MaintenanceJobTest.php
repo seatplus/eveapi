@@ -13,6 +13,7 @@ use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseGroupsByGroupIdJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
+use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Location;
@@ -119,6 +120,30 @@ class MaintenanceJobTest extends TestCase
         $this->job->handle();
 
         Queue::assertPushedOn('high', CharacterAssetsNameJob::class);
+    }
+
+    /** @test */
+    public function it_dispatch_resolve_location_jog_for_missing_corporation_member_tracking_location()
+    {
+        Event::fakeFor(fn() => factory(CorporationMemberTracking::class)->create([
+            'character_id' => $this->test_character->character_id,
+        ]));
+
+        $this->job->handle();
+
+        Queue::assertPushedOn('high', ResolveLocationJob::class);
+    }
+
+    /** @test */
+    public function it_fetches_missing_types_from_corporation_member_tracking()
+    {
+        $corporation_member_tracking = Event::fakeFor(fn() => factory(CorporationMemberTracking::class)->create());
+
+        $this->job->handle();
+
+        Queue::assertPushedOn('high', ResolveUniverseTypesByTypeIdJob::class);
+
+        $this->assertTrue(in_array($corporation_member_tracking->ship_type_id, cache('type_ids_to_resolve')));
     }
 
 }

@@ -23,16 +23,16 @@ class CorporationMemberTrackingTest extends TestCase
 
         parent::setUp();
 
-        $this->tracking = factory(CorporationMemberTracking::class)->create();
-
-        factory(Station::class)->create([
-            'station_id' => $this->tracking->location_id
-        ]);
+        $station = factory(Station::class)->create();
 
         factory(Location::class)->create([
-            'location_id' => $this->tracking->location_id,
-            'locatable_id' => $this->tracking->location_id,
+            'location_id' => $station->station_id,
+            'locatable_id' => $station->station_id,
             'locatable_type' => Station::class,
+        ]);
+
+        $this->tracking = factory(CorporationMemberTracking::class)->create([
+            'location_id' => $station->station_id,
         ]);
 
     }

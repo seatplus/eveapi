@@ -56,6 +56,7 @@ class StructureChecker extends LocationChecker
             // or if location does not exist and id is not between 60000000 and 64000000
             || (is_null($location->locatable) && ! ($location->location_id > 60000000 && $location->location_id < 64000000))
         ) {
+            // TODO check if refresh_token has required scope
             $this->action->execute($location->location_id);
         }
 

@@ -13,5 +13,6 @@ $factory->define(CorporationMemberTracking::class, function (Faker $faker) {
         'corporation_id'  => factory(CorporationInfo::class),
         'character_id' => factory(CharacterInfo::class),
         'location_id'  => $faker->numberBetween(0,10000),
+        'ship_type_id' => $faker->numberBetween(0,10000)
     ];
 });
