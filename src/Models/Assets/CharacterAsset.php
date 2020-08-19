@@ -113,7 +113,6 @@ class CharacterAsset extends Model
 
     public function scopeEntityFilter(Builder $query, array $character_ids): Builder
     {
-
         return $query->whereIn('character_id', $character_ids);
     }
 

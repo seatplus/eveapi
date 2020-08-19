@@ -32,7 +32,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
@@ -43,7 +42,7 @@ class UpdateCorporation implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     private array $pipes = [
-        CorporationMemberTrackingPipe::class
+        CorporationMemberTrackingPipe::class,
     ];
 
     private ?int $corporation_id;
@@ -55,14 +54,15 @@ class UpdateCorporation implements ShouldQueue
 
     public function handle()
     {
-        if($this->corporation_id)
+        if ($this->corporation_id) {
             return $this->dispatchUpdate($this->corporation_id, 'high');
+        }
 
         return RefreshToken::with('corporation', 'character.roles')
             ->cursor()
-            ->map(fn($token) => $token->corporation->corporation_id)
+            ->map(fn ($token) => $token->corporation->corporation_id)
             ->unique()
-            ->each(fn($corporation_id) => $this->dispatchUpdate($corporation_id));
+            ->each(fn ($corporation_id) => $this->dispatchUpdate($corporation_id));
     }
 
     private function execute(JobContainer $job_container, string $success_message)
@@ -85,5 +85,4 @@ class UpdateCorporation implements ShouldQueue
 
         $this->execute($job_container, $success_message);
     }
-
 }
