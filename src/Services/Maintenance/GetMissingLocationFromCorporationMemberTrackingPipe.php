@@ -24,12 +24,29 @@
  * SOFTWARE.
  */
 
-use Seatplus\Eveapi\Jobs\Seatplus\MaintenanceJob;
-use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
-use Seatplus\Eveapi\Jobs\Seatplus\UpdateCorporation;
+namespace Seatplus\Eveapi\Services\Maintenance;
 
-return [
-    UpdateCharacter::class,
-    MaintenanceJob::class,
-    UpdateCorporation::class,
-];
+use Closure;
+use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
+use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
+use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
+
+class GetMissingLocationFromCorporationMemberTrackingPipe
+{
+    public function handle($payload, Closure $next)
+    {
+        $find_corporation_refresh_token = new FindCorporationRefreshToken;
+
+        CorporationMemberTracking::doesntHave('location')
+            ->inRandomOrder()
+            ->get()
+            ->each(function (CorporationMemberTracking $corporation_member_tracking) use ($find_corporation_refresh_token) {
+                $refresh_token = $find_corporation_refresh_token($corporation_member_tracking->corporation_id, 'esi-corporations.track_members.v1', 'Director') ?? RefreshToken::find($corporation_member_tracking->character_id);
+
+                dispatch(new ResolveLocationJob($corporation_member_tracking->location_id, $refresh_token))->onQueue('high');
+            });
+
+        return $next($payload);
+    }
+}

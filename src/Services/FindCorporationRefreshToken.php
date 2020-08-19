@@ -24,12 +24,19 @@
  * SOFTWARE.
  */
 
-use Seatplus\Eveapi\Jobs\Seatplus\MaintenanceJob;
-use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
-use Seatplus\Eveapi\Jobs\Seatplus\UpdateCorporation;
+namespace Seatplus\Eveapi\Services;
 
-return [
-    UpdateCharacter::class,
-    MaintenanceJob::class,
-    UpdateCorporation::class,
-];
+use Seatplus\Eveapi\Models\RefreshToken;
+
+class FindCorporationRefreshToken
+{
+    public function __invoke(int $corporation_id, string $scope, string $role)
+    {
+        return RefreshToken::with(['corporation' => fn ($query) => $query->where('corporation_id', $corporation_id)], 'character.roles')
+            ->whereHas('character.roles')
+            ->cursor()
+            ->shuffle()
+            ->filter(fn ($token) => in_array($scope, $token->scopes))
+            ->first(fn ($token) => $token->character->roles->hasRole('roles', $role));
+    }
+}

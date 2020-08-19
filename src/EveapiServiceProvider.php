@@ -46,12 +46,14 @@ use Seatplus\Eveapi\Listeners\UpdatingRefreshTokenListener;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Models\Schedules;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Observers\CharacterAffiliationObserver;
 use Seatplus\Eveapi\Observers\CharacterAssetObserver;
 use Seatplus\Eveapi\Observers\CharacterInfoObserver;
+use Seatplus\Eveapi\Observers\CorporationMemberTrackingObserver;
 use Seatplus\Eveapi\Observers\GroupObserver;
 use Seatplus\Eveapi\Observers\TypeObserver;
 
@@ -180,11 +182,16 @@ class EveapiServiceProvider extends ServiceProvider
         $this->app->events->listen(RefreshTokenCreated::class, ReactOnFreshRefreshToken::class);
         $this->app->events->listen(UpdatingRefreshTokenEvent::class, UpdatingRefreshTokenListener::class);
 
+        Type::observe(TypeObserver::class);
+        Group::observe(GroupObserver::class);
+
+        //Character Observers
         CharacterInfo::observe(CharacterInfoObserver::class);
         CharacterAffiliation::observe(CharacterAffiliationObserver::class);
         CharacterAsset::observe(CharacterAssetObserver::class);
-        Type::observe(TypeObserver::class);
-        Group::observe(GroupObserver::class);
+
+        //Corporation Observers
+        CorporationMemberTracking::observe(CorporationMemberTrackingObserver::class);
     }
 
     private function addSchedules()

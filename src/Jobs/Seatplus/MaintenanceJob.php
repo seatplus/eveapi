@@ -39,7 +39,9 @@ use Seatplus\Eveapi\Services\Maintenance\GetMissingAssetsNamesPipe;
 use Seatplus\Eveapi\Services\Maintenance\GetMissingCategorysPipe;
 use Seatplus\Eveapi\Services\Maintenance\GetMissingGroupsPipe;
 use Seatplus\Eveapi\Services\Maintenance\GetMissingLocationFromAssetsPipe;
+use Seatplus\Eveapi\Services\Maintenance\GetMissingLocationFromCorporationMemberTrackingPipe;
 use Seatplus\Eveapi\Services\Maintenance\GetMissingTypesFromCharacterAssetsPipe;
+use Seatplus\Eveapi\Services\Maintenance\GetMissingTypesFromCorporationMemberTrackingPipe;
 use Seatplus\Eveapi\Services\Maintenance\GetMissingTypesFromLocationsPipe;
 
 class MaintenanceJob implements ShouldQueue
@@ -60,6 +62,8 @@ class MaintenanceJob implements ShouldQueue
         GetMissingCategorysPipe::class,
         GetMissingLocationFromAssetsPipe::class,
         GetMissingAssetsNamesPipe::class,
+        GetMissingTypesFromCorporationMemberTrackingPipe::class,
+        GetMissingLocationFromCorporationMemberTrackingPipe::class,
     ];
 
     /**

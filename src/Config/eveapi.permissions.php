@@ -25,8 +25,10 @@
  */
 
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
+use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 
 return [
     CharacterAsset::class => 'character.assets',
+    CorporationMemberTracking::class => 'corporation.member_tracking',
     'queue.manager',
 ];

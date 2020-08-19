@@ -24,12 +24,30 @@
  * SOFTWARE.
  */
 
-use Seatplus\Eveapi\Jobs\Seatplus\MaintenanceJob;
-use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
-use Seatplus\Eveapi\Jobs\Seatplus\UpdateCorporation;
+namespace Seatplus\Eveapi\Services\Pipes\Corporation;
 
-return [
-    UpdateCharacter::class,
-    MaintenanceJob::class,
-    UpdateCorporation::class,
-];
+use Closure;
+use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
+
+class CorporationMemberTrackingPipe extends AbstractCorporationPipe
+{
+    public function handle(JobContainer $job_container, Closure $next)
+    {
+        if ($this->enrichJobContainerWithRefreshToken($job_container)->getRefreshToken()) {
+            CorporationMemberTrackingJob::dispatch($job_container)->onQueue($job_container->queue);
+        }
+
+        return $next($job_container);
+    }
+
+    public function getRequiredScope(): string
+    {
+        return 'esi-corporations.track_members.v1';
+    }
+
+    public function getRequiredRole(): string
+    {
+        return 'Director';
+    }
+}

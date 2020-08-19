@@ -61,12 +61,6 @@ class CharacterInfo extends Model
         return $this->hasOne(RefreshToken::class, 'character_id', 'character_id');
     }
 
-    public function characters()
-    {
-        // we need to return has many as corpoation and alliance do have many character affiliated
-        return $this->hasMany(CharacterInfo::class, 'character_id');
-    }
-
     public function corporation()
     {
         return $this->hasOneThrough(

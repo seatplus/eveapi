@@ -37,6 +37,8 @@ class CharacterAsset extends Model
 {
     const ASSET_SAFETY = 2004;
 
+    protected array $affiliated_ids = [];
+
     /**
      * @var bool
      */
@@ -109,16 +111,9 @@ class CharacterAsset extends Model
         return $query->where('location_id', '<>', self::ASSET_SAFETY);
     }
 
-    public function scopeAffiliated(Builder $query, ?array $character_ids = null): Builder
+    public function scopeEntityFilter(Builder $query, array $character_ids): Builder
     {
-        $permission_name = config('eveapi.permissions.' . get_class($this));
-        $affiliated_character_ids = auth()->user()->getAffiliatedCharacterIdsByPermission($permission_name);
-
-        if ($character_ids) {
-            return $query->whereIn('character_id', collect($character_ids)->map(fn ($character_id) => intval($character_id))->intersect($affiliated_character_ids)->toArray());
-        }
-
-        return $query->whereIn('character_id', auth()->user()->characters->pluck('character_id')->toArray());
+        return $query->whereIn('character_id', $character_ids);
     }
 
     public function scopeInRegion(Builder $query, int $region_id): Builder
