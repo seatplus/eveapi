@@ -31,5 +31,5 @@ use Seatplus\Eveapi\Jobs\Seatplus\UpdateCorporation;
 return [
     UpdateCharacter::class,
     MaintenanceJob::class,
-    UpdateCorporation::class
+    UpdateCorporation::class,
 ];
