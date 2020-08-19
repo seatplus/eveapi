@@ -33,14 +33,25 @@ use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
 use Seatplus\Eveapi\Services\Pipes\Pipe;
 
-class CorporationMemberTrackingPipe implements Pipe
+class CorporationMemberTrackingPipe extends AbstractCorporationPipe
 {
     public function handle(JobContainer $job_container, Closure $next)
     {
-        if (in_array('esi-corporations.track_members.v1', $job_container->refresh_token->refresh()->scopes)) {
+
+        if ($this->enrichJobContainerWithRefreshToken($job_container)->getRefreshToken()) {
             CorporationMemberTrackingJob::dispatch($job_container)->onQueue($job_container->queue);
         }
 
         return $next($job_container);
+    }
+
+    public function getRequiredScope(): string
+    {
+        return 'esi-corporations.track_members.v1';
+    }
+
+    public function getRequiredRole(): string
+    {
+        return 'Director';
     }
 }

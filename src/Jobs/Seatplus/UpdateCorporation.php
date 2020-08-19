@@ -34,6 +34,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\Pipes\Corporation\CorporationMemberTrackingPipe;
 
@@ -45,50 +46,23 @@ class UpdateCorporation implements ShouldQueue
         CorporationMemberTrackingPipe::class
     ];
 
-    /**
-     * @var \Seatplus\Eveapi\Models\RefreshToken|null
-     */
-    private ?RefreshToken $refresh_token;
+    private ?int $corporation_id;
 
-    private Collection $processed_corporation_ids;
-
-    public function __construct(?RefreshToken $refresh_token = null)
+    public function __construct(?int $corporation_id = null)
     {
-        $this->refresh_token = $refresh_token;
-        $this->processed_corporation_ids = collect();
+        $this->corporation_id = $corporation_id;
     }
 
     public function handle()
     {
-
-        if ($this->refresh_token) {
-            return $this->handleDirectUpdate();
-        }
+        if($this->corporation_id)
+            return $this->dispatchUpdate($this->corporation_id, 'high');
 
         return RefreshToken::with('corporation', 'character.roles')
             ->cursor()
-            ->shuffle()
-            ->each(function (RefreshToken $token) {
-                // perform director level update
-                if(optional($token->character)->roles ? $token->character->roles->hasRole('roles','Director') : false)
-                    $this->directorUpdate($token);
-            })
-            ->reject(fn($token) => $this->processed_corporation_ids->contains($token->corporation_id))
-            ->each(fn($token) => $this->nonDirectorUpdate($token));
-    }
-
-    private function directorUpdate(RefreshToken $refresh_token, string $queue = 'default')
-    {
-        if($this->hasAlreadyProcessed($refresh_token)) return;
-
-        $job_container = new JobContainer(['refresh_token' => $refresh_token, 'queue' => $queue]);
-
-        $success_message = sprintf('%s (corporation) updated, using director refresh_token of %s',
-            optional($refresh_token->refresh()->corporation)->name ?? $refresh_token->corporation_id,
-            optional($refresh_token->refresh()->character)->name ?? $refresh_token->character_id
-        );
-
-        $this->execute($job_container, $success_message);
+            ->map(fn($token) => $token->corporation->corporation_id)
+            ->unique()
+            ->each(fn($corporation_id) => $this->dispatchUpdate($corporation_id));
     }
 
     private function execute(JobContainer $job_container, string $success_message)
@@ -101,29 +75,15 @@ class UpdateCorporation implements ShouldQueue
             );
     }
 
-    private function hasAlreadyProcessed(RefreshToken $refresh_token)
+    private function dispatchUpdate(int $corporation_id, string $queue = 'default')
     {
-        $corporation_id = $refresh_token->corporation_id;
+        $job_container = new JobContainer(['corporation_id' => $corporation_id, 'queue' => $queue]);
 
-        return $this->processed_corporation_ids->contains($corporation_id) ?: $this->processed_corporation_ids->push($corporation_id)->isEmpty();
-    }
-
-    private function nonDirectorUpdate(RefreshToken $refresh_token, string $queue = 'default')
-    {
-        $job_container = new JobContainer(['refresh_token' => $refresh_token, 'queue' => $queue]);
-
-        $success_message = sprintf('%s (corporation) updated, using a non director refresh_token of %s',
-            optional($refresh_token->refresh()->corporation)->name ?? $refresh_token->corporation_id,
-            optional($refresh_token->refresh()->character)->name ?? $refresh_token->character_id
+        $success_message = sprintf('%s (corporation) updated.',
+            optional(CorporationInfo::find($corporation_id))->name ?? $corporation_id,
         );
 
         $this->execute($job_container, $success_message);
     }
 
-    private function handleDirectUpdate()
-    {
-        return $this->refresh_token->hasScope('Director')
-            ? $this->directorUpdate($this->refresh_token, 'high')
-            : $this->nonDirectorUpdate($this->refresh_token, 'high');
-    }
 }

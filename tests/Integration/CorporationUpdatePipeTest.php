@@ -31,9 +31,9 @@ class CorporationUpdatePipeTest extends TestCase
 
         Bus::fake();
 
-        (new UpdateCorporation())->handle();
+        (new UpdateCorporation)->handle();
 
-        Bus::assertDispatched(CorporationMemberTrackingJob::class, function ($job){
+        Bus::assertNotDispatched(CorporationMemberTrackingJob::class, function ($job){
             return $this->test_character->character_id === $job->character_id;
         });
     }
@@ -47,7 +47,7 @@ class CorporationUpdatePipeTest extends TestCase
 
         Bus::fake();
 
-        (new UpdateCorporation())->handle();
+        (new UpdateCorporation)->handle();
 
         Bus::assertDispatched(CorporationMemberTrackingJob::class, function ($job) {
             return $this->test_character->character_id === $job->character_id;
