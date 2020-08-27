@@ -29,13 +29,15 @@ namespace Seatplus\Eveapi\Jobs\Corporation;
 use Seatplus\Eveapi\Actions\Jobs\Corporation\CorporationMemberTrackingAction;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
+use Seatplus\Eveapi\Jobs\ManualDispatchableJobInterface;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
+use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 
-class CorporationMemberTrackingJob extends EsiBase
+class CorporationMemberTrackingJob extends EsiBase implements ManualDispatchableJobInterface
 {
     /**
      * Get the middleware the job should pass through.
@@ -77,5 +79,20 @@ class CorporationMemberTrackingJob extends EsiBase
     public function getActionClass(): RetrieveFromEsiInterface
     {
         return new CorporationMemberTrackingAction;
+    }
+
+    public function getRequiredEveCorporationRole(): string
+    {
+        return 'Director';
+    }
+
+    public function getRequiredScope(): string
+    {
+        return 'esi-corporations.track_members.v1';
+    }
+
+    public function getRequiredPermission(): string
+    {
+        return config('eveapi.permissions.' . CorporationMemberTracking::class);
     }
 }

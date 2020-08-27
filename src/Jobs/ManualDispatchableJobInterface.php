@@ -24,10 +24,13 @@
  * SOFTWARE.
  */
 
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
-use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
+namespace Seatplus\Eveapi\Jobs;
 
-return [
-    'character.assets' => CharacterAssetJob::class,
-    'corporation.member_tracking' => CorporationMemberTrackingJob::class,
-];
+interface ManualDispatchableJobInterface
+{
+    public function getRequiredEveCorporationRole(): string;
+
+    public function getRequiredScope(): string;
+
+    public function getRequiredPermission(): string;
+}

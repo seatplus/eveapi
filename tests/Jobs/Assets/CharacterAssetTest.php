@@ -30,4 +30,14 @@ class CharacterAssetTest extends TestCase
         Queue::assertPushedOn('default', CharacterAssetJob::class);
     }
 
+    /** @test */
+    public function hasManualDispatchableJobInterfaceImplemented()
+    {
+        $job = new CharacterAssetJob;
+
+        $this->assertEquals('', $job->getRequiredEveCorporationRole());
+        $this->assertEquals('esi-assets.read_assets.v1', $job->getRequiredScope());
+        $this->assertEquals('character.assets', $job->getRequiredPermission());
+    }
+
 }
