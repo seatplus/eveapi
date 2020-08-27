@@ -29,5 +29,5 @@ use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
 
 return [
     'character.assets' => CharacterAssetJob::class,
-    'corporation.member_tracking' => CorporationMemberTrackingJob::class
+    'corporation.member_tracking' => CorporationMemberTrackingJob::class,
 ];
