@@ -104,6 +104,41 @@ class CharacterAssetModelTest extends TestCase
     }
 
     /** @test */
+    public function it_has_scopeAffiliated_withoutRequest()
+    {
+        $test_asset = factory(CharacterAsset::class)->create();
+
+        $characters_mock = \Mockery::mock(Collection::class);
+        $characters_mock->shouldReceive('pluck')
+            ->once()
+            ->andReturn(collect($test_asset->character_id));
+
+        $user_mock = \Mockery::mock('Seatplus\Auth\Models\User');
+        $user_mock->characters = $characters_mock;
+        $user_mock->characters->shouldReceive('pluck')->andReturn($this->test_character->character_id);
+
+        Auth::shouldReceive('user')
+            ->once()
+            ->andReturn($user_mock);
+
+        $asset = CharacterAsset::query()->Affiliated([$this->test_character->character_id])->first();;
+
+        $this->assertEquals($asset->item_id, $test_asset->item_id);
+    }
+
+    /** @test */
+    public function it_has_scopeAffiliated_withRequest()
+    {
+        $test_asset = factory(CharacterAsset::class)->create([
+            'character_id' => $this->test_character->character_id
+        ]);
+
+        $asset = CharacterAsset::query()->Affiliated([$this->test_character->character_id], [$this->test_character->character_id])->first();;
+
+        $this->assertEquals($asset->item_id, $test_asset->item_id);
+    }
+
+    /** @test */
     public function it_has_owner_relationship()
     {
         $test_asset = factory(CharacterAsset::class)->create();
