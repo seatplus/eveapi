@@ -53,17 +53,18 @@ if (! function_exists('setting')) {
                 throw new SettingException('Must provide a name and value when setting a setting.');
             }
 
-            return GlobalSettings::updateOrCreate(
+            $setting = GlobalSettings::updateOrCreate(
                 ['name' => $name[0]],
-                ['value' => $name[1]]
-            )
+                ['value' => $name[1]])
                 ->value;
+
+            return is_countable($setting) ? (count($setting)>1 ? $setting : $setting[0]) : $setting;
         }
 
 
         // If we just got a string, it means we want to get.
-        return optional(GlobalSettings::where('name', $name[0])
-            ->first())
-            ->value;
+        $setting = optional(GlobalSettings::where('name', $name)->first())->value;
+
+        return is_countable($setting) ? (count($setting)>1 ? $setting : $setting[0]) : $setting;
     }
 }

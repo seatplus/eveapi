@@ -25,6 +25,7 @@
     "prefer-stable": true,
     "require": {
         "php": "^7.4",
+        "ext-json": "*",
         "ext-redis": "*",
         "laravel/framework": "^6.0",
         "laravel/horizon": "^3.2",

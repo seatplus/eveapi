@@ -36,4 +36,13 @@ class GlobalSettings extends Model
      * @var array
      */
     protected $fillable = ['name', 'value'];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'value' => 'object',
+    ];
 }

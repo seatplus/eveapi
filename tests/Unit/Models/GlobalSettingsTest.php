@@ -9,28 +9,18 @@ use Seatplus\Eveapi\Tests\TestCase;
 
 class GlobalSettingsTest extends TestCase
 {
-    /** @test */
-    public function migartionWorked()
-    {
-
-        $global_settings = factory(GlobalSettings::class)->create();
-
-        $this->assertDatabaseHas('global_settings', [
-            'name' => $global_settings->name,
-            'value' => $global_settings->value
-        ]);
-
-    }
 
     /** @test */
     public function setGlobalSetting()
     {
-        setting(['test','settingTest'], true);
+        $test_value = 'settingTest';
+        setting(['test', $test_value]);
 
         $this->assertDatabaseHas('global_settings', [
             'name' => 'test',
-            'value' => 'settingTest'
         ]);
+
+        $this->assertEquals($test_value, setting('test'));
 
     }
 
@@ -41,13 +31,13 @@ class GlobalSettingsTest extends TestCase
         $testing_value = bin2hex(random_bytes(10));
 
         // 1. try to get a non set setting, returning null
-        $value = setting('test', true);
+        $value = setting('test');
 
         $this->assertNull($value);
 
         // 2. set setting and expect the setting to return the previously set value.
 
-        $value = setting(['test', $testing_value], true);
+        $value = setting(['test', $testing_value]);
 
         $this->assertNotNull($value);
 
@@ -55,7 +45,6 @@ class GlobalSettingsTest extends TestCase
 
         $this->assertDatabaseHas('global_settings', [
             'name' => 'test',
-            'value' => $testing_value
         ]);
 
     }
