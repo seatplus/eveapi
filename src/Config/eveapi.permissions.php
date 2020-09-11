@@ -31,4 +31,5 @@ return [
     CharacterAsset::class => 'character.assets',
     CorporationMemberTracking::class => 'corporation.member_tracking',
     'queue.manager',
+    'can open or close corporations for recruitment'
 ];

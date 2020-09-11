@@ -97,7 +97,7 @@ class CharacterInfo extends Model
 
     public function application()
     {
-        return $this->hasOne(Applications::class, 'character_id', 'character_id');
+        return $this->morphOne(Applications::class, 'applicationable');
     }
 
     public function getCorporationIdAttribute()

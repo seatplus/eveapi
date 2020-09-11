@@ -8,7 +8,8 @@ use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 $factory->define(Applications::class, function (Faker $faker) {
 
     return [
-        'character_id' => factory(CharacterInfo::class),
         'corporation_id' => factory(CorporationInfo::class),
+        'applicationable_type' => CharacterInfo::class,
+        'applicationable_id' => factory(CharacterInfo::class)
     ];
 });

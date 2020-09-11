@@ -29,12 +29,10 @@ use Seatplus\Eveapi\Http\Controllers\Alliance\InfoController as AllianceInfoCont
 use Seatplus\Eveapi\Http\Controllers\Character\InfoController;
 use Seatplus\Eveapi\Http\Controllers\Corporation\InfoController as CorporationInfoController;
 
-Route::namespace('Seatplus\Eveapi\Http\Controllers\Updates')
-    ->prefix('eveapi')
+Route::prefix('eveapi')
+    ->middleware('auth')
     ->group(function () {
-        Route::get('scopes', function () {
-            return config('eveapi.scopes.selected');
-        })->middleware('auth:api');
+        Route::get('scopes', fn() => config('eveapi.scopes.selected'))->middleware('auth:api');
 
         Route::prefix('character')
             ->group(function () {
@@ -47,6 +45,7 @@ Route::namespace('Seatplus\Eveapi\Http\Controllers\Updates')
 
         Route::prefix('corporation')->group(function () {
             Route::get('info', [CorporationInfoController::class, 'index'])->name('get.corporation_info');
+            include __DIR__ . '/Routes/Corporation/Recruitment.php';
         });
 
         Route::prefix('alliance')->group(function () {
