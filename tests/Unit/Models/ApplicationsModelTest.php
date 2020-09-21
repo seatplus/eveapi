@@ -22,6 +22,7 @@ class ApplicationsModelTest extends TestCase
         ]);
 
         $this->assertInstanceOf(CharacterInfo::class, $application->applicationable);
+        $this->assertInstanceOf(Applications::class, $this->test_character->application);
     }
 
     /** @test */
@@ -34,6 +35,15 @@ class ApplicationsModelTest extends TestCase
         ]);
 
         $this->assertInstanceOf(CorporationInfo::class, $application->corporation);
+    }
+
+    /** @test */
+    public function create_application_through_character()
+    {
+
+        $this->test_character->application()->create(['corporation_id' => $this->test_character->corporation->corporation_id]);
+
+        $this->assertInstanceOf(Applications::class, $this->test_character->application);
     }
 
 }

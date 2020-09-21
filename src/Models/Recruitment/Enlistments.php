@@ -5,6 +5,7 @@ namespace Seatplus\Eveapi\Models\Recruitment;
 
 
 use Illuminate\Database\Eloquent\Model;
+use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
 class Enlistments extends Model
 {
@@ -15,5 +16,9 @@ class Enlistments extends Model
 
     public $incrementing = false;
 
+    public function corporation()
+    {
+        return $this->belongsTo(CorporationInfo::class, 'corporation_id', 'corporation_id');
+    }
 
 }

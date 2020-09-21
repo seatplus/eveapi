@@ -7,7 +7,7 @@ namespace Seatplus\Eveapi\Http\Request;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class CreateOpenRecruitmentRequest extends FormRequest
+class ApplicationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -17,7 +17,7 @@ class CreateOpenRecruitmentRequest extends FormRequest
     public function authorize()
     {
 
-        return $this->user()->can('can open or close corporations for recruitment');
+        return true;
     }
 
     /**
@@ -29,8 +29,8 @@ class CreateOpenRecruitmentRequest extends FormRequest
     {
 
         return [
-            'corporation_id' => ['required', 'exists:corporation_infos,corporation_id'],
-            'type' => ['required', Rule::in(['character','user'])],
+            'corporation_id' => ['required', 'exists:enlistments,corporation_id'],
+            'character_id' => ['exists:character_infos,character_id'],
         ];
     }
 

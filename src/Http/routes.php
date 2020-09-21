@@ -24,14 +24,15 @@
  * SOFTWARE.
  */
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Seatplus\Eveapi\Http\Controllers\Alliance\InfoController as AllianceInfoController;
 use Seatplus\Eveapi\Http\Controllers\Character\InfoController;
 use Seatplus\Eveapi\Http\Controllers\Corporation\InfoController as CorporationInfoController;
 
-Route::prefix('eveapi')
-    ->middleware('auth')
+Route::prefix('api-delete')
     ->group(function () {
+
         Route::get('scopes', fn() => config('eveapi.scopes.selected'))->middleware('auth:api');
 
         Route::prefix('character')
@@ -45,7 +46,7 @@ Route::prefix('eveapi')
 
         Route::prefix('corporation')->group(function () {
             Route::get('info', [CorporationInfoController::class, 'index'])->name('get.corporation_info');
-            include __DIR__ . '/Routes/Corporation/Recruitment.php';
+
         });
 
         Route::prefix('alliance')->group(function () {
