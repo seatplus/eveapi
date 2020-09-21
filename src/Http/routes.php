@@ -24,7 +24,6 @@
  * SOFTWARE.
  */
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Seatplus\Eveapi\Http\Controllers\Alliance\InfoController as AllianceInfoController;
 use Seatplus\Eveapi\Http\Controllers\Character\InfoController;
@@ -32,8 +31,7 @@ use Seatplus\Eveapi\Http\Controllers\Corporation\InfoController as CorporationIn
 
 Route::prefix('api-delete')
     ->group(function () {
-
-        Route::get('scopes', fn() => config('eveapi.scopes.selected'))->middleware('auth:api');
+        Route::get('scopes', fn () => config('eveapi.scopes.selected'))->middleware('auth:api');
 
         Route::prefix('character')
             ->group(function () {
@@ -46,7 +44,6 @@ Route::prefix('api-delete')
 
         Route::prefix('corporation')->group(function () {
             Route::get('info', [CorporationInfoController::class, 'index'])->name('get.corporation_info');
-
         });
 
         Route::prefix('alliance')->group(function () {
