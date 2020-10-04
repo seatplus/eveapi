@@ -27,7 +27,6 @@
 namespace Seatplus\Eveapi\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
 class Applications extends Model
