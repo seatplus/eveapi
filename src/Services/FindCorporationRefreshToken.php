@@ -46,6 +46,6 @@ class FindCorporationRefreshToken
             ->cursor()
             ->shuffle()
             ->filter(fn ($token) => collect($scopes)->diff($token->scopes)->isEmpty())
-            ->first(fn ($token) => $token->character->roles->hasRole('roles', $role));
+            ->first(fn ($token) => $token->character->roles->hasRole('roles', $role) ?? null);
     }
 }

@@ -87,7 +87,7 @@ class CharacterInfo extends Model
 
     public function roles()
     {
-        return $this->hasOne(CharacterRole::class, 'character_id', 'character_id');
+        return $this->hasOne(CharacterRole::class, 'character_id', 'character_id')->withDefault();
     }
 
     public function character_affiliation()
