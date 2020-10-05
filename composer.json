@@ -36,7 +36,7 @@
         "spatie/phpunit-watcher": "^1.11",
         "itsgoingd/clockwork": "^4.0",
         "barryvdh/laravel-ide-helper": "^2.6",
-        "dms/phpunit-arraysubset-asserts": "^0.1.0"
+        "dms/phpunit-arraysubset-asserts": "^0.2.1"
     },
     "extra": {
         "laravel": {
