@@ -27,7 +27,6 @@
 namespace Seatplus\Eveapi\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
 class Applications extends Model
@@ -43,7 +42,6 @@ class Applications extends Model
      * @var array
      */
     protected $casts = [
-        'character_id' => 'integer',
         'corporation_id' => 'integer',
     ];
 
@@ -52,8 +50,8 @@ class Applications extends Model
         return $this->belongsTo(CorporationInfo::class, 'corporation_id', 'corporation_id');
     }
 
-    public function character()
+    public function applicationable()
     {
-        return $this->hasOne(CharacterInfo::class, 'character_id', 'character_id');
+        return $this->morphTo();
     }
 }

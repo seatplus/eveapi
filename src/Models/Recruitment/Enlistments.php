@@ -24,28 +24,22 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Services;
+namespace Seatplus\Eveapi\Models\Recruitment;
 
-use Seatplus\Eveapi\Models\RefreshToken;
+use Illuminate\Database\Eloquent\Model;
+use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
-class FindCorporationRefreshToken
+class Enlistments extends Model
 {
     /**
-     * @param int    $corporation_id
-     * @param string|array  $scope
-     * @param string $role
-     *
-     * @return \Seatplus\Eveapi\Models\RefreshToken|null
+     * @var bool
      */
-    public function __invoke(int $corporation_id, $scope, string $role): ?RefreshToken
-    {
-        $scopes = is_string($scope) ? [$scope] : (is_array($scope) ? $scope : []);
+    protected static $unguarded = true;
 
-        return RefreshToken::with('corporation', 'character.roles')
-            ->whereHas('corporation', fn ($query) => $query->where('corporation_infos.corporation_id', $corporation_id))
-            ->cursor()
-            ->shuffle()
-            ->filter(fn ($token) => collect($scopes)->diff($token->scopes)->isEmpty())
-            ->first(fn ($token) => $token->character->roles->hasRole('roles', $role) ?? null);
+    public $incrementing = false;
+
+    public function corporation()
+    {
+        return $this->belongsTo(CorporationInfo::class, 'corporation_id', 'corporation_id');
     }
 }

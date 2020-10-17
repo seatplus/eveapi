@@ -29,12 +29,9 @@ use Seatplus\Eveapi\Http\Controllers\Alliance\InfoController as AllianceInfoCont
 use Seatplus\Eveapi\Http\Controllers\Character\InfoController;
 use Seatplus\Eveapi\Http\Controllers\Corporation\InfoController as CorporationInfoController;
 
-Route::namespace('Seatplus\Eveapi\Http\Controllers\Updates')
-    ->prefix('eveapi')
+Route::prefix('api-delete')
     ->group(function () {
-        Route::get('scopes', function () {
-            return config('eveapi.scopes.selected');
-        })->middleware('auth:api');
+        Route::get('scopes', fn () => config('eveapi.scopes.selected'))->middleware('auth:api');
 
         Route::prefix('character')
             ->group(function () {

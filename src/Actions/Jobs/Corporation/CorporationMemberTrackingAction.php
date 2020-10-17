@@ -76,10 +76,10 @@ class CorporationMemberTrackingAction extends RetrieveFromEsiBase implements Ret
 
         collect($response)
             ->lazy()
-            ->each(fn ($member) => CorporationMemberTracking::firstOrCreate([
+            ->each(fn ($member) => CorporationMemberTracking::updateOrCreate([
                 'corporation_id' => $refresh_token->corporation_id,
                 'character_id'   => $member->character_id,
-            ])->fill([
+            ], [
                 'start_date'   => property_exists($member, 'start_date') ? carbon($member->start_date) : null,
                 'base_id'      => $member->base_id ?? null,
                 'logon_date'   => property_exists($member, 'logon_date') ? carbon($member->logon_date) : null,

@@ -10,6 +10,7 @@ use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsLocationJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfo as CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseCategoriesByCategoryIdJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
@@ -59,9 +60,11 @@ class CorporationMemberTrackingLifeCycleTest extends TestCase
     public function it_dispatches_location_job()
     {
 
-        $tracking = factory(CorporationMemberTracking::class)->create();
+        $tracking = factory(CorporationMemberTracking::class)->create([
+            'character_id' => $this->test_character->character_id
+        ]);
 
-        Queue::assertPushedOn('high', CharacterAssetsLocationJob::class);
+        Queue::assertPushedOn('high', ResolveLocationJob::class);
     }
 
     /** @test */
@@ -74,7 +77,7 @@ class CorporationMemberTrackingLifeCycleTest extends TestCase
             'location_id' => $location->location_id
         ]);
 
-        Queue::assertNotPushed(CharacterAssetsLocationJob::class);
+        Queue::assertNotPushed(ResolveLocationJob::class);
     }
 
     /** @test */
@@ -87,12 +90,12 @@ class CorporationMemberTrackingLifeCycleTest extends TestCase
             ]);
         });
 
-        Queue::assertNotPushed(CharacterAssetsLocationJob::class);
+        Queue::assertNotPushed(ResolveLocationJob::class);
 
         $tracking->location_id = 56789;
         $tracking->save();
 
-        Queue::assertPushedOn('high', CharacterAssetsLocationJob::class);
+        Queue::assertPushedOn('high', ResolveLocationJob::class);
 
     }
 
@@ -113,15 +116,6 @@ class CorporationMemberTrackingLifeCycleTest extends TestCase
 
         Queue::assertPushedOn('high', ResolveUniverseTypesByTypeIdJob::class);
 
-    }
-
-    /** @test */
-    public function it_dispatches_character_job()
-    {
-
-        $tracking = factory(CorporationMemberTracking::class)->create();
-
-        Queue::assertPushedOn('high', CharacterAssetsLocationJob::class);
     }
 
     /** @test */

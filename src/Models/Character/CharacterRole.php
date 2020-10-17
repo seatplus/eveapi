@@ -71,7 +71,7 @@ class CharacterRole extends Model
 
     public function hasRole(string $scope, string $role): bool
     {
-        if (! in_array($role, $this->roles_array)) {
+        if (! in_array($role, $this->roles_array) || is_null($this->$scope)) {
             return false;
         }
 

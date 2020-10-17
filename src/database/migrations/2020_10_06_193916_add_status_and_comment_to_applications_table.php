@@ -24,28 +24,36 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Services;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-use Seatplus\Eveapi\Models\RefreshToken;
-
-class FindCorporationRefreshToken
+class AddStatusAndCommentToApplicationsTable extends Migration
 {
     /**
-     * @param int    $corporation_id
-     * @param string|array  $scope
-     * @param string $role
+     * Run the migrations.
      *
-     * @return \Seatplus\Eveapi\Models\RefreshToken|null
+     * @return void
      */
-    public function __invoke(int $corporation_id, $scope, string $role): ?RefreshToken
+    public function up()
     {
-        $scopes = is_string($scope) ? [$scope] : (is_array($scope) ? $scope : []);
+        Schema::table('applications', function (Blueprint $table) {
+            $table->enum('status', ['open', 'accepted', 'rejected'])->default('open');
+            $table->longText('comment')->default('');
+            $table->nullableMorphs('causer');
+        });
+    }
 
-        return RefreshToken::with('corporation', 'character.roles')
-            ->whereHas('corporation', fn ($query) => $query->where('corporation_infos.corporation_id', $corporation_id))
-            ->cursor()
-            ->shuffle()
-            ->filter(fn ($token) => collect($scopes)->diff($token->scopes)->isEmpty())
-            ->first(fn ($token) => $token->character->roles->hasRole('roles', $role) ?? null);
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::table('applications', function (Blueprint $table) {
+            $table->dropColumn(['status', 'comment']);
+            $table->dropMorphs('causer');
+        });
     }
 }

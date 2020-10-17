@@ -24,28 +24,41 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Services;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-use Seatplus\Eveapi\Models\RefreshToken;
-
-class FindCorporationRefreshToken
+class AddApplicationableToApplicationsTable extends Migration
 {
     /**
-     * @param int    $corporation_id
-     * @param string|array  $scope
-     * @param string $role
+     * Run the migrations.
      *
-     * @return \Seatplus\Eveapi\Models\RefreshToken|null
+     * @return void
      */
-    public function __invoke(int $corporation_id, $scope, string $role): ?RefreshToken
+    public function up()
     {
-        $scopes = is_string($scope) ? [$scope] : (is_array($scope) ? $scope : []);
+        Schema::dropIfExists('applications');
 
-        return RefreshToken::with('corporation', 'character.roles')
-            ->whereHas('corporation', fn ($query) => $query->where('corporation_infos.corporation_id', $corporation_id))
-            ->cursor()
-            ->shuffle()
-            ->filter(fn ($token) => collect($scopes)->diff($token->scopes)->isEmpty())
-            ->first(fn ($token) => $token->character->roles->hasRole('roles', $role) ?? null);
+        Schema::create('applications', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->bigInteger('corporation_id');
+            $table->morphs('applicationable');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::create('applications', function (Blueprint $table) {
+            $table->increments('id');
+            $table->bigInteger('character_id');
+            $table->bigInteger('corporation_id');
+            $table->timestamps();
+        });
     }
 }

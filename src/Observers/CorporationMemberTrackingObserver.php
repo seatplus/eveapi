@@ -27,11 +27,12 @@
 namespace Seatplus\Eveapi\Observers;
 
 use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsLocationJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfo;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 
 class CorporationMemberTrackingObserver
 {
@@ -78,7 +79,7 @@ class CorporationMemberTrackingObserver
 
     private function handleShipTypes()
     {
-        if ($this->corporation_member_tracking->ship) {
+        if ($this->corporation_member_tracking->ship || is_null($this->corporation_member_tracking->ship_type_id)) {
             return;
         }
 
@@ -87,16 +88,20 @@ class CorporationMemberTrackingObserver
 
     private function handleLocations()
     {
-        if ($this->corporation_member_tracking->location) {
+        if ($this->corporation_member_tracking->location || is_null($this->corporation_member_tracking->location_id)) {
             return;
         }
 
-        $job_container = new JobContainer([
-            'refresh_token' => RefreshToken::find($this->corporation_member_tracking->character_id),
-            'queue' => 'high',
-        ]);
+        $find_corporation_refresh_token = new FindCorporationRefreshToken;
 
-        CharacterAssetsLocationJob::dispatch($job_container)->onQueue('high');
+        $refresh_token = $find_corporation_refresh_token($this->corporation_member_tracking->corporation_id, 'esi-corporations.track_members.v1', 'Director') ?? RefreshToken::find($this->corporation_member_tracking->character_id);
+
+        $job = new ResolveLocationJob(
+            $this->corporation_member_tracking->location_id,
+            $refresh_token
+        );
+
+        dispatch($job)->onQueue('high');
     }
 
     private function handleCharacters()

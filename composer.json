@@ -29,7 +29,8 @@
         "ext-redis": "*",
         "laravel/framework": "^6.0",
         "laravel/horizon": "^3.2",
-        "seatplus/eseye": "^2.0"
+        "seatplus/eseye": "^2.0",
+        "spatie/laravel-activitylog": "^3.16"
     },
     "require-dev": {
         "orchestra/testbench": "^4.3",

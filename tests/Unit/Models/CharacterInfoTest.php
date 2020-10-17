@@ -54,11 +54,13 @@ class CharacterInfoTest extends TestCase
     /** @test */
     public function it_has_application_relationship()
     {
-        $application = factory(Applications::class)->create();
+        $application = factory(Applications::class)->create([
+            'corporation_id' => $this->test_character->corporation->corporation_id,
+            'applicationable_type' => CharacterInfo::class,
+            'applicationable_id' => $this->test_character->character_id
+        ]);
 
-        $character = $application->character;
-
-        $this->assertInstanceOf(Applications::class, $character->application);
+        $this->assertInstanceOf(Applications::class, $this->test_character->application);
     }
 
     /** @test */
