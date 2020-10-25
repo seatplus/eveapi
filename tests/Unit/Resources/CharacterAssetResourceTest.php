@@ -14,12 +14,11 @@ class CharacterAssetResourceTest extends TestCase
     /** @test */
     public function testCorrectDataIsReturnedInResponse()
     {
-        $resource = (new CharacterAssetRessource($character_asset = factory(CharacterAsset::class)->states('withoutType')->create()))->jsonSerialize();
+        $resource = (new CharacterAssetRessource($character_asset = factory(CharacterAsset::class)->states('withoutType')->create()));
 
-        Assert::assertArraySubset([
-            'location_id' => $character_asset->location_id,
-            'name' => $character_asset->name
-        ], $resource);
+        $this->assertTrue($resource instanceof CharacterAssetRessource);
+        $this->assertEquals($character_asset->location_id, $resource->location_id);
+        $this->assertEquals($character_asset->name, $resource->name);
 
     }
 

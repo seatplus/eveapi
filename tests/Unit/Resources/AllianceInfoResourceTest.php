@@ -4,7 +4,6 @@
 namespace Seatplus\Eveapi\Tests\Unit\Resources;
 
 
-use DMS\PHPUnitExtensions\ArraySubset\Assert;
 use Seatplus\Eveapi\Http\Resources\AllianceInfoResource;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Tests\TestCase;
@@ -14,13 +13,11 @@ class AllianceInfoResourceTest extends TestCase
     /** @test */
     public function testCorrectDataIsReturnedInResponse()
     {
-        $resource = (new AllianceInfoResource($alliance_info = factory(AllianceInfo::class)->create()))->jsonSerialize();
+        $resource = (new AllianceInfoResource($alliance_info = factory(AllianceInfo::class)->create()));
 
-        Assert::assertArraySubset([
-            'alliance_id' => $alliance_info->alliance_id,
-            'name' => $alliance_info->name
-        ], $resource);
-
+        $this->assertTrue($resource instanceof AllianceInfoResource);
+        $this->assertEquals($alliance_info->alliance_id, $resource->alliance_id);
+        $this->assertEquals($alliance_info->name, $resource->name);
     }
 
 }

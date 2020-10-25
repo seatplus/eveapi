@@ -164,6 +164,9 @@ class EveapiServiceProvider extends ServiceProvider
 
         // Set the environment configuration.
         config(['horizon.environments' => $horizon_environments]);
+
+        // remove the default config worker
+        config(['horizon.defaults' => []]);
     }
 
     private function addHorizonSnapshotSchedule()
