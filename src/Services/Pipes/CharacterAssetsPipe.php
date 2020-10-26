@@ -39,7 +39,7 @@ class CharacterAssetsPipe implements Pipe
         if (in_array('esi-assets.read_assets.v1', $job_container->refresh_token->refresh()->scopes)) {
             Bus::chain([
                 new CharacterAssetJob($job_container),
-                new CharacterAssetsNameJob($job_container)
+                new CharacterAssetsNameJob($job_container),
             ])->onQueue($job_container->queue)->dispatch($job_container);
         }
 
