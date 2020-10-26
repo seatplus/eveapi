@@ -27,6 +27,7 @@
 namespace Seatplus\Eveapi\Services\Pipes;
 
 use Closure;
+use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
@@ -36,9 +37,10 @@ class CharacterAssetsPipe implements Pipe
     public function handle(JobContainer $job_container, Closure $next)
     {
         if (in_array('esi-assets.read_assets.v1', $job_container->refresh_token->refresh()->scopes)) {
-            CharacterAssetJob::withChain([
+            Bus::chain([
+                new CharacterAssetJob($job_container),
                 new CharacterAssetsNameJob($job_container),
-            ])->dispatch($job_container)->onQueue($job_container->queue);
+            ])->onQueue($job_container->queue)->dispatch($job_container);
         }
 
         return $next($job_container);

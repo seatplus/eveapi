@@ -16,12 +16,11 @@ class CharacterInfoResourceTest extends TestCase
     /** @test */
     public function testCorrectDataIsReturnedInResponse()
     {
-        $resource = (new CharacterInfoResource($character_info = factory(CharacterInfo::class)->create()))->jsonSerialize();
+        $resource = (new CharacterInfoResource($character_info = factory(CharacterInfo::class)->create()));
 
-        Assert::assertArraySubset([
-            'character_id' => $character_info->character_id,
-            'name' => $character_info->name
-        ], $resource);
+        $this->assertTrue($resource instanceof CharacterInfoResource);
+        $this->assertEquals($character_info->character_id, $resource->character_id);
+        $this->assertEquals($character_info->name, $resource->name);
 
     }
 
