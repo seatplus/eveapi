@@ -46,4 +46,17 @@ class ApplicationsModelTest extends TestCase
         $this->assertInstanceOf(Applications::class, $this->test_character->application);
     }
 
+    /** @test */
+    public function has_ofCorporation_scope()
+    {
+
+        $application = factory(Applications::class)->create([
+            'corporation_id' => $this->test_character->corporation->corporation_id,
+            'applicationable_type' => CharacterInfo::class,
+            'applicationable_id' => $this->test_character->character_id
+        ]);
+
+        $this->assertInstanceOf(CharacterInfo::class, Applications::ofCorporation($this->test_character->corporation->corporation_id)->first()->applicationable);
+    }
+
 }
