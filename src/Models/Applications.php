@@ -59,7 +59,7 @@ class Applications extends Model
         return $this->morphTo();
     }
 
-    public function scopeOfCorporation(Builder $query, int $corporation_id) : Builder
+    public function scopeOfCorporation(Builder $query, int $corporation_id): Builder
     {
         return $query->where('corporation_id', $corporation_id)
             ->with([
