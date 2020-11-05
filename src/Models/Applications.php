@@ -26,7 +26,11 @@
 
 namespace Seatplus\Eveapi\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Seatplus\Auth\Models\User;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
 class Applications extends Model
@@ -53,5 +57,16 @@ class Applications extends Model
     public function applicationable()
     {
         return $this->morphTo();
+    }
+
+    public function scopeOfCorporation(Builder $query, int $corporation_id): Builder
+    {
+        return $query->where('corporation_id', $corporation_id)
+            ->with([
+                'applicationable' => fn (MorphTo $morph_to) => $morph_to->morphWith([
+                    User::class => ['characters.refresh_token', 'main_character', 'characters.application.corporation.ssoScopes', 'characters.application.corporation.alliance.ssoScopes'],
+                    CharacterInfo::class => ['refresh_token', 'application.corporation.ssoScopes', 'application.corporation.alliance.ssoScopes'],
+                ]),
+            ]);
     }
 }
