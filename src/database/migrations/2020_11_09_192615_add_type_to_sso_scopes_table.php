@@ -24,34 +24,37 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Models;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-
-class SsoScopes extends Model
+class AddTypeToSsoScopesTable extends Migration
 {
     /**
-     * The attributes that are mass assignable.
+     * Run the migrations.
      *
-     * @var array
+     * @return void
      */
-    protected $fillable = ['selected_scopes', 'morphable_type', 'morphable_id', 'type'];
-
-    /**
-     * @var array
-     */
-    protected $casts = [
-        'selected_scopes' => 'array',
-    ];
-
-    public function morphable()
+    public function up()
     {
-        return $this->morphTo();
+        Schema::table('sso_scopes', function (Blueprint $table) {
+            $table->string('morphable_id')->nullable()->change();
+            $table->string('morphable_type')->nullable()->change();
+            $table->enum('type', ['default', 'user', 'global'])->default('default');
+        });
     }
 
-    public function scopeGlobal(Builder $query): Builder
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
     {
-        return $query->where('type', 'global');
+        Schema::table('sso_scopes', function (Blueprint $table) {
+            $table->string('morphable_id')->change();
+            $table->string('morphable_type')->change();
+            $table->dropColumn('type');
+        });
     }
 }
