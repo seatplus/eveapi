@@ -25,4 +25,13 @@ class SsoScopesModelTest extends TestCase
         $this->assertInstanceOf(AllianceInfo::class, $sso->refresh()->morphable);
     }
 
+    /** @test */
+    public function has_global_scope()
+    {
+
+        $sso = SsoScopes::updateOrCreate(['type' => 'global'], ['selected_scopes' => collect()->toJson()]);
+
+        $this->assertEquals($sso->type, SsoScopes::global()->first()->type);
+    }
+
 }

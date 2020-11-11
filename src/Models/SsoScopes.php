@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class SsoScopes extends Model
@@ -35,7 +36,7 @@ class SsoScopes extends Model
      *
      * @var array
      */
-    protected $fillable = ['selected_scopes', 'morphable_type', 'morphable_id'];
+    protected $fillable = ['selected_scopes', 'morphable_type', 'morphable_id', 'type'];
 
     /**
      * @var array
@@ -47,5 +48,10 @@ class SsoScopes extends Model
     public function morphable()
     {
         return $this->morphTo();
+    }
+
+    public function scopeGlobal(Builder $query): Builder
+    {
+        return $query->where('type', 'global');
     }
 }
