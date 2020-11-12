@@ -32,7 +32,8 @@
         "laravel/framework": "^8.0",
         "laravel/horizon": "^5.0",
         "seatplus/eseye": "^3.0",
-        "spatie/laravel-activitylog": "^3.16"
+        "spatie/laravel-activitylog": "^3.16",
+        "doctrine/dbal": "^2.12"
     },
     "require-dev": {
         "orchestra/testbench": "^6.0",
