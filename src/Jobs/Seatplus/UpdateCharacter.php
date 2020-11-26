@@ -81,9 +81,8 @@ class UpdateCharacter implements ShouldQueue
         Bus::batch([
             new CharacterInfoJob($job_container), // Public endpoint hence no hydration or added logic required
             new CharacterAssetsHydrateBatch($job_container),
-            new CharacterRolesHydrateBatch($job_container)
+            new CharacterRolesHydrateBatch($job_container),
         ])->then(fn (Batch $batch) => logger()->info($success_message)
         )->name($batch_name)->onQueue($queue)->allowFailures()->dispatch();
-
     }
 }
