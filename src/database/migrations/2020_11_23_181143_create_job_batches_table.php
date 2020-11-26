@@ -24,30 +24,40 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Services\Pipes\Corporation;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-use Closure;
-use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
-
-class CorporationMemberTrackingPipe extends AbstractCorporationPipe
+class CreateJobBatchesTable extends Migration
 {
-    public function handle(JobContainer $job_container, Closure $next)
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
     {
-        if ($this->enrichJobContainerWithRefreshToken($job_container)->getRefreshToken()) {
-            CorporationMemberTrackingJob::dispatch($job_container)->onQueue($job_container->queue);
-        }
-
-        return $next($job_container);
+        Schema::create('job_batches', function (Blueprint $table) {
+            $table->string('id')->primary();
+            $table->string('name');
+            $table->integer('total_jobs');
+            $table->integer('pending_jobs');
+            $table->integer('failed_jobs');
+            $table->text('failed_job_ids');
+            $table->text('options')->nullable();
+            $table->integer('cancelled_at')->nullable();
+            $table->integer('created_at');
+            $table->integer('finished_at')->nullable();
+        });
     }
 
-    public function getRequiredScope(): string
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
     {
-        return 'esi-corporations.track_members.v1';
-    }
-
-    public function getRequiredRole(): string
-    {
-        return 'Director';
+        Schema::dropIfExists('job_batches');
     }
 }

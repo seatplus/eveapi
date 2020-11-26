@@ -33,7 +33,7 @@ use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
 
-class CharacterInfo extends EsiBase
+class CharacterInfoJob extends EsiBase
 {
 
     /**

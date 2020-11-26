@@ -24,20 +24,30 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Services\Pipes;
+namespace Seatplus\Eveapi\Jobs\Hydrate\Character;
 
-use Closure;
 use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Jobs\Character\CharacterRoleJob;
+use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
+use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 
-class CharacterRolesPipe implements Pipe
+class CharacterAssetsHydrateBatch extends HydrateCharacterBase
 {
-    public function handle(JobContainer $job_container, Closure $next)
+    public function __construct(JobContainer $job_container)
     {
-        if (in_array('esi-characters.read_corporation_roles.v1', $job_container->refresh_token->refresh()->scopes)) {
-            CharacterRoleJob::dispatch($job_container)->onQueue($job_container->queue);
-        }
+        parent::__construct($job_container);
 
-        return $next($job_container);
+        parent::setRequiredScope('esi-assets.read_assets.v1');
+    }
+
+    public function handle()
+    {
+        if ($this->hasRequiredScope()) {
+            $this->batch()->add([
+                [
+                    new CharacterAssetJob($this->job_container),
+                    new CharacterAssetsNameJob($this->job_container),
+                ],
+            ]);
+        }
     }
 }

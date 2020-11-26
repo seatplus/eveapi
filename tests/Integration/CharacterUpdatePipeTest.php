@@ -4,36 +4,27 @@
 namespace Seatplus\Eveapi\Tests\Integration;
 
 
+use Illuminate\Bus\Batch;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Testing\Fakes\PendingBatchFake;
+use Mockery;
+use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
-use Seatplus\Eveapi\Jobs\Character\CharacterInfo as CharacterInfoJob;
+use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob as CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterRoleJob;
+use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
+use Seatplus\Eveapi\Jobs\Hydrate\Character\CharacterAssetsHydrateBatch;
+use Seatplus\Eveapi\Jobs\Hydrate\Character\CharacterRolesHydrateBatch;
+use Seatplus\Eveapi\Jobs\Hydrate\Corporation\CorporationMemberTrackingHydrateBatch;
 use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Tests\TestCase;
 
 class CharacterUpdatePipeTest extends TestCase
 {
-    /** @test */
-    public function it_dispatches_character_assets()
-    {
-        $refresh_token = Event::fakeFor( function () {
-            return factory(RefreshToken::class)->create([
-                'scopes' => ['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1']
-            ]);
-        });
-
-        Bus::fake();
-
-        (new UpdateCharacter)->handle();
-
-        Bus::assertDispatched(CharacterAssetJob::class, function ($job) use ($refresh_token) {
-            return $refresh_token->character_id === $job->character_id;
-        });
-    }
 
     /** @test */
     public function it_dispatches_character_info()
@@ -42,9 +33,17 @@ class CharacterUpdatePipeTest extends TestCase
 
         (new UpdateCharacter)->handle();
 
-        Bus::assertDispatched(CharacterInfoJob::class, function ($job) {
-            return $this->test_character->refresh_token->character_id === $job->refresh_token->character_id;
-        });
+        Bus::assertBatched(fn($batch) => $batch->jobs->first(fn($job) => $job instanceof CharacterInfoJob));
+    }
+
+    /** @test */
+    public function it_dispatch_assets_hydration_job()
+    {
+        Bus::fake();
+
+        (new UpdateCharacter)->handle();
+
+        Bus::assertBatched(fn($batch) => $batch->jobs->first(fn($job) => $job instanceof CharacterAssetsHydrateBatch));
     }
 
     /** @test */
@@ -54,7 +53,47 @@ class CharacterUpdatePipeTest extends TestCase
 
         (new UpdateCharacter)->handle();
 
-        Bus::assertNotDispatched(CharacterAssetJob::class);
+        $job_container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]);
+
+        $job = Mockery::mock(CharacterAssetsHydrateBatch::class . '[batch]', [$job_container]);
+
+        $job->shouldNotReceive('batch');
+
+        Bus::fake();
+
+        $job->handle();
+
+        //Bus::assertNotDispatched(CharacterAssetJob::class);
+    }
+
+    /** @test */
+    public function assets_hydration_job_dispatches_character_assets_job()
+    {
+        $refresh_token = Event::fakeFor( function () {
+            return factory(RefreshToken::class)->create([
+                'scopes' => ['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1']
+            ]);
+        });
+
+        $job_container = new JobContainer(['refresh_token' => $refresh_token]);
+
+        $job = Mockery::mock(CharacterAssetsHydrateBatch::class . '[batch]', [$job_container]);
+
+        $batch = Mockery::mock(Batch::class)->makePartial();
+
+        $batch->shouldReceive('add')->once()->with([
+            [
+                new CharacterAssetJob($job_container),
+                new CharacterAssetsNameJob($job_container)
+            ]
+        ]);
+
+        $job->shouldReceive('batch')
+            ->once()->andReturn($batch);
+
+        Bus::fake();
+
+        $job->handle();
     }
 
     /** @test */
@@ -66,34 +105,11 @@ class CharacterUpdatePipeTest extends TestCase
             ]);
         });
 
-        Queue::fake();
+        Bus::fake();
 
         (new UpdateCharacter($refresh_token))->handle();
 
-        Queue::assertPushedOn('high', CharacterInfoJob::class);
-
-        Queue::assertPushed(CharacterInfoJob::class, function ($job) use ($refresh_token){
-
-            return $refresh_token->character_id === $job->refresh_token->character_id;
-        });
-    }
-
-    /** @test */
-    public function it_dispatches_name_job_as_chain()
-    {
-        $refresh_token = Event::fakeFor( function () {
-            return factory(RefreshToken::class)->create([
-                'scopes' => ['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1']
-            ]);
-        });
-
-        Queue::fake();
-
-        (new UpdateCharacter)->handle();
-
-        Queue::assertPushedWithChain(CharacterAssetJob::class, [
-            CharacterAssetsNameJob::class
-        ]);
+        Bus::assertBatched(fn(PendingBatchFake $batch) => $batch->queue() === 'high');
     }
 
     /** @test */
@@ -105,16 +121,58 @@ class CharacterUpdatePipeTest extends TestCase
             ]);
         });
 
-        Queue::fake();
+        Bus::fake();
 
         (new UpdateCharacter($refresh_token))->handle();
 
-        Queue::assertPushedOn('high', CharacterRoleJob::class);
+        Bus::assertBatched(fn($batch) => $batch->jobs->first(fn($job) => $job instanceof CharacterRolesHydrateBatch));
+    }
 
-        Queue::assertPushed(CharacterRoleJob::class, function ($job) use ($refresh_token){
-
-            return $refresh_token->character_id === $job->refresh_token->character_id;
+    /** @test */
+    public function roles_hydration_job_dispatches_character_roles_job()
+    {
+        $refresh_token = Event::fakeFor( function () {
+            return factory(RefreshToken::class)->create([
+                'scopes' => ['esi-characters.read_corporation_roles.v1']
+            ]);
         });
+
+        $job_container = new JobContainer(['refresh_token' => $refresh_token]);
+
+        $job = Mockery::mock(CharacterRolesHydrateBatch::class . '[batch]', [$job_container]);
+
+        $batch = Mockery::mock(Batch::class)->makePartial();
+
+        $batch->shouldReceive('add')->once()->with([
+            new CharacterRoleJob($job_container),
+        ]);
+
+        $job->shouldReceive('batch')
+            ->once()->andReturn($batch);
+
+        Bus::fake();
+
+        $job->handle();
+    }
+
+    /** @test */
+    public function hydration_does_not_dispatch_role_job_for_missing_scopes()
+    {
+        Bus::fake();
+
+        (new UpdateCharacter)->handle();
+
+        $job_container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]);
+
+        $job = Mockery::mock(CharacterRolesHydrateBatch::class . '[batch]', [$job_container]);
+
+        $job->shouldNotReceive('batch');
+
+        Bus::fake();
+
+        $job->handle();
+
+        //Bus::assertNotDispatched(CharacterAssetJob::class);
     }
 
 }

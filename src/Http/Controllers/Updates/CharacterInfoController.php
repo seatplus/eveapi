@@ -29,7 +29,7 @@ namespace Seatplus\Eveapi\Http\Controllers\Updates;
 use Illuminate\Http\Request;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Http\Controllers\Controller;
-use Seatplus\Eveapi\Jobs\Character\CharacterInfo;
+use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 
 class CharacterInfoController extends Controller
 {
@@ -43,7 +43,7 @@ class CharacterInfoController extends Controller
             'character_id' => $request->character_id,
         ]);
 
-        CharacterInfo::dispatch($job_container)->onQueue('default');
+        CharacterInfoJob::dispatch($job_container)->onQueue('default');
 
         return response('success', 200);
     }

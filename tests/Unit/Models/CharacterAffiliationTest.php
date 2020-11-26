@@ -29,7 +29,7 @@ class CharacterAffiliationTest extends TestCase
             $character->character_affiliation->alliance->delete();
 
         // It needs an existing character on record else we don't bother
-        //factory(CharacterInfo::class)->create(['character_id' => $character_affiliation->character_id]);
+        //factory(CharacterInfoJob::class)->create(['character_id' => $character_affiliation->character_id]);
 
         (new CharacterAffiliationObserver)->created($character->character_affiliation->refresh());
 
@@ -52,7 +52,7 @@ class CharacterAffiliationTest extends TestCase
         $character_affiliation->alliance_id = 5678;
 
         // It needs an existing character on record else we don't bother
-        //factory(CharacterInfo::class)->create(['character_id' => $character_affiliation->character_id]);
+        //factory(CharacterInfoJob::class)->create(['character_id' => $character_affiliation->character_id]);
 
         (new CharacterAffiliationObserver)->updating($character_affiliation);
 
