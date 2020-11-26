@@ -26,25 +26,26 @@
 
 namespace Seatplus\Eveapi\Jobs\Seatplus;
 
+use Illuminate\Bus\Batch;
+use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Pipeline\Pipeline;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
+use Seatplus\Eveapi\Jobs\Hydrate\Character\CharacterAssetsHydrateBatch;
+use Seatplus\Eveapi\Jobs\Hydrate\Character\CharacterRolesHydrateBatch;
 use Seatplus\Eveapi\Models\RefreshToken;
-use Seatplus\Eveapi\Services\Pipes\CharacterAssetsPipe;
-use Seatplus\Eveapi\Services\Pipes\CharacterInfoPipe;
 use Seatplus\Eveapi\Services\Pipes\CharacterRolesPipe;
 
 class UpdateCharacter implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     private array $pipes = [
-        CharacterInfoPipe::class,
-        CharacterAssetsPipe::class,
         CharacterRolesPipe::class,
     ];
 
@@ -73,15 +74,16 @@ class UpdateCharacter implements ShouldQueue
     {
         $job_container = new JobContainer(['refresh_token' => $refresh_token, 'queue' => $queue]);
 
-        app(Pipeline::class)
-            ->send($job_container)
-            ->through($this->pipes)
-            ->then(
-                fn ($jobcontainer) => logger()->info(sprintf('RefreshToken of %s updated!',
-                        optional($refresh_token->refresh()->character)->name ?? $refresh_token->character_id
-                    )
-                )
+        $character = optional($refresh_token->refresh()->character)->name ?? $refresh_token->character_id;
+        $success_message = sprintf('Character update batch of %s processed!', $character);
+        $batch_name = sprintf('%s (character) update batch', $character);
 
-            );
+        Bus::batch([
+            new CharacterInfoJob($job_container), // Public endpoint hence no hydration or added logic required
+            new CharacterAssetsHydrateBatch($job_container),
+            new CharacterRolesHydrateBatch($job_container)
+        ])->then(fn (Batch $batch) => logger()->info($success_message)
+        )->name($batch_name)->onQueue($queue)->allowFailures()->dispatch();
+
     }
 }

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Http\Controllers\Updates\Universe\PublicStructureController;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfo;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
-use Seatplus\Eveapi\Jobs\Character\CharacterInfo;
+use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterRoleJob;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationInfoJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolvePublicStructureJob;
@@ -26,7 +26,7 @@ class UpdateControllerTest extends TestCase
 
         $response = $this->post(route('update.character_info'),['character_id' => 1234]);
 
-        Bus::assertDispatched(CharacterInfo::class, function ($job) {
+        Bus::assertDispatched(CharacterInfoJob::class, function ($job) {
             return $job->character_id = 1234;
         });
 

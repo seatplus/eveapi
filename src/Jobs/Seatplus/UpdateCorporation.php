@@ -26,13 +26,15 @@
 
 namespace Seatplus\Eveapi\Jobs\Seatplus;
 
+use Illuminate\Bus\Batch;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Pipeline\Pipeline;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Jobs\Hydrate\Corporation\CorporationMemberTrackingHydrateBatch;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\Pipes\Corporation\CorporationMemberTrackingPipe;
@@ -65,24 +67,26 @@ class UpdateCorporation implements ShouldQueue
             ->each(fn ($corporation_id) => $this->dispatchUpdate($corporation_id));
     }
 
-    private function execute(JobContainer $job_container, string $success_message)
+    private function execute(JobContainer $job_container, int $corporation_id)
     {
-        app(Pipeline::class)
-            ->send($job_container)
-            ->through($this->pipes)
-            ->then(
-                fn ($jobcontainer) => logger()->info($success_message)
-            );
+
+        $corporation = optional(CorporationInfo::find($corporation_id))->name ?? $corporation_id;
+
+        $success_message = sprintf('%s (corporation) updated.', $corporation);
+        $batch_name = sprintf('%s (corporation) update batch', $corporation);
+
+        $batch = Bus::batch([
+            new CorporationMemberTrackingHydrateBatch($job_container),
+        ])->then(fn (Batch $batch) => logger()->info($success_message)
+        )->name($batch_name)->onQueue($job_container->queue)->allowFailures()->dispatch();
+
+
     }
 
     private function dispatchUpdate(int $corporation_id, string $queue = 'default')
     {
         $job_container = new JobContainer(['corporation_id' => $corporation_id, 'queue' => $queue]);
 
-        $success_message = sprintf('%s (corporation) updated.',
-            optional(CorporationInfo::find($corporation_id))->name ?? $corporation_id,
-        );
-
-        $this->execute($job_container, $success_message);
+        $this->execute($job_container, $corporation_id);
     }
 }

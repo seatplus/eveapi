@@ -24,31 +24,50 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Services\Pipes\Corporation;
+namespace Seatplus\Eveapi\Jobs\Character;
 
-use Closure;
-use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
-use Seatplus\Eveapi\Services\Pipes\Pipe;
+use Seatplus\Eveapi\Actions\Jobs\Character\CharacterInfoAction;
+use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
+use Seatplus\Eveapi\Jobs\EsiBase;
+use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
+use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
+use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
 
-abstract class AbstractCorporationPipe implements Pipe
+class CharacterInfoJob extends EsiBase
 {
-    abstract public function getRequiredScope(): string;
 
-    abstract public function getRequiredRole(): string;
+    /**
+     * @var array
+     */
+    protected $tags = ['character', 'info'];
 
-    abstract public function handle(JobContainer $job_container, Closure $next);
-
-    final public function enrichJobContainerWithRefreshToken(JobContainer $job_container): JobContainer
+    /**
+     * Get the middleware the job should pass through.
+     *
+     * @return array
+     */
+    public function middleware(): array
     {
-        $find_corporation_refresh_token = new FindCorporationRefreshToken;
+        return [
+            new RedisFunnelMiddleware,
+            new EsiRateLimitedMiddleware,
+            new EsiAvailabilityMiddleware,
+        ];
+    }
 
-        $job_container->refresh_token = $find_corporation_refresh_token(
-            $job_container->getCorporationId(),
-            $this->getRequiredScope(),
-            $this->getRequiredRole()
-        );
+    /**
+     * Execute the job.
+     *
+     * @return void
+     * @throws \Exception
+     */
+    public function handle(): void
+    {
+        $this->getActionClass()->execute($this->character_id);
+    }
 
-        return $job_container;
+    public function getActionClass(): RetrieveFromEsiInterface
+    {
+        return new CharacterInfoAction();
     }
 }
