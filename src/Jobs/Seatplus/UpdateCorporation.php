@@ -69,7 +69,6 @@ class UpdateCorporation implements ShouldQueue
 
     private function execute(JobContainer $job_container, int $corporation_id)
     {
-
         $corporation = optional(CorporationInfo::find($corporation_id))->name ?? $corporation_id;
 
         $success_message = sprintf('%s (corporation) updated.', $corporation);
@@ -79,8 +78,6 @@ class UpdateCorporation implements ShouldQueue
             new CorporationMemberTrackingHydrateBatch($job_container),
         ])->then(fn (Batch $batch) => logger()->info($success_message)
         )->name($batch_name)->onQueue($job_container->queue)->allowFailures()->dispatch();
-
-
     }
 
     private function dispatchUpdate(int $corporation_id, string $queue = 'default')

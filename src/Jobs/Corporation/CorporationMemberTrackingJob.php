@@ -40,7 +40,6 @@ use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 
 class CorporationMemberTrackingJob extends EsiBase implements ManualDispatchableJobInterface
 {
-
     use Batchable;
 
     /**
