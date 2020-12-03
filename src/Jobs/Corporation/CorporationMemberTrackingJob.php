@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Corporation;
 
+use Illuminate\Bus\Batchable;
 use Seatplus\Eveapi\Actions\Jobs\Corporation\CorporationMemberTrackingAction;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -39,6 +40,8 @@ use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 
 class CorporationMemberTrackingJob extends EsiBase implements ManualDispatchableJobInterface
 {
+    use Batchable;
+
     /**
      * Get the middleware the job should pass through.
      *

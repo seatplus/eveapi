@@ -24,25 +24,28 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Services\Pipes;
+namespace Seatplus\Eveapi\Jobs\Hydrate\Corporation;
 
-use Closure;
-use Illuminate\Support\Facades\Bus;
-use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
+use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
 
-class CharacterAssetsPipe implements Pipe
+class CorporationMemberTrackingHydrateBatch extends HydrateCorporationBase
 {
-    public function handle(JobContainer $job_container, Closure $next)
+    public function getRequiredScope(): string
     {
-        if (in_array('esi-assets.read_assets.v1', $job_container->refresh_token->refresh()->scopes)) {
-            Bus::chain([
-                new CharacterAssetJob($job_container),
-                new CharacterAssetsNameJob($job_container),
-            ])->onQueue($job_container->queue)->dispatch($job_container);
-        }
+        return 'esi-corporations.track_members.v1';
+    }
 
-        return $next($job_container);
+    public function getRequiredRole(): string
+    {
+        return 'Director';
+    }
+
+    public function handle()
+    {
+        if ($this->job_container->getRefreshToken()) {
+            $this->batch()->add([
+                new CorporationMemberTrackingJob($this->job_container),
+            ]);
+        }
     }
 }
