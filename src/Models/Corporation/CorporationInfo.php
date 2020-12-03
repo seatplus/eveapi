@@ -31,6 +31,7 @@ use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Applications;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\Contacts\Contact;
 use Seatplus\Eveapi\Models\SsoScopes;
 
 class CorporationInfo extends Model
@@ -80,5 +81,11 @@ class CorporationInfo extends Model
     public function candidates()
     {
         return $this->hasMany(Applications::class, 'corporation_id', 'corporation_id');
+    }
+
+    public function contacts()
+    {
+
+        return $this->morphMany(Contact::class, 'contactable');
     }
 }

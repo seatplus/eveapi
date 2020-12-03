@@ -29,6 +29,7 @@ namespace Seatplus\Eveapi\Models\Alliance;
 use Illuminate\Database\Eloquent\Model;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\Contacts\Contact;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\SsoScopes;
 
@@ -74,5 +75,11 @@ class AllianceInfo extends Model
     public function ssoScopes()
     {
         return $this->morphOne(SsoScopes::class, 'morphable');
+    }
+
+    public function contacts()
+    {
+
+        return $this->morphMany(Contact::class, 'contactable');
     }
 }
