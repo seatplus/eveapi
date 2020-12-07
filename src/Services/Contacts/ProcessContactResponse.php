@@ -34,7 +34,7 @@ class ProcessContactResponse
                 'is_watched' => optional($contact)->is_watched,
             ]);
 
-            if($contact->label_ids)
+            if(optional($contact)->label_ids)
                 $contact_model->labels()->createMany(collect($contact->label_ids)->map(fn($label_id) => ['label_id' => $label_id]));
 
             $contact_model->labels()->whereNotIn('label_id', $contact->label_ids ?? [])->delete();

@@ -13,3 +13,5 @@ $factory->define(CharacterAffiliation::class, function (Faker $faker) {
         'last_pulled' => $faker->dateTime()
     ];
 });
+
+$factory->state(CharacterAffiliation::class, 'withAlliance', fn(Faker $faker) => ['alliance_id' => $faker->numberBetween(99000000,100000000)]);

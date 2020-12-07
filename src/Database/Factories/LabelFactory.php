@@ -14,7 +14,8 @@ class LabelFactory extends Factory
     public function definition()
     {
         return [
-            'label_name' => $this->faker->name
+            'label_id' => $this->faker->randomDigitNotNull,
+            'label_name' => $this->faker->domainWord
         ];
     }
 }

@@ -18,4 +18,13 @@ class ContactFactory extends Factory
             'standing' => $this->faker->randomFloat(2,-10, 10)
         ];
     }
+
+    public function withLabels()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'label_ids' => [1, 2, 3]
+            ];
+        });
+    }
 }
