@@ -26,8 +26,6 @@
 
 namespace Seatplus\Eveapi\Jobs\Contacts;
 
-use Seatplus\Eveapi\Actions\Jobs\Character\CharacterRoleAction;
-use Seatplus\Eveapi\Actions\Jobs\Contacts\CharacterContactAction;
 use Seatplus\Eveapi\Actions\Jobs\Contacts\CharacterContactLabelAction;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -59,7 +57,7 @@ class CharacterContactLabelJob extends EsiBase
             'character',
             'character_id: ' . $this->character_id,
             'contacts',
-            'labels'
+            'labels',
         ];
     }
 

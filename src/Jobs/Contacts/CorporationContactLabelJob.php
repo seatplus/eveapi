@@ -26,9 +26,6 @@
 
 namespace Seatplus\Eveapi\Jobs\Contacts;
 
-use Seatplus\Eveapi\Actions\Jobs\Character\CharacterRoleAction;
-use Seatplus\Eveapi\Actions\Jobs\Contacts\CharacterContactAction;
-use Seatplus\Eveapi\Actions\Jobs\Contacts\CorporationContactAction;
 use Seatplus\Eveapi\Actions\Jobs\Contacts\CorporationContactLabelAction;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -60,7 +57,7 @@ class CorporationContactLabelJob extends EsiBase
             'corporation',
             'corporation_id: ' . $this->corporation_id,
             'contacts',
-            'label'
+            'label',
         ];
     }
 

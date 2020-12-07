@@ -85,7 +85,6 @@ class CorporationInfo extends Model
 
     public function contacts()
     {
-
         return $this->morphMany(Contact::class, 'contactable');
     }
 }
