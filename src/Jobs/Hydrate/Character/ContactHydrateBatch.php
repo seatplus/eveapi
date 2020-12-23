@@ -26,8 +26,6 @@
 
 namespace Seatplus\Eveapi\Jobs\Hydrate\Character;
 
-use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Jobs\Character\CharacterRoleJob;
 use Seatplus\Eveapi\Jobs\Contacts\AllianceContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\AllianceContactLabelJob;
 use Seatplus\Eveapi\Jobs\Contacts\CharacterContactJob;
@@ -37,7 +35,6 @@ use Seatplus\Eveapi\Jobs\Contacts\CorporationContactLabelJob;
 
 class ContactHydrateBatch extends HydrateCharacterBase
 {
-
     public function handle()
     {
         $this->handleCharacterContacts();
@@ -52,34 +49,32 @@ class ContactHydrateBatch extends HydrateCharacterBase
         $this->hydrate([
             [
                 new CharacterContactJob($this->job_container),
-                new CharacterContactLabelJob($this->job_container)
-            ]
+                new CharacterContactLabelJob($this->job_container),
+            ],
         ]);
     }
 
     private function handleCorporationContacts()
     {
-
         parent::setRequiredScope('esi-corporations.read_contacts.v1');
 
         $this->hydrate([
             [
                 new CorporationContactJob($this->job_container),
-                new CorporationContactLabelJob($this->job_container)
-            ]
+                new CorporationContactLabelJob($this->job_container),
+            ],
         ]);
     }
 
     private function handleAllianceContacts()
     {
-
         parent::setRequiredScope('esi-alliances.read_contacts.v1');
 
         $this->hydrate([
             [
                 new AllianceContactJob($this->job_container),
-                new AllianceContactLabelJob($this->job_container)
-            ]
+                new AllianceContactLabelJob($this->job_container),
+            ],
         ]);
     }
 

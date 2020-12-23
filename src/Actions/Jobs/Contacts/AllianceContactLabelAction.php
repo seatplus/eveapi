@@ -37,7 +37,6 @@ use Seatplus\Eveapi\Services\Contacts\ProcessContactLabelsResponse;
 
 class AllianceContactLabelAction extends RetrieveFromEsiBase implements RetrieveFromEsiInterface, HasPathValuesInterface, HasRequiredScopeInterface
 {
-
     protected RefreshToken $refresh_token;
 
     private ?array $path_values;
@@ -70,8 +69,9 @@ class AllianceContactLabelAction extends RetrieveFromEsiBase implements Retrieve
     {
         $this->refresh_token = $refresh_token;
 
-        if(is_null($refresh_token->corporation->alliance_id))
+        if (is_null($refresh_token->corporation->alliance_id)) {
             return;
+        }
 
         $this->setPathValues([
             'alliance_id' => $refresh_token->corporation->alliance_id,
@@ -117,5 +117,4 @@ class AllianceContactLabelAction extends RetrieveFromEsiBase implements Retrieve
     {
         return $this->path_values;
     }
-
 }

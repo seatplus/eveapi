@@ -34,5 +34,5 @@ return [
     'queue.manager',
     'can open or close corporations for recruitment',
     'can accept or deny applications',
-    Contact::class => 'contacts'
+    Contact::class => 'contacts',
 ];
