@@ -30,15 +30,4 @@ class CorporationMemberTrackingJobTest extends TestCase
         Queue::assertPushedOn('default', CorporationMemberTrackingJob::class);
     }
 
-    /** @test */
-    public function hasManualDispatchableJobInterfaceImplemented()
-    {
-        $job = new CorporationMemberTrackingJob;
-
-        $this->assertEquals('Director', $job->getRequiredEveCorporationRole());
-        $this->assertEquals('esi-corporations.track_members.v1', $job->getRequiredScope());
-        $this->assertEquals('corporation.member_tracking', $job->getRequiredPermission());
-        $this->assertEquals('corporation.member_tracking', $job->getRequiredPermission());
-    }
-
 }

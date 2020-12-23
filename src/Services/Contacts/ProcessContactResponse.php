@@ -6,6 +6,7 @@ namespace Seatplus\Eveapi\Services\Contacts;
 
 use Seat\Eseye\Containers\EsiResponse;
 use Seatplus\Eveapi\Models\Contacts\Contact;
+use Seatplus\Eveapi\Models\Contacts\ContactLabel;
 
 class ProcessContactResponse
 {
@@ -34,10 +35,16 @@ class ProcessContactResponse
                 'is_watched' => optional($contact)->is_watched,
             ]);
 
-            if(optional($contact)->label_ids)
-                $contact_model->labels()->createMany(collect($contact->label_ids)->map(fn($label_id) => ['label_id' => $label_id]));
-
             $contact_model->labels()->whereNotIn('label_id', $contact->label_ids ?? [])->delete();
+
+            if(optional($contact)->label_ids) {
+
+                $already_existing_label_ids = $contact_model->labels()->pluck('label_id');
+
+                $labels_to_save = collect($contact->label_ids)->diff($already_existing_label_ids);
+
+                $contact_model->labels()->createMany($labels_to_save->map(fn($label_id) => ['label_id' => $label_id]));
+            }
 
         })->pluck('contact_id');
     }

@@ -30,6 +30,7 @@ use Illuminate\Database\Eloquent\Model;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contacts\Contact;
+use Seatplus\Eveapi\Models\Contacts\Label;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\SsoScopes;
 
@@ -37,9 +38,11 @@ class AllianceInfo extends Model
 {
 
     /**
-     * @var bool
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
      */
-    protected static $unguarded = true;
+    protected $guarded = [];
 
     /**
      * @var string
@@ -79,7 +82,11 @@ class AllianceInfo extends Model
 
     public function contacts()
     {
-
         return $this->morphMany(Contact::class, 'contactable');
+    }
+
+    public function labels()
+    {
+        return $this->morphMany(Label::class, 'labelable');
     }
 }

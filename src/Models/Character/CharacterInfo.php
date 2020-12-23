@@ -37,9 +37,11 @@ use Seatplus\Eveapi\Models\RefreshToken;
 class CharacterInfo extends Model
 {
     /**
-     * @var bool
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
      */
-    protected static $unguarded = true;
+    protected $guarded = [];
 
     public $incrementing = false;
 

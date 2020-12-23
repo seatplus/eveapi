@@ -40,9 +40,11 @@ class CharacterAsset extends Model
     protected array $affiliated_ids = [];
 
     /**
-     * @var bool
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
      */
-    protected static $unguarded = true;
+    protected $guarded = [];
 
     /**
      * @var string

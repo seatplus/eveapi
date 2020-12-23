@@ -29,15 +29,13 @@ namespace Seatplus\Eveapi\Jobs\Assets;
 use Seatplus\Eveapi\Actions\Jobs\Assets\CharacterAssetsAction;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
-use Seatplus\Eveapi\Jobs\ManualDispatchableJobInterface;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\RateLimitedJobMiddleware;
-use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 
-class CharacterAssetJob extends EsiBase implements ManualDispatchableJobInterface
+class CharacterAssetJob extends EsiBase
 {
     /**
      * Get the middleware the job should pass through.
@@ -82,20 +80,5 @@ class CharacterAssetJob extends EsiBase implements ManualDispatchableJobInterfac
     public function handle(): void
     {
         $this->getActionClass()->execute($this->refresh_token);
-    }
-
-    public function getRequiredEveCorporationRole(): string
-    {
-        return '';
-    }
-
-    public function getRequiredScope(): string
-    {
-        return 'esi-assets.read_assets.v1';
-    }
-
-    public function getRequiredPermission(): string
-    {
-        return config('eveapi.permissions.' . CharacterAsset::class);
     }
 }
