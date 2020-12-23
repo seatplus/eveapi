@@ -31,14 +31,12 @@ use Seatplus\Eveapi\Actions\HasPathValuesInterface;
 use Seatplus\Eveapi\Actions\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\Contacts\ProcessContactResponse;
 
 class CorporationContactAction extends RetrieveFromEsiBase implements RetrieveFromEsiInterface, HasPathValuesInterface, HasRequiredScopeInterface
 {
-
     protected RefreshToken $refresh_token;
 
     private ?array $path_values;
@@ -117,5 +115,4 @@ class CorporationContactAction extends RetrieveFromEsiBase implements RetrieveFr
     {
         return $this->path_values;
     }
-
 }
