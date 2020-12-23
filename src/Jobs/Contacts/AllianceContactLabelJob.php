@@ -26,11 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Contacts;
 
-use Seatplus\Eveapi\Actions\Jobs\Character\CharacterRoleAction;
-use Seatplus\Eveapi\Actions\Jobs\Contacts\AllianceContactAction;
 use Seatplus\Eveapi\Actions\Jobs\Contacts\AllianceContactLabelAction;
-use Seatplus\Eveapi\Actions\Jobs\Contacts\CharacterContactAction;
-use Seatplus\Eveapi\Actions\Jobs\Contacts\CorporationContactAction;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
@@ -58,7 +54,7 @@ class AllianceContactLabelJob extends EsiBase
             new HasRequiredScopeMiddleware,
             new EsiRateLimitedMiddleware,
             new EsiAvailabilityMiddleware,
-            $rate_limited_middleare
+            $rate_limited_middleare,
         ];
     }
 
@@ -68,7 +64,7 @@ class AllianceContactLabelJob extends EsiBase
             'alliance',
             'alliance_id: ' . $this->alliance_id,
             'contacts',
-            'labels'
+            'labels',
         ];
     }
 
