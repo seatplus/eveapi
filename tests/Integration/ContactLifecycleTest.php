@@ -10,9 +10,12 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
 use Seatplus\Eveapi\Jobs\Contacts\AllianceContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\CharacterContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\CorporationContactJob;
+use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contacts\Contact;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
@@ -28,7 +31,7 @@ class ContactJobsTest extends TestCase
         parent::setUp();
 
         // Prevent any auto dispatching of jobs
-        Event::fake();
+        Queue::fake();
 
         $this->job_container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]);
     }
@@ -89,6 +92,21 @@ class ContactJobsTest extends TestCase
         $contact = $this->test_character->refresh()->contacts->first();
 
         $this->assertCount(3, $contact->labels);
+    }
+
+    /** @test */
+    public function contact_of_type_character_dispatches_affiliation_job()
+    {
+
+        Queue::assertNothingPushed();
+
+        $contact = Contact::factory()->create([
+            'contactable_id' => $this->test_character->character_id,
+            'contactable_type' => CharacterInfo::class,
+            'contact_type' => 'character'
+        ]);
+
+        Queue::assertPushedOn('high', CharacterAffiliationJob::class);
 
     }
 
