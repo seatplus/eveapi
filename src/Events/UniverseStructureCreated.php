@@ -35,7 +35,6 @@ class UniverseStructureCreated
 
     public function __construct(
         public Structure $structure
-    )
-    {
+    ) {
     }
 }

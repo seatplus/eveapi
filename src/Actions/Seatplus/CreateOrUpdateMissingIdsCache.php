@@ -34,8 +34,7 @@ class CreateOrUpdateMissingIdsCache
     public function __construct(
         private string $cache_string,
         public Collection $ids
-    )
-    {
+    ) {
     }
 
     public function handle()

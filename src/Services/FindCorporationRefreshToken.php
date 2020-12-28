@@ -37,7 +37,7 @@ class FindCorporationRefreshToken
      *
      * @return \Seatplus\Eveapi\Models\RefreshToken|null
      */
-    public function __invoke(int $corporation_id, string|array $scope, string $role): ?RefreshToken
+    public function __invoke(int $corporation_id, string | array $scope, string $role): ?RefreshToken
     {
         $scopes = is_string($scope) ? [$scope] : (is_array($scope) ? $scope : []);
 

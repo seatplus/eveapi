@@ -35,7 +35,6 @@ class UniverseSystemCreated
 
     public function __construct(
         public System $system
-    )
-    {
+    ) {
     }
 }

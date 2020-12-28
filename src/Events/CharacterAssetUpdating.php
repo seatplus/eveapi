@@ -35,8 +35,7 @@ class CharacterAssetUpdating
 
     public function __construct(
         private CharacterAsset $character_asset
-    )
-    {
+    ) {
     }
 
     //TODO implement Listener to track item transactions https://stackoverflow.com/a/48793801
