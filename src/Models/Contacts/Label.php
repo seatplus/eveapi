@@ -24,13 +24,25 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Jobs;
+namespace Seatplus\Eveapi\Models\Contacts;
 
-interface ManualDispatchableJobInterface
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Seatplus\Eveapi\Database\Factories\LabelFactory;
+
+class Label extends Model
 {
-    public function getRequiredEveCorporationRole(): string;
+    use HasFactory;
 
-    public function getRequiredScope(): string;
+    protected $guarded = false;
 
-    public function getRequiredPermission(): string;
+    protected static function newFactory()
+    {
+        return LabelFactory::new();
+    }
+
+    public function labelable()
+    {
+        return $this->morphTo();
+    }
 }

@@ -4,7 +4,6 @@
 namespace Seatplus\Eveapi\Tests\Unit\Actions\Jobs\Assets;
 
 
-use Illuminate\Support\Facades\Cache;
 use Seatplus\Eveapi\Actions\Jobs\Assets\CharacterAssetsAction;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Tests\TestCase;

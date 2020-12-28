@@ -30,15 +30,18 @@ $factory->define(CharacterInfo::class, function (Faker $faker) {
 
 $factory->afterCreating(CharacterInfo::class, function ($character_info, $faker) {
 
-    $character_affiliation = $character_info->character_affiliation()->save(factory(CharacterAffiliation::class)->create());
+    $character_affiliation = $character_info->character_affiliation()->save(factory(CharacterAffiliation::class)->states('withAlliance')->create());
+
+    $alliance = factory(AllianceInfo::class)->create([
+        'alliance_id' => $character_affiliation->alliance_id
+    ]);
 
     $character_affiliation->corporation()->associate(factory(CorporationInfo::class)->create([
-        'corporation_id' => $character_affiliation->corporation_id
+        'corporation_id' => $character_affiliation->corporation_id,
+        'alliance_id' => $alliance->alliance_id
     ]));
 
-    $character_affiliation->alliance()->associate(factory(AllianceInfo::class)->create([
-        'alliance_id' => $character_affiliation->alliance_id
-    ]));
+    $character_affiliation->alliance()->associate($alliance);
 
     Event::fakeFor(function () use ($character_info) {
         $character_info->refresh_token()->save(factory(RefreshToken::class)->create());

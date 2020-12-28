@@ -25,6 +25,7 @@
  */
 
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
+use Seatplus\Eveapi\Models\Contacts\Contact;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 
 return [
@@ -33,4 +34,5 @@ return [
     'queue.manager',
     'can open or close corporations for recruitment',
     'can accept or deny applications',
+    Contact::class => 'contacts',
 ];

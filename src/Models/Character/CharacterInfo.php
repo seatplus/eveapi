@@ -29,15 +29,19 @@ namespace Seatplus\Eveapi\Models\Character;
 use Illuminate\Database\Eloquent\Model;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Applications;
+use Seatplus\Eveapi\Models\Contacts\Contact;
+use Seatplus\Eveapi\Models\Contacts\Label;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 class CharacterInfo extends Model
 {
     /**
-     * @var bool
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
      */
-    protected static $unguarded = true;
+    protected $guarded = [];
 
     public $incrementing = false;
 
@@ -108,5 +112,15 @@ class CharacterInfo extends Model
     public function getAllianceIdAttribute()
     {
         return optional($this->character_affiliation)->alliance_id;
+    }
+
+    public function contacts()
+    {
+        return $this->morphMany(Contact::class, 'contactable');
+    }
+
+    public function labels()
+    {
+        return $this->morphMany(Label::class, 'labelable');
     }
 }

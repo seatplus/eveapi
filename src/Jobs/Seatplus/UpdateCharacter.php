@@ -38,6 +38,7 @@ use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\CharacterAssetsHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\CharacterRolesHydrateBatch;
+use Seatplus\Eveapi\Jobs\Hydrate\Character\ContactHydrateBatch;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\Pipes\CharacterRolesPipe;
 
@@ -82,6 +83,7 @@ class UpdateCharacter implements ShouldQueue
             new CharacterInfoJob($job_container), // Public endpoint hence no hydration or added logic required
             new CharacterAssetsHydrateBatch($job_container),
             new CharacterRolesHydrateBatch($job_container),
+            new ContactHydrateBatch($job_container),
         ])->then(fn (Batch $batch) => logger()->info($success_message)
         )->name($batch_name)->onQueue($queue)->allowFailures()->dispatch();
     }

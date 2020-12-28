@@ -35,9 +35,11 @@ use Seatplus\Eveapi\Models\Universe\Type;
 class CorporationMemberTracking extends Model
 {
     /**
-     * @var bool
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
      */
-    protected static $unguarded = true;
+    protected $guarded = [];
 
     /**
      * Indicates if the IDs are auto-incrementing.

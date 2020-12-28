@@ -36,9 +36,11 @@ use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 class Applications extends Model
 {
     /**
-     * @var bool
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
      */
-    protected static $unguarded = true;
+    protected $guarded = [];
 
     /**
      * The attributes that should be cast to native types.

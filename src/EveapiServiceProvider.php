@@ -46,6 +46,7 @@ use Seatplus\Eveapi\Listeners\UpdatingRefreshTokenListener;
 use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\Contacts\Contact;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Models\Schedules;
 use Seatplus\Eveapi\Models\Universe\Group;
@@ -53,6 +54,7 @@ use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Observers\CharacterAffiliationObserver;
 use Seatplus\Eveapi\Observers\CharacterAssetObserver;
 use Seatplus\Eveapi\Observers\CharacterInfoObserver;
+use Seatplus\Eveapi\Observers\ContactObserver;
 use Seatplus\Eveapi\Observers\CorporationMemberTrackingObserver;
 use Seatplus\Eveapi\Observers\GroupObserver;
 use Seatplus\Eveapi\Observers\TypeObserver;
@@ -195,6 +197,9 @@ class EveapiServiceProvider extends ServiceProvider
 
         //Corporation Observers
         CorporationMemberTracking::observe(CorporationMemberTrackingObserver::class);
+
+        //Contact Observers
+        Contact::observe(ContactObserver::class);
     }
 
     private function addSchedules()

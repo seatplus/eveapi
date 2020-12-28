@@ -31,14 +31,18 @@ use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Applications;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\Contacts\Contact;
+use Seatplus\Eveapi\Models\Contacts\Label;
 use Seatplus\Eveapi\Models\SsoScopes;
 
 class CorporationInfo extends Model
 {
     /**
-     * @var bool
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
      */
-    protected static $unguarded = true;
+    protected $guarded = [];
 
     /**
      * @var string
@@ -80,5 +84,15 @@ class CorporationInfo extends Model
     public function candidates()
     {
         return $this->hasMany(Applications::class, 'corporation_id', 'corporation_id');
+    }
+
+    public function contacts()
+    {
+        return $this->morphMany(Contact::class, 'contactable');
+    }
+
+    public function labels()
+    {
+        return $this->morphMany(Label::class, 'labelable');
     }
 }

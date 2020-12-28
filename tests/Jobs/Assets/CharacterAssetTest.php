@@ -1,6 +1,6 @@
 <?php
 
-namespace Seatplus\Eveapi\Tests\Jobs\Character;
+namespace Seatplus\Eveapi\Tests\Jobs\Assets;
 
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Containers\JobContainer;
@@ -28,16 +28,6 @@ class CharacterAssetTest extends TestCase
 
         // Assert a job was pushed to a given queue...
         Queue::assertPushedOn('default', CharacterAssetJob::class);
-    }
-
-    /** @test */
-    public function hasManualDispatchableJobInterfaceImplemented()
-    {
-        $job = new CharacterAssetJob;
-
-        $this->assertEquals('', $job->getRequiredEveCorporationRole());
-        $this->assertEquals('esi-assets.read_assets.v1', $job->getRequiredScope());
-        $this->assertEquals('character.assets', $job->getRequiredPermission());
     }
 
 }
