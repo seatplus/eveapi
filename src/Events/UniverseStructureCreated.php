@@ -33,13 +33,12 @@ class UniverseStructureCreated
 {
     use SerializesModels;
 
-    /**
-     * @var \Seatplus\Eveapi\Models\Universe\Station
-     */
-    public $structure;
-
-    public function __construct(Structure $structure)
+    public function __construct(
+        /**
+         * @var \Seatplus\Eveapi\Models\Universe\Station
+         */
+        public Structure $structure
+    )
     {
-        $this->structure = $structure;
     }
 }

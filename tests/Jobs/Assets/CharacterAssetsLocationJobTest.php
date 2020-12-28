@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Seatplus\Eveapi\Tests\Jobs\Character;
+namespace Seatplus\Eveapi\Tests\Jobs\Assets;
 
 
 use Illuminate\Support\Facades\Queue;

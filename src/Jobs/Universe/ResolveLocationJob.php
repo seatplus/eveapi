@@ -54,11 +54,6 @@ class ResolveLocationJob implements ShouldQueue
     public $tries = 1;
 
     /**
-     * @var \Seatplus\Eveapi\Models\RefreshToken|null
-     */
-    public $refresh_token;
-
-    /**
      * @var \Seatplus\Eveapi\Actions\Location\AssetSafetyChecker
      */
     private $asset_safety_checker;
@@ -72,11 +67,6 @@ class ResolveLocationJob implements ShouldQueue
      * @var \Seatplus\Eveapi\Actions\Location\StructureChecker
      */
     private $structure_checker;
-
-    /**
-     * @var int
-     */
-    public $location_id;
 
     public function middleware(): array
     {
@@ -94,11 +84,14 @@ class ResolveLocationJob implements ShouldQueue
         ];
     }
 
-    public function __construct(int $location_id, RefreshToken $refresh_token)
+    public function __construct(/**
+     * @var int
+     */
+    public int $location_id, /**
+     * @var \Seatplus\Eveapi\Models\RefreshToken|null
+     */
+    public RefreshToken $refresh_token)
     {
-        $this->location_id = $location_id;
-        $this->refresh_token = $refresh_token;
-
         $this->asset_safety_checker = new AssetSafetyChecker;
         $this->station_checker = new StationChecker;
         $this->structure_checker = new StructureChecker($this->refresh_token);

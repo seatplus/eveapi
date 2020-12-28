@@ -50,14 +50,13 @@ class UpdateCharacter implements ShouldQueue
         CharacterRolesPipe::class,
     ];
 
-    /**
-     * @var \Seatplus\Eveapi\Models\RefreshToken|null
-     */
-    private ?RefreshToken $refresh_token;
-
-    public function __construct(?RefreshToken $refresh_token = null)
+    public function __construct(
+        /**
+         * @var \Seatplus\Eveapi\Models\RefreshToken|null
+         */
+        private ?RefreshToken $refresh_token = null
+    )
     {
-        $this->refresh_token = $refresh_token;
     }
 
     public function handle()

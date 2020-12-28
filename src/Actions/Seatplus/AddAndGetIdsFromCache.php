@@ -31,22 +31,16 @@ use Illuminate\Support\Facades\Cache;
 
 class AddAndGetIdsFromCache
 {
-    /**
-     * @var string
-     */
-    private $cache_key;
-
-    /**
-     * @var int
-     */
-    private $id_to_add;
-
     private $ids_to_return;
 
-    public function __construct(string $cache_key, ?int $id_to_add = null)
+    public function __construct(/**
+     * @var string
+     */
+    private string $cache_key, /**
+     * @var int
+     */
+    private ?int $id_to_add = null)
     {
-        $this->cache_key = $cache_key;
-        $this->id_to_add = $id_to_add;
         $this->ids_to_return = collect();
     }
 

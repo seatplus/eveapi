@@ -33,13 +33,8 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
 class GetOwnedIds
 {
-    /* TODO: This is a duplication from code in seatplus/auth needs refactoring */
-
-    private string $corporation_role;
-
-    public function __construct(string $corporation_role = 'Director')
+    public function __construct(private string $corporation_role = 'Director')
     {
-        $this->corporation_role = $corporation_role;
     }
 
     public function execute(): array

@@ -47,11 +47,8 @@ class ResolveUniverseCategoriesByCategoryIdJob implements ShouldQueue
      */
     public $tries = 1;
 
-    private ?int $category_id;
-
-    public function __construct(?int $category_id = null)
+    public function __construct(private ?int $category_id = null)
     {
-        $this->category_id = $category_id;
     }
 
     /**

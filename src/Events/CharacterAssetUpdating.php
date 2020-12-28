@@ -33,14 +33,13 @@ class CharacterAssetUpdating
 {
     use SerializesModels;
 
-    /**
-     * @var \Seatplus\Eveapi\Models\Assets\CharacterAsset
-     */
-    private $character_asset;
-
-    public function __construct(CharacterAsset $character_asset)
+    public function __construct(
+        /**
+         * @var \Seatplus\Eveapi\Models\Assets\CharacterAsset
+         */
+        private CharacterAsset $character_asset
+    )
     {
-        $this->character_asset = $character_asset;
     }
 
     //TODO implement Listener to track item transactions https://stackoverflow.com/a/48793801

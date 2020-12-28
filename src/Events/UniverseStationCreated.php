@@ -33,13 +33,12 @@ class UniverseStationCreated
 {
     use SerializesModels;
 
-    /**
-     * @var \Seatplus\Eveapi\Models\Universe\Station
-     */
-    public $station;
-
-    public function __construct(Station $station)
+    public function __construct(
+        /**
+         * @var \Seatplus\Eveapi\Models\Universe\Station
+         */
+        public Station $station
+    )
     {
-        $this->station = $station;
     }
 }

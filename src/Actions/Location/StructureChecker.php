@@ -33,18 +33,15 @@ use Seatplus\Eveapi\Models\Universe\Structure;
 class StructureChecker extends LocationChecker
 {
     /**
-     * @var \Seatplus\Eveapi\Models\RefreshToken
-     */
-    private $refresh_token;
-
-    /**
      * @var \Seatplus\Eveapi\Actions\Location\ResolveUniverseStructureByIdAction
      */
     private $action;
 
-    public function __construct(RefreshToken $refresh_token)
+    public function __construct(/**
+     * @var \Seatplus\Eveapi\Models\RefreshToken
+     */
+    private RefreshToken $refresh_token)
     {
-        $this->refresh_token = $refresh_token;
         $this->action = new ResolveUniverseStructureByIdAction($refresh_token);
     }
 

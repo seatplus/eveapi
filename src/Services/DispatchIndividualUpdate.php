@@ -35,18 +35,15 @@ class DispatchIndividualUpdate
     use DispatchesJobs;
 
     /**
-     * @var \Seatplus\Eveapi\Models\RefreshToken
-     */
-    private RefreshToken $refresh_token;
-
-    /**
      * @var \Seatplus\Eveapi\Containers\JobContainer
      */
     private JobContainer $job_container;
 
-    public function __construct(RefreshToken $refresh_token)
+    public function __construct(/**
+     * @var \Seatplus\Eveapi\Models\RefreshToken
+     */
+    private RefreshToken $refresh_token)
     {
-        $this->refresh_token = $refresh_token;
         $this->job_container = new JobContainer([
             'refresh_token' => $refresh_token,
         ]);

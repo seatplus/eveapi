@@ -4,23 +4,19 @@
 namespace Seatplus\Eveapi\Tests\Integration;
 
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
 use Seatplus\Eveapi\Jobs\Contacts\AllianceContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\CharacterContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\CorporationContactJob;
-use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contacts\Contact;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
-class ContactJobsTest extends TestCase
+class ContactLifecycleTest extends TestCase
 {
     use MockRetrieveEsiDataAction;
 

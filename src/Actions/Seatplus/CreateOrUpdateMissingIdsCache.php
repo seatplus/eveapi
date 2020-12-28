@@ -31,20 +31,17 @@ use Illuminate\Support\Facades\Cache;
 
 class CreateOrUpdateMissingIdsCache
 {
-    /**
-     * @var \Illuminate\Support\Collection
-     */
-    public $ids;
-
-    /**
-     * @var string
-     */
-    private $cache_string;
-
-    public function __construct(string $cache_string, Collection $ids)
+    public function __construct(
+        /**
+         * @var string
+         */
+        private string $cache_string,
+        /**
+         * @var \Illuminate\Support\Collection
+         */
+        public Collection $ids
+    )
     {
-        $this->ids = $ids;
-        $this->cache_string = $cache_string;
     }
 
     public function handle()

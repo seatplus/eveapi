@@ -47,11 +47,8 @@ class ResolveUniverseGroupsByGroupIdJob implements ShouldQueue
      */
     public $tries = 1;
 
-    private ?int $group_id;
-
-    public function __construct(?int $group_id = null)
+    public function __construct(private ?int $group_id = null)
     {
-        $this->group_id = $group_id;
     }
 
     /**

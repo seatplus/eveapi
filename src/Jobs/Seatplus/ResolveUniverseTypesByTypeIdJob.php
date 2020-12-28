@@ -47,11 +47,8 @@ class ResolveUniverseTypesByTypeIdJob implements ShouldQueue
      */
     public $tries = 1;
 
-    public ?int $type_id = null;
-
-    public function __construct(?int $type_id = null)
+    public function __construct(public ?int $type_id = null)
     {
-        $this->type_id = $type_id;
     }
 
     /**

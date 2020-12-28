@@ -33,13 +33,12 @@ class UniverseConstellationCreated
 {
     use SerializesModels;
 
-    /**
-     * @var \Seatplus\Eveapi\Models\Universe\System
-     */
-    public $constellation;
-
-    public function __construct(Constellation $constellation)
+    public function __construct(
+        /**
+         * @var \Seatplus\Eveapi\Models\Universe\System
+         */
+        public Constellation $constellation
+    )
     {
-        $this->constellation = $constellation;
     }
 }
