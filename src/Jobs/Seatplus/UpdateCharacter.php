@@ -55,8 +55,7 @@ class UpdateCharacter implements ShouldQueue
          * @var \Seatplus\Eveapi\Models\RefreshToken|null
          */
         private ?RefreshToken $refresh_token = null
-    )
-    {
+    ) {
     }
 
     public function handle()

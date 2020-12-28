@@ -35,7 +35,6 @@ class UniverseStationCreated
 
     public function __construct(
         public Station $station
-    )
-    {
+    ) {
     }
 }
