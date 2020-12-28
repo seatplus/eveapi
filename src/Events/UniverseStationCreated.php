@@ -34,9 +34,6 @@ class UniverseStationCreated
     use SerializesModels;
 
     public function __construct(
-        /**
-         * @var \Seatplus\Eveapi\Models\Universe\Station
-         */
         public Station $station
     )
     {

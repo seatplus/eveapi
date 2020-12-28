@@ -33,13 +33,10 @@ class AddAndGetIdsFromCache
 {
     private $ids_to_return;
 
-    public function __construct(/**
-     * @var string
-     */
-    private string $cache_key, /**
-     * @var int
-     */
-    private ?int $id_to_add = null)
+    public function __construct(
+        private string $cache_key,
+        private ?int $id_to_add = null
+    )
     {
         $this->ids_to_return = collect();
     }

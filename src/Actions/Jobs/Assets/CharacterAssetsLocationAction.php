@@ -34,12 +34,7 @@ class CharacterAssetsLocationAction
 {
     private $location_ids;
 
-    public function __construct(
-        /**
-         * @var \Seatplus\Eveapi\Models\RefreshToken
-         */
-        private RefreshToken $refresh_token
-    )
+    public function __construct(private RefreshToken $refresh_token)
     {
     }
 

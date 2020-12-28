@@ -37,10 +37,7 @@ class StructureChecker extends LocationChecker
      */
     private $action;
 
-    public function __construct(/**
-     * @var \Seatplus\Eveapi\Models\RefreshToken
-     */
-    private RefreshToken $refresh_token)
+    public function __construct(private RefreshToken $refresh_token)
     {
         $this->action = new ResolveUniverseStructureByIdAction($refresh_token);
     }

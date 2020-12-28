@@ -34,9 +34,6 @@ class CharacterAssetUpdating
     use SerializesModels;
 
     public function __construct(
-        /**
-         * @var \Seatplus\Eveapi\Models\Assets\CharacterAsset
-         */
         private CharacterAsset $character_asset
     )
     {

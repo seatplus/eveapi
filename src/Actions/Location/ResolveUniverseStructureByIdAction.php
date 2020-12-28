@@ -62,10 +62,7 @@ class ResolveUniverseStructureByIdAction extends RetrieveFromEsiBase implements 
      */
     private $location_ids;
 
-    public function __construct(/**
-     * @var \Seatplus\Eveapi\Models\RefreshToken
-     */
-    protected RefreshToken $refresh_token)
+    public function __construct(protected RefreshToken $refresh_token)
     {
         $this->location_ids = collect();
     }
