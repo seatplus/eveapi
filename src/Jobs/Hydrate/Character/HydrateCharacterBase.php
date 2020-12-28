@@ -38,13 +38,10 @@ abstract class HydrateCharacterBase implements Hydrate
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public JobContainer $job_container;
-
     public string $required_scope = '';
 
-    public function __construct(JobContainer $job_container)
+    public function __construct(public JobContainer $job_container)
     {
-        $this->job_container = $job_container;
     }
 
     public function setRequiredScope(string $required_scope): void

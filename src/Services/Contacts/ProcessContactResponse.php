@@ -31,13 +31,8 @@ use Seatplus\Eveapi\Models\Contacts\Contact;
 
 class ProcessContactResponse
 {
-    private int $contactable_id;
-    private string $contactable_type;
-
-    public function __construct(int $contactable_id, string $contactable_type)
+    public function __construct(private int $contactable_id, private string $contactable_type)
     {
-        $this->contactable_id = $contactable_id;
-        $this->contactable_type = $contactable_type;
     }
 
     public function execute(EsiResponse $response)

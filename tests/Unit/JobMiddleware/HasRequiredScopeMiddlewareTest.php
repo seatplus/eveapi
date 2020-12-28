@@ -1,6 +1,6 @@
 <?php
 
-namespace Seatplus\Eveapi\Tests\Unit\Models;
+namespace Seatplus\Eveapi\Tests\Unit\JobMiddleware;
 
 use Mockery;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;

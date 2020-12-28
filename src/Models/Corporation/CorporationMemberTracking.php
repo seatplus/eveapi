@@ -80,7 +80,7 @@ class CorporationMemberTracking extends Model
 
     public function scopeAffiliated(Builder $query, ?array $corporation_ids = []): Builder
     {
-        $affiliated_ids = getAffiliatedIdsByClass(get_class($this), 'Director');
+        $affiliated_ids = getAffiliatedIdsByClass($this::class, 'Director');
 
         if ($corporation_ids) {
             return $query->whereIn('corporation_id', collect($corporation_ids)->map(fn ($corporation_id) => intval($corporation_id))->intersect($affiliated_ids)->toArray());

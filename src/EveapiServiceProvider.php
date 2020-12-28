@@ -218,7 +218,7 @@ class EveapiServiceProvider extends ServiceProvider
                 if (! Schema::hasTable('schedules')) {
                     throw new Exception('Schema schedules does not exist');
                 }
-            } catch (Exception $e) {
+            } catch (Exception) {
                 return;
             }
 

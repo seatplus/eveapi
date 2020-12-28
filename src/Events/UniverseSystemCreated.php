@@ -33,13 +33,8 @@ class UniverseSystemCreated
 {
     use SerializesModels;
 
-    /**
-     * @var \Seatplus\Eveapi\Models\Universe\System
-     */
-    public $system;
-
-    public function __construct(System $system)
-    {
-        $this->system = $system;
+    public function __construct(
+        public System $system
+    ) {
     }
 }

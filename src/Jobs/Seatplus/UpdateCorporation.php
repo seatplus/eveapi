@@ -47,11 +47,8 @@ class UpdateCorporation implements ShouldQueue
         CorporationMemberTrackingPipe::class,
     ];
 
-    private ?int $corporation_id;
-
-    public function __construct(?int $corporation_id = null)
+    public function __construct(private ?int $corporation_id = null)
     {
-        $this->corporation_id = $corporation_id;
     }
 
     public function handle()
