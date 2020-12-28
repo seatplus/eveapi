@@ -31,7 +31,7 @@ return [
         'assets' => ['esi-assets.read_assets.v1',  'esi-universe.read_structures.v1'],
         'title' => ['esi-characters.read_titles.v1'],
         'roles' => ['esi-characters.read_corporation_roles.v1'],
-        'contacts' => ['esi-characters.read_contacts.v1', 'esi-corporations.read_contacts.v1', 'esi-alliances.read_contacts.v1']
+        'contacts' => ['esi-characters.read_contacts.v1', 'esi-corporations.read_contacts.v1', 'esi-alliances.read_contacts.v1'],
     ],
     'corporation' => [
         'assets' => ['esi-assets.read_corporation_assets.v1'],

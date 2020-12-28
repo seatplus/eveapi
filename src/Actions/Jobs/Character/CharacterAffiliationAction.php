@@ -56,7 +56,7 @@ class CharacterAffiliationAction extends RetrieveFromEsiBase implements HasReque
 
     public function execute(?int $character_id = null)
     {
-        collect($character_id)->pipe(fn(Collection $collection) => $collection->isEmpty() ? $collection : $collection->filter(function ($value) {
+        collect($character_id)->pipe(fn (Collection $collection) => $collection->isEmpty() ? $collection : $collection->filter(function ($value) {
 
             // Remove $character_id that is already in DB and younger then 60minutes
             $db_entry = CharacterAffiliation::find($value);

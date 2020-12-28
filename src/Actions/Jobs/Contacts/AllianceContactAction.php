@@ -32,14 +32,11 @@ use Seatplus\Eveapi\Actions\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\Contacts\ProcessContactResponse;
 
 class AllianceContactAction extends RetrieveFromEsiBase implements RetrieveFromEsiInterface, HasPathValuesInterface, HasRequiredScopeInterface
 {
-
     protected RefreshToken $refresh_token;
 
     private ?array $path_values;
@@ -72,8 +69,9 @@ class AllianceContactAction extends RetrieveFromEsiBase implements RetrieveFromE
     {
         $this->refresh_token = $refresh_token;
 
-        if(is_null($refresh_token->corporation->alliance_id))
+        if (is_null($refresh_token->corporation->alliance_id)) {
             return;
+        }
 
         $this->setPathValues([
             'alliance_id' => $refresh_token->corporation->alliance_id,
@@ -119,5 +117,4 @@ class AllianceContactAction extends RetrieveFromEsiBase implements RetrieveFromE
     {
         return $this->path_values;
     }
-
 }

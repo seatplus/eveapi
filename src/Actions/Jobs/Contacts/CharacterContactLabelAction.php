@@ -34,11 +34,9 @@ use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\Contacts\ProcessContactLabelsResponse;
-use Seatplus\Eveapi\Services\Contacts\ProcessContactResponse;
 
 class CharacterContactLabelAction extends RetrieveFromEsiBase implements RetrieveFromEsiInterface, HasPathValuesInterface, HasRequiredScopeInterface
 {
-
     protected RefreshToken $refresh_token;
 
     private ?array $path_values;
@@ -117,5 +115,4 @@ class CharacterContactLabelAction extends RetrieveFromEsiBase implements Retriev
     {
         return $this->path_values;
     }
-
 }
