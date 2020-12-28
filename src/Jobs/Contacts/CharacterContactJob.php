@@ -26,7 +26,6 @@
 
 namespace Seatplus\Eveapi\Jobs\Contacts;
 
-use Seatplus\Eveapi\Actions\Jobs\Character\CharacterRoleAction;
 use Seatplus\Eveapi\Actions\Jobs\Contacts\CharacterContactAction;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -55,7 +54,7 @@ class CharacterContactJob extends EsiBase
             new HasRequiredScopeMiddleware,
             new EsiRateLimitedMiddleware,
             new EsiAvailabilityMiddleware,
-            $rate_limited_middleare
+            $rate_limited_middleare,
         ];
     }
 
