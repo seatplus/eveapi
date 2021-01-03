@@ -50,6 +50,7 @@ class CharacterAsset extends JsonResource
             'location_flag' => $this->location_flag,
             'is_singleton' => $this->is_singleton,
             'is_blueprint_copy' => $this->is_blueprint_copy,
+            'container' => $this->whenLoaded('container'),
             'content' => $this::collection($this->whenLoaded('content')),
             'owner' => $this->whenLoaded('owner'),
         ];
