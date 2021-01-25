@@ -33,12 +33,11 @@ class WalletHydrateBatch extends HydrateCharacterBase
 {
     public function handle()
     {
-
         parent::setRequiredScope('esi-wallet.read_character_wallet.v1');
 
         $this->hydrate([
             new CharacterWalletJournalJob($this->job_container),
-            new CharacterWalletTransactionJob($this->job_container)
+            new CharacterWalletTransactionJob($this->job_container),
         ]);
     }
 
