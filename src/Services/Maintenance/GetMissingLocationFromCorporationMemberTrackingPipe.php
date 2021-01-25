@@ -44,8 +44,9 @@ class GetMissingLocationFromCorporationMemberTrackingPipe
             ->each(function (CorporationMemberTracking $corporation_member_tracking) use ($find_corporation_refresh_token) {
                 $refresh_token = $find_corporation_refresh_token($corporation_member_tracking->corporation_id, 'esi-corporations.track_members.v1', 'Director') ?? RefreshToken::find($corporation_member_tracking->character_id);
 
-                if($refresh_token)
+                if ($refresh_token) {
                     dispatch(new ResolveLocationJob($corporation_member_tracking->location_id, $refresh_token))->onQueue('high');
+                }
             });
 
         return $next($payload);
