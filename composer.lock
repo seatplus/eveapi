@@ -4587,16 +4587,16 @@
         },
         {
             "name": "vlucas/phpdotenv",
-            "version": "v5.2.0",
+            "version": "v5.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vlucas/phpdotenv.git",
-                "reference": "fba64139db67123c7a57072e5f8d3db10d160b66"
+                "reference": "b3eac5c7ac896e52deab4a99068e3f4ab12d9e56"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vlucas/phpdotenv/zipball/fba64139db67123c7a57072e5f8d3db10d160b66",
-                "reference": "fba64139db67123c7a57072e5f8d3db10d160b66",
+                "url": "https://api.github.com/repos/vlucas/phpdotenv/zipball/b3eac5c7ac896e52deab4a99068e3f4ab12d9e56",
+                "reference": "b3eac5c7ac896e52deab4a99068e3f4ab12d9e56",
                 "shasum": ""
             },
             "require": {
@@ -4611,7 +4611,7 @@
             "require-dev": {
                 "bamarni/composer-bin-plugin": "^1.4.1",
                 "ext-filter": "*",
-                "phpunit/phpunit": "^7.5.20 || ^8.5.2 || ^9.0"
+                "phpunit/phpunit": "^7.5.20 || ^8.5.14 || ^9.5.1"
             },
             "suggest": {
                 "ext-filter": "Required to use the boolean validator."
@@ -4619,7 +4619,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "5.2-dev"
+                    "dev-master": "5.3-dev"
                 }
             },
             "autoload": {
@@ -4659,7 +4659,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-09-14T15:57:31+00:00"
+            "time": "2021-01-20T15:23:13+00:00"
         },
         {
             "name": "voku/portable-ascii",
@@ -4736,12 +4736,12 @@
             "version": "1.9.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/webmozart/assert.git",
+                "url": "https://github.com/webmozarts/assert.git",
                 "reference": "bafc69caeb4d49c39fd0779086c03a3738cbb389"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmozart/assert/zipball/bafc69caeb4d49c39fd0779086c03a3738cbb389",
+                "url": "https://api.github.com/repos/webmozarts/assert/zipball/bafc69caeb4d49c39fd0779086c03a3738cbb389",
                 "reference": "bafc69caeb4d49c39fd0779086c03a3738cbb389",
                 "shasum": ""
             },
@@ -6108,22 +6108,22 @@
         },
         {
             "name": "orchestra/testbench",
-            "version": "v6.7.1",
+            "version": "v6.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/orchestral/testbench.git",
-                "reference": "7713cc13587e08bace7359abee69f76e6017a561"
+                "reference": "0ed9ff8aa8e6844d6e2b38ab17ad2c456e286ae1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/orchestral/testbench/zipball/7713cc13587e08bace7359abee69f76e6017a561",
-                "reference": "7713cc13587e08bace7359abee69f76e6017a561",
+                "url": "https://api.github.com/repos/orchestral/testbench/zipball/0ed9ff8aa8e6844d6e2b38ab17ad2c456e286ae1",
+                "reference": "0ed9ff8aa8e6844d6e2b38ab17ad2c456e286ae1",
                 "shasum": ""
             },
             "require": {
-                "laravel/framework": "^8.18.1",
-                "mockery/mockery": "^1.3.2",
-                "orchestra/testbench-core": "^6.9.1",
+                "laravel/framework": "^8.22.1",
+                "mockery/mockery": "^1.4.2",
+                "orchestra/testbench-core": "^6.11.1",
                 "php": ">=7.3 || >=8.0",
                 "phpunit/phpunit": "^8.4 || ^9.0"
             },
@@ -6164,38 +6164,38 @@
                     "type": "liberapay"
                 }
             ],
-            "time": "2020-12-28T14:56:36+00:00"
+            "time": "2021-01-17T23:48:38+00:00"
         },
         {
             "name": "orchestra/testbench-core",
-            "version": "v6.9.1",
+            "version": "v6.11.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/orchestral/testbench-core.git",
-                "reference": "65d1fc936c5fc166082a1797351847ef6dadbd29"
+                "reference": "185a16ffa1ce56001e7a5559e2c1855c17bf5c29"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/orchestral/testbench-core/zipball/65d1fc936c5fc166082a1797351847ef6dadbd29",
-                "reference": "65d1fc936c5fc166082a1797351847ef6dadbd29",
+                "url": "https://api.github.com/repos/orchestral/testbench-core/zipball/185a16ffa1ce56001e7a5559e2c1855c17bf5c29",
+                "reference": "185a16ffa1ce56001e7a5559e2c1855c17bf5c29",
                 "shasum": ""
             },
             "require": {
                 "fakerphp/faker": "^1.9.1",
                 "php": ">=7.2.5 || >=8.0",
-                "symfony/yaml": "^4.3 || ^5.0",
+                "symfony/yaml": "^5.0",
                 "vlucas/phpdotenv": "^5.1"
             },
             "require-dev": {
-                "laravel/framework": "^8.0",
+                "laravel/framework": "^8.22.1",
                 "laravel/laravel": "8.x-dev",
-                "mockery/mockery": "^1.3.2",
+                "mockery/mockery": "^1.4.2",
                 "orchestra/canvas": "^6.0",
                 "phpunit/phpunit": "^8.4 || ^9.0"
             },
             "suggest": {
-                "laravel/framework": "Required for testing (^8.0).",
-                "mockery/mockery": "Allow using Mockery for testing (^1.3.2).",
+                "laravel/framework": "Required for testing (^8.22.1).",
+                "mockery/mockery": "Allow using Mockery for testing (^1.4.2).",
                 "orchestra/testbench-browser-kit": "Allow using legacy Laravel BrowserKit for testing (^6.0).",
                 "orchestra/testbench-dusk": "Allow using Laravel Dusk for testing (^6.0).",
                 "phpunit/phpunit": "Allow using PHPUnit for testing (^8.4 || ^9.0)."
@@ -6245,7 +6245,7 @@
                     "type": "liberapay"
                 }
             ],
-            "time": "2020-12-15T03:18:42+00:00"
+            "time": "2021-01-21T01:13:06+00:00"
         },
         {
             "name": "phar-io/manifest",
