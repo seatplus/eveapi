@@ -24,9 +24,10 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Database\Factories;
+namespace Seatplus\Eveapi\database\factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contacts\Contact;

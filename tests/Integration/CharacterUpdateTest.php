@@ -25,12 +25,15 @@ use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\CharacterAssetsHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\CharacterRolesHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\ContactHydrateBatch;
+use Seatplus\Eveapi\Jobs\Hydrate\Character\WalletHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Corporation\CorporationMemberTrackingHydrateBatch;
 use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
+use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletJournalJob;
+use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Tests\TestCase;
 
-class CharacterUpdatePipeTest extends TestCase
+class CharacterUpdateTest extends TestCase
 {
 
     /** @test */
@@ -265,7 +268,7 @@ class CharacterUpdatePipeTest extends TestCase
     }
 
     /** @test */
-    public function allianz_contact_hydration_adds_jobs_to_batch()
+    public function alliance_contact_hydration_adds_jobs_to_batch()
     {
         $refresh_token = Event::fakeFor( function () {
             return factory(RefreshToken::class)->create([
@@ -284,6 +287,34 @@ class CharacterUpdatePipeTest extends TestCase
                 new AllianceContactJob($job_container),
                 new AllianceContactLabelJob($job_container)
             ]
+        ]);
+
+        $job->shouldReceive('batch')
+            ->once()->andReturn($batch);
+
+        Bus::fake();
+
+        $job->handle();
+    }
+
+    /** @test */
+    public function characterWalletHydrationAddsJobsToBatch()
+    {
+        $refresh_token = Event::fakeFor( function () {
+            return factory(RefreshToken::class)->create([
+                'scopes' => ['esi-wallet.read_character_wallet.v1']
+            ]);
+        });
+
+        $job_container = new JobContainer(['refresh_token' => $refresh_token]);
+
+        $job = Mockery::mock(WalletHydrateBatch::class . '[batch]', [$job_container]);
+
+        $batch = Mockery::mock(Batch::class)->makePartial();
+
+        $batch->shouldReceive('add')->once()->with([
+            new CharacterWalletJournalJob($job_container),
+            new CharacterWalletTransactionJob($job_container)
         ]);
 
         $job->shouldReceive('batch')

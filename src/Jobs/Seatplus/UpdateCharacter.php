@@ -39,16 +39,12 @@ use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\CharacterAssetsHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\CharacterRolesHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\ContactHydrateBatch;
+use Seatplus\Eveapi\Jobs\Hydrate\Character\WalletHydrateBatch;
 use Seatplus\Eveapi\Models\RefreshToken;
-use Seatplus\Eveapi\Services\Pipes\CharacterRolesPipe;
 
 class UpdateCharacter implements ShouldQueue
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-    private array $pipes = [
-        CharacterRolesPipe::class,
-    ];
 
     public function __construct(
         /**
@@ -77,11 +73,12 @@ class UpdateCharacter implements ShouldQueue
         $success_message = sprintf('Character update batch of %s processed!', $character);
         $batch_name = sprintf('%s (character) update batch', $character);
 
-        Bus::batch([
+        return Bus::batch([
             new CharacterInfoJob($job_container), // Public endpoint hence no hydration or added logic required
             new CharacterAssetsHydrateBatch($job_container),
             new CharacterRolesHydrateBatch($job_container),
             new ContactHydrateBatch($job_container),
+            new WalletHydrateBatch($job_container)
         ])->then(fn (Batch $batch) => logger()->info($success_message)
         )->name($batch_name)->onQueue($queue)->allowFailures()->dispatch();
     }

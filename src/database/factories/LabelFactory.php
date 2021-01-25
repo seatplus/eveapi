@@ -24,19 +24,20 @@
  * SOFTWARE.
  */
 
-use Seatplus\Eveapi\Models\Assets\CharacterAsset;
-use Seatplus\Eveapi\Models\Contacts\Contact;
-use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
-use Seatplus\Eveapi\Models\Wallet\WalletJournal;
-use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
+namespace Seatplus\Eveapi\database\factories;
 
-return [
-    CharacterAsset::class => 'character.assets',
-    CorporationMemberTracking::class => 'corporation.member_tracking',
-    'queue.manager',
-    'can open or close corporations for recruitment',
-    'can accept or deny applications',
-    Contact::class => 'contacts',
-    WalletJournal::class => 'wallet_journals',
-    WalletTransaction::class => 'wallet_transaction'
-];
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Seatplus\Eveapi\Models\Contacts\Label;
+
+class LabelFactory extends Factory
+{
+    protected $model = Label::class;
+
+    public function definition()
+    {
+        return [
+            'label_id' => $this->faker->randomDigitNotNull,
+            'label_name' => $this->faker->domainWord,
+        ];
+    }
+}
