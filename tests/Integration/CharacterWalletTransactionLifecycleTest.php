@@ -5,12 +5,17 @@ namespace Seatplus\Eveapi\Tests\Integration;
 
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Mockery;
 use Seat\Eseye\Containers\EsiResponse;
 use Seatplus\Eveapi\Actions\Eseye\RetrieveEsiDataAction;
 use Seatplus\Eveapi\Actions\Jobs\Wallet\CharacterWalletTransactionAction;
 use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsLocationJob;
+use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
+use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 use Seatplus\Eveapi\Tests\TestCase;
 
@@ -32,8 +37,9 @@ class CharacterWalletTransactionLifecycleTest extends TestCase
     /** @test */
     public function runWalletTransactionAction()
     {
-
+        Queue::assertNothingPushed();
         $mock_data = $this->buildMockEsiData();
+        Queue::assertNothingPushed();
 
         $response = new EsiResponse($mock_data, [], 'now', 200);
         $response2 = new EsiResponse(json_encode([]), [], 'now', 200);
@@ -63,25 +69,34 @@ class CharacterWalletTransactionLifecycleTest extends TestCase
     }
 
     /** @test */
-    /*public function contact_of_type_character_dispatches_affiliation_job()
+    public function creationOfCharacterWalletTransactionDispatchesJobs()
     {
 
-        Queue::assertNothingPushed();
-
-        $contact = Contact::factory()->create([
-            'contactable_id' => $this->test_character->character_id,
-            'contactable_type' => CharacterInfo::class,
-            'contact_type' => 'character'
+        $wallet_transaction = WalletTransaction::factory()->create([
+            'wallet_transactionable_id' => $this->test_character->character_id
         ]);
 
-        Queue::assertPushedOn('high', CharacterAffiliationJob::class);
+        Queue::assertPushedOn('high', ResolveLocationJob::class);
+        Queue::assertPushedOn('high', ResolveUniverseTypesByTypeIdJob::class);
+    }
 
-    }*/
+    /** @test */
+    public function creationOfCorporationWalletTransactionDispatchesJobs()
+    {
+
+        $wallet_transaction = WalletTransaction::factory()->create([
+            'wallet_transactionable_id' => $this->test_character->corporation->corporation_id,
+            'wallet_transactionable_type' => CorporationInfo::class
+        ]);
+
+        Queue::assertPushedOn('high', ResolveLocationJob::class);
+        Queue::assertPushedOn('high', ResolveUniverseTypesByTypeIdJob::class);
+    }
 
     private function buildMockEsiData()
     {
 
-        $mock_data = WalletTransaction::factory()->count(5)->make();
+        $mock_data = Event::fakeFor(fn() => WalletTransaction::factory()->count(5)->make());
 
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
 

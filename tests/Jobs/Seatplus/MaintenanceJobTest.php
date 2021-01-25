@@ -19,6 +19,7 @@ use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\Type;
+use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 use Seatplus\Eveapi\Tests\TestCase;
 
 class MaintenanceJobTest extends TestCase
@@ -144,6 +145,32 @@ class MaintenanceJobTest extends TestCase
         Queue::assertPushedOn('high', ResolveUniverseTypesByTypeIdJob::class);
 
         $this->assertTrue(in_array($corporation_member_tracking->ship_type_id, cache('type_ids_to_resolve')));
+    }
+
+    /** @test */
+    public function it_fetches_missing_types_from_wallet_transaction()
+    {
+        $asset = Event::fakeFor(fn() => WalletTransaction::factory()->create([
+            'wallet_transactionable_id' => $this->test_character->character_id
+        ]));
+
+        $this->job->handle();
+
+        Queue::assertPushedOn('high', ResolveUniverseTypesByTypeIdJob::class);
+
+        $this->assertTrue(in_array($asset->type_id,cache('type_ids_to_resolve')));
+    }
+
+    /** @test */
+    public function it_dispatch_resolve_location_jog_for_missing_wallet_transaction_location()
+    {
+        Event::fakeFor(fn() => WalletTransaction::factory()->create([
+            'wallet_transactionable_id' => $this->test_character->character_id
+        ]));
+
+        $this->job->handle();
+
+        Queue::assertPushedOn('high', ResolveLocationJob::class);
     }
 
 }

@@ -42,6 +42,8 @@ class Location extends Model
      */
     protected $primaryKey = 'location_id';
 
+    protected $with = ['locatable'];
+
     /**
      * The table associated with the model.
      *

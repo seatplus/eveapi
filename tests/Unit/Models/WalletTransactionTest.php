@@ -6,6 +6,8 @@ namespace Seatplus\Eveapi\Tests\Unit\Models;
 
 use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\Universe\Location;
+use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Models\Wallet\WalletJournal;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 use Seatplus\Eveapi\Tests\TestCase;
@@ -32,22 +34,21 @@ class WalletTransactionTest extends TestCase
     }
 
     /** @test */
-    /*public function corporation_has_contact_test()
+    public function corporation_has_relationships_test()
     {
 
-        $this->assertCount(0, $this->test_character->corporation->contacts);
+        $this->assertCount(0, $this->test_character->wallet_transactions);
 
-        $contact = Event::fakeFor( fn() => Contact::factory()->create([
-            'contactable_id' => $this->test_character->corporation->corporation_id,
-            'contactable_type' => CorporationInfo::class
+        $wallet_transaction = Event::fakeFor( fn() => WalletTransaction::factory()->create([
+            'wallet_transactionable_id' => $this->test_character->character_id,
+            'wallet_transactionable_type' => CharacterInfo::class,
+            'type_id' => factory(Type::class)->create(),
+            'location_id' => factory(Location::class)->create()
         ]));
 
-        $this->assertInstanceOf(CorporationInfo::class, $contact->contactable);
-
-        $corporation = $this->test_character->corporation->refresh();
-        $this->assertCount(1, $corporation->contacts);
-        $this->assertInstanceOf(Contact::class, $corporation->contacts->first());
-    }*/
+        $this->assertInstanceOf(Type::class, $wallet_transaction->type);
+        $this->assertInstanceOf(Location::class, $wallet_transaction->location);
+    }
 
     /** @test */
     /*public function alliance_has_contact_test()

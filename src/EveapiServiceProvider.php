@@ -51,6 +51,7 @@ use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Models\Schedules;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Type;
+use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 use Seatplus\Eveapi\Observers\CharacterAffiliationObserver;
 use Seatplus\Eveapi\Observers\CharacterAssetObserver;
 use Seatplus\Eveapi\Observers\CharacterInfoObserver;
@@ -58,6 +59,7 @@ use Seatplus\Eveapi\Observers\ContactObserver;
 use Seatplus\Eveapi\Observers\CorporationMemberTrackingObserver;
 use Seatplus\Eveapi\Observers\GroupObserver;
 use Seatplus\Eveapi\Observers\TypeObserver;
+use Seatplus\Eveapi\Observers\WalletTransactionObserver;
 
 class EveapiServiceProvider extends ServiceProvider
 {
@@ -200,6 +202,9 @@ class EveapiServiceProvider extends ServiceProvider
 
         //Contact Observers
         Contact::observe(ContactObserver::class);
+
+        //WalletObserver
+        WalletTransaction::observe(WalletTransactionObserver::class);
     }
 
     private function addSchedules()

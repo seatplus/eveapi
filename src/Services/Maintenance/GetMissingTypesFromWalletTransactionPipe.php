@@ -24,49 +24,26 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Models\Wallet;
+namespace Seatplus\Eveapi\Services\Maintenance;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\WalletTransactionFactory;
-use Seatplus\Eveapi\Models\Universe\Location;
-use Seatplus\Eveapi\Models\Universe\Type;
+use Closure;
+use Seatplus\Eveapi\Actions\Seatplus\CreateOrUpdateMissingIdsCache;
+use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
+use Seatplus\Eveapi\Models\Assets\CharacterAsset;
+use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 
-class WalletTransaction extends Model
+class GetMissingTypesFromWalletTransactionPipe
 {
-    use HasFactory;
-
-    protected $guarded = false;
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'date' => 'datetime',
-    ];
-
-    protected static function newFactory()
+    public function handle($payload, Closure $next)
     {
-        return WalletTransactionFactory::new();
-    }
+        $type_ids = WalletTransaction::doesntHave('type')->pluck('type_id')->unique()->values();
 
-    public function wallet_transactionable()
-    {
+        if ($type_ids->isNotEmpty()) {
+            (new CreateOrUpdateMissingIdsCache('type_ids_to_resolve', $type_ids))->handle();
+        }
 
-        return $this->morphTo();
-    }
+        ResolveUniverseTypesByTypeIdJob::dispatch()->onQueue('high');
 
-    public function type()
-    {
-
-        return $this->hasOne(Type::class, 'type_id', 'type_id');
-    }
-
-    public function location()
-    {
-
-        return $this->hasOne(Location::class, 'location_id', 'location_id');
+        return $next($payload);
     }
 }
