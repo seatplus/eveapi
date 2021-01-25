@@ -38,5 +38,5 @@ return [
     'can accept or deny applications',
     Contact::class => 'contacts',
     WalletJournal::class => 'wallet_journals',
-    WalletTransaction::class => 'wallet_transaction'
+    WalletTransaction::class => 'wallet_transaction',
 ];

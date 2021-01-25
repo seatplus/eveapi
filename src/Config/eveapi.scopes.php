@@ -32,7 +32,7 @@ return [
         'title' => ['esi-characters.read_titles.v1'],
         'roles' => ['esi-characters.read_corporation_roles.v1'],
         'contacts' => ['esi-characters.read_contacts.v1', 'esi-corporations.read_contacts.v1', 'esi-alliances.read_contacts.v1'],
-        'wallet' => ['esi-wallet.read_character_wallet.v1']
+        'wallet' => ['esi-wallet.read_character_wallet.v1'],
     ],
     'corporation' => [
         'assets' => ['esi-assets.read_corporation_assets.v1'],
