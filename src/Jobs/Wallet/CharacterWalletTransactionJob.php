@@ -26,8 +26,6 @@
 
 namespace Seatplus\Eveapi\Jobs\Wallet;
 
-use Seatplus\Eveapi\Actions\Jobs\Contacts\CharacterContactAction;
-use Seatplus\Eveapi\Actions\Jobs\Wallet\CharacterWalletJournalAction;
 use Seatplus\Eveapi\Actions\Jobs\Wallet\CharacterWalletTransactionAction;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -66,7 +64,7 @@ class CharacterWalletTransactionJob extends EsiBase
             'character',
             'character_id: ' . $this->character_id,
             'wallet',
-            'transaction'
+            'transaction',
         ];
     }
 
