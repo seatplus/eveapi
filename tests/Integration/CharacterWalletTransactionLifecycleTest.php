@@ -53,6 +53,13 @@ class CharacterWalletTransactionLifecycleTest extends TestCase
         $mock->execute($this->test_character->refresh_token);
 
         $this->assertWalletTransaction($mock_data, $this->test_character->character_id);
+
+        $this->assertEquals(['character_id' => $this->test_character->character_id], $mock->getPathValues());
+        $this->assertEquals('esi-wallet.read_character_wallet.v1', $mock->getRequiredScope());
+        $this->assertEquals($this->test_character->refresh_token, $mock->getRefreshToken());
+        $this->assertEquals('get', $mock->getMethod());
+        $this->assertEquals('/characters/{character_id}/wallet/transactions/', $mock->getEndpoint());
+        $this->assertEquals('v1', $mock->getVersion());
     }
 
     /** @test */
