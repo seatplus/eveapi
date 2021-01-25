@@ -2238,16 +2238,16 @@
         },
         {
             "name": "spatie/data-transfer-object",
-            "version": "2.6.0",
+            "version": "2.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/data-transfer-object.git",
-                "reference": "64555c085364b567701ff627ef442ff1b2d42757"
+                "reference": "dd129045695251f9707e80ec38824e141c5cf130"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/data-transfer-object/zipball/64555c085364b567701ff627ef442ff1b2d42757",
-                "reference": "64555c085364b567701ff627ef442ff1b2d42757",
+                "url": "https://api.github.com/repos/spatie/data-transfer-object/zipball/dd129045695251f9707e80ec38824e141c5cf130",
+                "reference": "dd129045695251f9707e80ec38824e141c5cf130",
                 "shasum": ""
             },
             "require": {
@@ -2289,7 +2289,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2020-11-26T09:24:53+00:00"
+            "time": "2021-01-21T13:50:19+00:00"
         },
         {
             "name": "spatie/laravel-activitylog",
@@ -4736,12 +4736,12 @@
             "version": "1.9.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/webmozart/assert.git",
+                "url": "https://github.com/webmozarts/assert.git",
                 "reference": "bafc69caeb4d49c39fd0779086c03a3738cbb389"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmozart/assert/zipball/bafc69caeb4d49c39fd0779086c03a3738cbb389",
+                "url": "https://api.github.com/repos/webmozarts/assert/zipball/bafc69caeb4d49c39fd0779086c03a3738cbb389",
                 "reference": "bafc69caeb4d49c39fd0779086c03a3738cbb389",
                 "shasum": ""
             },
