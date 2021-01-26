@@ -24,35 +24,32 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Database\Factories;
+namespace Seatplus\Eveapi\database\factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Seatplus\Eveapi\Models\Contacts\Contact;
-use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
+use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 
-class ContactFactory extends Factory
+class WalletTransactionFactory extends Factory
 {
-    protected $model = Contact::class;
+    protected $model = WalletTransaction::class;
 
     public function definition()
     {
         return [
-            'contactable_id' => $this->faker->numberBetween(),
-            'contactable_type' => $this->faker->randomElement([CharacterInfo::class, CorporationInfo::class, AllianceInfo::class]),
-            'contact_id' => $this->faker->numberBetween(),
-            'contact_type' => $this->faker->randomElement(['character', 'corporation', 'alliance', 'faction']),
-            'standing' => $this->faker->randomFloat(2, -10, 10),
-        ];
-    }
+            'transaction_id' => $this->faker->randomNumber,
+            'wallet_transactionable_id' => $this->faker->numberBetween(90_000_000, 98_000_000),
+            'wallet_transactionable_type' => CharacterInfo::class,
 
-    public function withLabels()
-    {
-        return $this->state(function (array $attributes) {
-            return [
-                'label_ids' => [1, 2, 3],
-            ];
-        });
+            'client_id' => $this->faker->numberBetween(90_000_000, 98_000_000),
+            'date' => $this->faker->iso8601,
+            'is_buy' => $this->faker->boolean(),
+            'is_personal' => $this->faker->boolean(),
+            'journal_ref_id' => $this->faker->randomNumber(8),
+            'location_id' => $this->faker->randomNumber(6),
+            'quantity' => $this->faker->randomNumber(),
+            'type_id' => $this->faker->numberBetween(90_000_000, 98_000_000),
+            'unit_price' => $this->faker->randomFloat(2),
+        ];
     }
 }

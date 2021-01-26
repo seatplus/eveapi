@@ -24,19 +24,45 @@
  * SOFTWARE.
  */
 
-use Seatplus\Eveapi\Models\Assets\CharacterAsset;
-use Seatplus\Eveapi\Models\Contacts\Contact;
-use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
-use Seatplus\Eveapi\Models\Wallet\WalletJournal;
-use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-return [
-    CharacterAsset::class => 'character.assets',
-    CorporationMemberTracking::class => 'corporation.member_tracking',
-    'queue.manager',
-    'can open or close corporations for recruitment',
-    'can accept or deny applications',
-    Contact::class => 'contacts',
-    WalletJournal::class => 'wallet_journals',
-    WalletTransaction::class => 'wallet_transaction',
-];
+class CreateWalletTransactionsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('wallet_transactions', function (Blueprint $table) {
+            $table->bigIncrements('transaction_id');
+
+            $table->morphs('wallet_transactionable', 'morph');
+
+            $table->bigInteger('client_id');
+            $table->dateTime('date');
+            $table->boolean('is_buy');
+            $table->boolean('is_personal');
+            $table->bigInteger('journal_ref_id');
+            $table->bigInteger('location_id');
+            $table->bigInteger('quantity');
+            $table->bigInteger('type_id');
+            $table->double('unit_price');
+
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('wallet_transactions');
+    }
+}

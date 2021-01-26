@@ -28,27 +28,45 @@ namespace Seatplus\Eveapi\Services\Maintenance;
 
 use Closure;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
-use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 
-class GetMissingLocationFromCorporationMemberTrackingPipe
+class GetMissingLocationFromWalletTransactionPipe
 {
     public function handle($payload, Closure $next)
     {
-        $find_corporation_refresh_token = new FindCorporationRefreshToken;
-
-        CorporationMemberTracking::doesntHave('location')
+        WalletTransaction::doesntHave('location')
             ->inRandomOrder()
             ->get()
-            ->each(function (CorporationMemberTracking $corporation_member_tracking) use ($find_corporation_refresh_token) {
-                $refresh_token = $find_corporation_refresh_token($corporation_member_tracking->corporation_id, 'esi-corporations.track_members.v1', 'Director') ?? RefreshToken::find($corporation_member_tracking->character_id);
+            ->unique('location_id')
+            ->each(function ($wallet_transaction) {
+                $refresh_token = null;
+
+                if ($wallet_transaction->wallet_transactionable_type === CharacterInfo::class) {
+                    $refresh_token = RefreshToken::find($wallet_transaction->wallet_transactionable_id);
+                }
+
+                if ($wallet_transaction->wallet_transactionable_type === CorporationInfo::class) {
+                    $find_corporation_refresh_token = new FindCorporationRefreshToken;
+
+                    $refresh_token = $find_corporation_refresh_token($this->wallet_transaction->wallet_transactionable_id, 'esi-universe.read_structures.v1', 'Director') ?? $this->getRandomRefreshToken($wallet_transaction);
+                }
 
                 if ($refresh_token) {
-                    dispatch(new ResolveLocationJob($corporation_member_tracking->location_id, $refresh_token))->onQueue('high');
+                    dispatch(new ResolveLocationJob($wallet_transaction->location_id, $refresh_token))->onQueue('high');
                 }
             });
 
         return $next($payload);
+    }
+
+    private function getRandomRefreshToken(WalletTransaction $wallet_transaction)
+    {
+        $random_character = $wallet_transaction->wallet_transactionable->characters->random();
+
+        return RefreshToken::find($random_character->character_id);
     }
 }

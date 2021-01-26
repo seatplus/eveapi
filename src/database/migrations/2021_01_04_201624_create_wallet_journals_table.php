@@ -24,35 +24,48 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Models\Universe;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Location extends Model
+class CreateWalletJournalsTable extends Migration
 {
     /**
-     * The attributes that aren't mass assignable.
+     * Run the migrations.
      *
-     * @var array
+     * @return void
      */
-    protected $guarded = [];
-
-    /**
-     * @var string
-     */
-    protected $primaryKey = 'location_id';
-
-    protected $with = ['locatable'];
-
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'universe_locations';
-
-    public function locatable()
+    public function up()
     {
-        return $this->morphTo();
+        Schema::create('wallet_journals', function (Blueprint $table) {
+            $table->bigIncrements('id');
+
+            $table->morphs('wallet_journable');
+
+            $table->dateTime('date');
+            $table->text('description');
+            $table->string('ref_type');
+
+            $table->double('amount')->nullable();
+            $table->double('balance')->nullable();
+            $table->nullableMorphs('contextable');
+            $table->bigInteger('first_party_id')->nullable();
+            $table->bigInteger('second_party_id')->nullable();
+            $table->text('reason')->nullable();
+            $table->double('tax')->nullable();
+            $table->bigInteger('tax_receiver_id')->nullable();
+
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('wallet_journals');
     }
 }

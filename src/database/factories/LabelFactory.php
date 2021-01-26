@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Database\Factories;
+namespace Seatplus\Eveapi\database\factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Contacts\Label;

@@ -24,9 +24,9 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Jobs\Contacts;
+namespace Seatplus\Eveapi\Jobs\Wallet;
 
-use Seatplus\Eveapi\Actions\Jobs\Contacts\CorporationContactLabelAction;
+use Seatplus\Eveapi\Actions\Jobs\Wallet\CharacterWalletTransactionAction;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
@@ -35,7 +35,7 @@ use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\RateLimitedJobMiddleware;
 
-class CorporationContactLabelJob extends EsiBase
+class CharacterWalletTransactionJob extends EsiBase
 {
     /**
      * Get the middleware the job should pass through.
@@ -61,10 +61,10 @@ class CorporationContactLabelJob extends EsiBase
     public function tags(): array
     {
         return [
-            'corporation',
-            'corporation_id: ' . $this->corporation_id,
-            'contacts',
-            'label',
+            'character',
+            'character_id: ' . $this->character_id,
+            'wallet',
+            'transaction',
         ];
     }
 
@@ -81,6 +81,6 @@ class CorporationContactLabelJob extends EsiBase
 
     public function getActionClass(): RetrieveFromEsiInterface
     {
-        return new CorporationContactLabelAction;
+        return new CharacterWalletTransactionAction();
     }
 }

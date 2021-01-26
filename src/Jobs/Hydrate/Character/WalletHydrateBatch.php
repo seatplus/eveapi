@@ -24,19 +24,27 @@
  * SOFTWARE.
  */
 
-use Seatplus\Eveapi\Models\Assets\CharacterAsset;
-use Seatplus\Eveapi\Models\Contacts\Contact;
-use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
-use Seatplus\Eveapi\Models\Wallet\WalletJournal;
-use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
+namespace Seatplus\Eveapi\Jobs\Hydrate\Character;
 
-return [
-    CharacterAsset::class => 'character.assets',
-    CorporationMemberTracking::class => 'corporation.member_tracking',
-    'queue.manager',
-    'can open or close corporations for recruitment',
-    'can accept or deny applications',
-    Contact::class => 'contacts',
-    WalletJournal::class => 'wallet_journals',
-    WalletTransaction::class => 'wallet_transaction',
-];
+use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletJournalJob;
+use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
+
+class WalletHydrateBatch extends HydrateCharacterBase
+{
+    public function handle()
+    {
+        parent::setRequiredScope('esi-wallet.read_character_wallet.v1');
+
+        $this->hydrate([
+            new CharacterWalletJournalJob($this->job_container),
+            new CharacterWalletTransactionJob($this->job_container),
+        ]);
+    }
+
+    private function hydrate(array $array)
+    {
+        if ($this->hasRequiredScope()) {
+            $this->batch()->add($array);
+        }
+    }
+}

@@ -24,19 +24,11 @@
  * SOFTWARE.
  */
 
-use Seatplus\Eveapi\Models\Assets\CharacterAsset;
-use Seatplus\Eveapi\Models\Contacts\Contact;
-use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
-use Seatplus\Eveapi\Models\Wallet\WalletJournal;
-use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
+namespace Seatplus\Eveapi\Actions;
 
-return [
-    CharacterAsset::class => 'character.assets',
-    CorporationMemberTracking::class => 'corporation.member_tracking',
-    'queue.manager',
-    'can open or close corporations for recruitment',
-    'can accept or deny applications',
-    Contact::class => 'contacts',
-    WalletJournal::class => 'wallet_journals',
-    WalletTransaction::class => 'wallet_transaction',
-];
+interface HasQueryStringInterface
+{
+    public function getQueryString(): array;
+
+    public function setQueryString(array $array): void;
+}

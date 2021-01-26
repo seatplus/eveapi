@@ -24,19 +24,46 @@
  * SOFTWARE.
  */
 
-use Seatplus\Eveapi\Models\Assets\CharacterAsset;
-use Seatplus\Eveapi\Models\Contacts\Contact;
-use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
-use Seatplus\Eveapi\Models\Wallet\WalletJournal;
-use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
+namespace Seatplus\Eveapi\Models\Wallet;
 
-return [
-    CharacterAsset::class => 'character.assets',
-    CorporationMemberTracking::class => 'corporation.member_tracking',
-    'queue.manager',
-    'can open or close corporations for recruitment',
-    'can accept or deny applications',
-    Contact::class => 'contacts',
-    WalletJournal::class => 'wallet_journals',
-    WalletTransaction::class => 'wallet_transaction',
-];
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Seatplus\Eveapi\database\factories\WalletTransactionFactory;
+use Seatplus\Eveapi\Models\Universe\Location;
+use Seatplus\Eveapi\Models\Universe\Type;
+
+class WalletTransaction extends Model
+{
+    use HasFactory;
+
+    protected $guarded = false;
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'date' => 'datetime',
+    ];
+
+    protected static function newFactory()
+    {
+        return WalletTransactionFactory::new();
+    }
+
+    public function wallet_transactionable()
+    {
+        return $this->morphTo();
+    }
+
+    public function type()
+    {
+        return $this->hasOne(Type::class, 'type_id', 'type_id');
+    }
+
+    public function location()
+    {
+        return $this->hasOne(Location::class, 'location_id', 'location_id');
+    }
+}

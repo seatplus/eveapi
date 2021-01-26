@@ -82,6 +82,10 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
             $this->esi_request_container->refresh_token = $this->getRefreshToken();
         }
 
+        if (method_exists($this, 'getQueryString')) {
+            $this->esi_request_container->query_string = $this->getQueryString();
+        }
+
         $this->esi_request_container->page = $page;
     }
 }

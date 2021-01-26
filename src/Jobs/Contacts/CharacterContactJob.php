@@ -44,7 +44,7 @@ class CharacterContactJob extends EsiBase
      */
     public function middleware(): array
     {
-        $rate_limited_middleare = (new RateLimitedJobMiddleware)
+        $rate_limited_middleware = (new RateLimitedJobMiddleware)
             ->setKey(self::class)
             ->setViaCharacterId($this->refresh_token->character_id)
             ->setDuration(300);
@@ -54,7 +54,7 @@ class CharacterContactJob extends EsiBase
             new HasRequiredScopeMiddleware,
             new EsiRateLimitedMiddleware,
             new EsiAvailabilityMiddleware,
-            $rate_limited_middleare,
+            $rate_limited_middleware,
         ];
     }
 

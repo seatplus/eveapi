@@ -19,7 +19,7 @@
     "autoload-dev": {
         "psr-4": {
             "Seatplus\\Eveapi\\Tests\\": "tests/",
-            "Database\\Factories\\": "database/factories/",
+            "Seatplus\\Eveapi\\database\\factories\\": "src/database/factories/",
             "Database\\Seeders\\": "database/seeders/"
         }
     },

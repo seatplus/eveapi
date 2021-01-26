@@ -40,9 +40,11 @@ use Seatplus\Eveapi\Services\Maintenance\GetMissingCategorysPipe;
 use Seatplus\Eveapi\Services\Maintenance\GetMissingGroupsPipe;
 use Seatplus\Eveapi\Services\Maintenance\GetMissingLocationFromAssetsPipe;
 use Seatplus\Eveapi\Services\Maintenance\GetMissingLocationFromCorporationMemberTrackingPipe;
+use Seatplus\Eveapi\Services\Maintenance\GetMissingLocationFromWalletTransactionPipe;
 use Seatplus\Eveapi\Services\Maintenance\GetMissingTypesFromCharacterAssetsPipe;
 use Seatplus\Eveapi\Services\Maintenance\GetMissingTypesFromCorporationMemberTrackingPipe;
 use Seatplus\Eveapi\Services\Maintenance\GetMissingTypesFromLocationsPipe;
+use Seatplus\Eveapi\Services\Maintenance\GetMissingTypesFromWalletTransactionPipe;
 
 class MaintenanceJob implements ShouldQueue
 {
@@ -64,6 +66,8 @@ class MaintenanceJob implements ShouldQueue
         GetMissingAssetsNamesPipe::class,
         GetMissingTypesFromCorporationMemberTrackingPipe::class,
         GetMissingLocationFromCorporationMemberTrackingPipe::class,
+        GetMissingTypesFromWalletTransactionPipe::class,
+        GetMissingLocationFromWalletTransactionPipe::class,
         // TODO: Missing Affiliations from character_users, character_info and contacts
     ];
 
