@@ -54,19 +54,16 @@ class WalletTransaction extends Model
 
     public function wallet_transactionable()
     {
-
         return $this->morphTo();
     }
 
     public function type()
     {
-
         return $this->hasOne(Type::class, 'type_id', 'type_id');
     }
 
     public function location()
     {
-
         return $this->hasOne(Location::class, 'location_id', 'location_id');
     }
 }
