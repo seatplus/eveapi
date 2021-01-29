@@ -30,7 +30,6 @@ use Seatplus\Eveapi\Models\Assets\Asset;
 
 class AssetCleanupAction
 {
-
     private int $assetable_id;
 
     private array $known_assets;

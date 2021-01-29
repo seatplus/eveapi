@@ -82,9 +82,7 @@ class GroupObserver
             ->get()
             ->unique('assetable_id')
             ->whenNotEmpty(function ($assets) {
-
                 $assets->each(function ($asset) {
-
                     $refresh_token = $asset->assetable_type === CharacterInfo::class
                         ? RefreshToken::find($asset->assetable_id)
                         : null; //TODO Corp Implementation

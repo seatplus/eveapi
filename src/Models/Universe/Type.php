@@ -28,12 +28,10 @@ namespace Seatplus\Eveapi\Models\Universe;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\ContactFactory;
 use Seatplus\Eveapi\database\factories\TypeFactory;
 
 class Type extends Model
 {
-
     use HasFactory;
 
     /**

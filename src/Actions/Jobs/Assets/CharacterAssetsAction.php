@@ -83,7 +83,7 @@ class CharacterAssetsAction extends RetrieveFromEsiBase implements HasPathValues
             }
 
             // First update the
-            collect($response)->each(fn($asset) => Asset::updateOrCreate([
+            collect($response)->each(fn ($asset) => Asset::updateOrCreate([
                 'item_id' => $asset->item_id,
             ], [
                 'assetable_id' => $this->refresh_token->character_id,
@@ -95,7 +95,7 @@ class CharacterAssetsAction extends RetrieveFromEsiBase implements HasPathValues
                 'location_type'          => $asset->location_type,
                 'quantity'   => $asset->quantity,
                 'type_id' => $asset->type_id,
-            ]))->pipe(fn(Collection $response) => $response->pluck('item_id')->each(fn($id) => $this->known_assets->push($id)));
+            ]))->pipe(fn (Collection $response) => $response->pluck('item_id')->each(fn ($id) => $this->known_assets->push($id)));
 
             // Lastly if more pages are present load next page
             if ($this->page >= $response->pages) {
