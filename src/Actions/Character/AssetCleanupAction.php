@@ -24,19 +24,31 @@
  * SOFTWARE.
  */
 
-use Seatplus\Eveapi\Models\Assets\Asset;
-use Seatplus\Eveapi\Models\Contacts\Contact;
-use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
-use Seatplus\Eveapi\Models\Wallet\WalletJournal;
-use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
+namespace Seatplus\Eveapi\Actions\Character;
 
-return [
-    Asset::class => 'assets',
-    CorporationMemberTracking::class => 'corporation.member_tracking',
-    'queue.manager',
-    'can open or close corporations for recruitment',
-    'can accept or deny applications',
-    Contact::class => 'contacts',
-    WalletJournal::class => 'wallet_journals',
-    /*WalletTransaction::class => 'wallet_transaction',*/
-];
+use Seatplus\Eveapi\Models\Assets\Asset;
+
+class AssetCleanupAction
+{
+    private int $assetable_id;
+
+    private array $known_assets;
+
+    public function execute(int $assetable_id, array $known_assets)
+    {
+        $this->assetable_id = $assetable_id;
+        $this->known_assets = $known_assets;
+
+        // Take advantage of new LazyCollection
+        $character_assets = Asset::cursor()->filter(function ($asset) {
+            return $asset->assetable_id === $this->assetable_id;
+        });
+
+        // Delete character items if no longer present
+        foreach ($character_assets as $character_asset) {
+            if (! in_array($character_asset->item_id, $this->known_assets)) {
+                $character_asset->delete();
+            }
+        }
+    }
+}

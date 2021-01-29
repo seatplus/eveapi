@@ -29,24 +29,24 @@ namespace Seatplus\Eveapi\Observers;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsLocationJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
-use Seatplus\Eveapi\Models\Assets\CharacterAsset;
+use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 class CharacterAssetObserver
 {
     /**
-     * @var \Seatplus\Eveapi\Models\Assets\CharacterAsset
+     * @var \Seatplus\Eveapi\Models\Assets\Asset
      */
-    private CharacterAsset $character_asset;
+    private Asset $character_asset;
 
     /**
      * Handle the User "created" event.
      *
-     * @param \Seatplus\Eveapi\Models\Assets\CharacterAsset $character_asset
+     * @param \Seatplus\Eveapi\Models\Assets\Asset $character_asset
      *
      * @return void
      */
-    public function created(CharacterAsset $character_asset)
+    public function created(Asset $character_asset)
     {
         $this->character_asset = $character_asset;
 
@@ -57,11 +57,11 @@ class CharacterAssetObserver
     /**
      * Handle the User "updating" event.
      *
-     * @param \Seatplus\Eveapi\Models\Assets\CharacterAsset $character_asset
+     * @param \Seatplus\Eveapi\Models\Assets\Asset $character_asset
      *
      * @return void
      */
-    public function updating(CharacterAsset $character_asset)
+    public function updating(Asset $character_asset)
     {
         $this->character_asset = $character_asset;
 

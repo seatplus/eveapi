@@ -42,7 +42,7 @@ class WalletTransactionTest extends TestCase
         $wallet_transaction = Event::fakeFor( fn() => WalletTransaction::factory()->create([
             'wallet_transactionable_id' => $this->test_character->character_id,
             'wallet_transactionable_type' => CharacterInfo::class,
-            'type_id' => factory(Type::class)->create(),
+            'type_id' => Type::factory()->create(),
             'location_id' => factory(Location::class)->create()
         ]));
 

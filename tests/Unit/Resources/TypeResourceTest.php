@@ -17,7 +17,7 @@ class TypeResourceTest extends TestCase
     public function testCorrectDataIsReturnedInResponse()
     {
 
-        $type = Event::fakeFor(fn () => factory(Type::class)->create());
+        $type = Event::fakeFor(fn () => Type::factory()->create());
 
         $resource = (new TypeResource($type));
 

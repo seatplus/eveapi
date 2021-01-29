@@ -27,11 +27,12 @@
 namespace Seatplus\Eveapi\Actions\Jobs\Assets;
 
 use Illuminate\Support\Collection;
-use Seatplus\Eveapi\Actions\Character\CharacterAssetsCleanupAction;
+use Seatplus\Eveapi\Actions\Character\AssetCleanupAction;
 use Seatplus\Eveapi\Actions\HasPathValuesInterface;
 use Seatplus\Eveapi\Actions\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
-use Seatplus\Eveapi\Models\Assets\CharacterAsset;
+use Seatplus\Eveapi\Models\Assets\Asset;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 class CharacterAssetsAction extends RetrieveFromEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
@@ -82,24 +83,19 @@ class CharacterAssetsAction extends RetrieveFromEsiBase implements HasPathValues
             }
 
             // First update the
-            collect($response)->each(function ($asset) {
-                CharacterAsset::updateOrCreate([
-                    'item_id' => $asset->item_id,
-                ], [
-                    'character_id' => $this->refresh_token->character_id,
-                    'is_blueprint_copy' => optional($asset)->is_blueprint_copy ?? false,
-                    'is_singleton'  => $asset->is_singleton,
-                    'location_flag'     => $asset->location_flag,
-                    'location_id'        => $asset->location_id,
-                    'location_type'          => $asset->location_type,
-                    'quantity'   => $asset->quantity,
-                    'type_id' => $asset->type_id,
-                ]);
-            })->pipe(function (Collection $response) {
-                return $response->pluck('item_id')->each(function ($id) {
-                    $this->known_assets->push($id);
-                });
-            });
+            collect($response)->each(fn ($asset) => Asset::updateOrCreate([
+                'item_id' => $asset->item_id,
+            ], [
+                'assetable_id' => $this->refresh_token->character_id,
+                'assetable_type' => CharacterInfo::class,
+                'is_blueprint_copy' => optional($asset)->is_blueprint_copy ?? false,
+                'is_singleton'  => $asset->is_singleton,
+                'location_flag'     => $asset->location_flag,
+                'location_id'        => $asset->location_id,
+                'location_type'          => $asset->location_type,
+                'quantity'   => $asset->quantity,
+                'type_id' => $asset->type_id,
+            ]))->pipe(fn (Collection $response) => $response->pluck('item_id')->each(fn ($id) => $this->known_assets->push($id)));
 
             // Lastly if more pages are present load next page
             if ($this->page >= $response->pages) {
@@ -110,7 +106,7 @@ class CharacterAssetsAction extends RetrieveFromEsiBase implements HasPathValues
         }
 
         // Cleanup old items
-        (new CharacterAssetsCleanupAction)->execute($this->refresh_token->character_id, $this->known_assets->toArray());
+        (new AssetCleanupAction)->execute($this->refresh_token->character_id, $this->known_assets->toArray());
     }
 
     public function getMethod(): string

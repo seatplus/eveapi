@@ -24,34 +24,23 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Http\Resources;
+namespace Seatplus\Eveapi\database\factories;
 
-use Illuminate\Http\Resources\Json\JsonResource;
-use Seatplus\Eveapi\Http\Resources\Type as TypeResource;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Seatplus\Eveapi\Models\Universe\Type;
 
-class CharacterAsset extends JsonResource
+class TypeFactory extends Factory
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @param  \Illuminate\Http\Request
-     * @return array
-     */
-    public function toArray($request)
+    protected $model = Type::class;
+
+    public function definition()
     {
         return [
-            'item_id' => $this->item_id,
-            'quantity' => $this->quantity,
-            'type_id' => $this->type_id,
-            'type' => TypeResource::make($this->whenLoaded('type')),
-            'name' => $this->name,
-            'location_id' => $this->location_id,
-            'location' => $this->whenLoaded('location'),
-            'location_flag' => $this->location_flag,
-            'is_singleton' => $this->is_singleton,
-            'is_blueprint_copy' => $this->is_blueprint_copy,
-            'content' => $this::collection($this->whenLoaded('content')),
-            'owner' => $this->whenLoaded('owner'),
+            'type_id' => $this->faker->numberBetween(0, 10000),
+            'group_id' => $this->faker->numberBetween(0, 10000),
+            'description'  => $this->faker->company,
+            'name'  => $this->faker->name,
+            'published' => $this->faker->boolean,
         ];
     }
 }

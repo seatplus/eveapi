@@ -29,6 +29,7 @@ namespace Seatplus\Eveapi\Models\Character;
 use Illuminate\Database\Eloquent\Model;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Applications;
+use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Contacts\Contact;
 use Seatplus\Eveapi\Models\Contacts\Label;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
@@ -114,6 +115,11 @@ class CharacterInfo extends Model
     public function getAllianceIdAttribute()
     {
         return $this->character_affiliation?->alliance_id;
+    }
+
+    public function assets()
+    {
+        return $this->morphMany(Asset::class, 'assetable');
     }
 
     public function contacts()

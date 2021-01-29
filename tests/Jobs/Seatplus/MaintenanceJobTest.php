@@ -12,7 +12,7 @@ use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseCategoriesByCategoryIdJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseGroupsByGroupIdJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
-use Seatplus\Eveapi\Models\Assets\CharacterAsset;
+use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Group;
@@ -41,7 +41,7 @@ class MaintenanceJobTest extends TestCase
     /** @test */
     public function it_fetches_missing_types_from_assets()
     {
-        $asset = Event::fakeFor(fn() => factory(CharacterAsset::class)->create());
+        $asset = Event::fakeFor(fn() => Asset::factory()->create());
 
         $this->job->handle();
 
@@ -71,7 +71,7 @@ class MaintenanceJobTest extends TestCase
     /** @test */
     public function it_caches_missing_groups_from_type()
     {
-        $type = Event::fakeFor(fn() => factory(Type::class)->create());
+        $type = Event::fakeFor(fn() => Type::factory()->create());
 
         $this->job->handle();
 
@@ -95,8 +95,8 @@ class MaintenanceJobTest extends TestCase
     /** @test */
     public function it_dispatch_resolve_location_jog_for_missing_assets_location()
     {
-        $character_asset = Event::fakeFor(fn() => factory(CharacterAsset::class)->create([
-            'character_id' => $this->test_character->character_id,
+        $asset = Event::fakeFor(fn() => Asset::factory()->create([
+            'assetable_id' => $this->test_character->character_id,
             'location_flag' => 'Hangar'
         ]));
 
@@ -108,13 +108,13 @@ class MaintenanceJobTest extends TestCase
     /** @test */
     public function it_dispatch_resolve_missing_assets_name_jog()
     {
-        $character_asset = Event::fakeFor(fn() => factory(CharacterAsset::class)->create([
-            'character_id' => $this->test_character->character_id,
+        $asset = Event::fakeFor(fn() => Asset::factory()->create([
+            'assetable_id' => $this->test_character->character_id,
             'location_flag' => 'Hangar'
         ]));
 
-        $type = Event::fakeFor(fn() => factory(Type::class)->create([
-            'type_id' => $character_asset->type_id,
+        $type = Event::fakeFor(fn() => Type::factory()->create([
+            'type_id' => $asset->type_id,
             'group_id' => factory(Group::class)->create(['category_id' => 2])
         ]));
 

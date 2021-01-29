@@ -21,7 +21,7 @@ class UniverseTypesModelTest extends TestCase
 
         parent::setUp();
 
-        $this->type = Event::fakeFor(fn () => factory(Type::class)->create());
+        $this->type = Event::fakeFor(fn () => Type::factory()->create());
     }
 
     /** @test */

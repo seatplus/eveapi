@@ -24,38 +24,44 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Actions\Character;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
-use Seatplus\Eveapi\Models\Assets\CharacterAsset;
-
-class CharacterAssetsCleanupAction
+class ChangeCharacterAssetsToMorphAssets extends Migration
 {
-
     /**
-     * @var int
+     * Run the migrations.
+     *
+     * @return void
      */
-    private $character_id;
-
-    /**
-     * @var array
-     */
-    private $known_assets;
-
-    public function execute(int $character_id, array $known_assets)
+    public function up()
     {
-        $this->character_id = $character_id;
-        $this->known_assets = $known_assets;
-
-        // Take advantage of new LazyCollection
-        $character_assets = CharacterAsset::cursor()->filter(function ($character_asset) {
-            return $character_asset->character_id === $this->character_id;
+        Schema::table('character_assets', function (Blueprint $table) {
+            $table->string('assetable_type', 255)->after('character_id')->default(CharacterInfo::class);
         });
 
-        // Delete character items if no longer present
-        foreach ($character_assets as $character_asset) {
-            if (! in_array($character_asset->item_id, $this->known_assets)) {
-                $character_asset->delete();
-            }
-        }
+        Schema::table('character_assets', function (Blueprint $table) {
+            $table->renameColumn('character_id', 'assetable_id');
+            $table->string('assetable_type', 255)->change();
+        });
+
+        Schema::table('character_assets', function (Blueprint $table) {
+            $table->index(['assetable_id', 'assetable_type']);
+        });
+
+        Schema::rename('character_assets', 'assets');
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::table('character_assets', function (Blueprint $table) {
+        });
     }
 }

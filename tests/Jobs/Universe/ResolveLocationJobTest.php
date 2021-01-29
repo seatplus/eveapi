@@ -9,7 +9,7 @@ use Seatplus\Eveapi\Events\RefreshTokenCreated;
 use Seatplus\Eveapi\Events\UniverseStationCreated;
 use Seatplus\Eveapi\Events\UniverseStructureCreated;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
-use Seatplus\Eveapi\Models\Assets\CharacterAsset;
+use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
@@ -45,9 +45,9 @@ class ResolveLocationJobTest extends TestCase
     /** @test */
     public function it_checks_only_asset_safety_checker()
     {
-        factory(CharacterAsset::class)->create([
+        Asset::factory()->create([
             'location_id' => 2004,
-            'character_id' => $this->test_character->character_id,
+            'assetable_id' => $this->test_character->character_id,
             'location_flag' => 'Hangar',
             'location_type' => 'other'
         ]);
@@ -63,9 +63,9 @@ class ResolveLocationJobTest extends TestCase
      */
     public function it_checks_only_station_checker()
     {
-        $test_assets = factory(CharacterAsset::class)->create([
+        $test_assets = Asset::factory()->create([
             'location_id' => 60003760,
-            'character_id' => $this->test_character->character_id,
+            'assetable_id' => $this->test_character->character_id,
             'location_flag' => 'Hangar',
             'location_type' => 'station'
         ]);
@@ -90,9 +90,9 @@ class ResolveLocationJobTest extends TestCase
 
         $location_id = 60003760;
 
-        factory(CharacterAsset::class,5)->create([
+        Asset::factory()->count(5)->create([
             'location_id' => $location_id,
-            'character_id' => $this->test_character->character_id,
+            'assetable_id' => $this->test_character->character_id,
             'location_flag' => 'Hangar',
             'location_type' => 'station',
         ]);
@@ -124,9 +124,9 @@ class ResolveLocationJobTest extends TestCase
     {
         $location_id = 60003760;
 
-        factory(CharacterAsset::class,5)->create([
+        Asset::factory()->count(5)->create([
             'location_id' => $location_id,
-            'character_id' => $this->test_character->character_id,
+            'assetable_id' => $this->test_character->character_id,
             'location_flag' => 'Hangar',
             'location_type' => 'station',
         ]);
@@ -155,9 +155,9 @@ class ResolveLocationJobTest extends TestCase
      */
     public function it_checks_only_structure_checker()
     {
-        $test_assets = factory(CharacterAsset::class,5)->create([
+        $test_assets = Asset::factory()->count(5)->create([
             'location_id' => 1028832949394,
-            'character_id' => $this->test_character->character_id,
+            'assetable_id' => $this->test_character->character_id,
             'location_flag' => 'Hangar',
             'location_type' => 'station'
         ]);
@@ -181,9 +181,9 @@ class ResolveLocationJobTest extends TestCase
     {
         $location_id = 1028832949394;
 
-        factory(CharacterAsset::class,5)->create([
+        Asset::factory()->count(5)->create([
             'location_id' => $location_id,
-            'character_id' => $this->test_character->character_id,
+            'assetable_id' => $this->test_character->character_id,
             'location_flag' => 'Hangar',
             'location_type' => 'station',
         ]);
@@ -216,9 +216,9 @@ class ResolveLocationJobTest extends TestCase
     {
         $location_id = 1028832949394;
 
-        factory(CharacterAsset::class,5)->create([
+        Asset::factory()->count(5)->create([
             'location_id' => $location_id,
-            'character_id' => $this->test_character->character_id,
+            'assetable_id' => $this->test_character->character_id,
             'location_flag' => 'Hangar',
             'location_type' => 'other',
         ]);

@@ -27,14 +27,18 @@
 namespace Seatplus\Eveapi\Models\Assets;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\Events\CharacterAssetUpdating;
+use Seatplus\Eveapi\database\factories\AssetFactory;
+use Seatplus\Eveapi\Events\AssetUpdating;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Type;
 
-class CharacterAsset extends Model
+class Asset extends Model
 {
+    use HasFactory;
+
     const ASSET_SAFETY = 2004;
 
     protected array $affiliated_ids = [];
@@ -57,7 +61,7 @@ class CharacterAsset extends Model
      * @var array
      */
     protected $casts = [
-        'character_id' => 'integer',
+        'assetable_id' => 'integer',
         'type_id' => 'integer',
     ];
 
@@ -67,8 +71,18 @@ class CharacterAsset extends Model
      * @var array
      */
     protected $dispatchesEvents = [
-        'updating' => CharacterAssetUpdating::class,
+        'updating' => AssetUpdating::class,
     ];
+
+    protected static function newFactory()
+    {
+        return AssetFactory::new();
+    }
+
+    public function assetable()
+    {
+        return $this->morphTo();
+    }
 
     public function type()
     {
@@ -80,7 +94,7 @@ class CharacterAsset extends Model
      */
     public function container()
     {
-        return $this->belongsTo(CharacterAsset::class, 'location_id', 'item_id');
+        return $this->belongsTo(self::class, 'location_id', 'item_id');
     }
 
     /**
@@ -88,7 +102,7 @@ class CharacterAsset extends Model
      */
     public function content()
     {
-        return $this->hasMany(CharacterAsset::class, 'location_id', 'item_id');
+        return $this->hasMany(self::class, 'location_id', 'item_id');
     }
 
     public function location()
@@ -99,7 +113,8 @@ class CharacterAsset extends Model
 
     public function owner()
     {
-        return $this->belongsTo(CharacterInfo::class, 'character_id', 'character_id');
+        return $this->assetable();
+        //return $this->belongsTo(CharacterInfo::class, 'character_id', 'character_id');
     }
 
     public function scopeAssetsLocationIds(Builder $query): Builder
@@ -124,7 +139,7 @@ class CharacterAsset extends Model
 
     public function scopeEntityFilter(Builder $query, array $character_ids): Builder
     {
-        return $query->whereIn('character_id', $character_ids);
+        return $query->whereIn('assetable_id', $character_ids);
     }
 
     public function scopeInRegion(Builder $query, int $region_id): Builder

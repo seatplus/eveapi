@@ -7,7 +7,7 @@ namespace Seatplus\Eveapi\Tests\Unit\Actions\Jobs\Assets;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Actions\Jobs\Assets\CharacterAssetsLocationAction;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
-use Seatplus\Eveapi\Models\Assets\CharacterAsset;
+use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Tests\TestCase;
 
 class CharacterAssetsLocationActionTest extends TestCase
@@ -29,8 +29,8 @@ class CharacterAssetsLocationActionTest extends TestCase
     /** @test */
     public function it_builds_location_id()
     {
-        $test_assets = factory(CharacterAsset::class,5)->create([
-            'character_id' => $this->test_character->character_id,
+        $test_assets = Asset::factory()->count(5)->create([
+            'assetable_id' => $this->test_character->character_id,
             'location_flag' => 'Hangar',
             'location_type' => 'other'
         ]);
@@ -49,19 +49,17 @@ class CharacterAssetsLocationActionTest extends TestCase
         // Assert that no jobs were pushed...
         Queue::assertNothingPushed();
 
-        $test_assets = factory(CharacterAsset::class,5)->create([
-            'character_id' => $this->test_character->character_id,
+        $test_assets = Asset::factory()->count(5)->create([
+            'assetable_id' => $this->test_character->character_id,
             'location_flag' => 'Hangar',
             'location_type' => 'other'
         ]);
 
         $this->action->buildLocationIds()->execute();
 
-         $test_assets->pluck('location_id')->unique()->each(function ($location_id) {
-             Queue::assertPushed(ResolveLocationJob::class, function ($job) use ($location_id) {
-                 return $job->location_id === $location_id;
-             });
-         });
+         $test_assets->pluck('location_id')->unique()->each(fn($location_id) => Queue::assertPushed(ResolveLocationJob::class, function ($job) use ($location_id) {
+             return $job->location_id === $location_id;
+         }));
 
         // Assert a job was pushed once per test asset...
         Queue::assertPushed(ResolveLocationJob::class, $test_assets->count());

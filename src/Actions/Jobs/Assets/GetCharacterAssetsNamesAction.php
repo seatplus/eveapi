@@ -31,7 +31,7 @@ use Seatplus\Eveapi\Actions\HasPathValuesInterface;
 use Seatplus\Eveapi\Actions\HasRequestBodyInterface;
 use Seatplus\Eveapi\Actions\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
-use Seatplus\Eveapi\Models\Assets\CharacterAsset;
+use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 class GetCharacterAssetsNamesAction extends RetrieveFromEsiBase implements HasPathValuesInterface, HasRequestBodyInterface, HasRequiredScopeInterface
@@ -77,10 +77,10 @@ class GetCharacterAssetsNamesAction extends RetrieveFromEsiBase implements HasPa
             'character_id' => $this->refresh_token->character_id,
         ]);
 
-        CharacterAsset::whereHas('type.group', function (Builder $query) {
+        Asset::whereHas('type.group', function (Builder $query) {
             // Only Celestials, Ships, Deployable, Starbases, Orbitals and Structures might be named
             $query->whereIn('category_id', [2, 6, 22, 23, 46, 65]);
-        })->where('character_id', $this->refresh_token->character_id)
+        })->where('assetable_id', $this->refresh_token->character_id)
             ->select('item_id')
             ->where('is_singleton', true)
             ->pluck('item_id')
@@ -100,7 +100,7 @@ class GetCharacterAssetsNamesAction extends RetrieveFromEsiBase implements HasPa
                     //cache items for 1 hrs
                     cache()->store('file')->put($response->item_id, $response->name, 3600);
 
-                    CharacterAsset::where('character_id', $this->refresh_token->character_id)
+                    Asset::where('assetable_id', $this->refresh_token->character_id)
                         ->where('item_id', $response->item_id)
                         ->update(['name' => $response->name]);
                 });

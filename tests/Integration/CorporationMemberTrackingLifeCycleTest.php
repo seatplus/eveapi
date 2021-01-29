@@ -6,12 +6,9 @@ namespace Seatplus\Eveapi\Tests\Integration;
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsLocationJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob as CharacterInfoJob;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseCategoriesByCategoryIdJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
-use Seatplus\Eveapi\Models\Assets\CharacterAsset;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Models\Universe\Location;
@@ -25,7 +22,7 @@ class CorporationMemberTrackingLifeCycleTest extends TestCase
     public function it_dispatches_type_job()
     {
         $tracking = factory(CorporationMemberTracking::class)->make([
-            'ship_type_id' => factory(Type::class)->make()
+            'ship_type_id' => Type::factory()->make()
         ]);
 
         Queue::assertNotPushed('high', ResolveUniverseTypesByTypeIdJob::class);
@@ -47,7 +44,7 @@ class CorporationMemberTrackingLifeCycleTest extends TestCase
     public function it_does_not_dispatch_type_job_if_type_is_known()
     {
 
-        $type = factory(Type::class)->create();
+        $type = Type::factory()->create();
 
         $tracking = factory(CorporationMemberTracking::class)->create([
             'ship_type_id' => $type->type_id
