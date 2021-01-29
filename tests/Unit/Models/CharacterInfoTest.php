@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Applications;
+use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
@@ -61,6 +62,17 @@ class CharacterInfoTest extends TestCase
         ]);
 
         $this->assertInstanceOf(Applications::class, $this->test_character->application);
+    }
+
+    /** @test */
+    public function it_has_asset_relationship()
+    {
+        $asset = Asset::factory()->create([
+            'assetable_id' => $this->test_character->character_id,
+            'assetable_type' => CharacterInfo::class
+        ]);
+
+        $this->assertInstanceOf(Asset::class, $this->test_character->refresh()->assets->first());
     }
 
     /** @test */
