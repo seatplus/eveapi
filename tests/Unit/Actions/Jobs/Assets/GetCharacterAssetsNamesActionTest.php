@@ -45,7 +45,7 @@ class GetCharacterAssetsNamesActionTest extends TestCase
      */
     public function it_updates_a_name()
     {
-        $type = factory(Type::class)->create();
+        $type = Type::factory()->create();
 
         $group = Event::fakeFor(fn () => factory(Group::class)->create([
             'group_id' => $type->group_id,
@@ -96,7 +96,7 @@ class GetCharacterAssetsNamesActionTest extends TestCase
      */
     public function it_does_not_update_for_wrong_category()
     {
-        $type = factory(Type::class)->create();
+        $type = Type::factory()->create();
 
         $group = Event::fakeFor(fn () => factory(Group::class)->create([
             'group_id' => $type->group_id,
@@ -145,7 +145,7 @@ class GetCharacterAssetsNamesActionTest extends TestCase
      */
     public function it_does_not_run_if_category_id_is_out_of_scope()
     {
-        $type = factory(Type::class)->create();
+        $type = Type::factory()->create();
 
         $group = Event::fakeFor(fn () => factory(Group::class)->create([
             'group_id' => $type->group_id,
@@ -190,7 +190,7 @@ class GetCharacterAssetsNamesActionTest extends TestCase
      */
     public function it_does_not_run_if_group_is_missing()
     {
-        $type = factory(Type::class)->create();
+        $type = Type::factory()->create();
 
         $asset = Asset::factory()->create([
             'type_id' => $type->type_id,
@@ -233,7 +233,7 @@ class GetCharacterAssetsNamesActionTest extends TestCase
      */
     public function it_runs_the_job()
     {
-        $type = Event::fakeFor( fn() => factory(Type::class)->create());
+        $type = Event::fakeFor( fn() => Type::factory()->create());
 
         $group = Event::fakeFor(fn () => factory(Group::class)->create([
             'group_id' => $type->group_id,

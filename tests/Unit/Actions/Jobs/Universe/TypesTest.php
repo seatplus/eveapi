@@ -59,7 +59,7 @@ class TypesTest extends TestCase
 
     private function buildMockEsiData()
     {
-        $mock_data = factory(Type::class)->make();
+        $mock_data = Type::factory()->make();
 
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
 

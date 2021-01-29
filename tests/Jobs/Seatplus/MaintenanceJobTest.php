@@ -71,7 +71,7 @@ class MaintenanceJobTest extends TestCase
     /** @test */
     public function it_caches_missing_groups_from_type()
     {
-        $type = Event::fakeFor(fn() => factory(Type::class)->create());
+        $type = Event::fakeFor(fn() => Type::factory()->create());
 
         $this->job->handle();
 
@@ -113,7 +113,7 @@ class MaintenanceJobTest extends TestCase
             'location_flag' => 'Hangar'
         ]));
 
-        $type = Event::fakeFor(fn() => factory(Type::class)->create([
+        $type = Event::fakeFor(fn() => Type::factory()->create([
             'type_id' => $asset->type_id,
             'group_id' => factory(Group::class)->create(['category_id' => 2])
         ]));

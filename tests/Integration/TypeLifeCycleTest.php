@@ -17,7 +17,7 @@ class TypeLifeCycleTest extends TestCase
     {
         Queue::fake();
 
-        $type = factory(Type::class)->create();
+        $type = Type::factory()->create();
 
         Queue::assertPushedOn('high', ResolveUniverseGroupsByGroupIdJob::class);
     }
@@ -29,7 +29,7 @@ class TypeLifeCycleTest extends TestCase
 
         $group = factory(Group::class)->create();
 
-        $type = factory(Type::class)->create([
+        $type = Type::factory()->create([
             'group_id' => $group->group_id
         ]);
 

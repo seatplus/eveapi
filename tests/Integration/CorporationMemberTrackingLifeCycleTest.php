@@ -22,7 +22,7 @@ class CorporationMemberTrackingLifeCycleTest extends TestCase
     public function it_dispatches_type_job()
     {
         $tracking = factory(CorporationMemberTracking::class)->make([
-            'ship_type_id' => factory(Type::class)->make()
+            'ship_type_id' => Type::factory()->make()
         ]);
 
         Queue::assertNotPushed('high', ResolveUniverseTypesByTypeIdJob::class);
@@ -44,7 +44,7 @@ class CorporationMemberTrackingLifeCycleTest extends TestCase
     public function it_does_not_dispatch_type_job_if_type_is_known()
     {
 
-        $type = factory(Type::class)->create();
+        $type = Type::factory()->create();
 
         $tracking = factory(CorporationMemberTracking::class)->create([
             'ship_type_id' => $type->type_id

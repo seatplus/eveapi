@@ -45,7 +45,7 @@ class GroupLifecycleTest extends TestCase
     public function it_dispatches_assets_name_job()
     {
 
-        $type = factory(Type::class)->create();
+        $type = Type::factory()->create();
 
 
 

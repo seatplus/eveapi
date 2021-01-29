@@ -54,7 +54,7 @@ class CharacterAssetLifeCycleTest extends TestCase
     public function it_does_not_dispatch_type_job_if_type_is_known()
     {
 
-        $type = factory(Type::class)->create();
+        $type = Type::factory()->create();
 
         $asset = Asset::factory()->create([
             'type_id' => $type->type_id
