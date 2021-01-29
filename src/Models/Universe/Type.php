@@ -26,10 +26,15 @@
 
 namespace Seatplus\Eveapi\Models\Universe;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Seatplus\Eveapi\database\factories\ContactFactory;
+use Seatplus\Eveapi\database\factories\TypeFactory;
 
 class Type extends Model
 {
+
+    use HasFactory;
 
     /**
      * The attributes that aren't mass assignable.
@@ -62,6 +67,13 @@ class Type extends Model
         'description' => 'string',
         'published' => 'boolean',
     ];
+
+    protected $with = ['group', 'category'];
+
+    protected static function newFactory()
+    {
+        return TypeFactory::new();
+    }
 
     public function group()
     {

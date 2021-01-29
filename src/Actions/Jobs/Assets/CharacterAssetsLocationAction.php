@@ -27,7 +27,7 @@
 namespace Seatplus\Eveapi\Actions\Jobs\Assets;
 
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
-use Seatplus\Eveapi\Models\Assets\CharacterAsset;
+use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 class CharacterAssetsLocationAction
@@ -48,7 +48,7 @@ class CharacterAssetsLocationAction
 
     public function buildLocationIds()
     {
-        $this->location_ids = CharacterAsset::where('character_id', $this->refresh_token->character_id)
+        $this->location_ids = Asset::where('assetable_id', $this->refresh_token->character_id)
             ->AssetsLocationIds()
             ->inRandomOrder()
             ->pluck('location_id')

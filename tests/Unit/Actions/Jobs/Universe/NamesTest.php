@@ -6,7 +6,7 @@ namespace Seatplus\Eveapi\Tests\Unit\Actions\Jobs\Universe;
 
 use Illuminate\Support\Facades\Cache;
 use Seatplus\Eveapi\Actions\Jobs\Universe\NamesAction;
-use Seatplus\Eveapi\Models\Assets\CharacterAsset;
+use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Universe\Name;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;

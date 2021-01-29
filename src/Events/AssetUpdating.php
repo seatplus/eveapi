@@ -24,19 +24,19 @@
  * SOFTWARE.
  */
 
-use Seatplus\Eveapi\Models\Assets\Asset;
-use Seatplus\Eveapi\Models\Contacts\Contact;
-use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
-use Seatplus\Eveapi\Models\Wallet\WalletJournal;
-use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
+namespace Seatplus\Eveapi\Events;
 
-return [
-    Asset::class => 'assets',
-    CorporationMemberTracking::class => 'corporation.member_tracking',
-    'queue.manager',
-    'can open or close corporations for recruitment',
-    'can accept or deny applications',
-    Contact::class => 'contacts',
-    WalletJournal::class => 'wallet_journals',
-    /*WalletTransaction::class => 'wallet_transaction',*/
-];
+use Illuminate\Queue\SerializesModels;
+use Seatplus\Eveapi\Models\Assets\Asset;
+
+class AssetUpdating
+{
+    use SerializesModels;
+
+    public function __construct(
+        private Asset $character_asset
+    ) {
+    }
+
+    //TODO implement Listener to track item transactions https://stackoverflow.com/a/48793801
+}

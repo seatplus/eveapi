@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseCategoriesByCategoryIdJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseGroupsByGroupIdJob;
-use Seatplus\Eveapi\Models\Assets\CharacterAsset;
+use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Universe\Category;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Type;
@@ -47,8 +47,10 @@ class GroupLifecycleTest extends TestCase
 
         $type = factory(Type::class)->create();
 
-        $asset = factory(CharacterAsset::class)->create([
-            'character_id' => $this->test_character->character_id,
+
+
+        $asset = Asset::factory()->create([
+            'assetable_id' => $this->test_character->character_id,
             'type_id' => $type->type_id,
             'is_singleton' => true,
         ]);

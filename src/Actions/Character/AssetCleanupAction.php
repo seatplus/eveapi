@@ -26,29 +26,23 @@
 
 namespace Seatplus\Eveapi\Actions\Character;
 
-use Seatplus\Eveapi\Models\Assets\CharacterAsset;
+use Seatplus\Eveapi\Models\Assets\Asset;
 
-class CharacterAssetsCleanupAction
+class AssetCleanupAction
 {
 
-    /**
-     * @var int
-     */
-    private $character_id;
+    private int $assetable_id;
 
-    /**
-     * @var array
-     */
-    private $known_assets;
+    private array $known_assets;
 
-    public function execute(int $character_id, array $known_assets)
+    public function execute(int $assetable_id, array $known_assets)
     {
-        $this->character_id = $character_id;
+        $this->assetable_id = $assetable_id;
         $this->known_assets = $known_assets;
 
         // Take advantage of new LazyCollection
-        $character_assets = CharacterAsset::cursor()->filter(function ($character_asset) {
-            return $character_asset->character_id === $this->character_id;
+        $character_assets = Asset::cursor()->filter(function ($asset) {
+            return $asset->assetable_id === $this->assetable_id;
         });
 
         // Delete character items if no longer present

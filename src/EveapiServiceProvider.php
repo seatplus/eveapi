@@ -43,7 +43,7 @@ use Seatplus\Eveapi\Listeners\DispatchGetRegionById;
 use Seatplus\Eveapi\Listeners\DispatchGetSystemJobSubscriber;
 use Seatplus\Eveapi\Listeners\ReactOnFreshRefreshToken;
 use Seatplus\Eveapi\Listeners\UpdatingRefreshTokenListener;
-use Seatplus\Eveapi\Models\Assets\CharacterAsset;
+use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contacts\Contact;
@@ -195,7 +195,7 @@ class EveapiServiceProvider extends ServiceProvider
         //Character Observers
         CharacterInfo::observe(CharacterInfoObserver::class);
         CharacterAffiliation::observe(CharacterAffiliationObserver::class);
-        CharacterAsset::observe(CharacterAssetObserver::class);
+        Asset::observe(CharacterAssetObserver::class);
 
         //Corporation Observers
         CorporationMemberTracking::observe(CorporationMemberTrackingObserver::class);

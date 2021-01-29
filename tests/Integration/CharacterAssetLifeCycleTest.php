@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsLocationJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseCategoriesByCategoryIdJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
-use Seatplus\Eveapi\Models\Assets\CharacterAsset;
+use Seatplus\Eveapi\Models\Assets\Asset;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Tests\TestCase;
@@ -20,16 +21,17 @@ class CharacterAssetLifeCycleTest extends TestCase
     /** @test */
     public function it_dispatches_type_job()
     {
-        $asset = factory(CharacterAsset::class)->make();
+        $asset = Asset::factory()->make();
 
         Queue::assertNotPushed('high', ResolveUniverseTypesByTypeIdJob::class);
 
-        $this->assertDatabaseMissing('character_assets', ['item_id' => $asset->item_id]);
+        $this->assertDatabaseMissing('assets', ['item_id' => $asset->item_id]);
 
-        CharacterAsset::updateOrCreate([
+        Asset::updateOrCreate([
             'item_id' => $asset->item_id,
         ], [
-            'character_id' => $asset->character_id,
+            'assetable_id' => $asset->assetable_id,
+            'assetable_type' => CharacterInfo::class,
             'is_blueprint_copy' => optional($asset)->is_blueprint_copy ?? false,
             'is_singleton'  => $asset->is_singleton,
             'location_flag'     => $asset->location_flag,
@@ -39,7 +41,7 @@ class CharacterAssetLifeCycleTest extends TestCase
             'type_id' => $asset->type_id,
         ]);
 
-        $this->assertDatabaseHas('character_assets', ['item_id' => $asset->item_id]);
+        $this->assertDatabaseHas('assets', ['item_id' => $asset->item_id]);
 
         Queue::assertPushedOn('high', ResolveUniverseTypesByTypeIdJob::class);
 
@@ -54,7 +56,7 @@ class CharacterAssetLifeCycleTest extends TestCase
 
         $type = factory(Type::class)->create();
 
-        $asset = factory(CharacterAsset::class)->create([
+        $asset = Asset::factory()->create([
             'type_id' => $type->type_id
         ]);
 
@@ -64,7 +66,7 @@ class CharacterAssetLifeCycleTest extends TestCase
     /** @test */
     public function it_dispatches_location_job()
     {
-        $asset = factory(CharacterAsset::class)->create();
+        $asset = Asset::factory()->create();
 
         Queue::assertPushedOn('high', CharacterAssetsLocationJob::class);
     }
@@ -75,7 +77,7 @@ class CharacterAssetLifeCycleTest extends TestCase
 
         $location = factory(Location::class)->create();
 
-        $asset = factory(CharacterAsset::class)->create([
+        $asset = Asset::factory()->create([
             'location_id' => $location->location_id
         ]);
 
@@ -87,7 +89,7 @@ class CharacterAssetLifeCycleTest extends TestCase
     {
 
         $asset = Event::fakeFor( function () {
-            return factory(CharacterAsset::class)->create([
+            return Asset::factory()->create([
                 'location_id' => 1234
             ]);
         });

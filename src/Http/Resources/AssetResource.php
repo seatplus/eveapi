@@ -24,19 +24,34 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Events;
+namespace Seatplus\Eveapi\Http\Resources;
 
-use Illuminate\Queue\SerializesModels;
-use Seatplus\Eveapi\Models\Assets\CharacterAsset;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Seatplus\Eveapi\Http\Resources\Type as TypeResource;
 
-class CharacterAssetUpdating
+class AssetResource extends JsonResource
 {
-    use SerializesModels;
-
-    public function __construct(
-        private CharacterAsset $character_asset
-    ) {
+    /**
+     * Transform the resource into an array.
+     *
+     * @param  \Illuminate\Http\Request
+     * @return array
+     */
+    public function toArray($request)
+    {
+        return [
+            'item_id' => $this->item_id,
+            'quantity' => $this->quantity,
+            'type_id' => $this->type_id,
+            'type' => TypeResource::make($this->whenLoaded('type')),
+            'name' => $this->name,
+            'location_id' => $this->location_id,
+            'location' => $this->whenLoaded('location'),
+            'location_flag' => $this->location_flag,
+            'is_singleton' => $this->is_singleton,
+            'is_blueprint_copy' => $this->is_blueprint_copy,
+            'content' => $this::collection($this->whenLoaded('content')),
+            'owner' => $this->whenLoaded('owner'),
+        ];
     }
-
-    //TODO implement Listener to track item transactions https://stackoverflow.com/a/48793801
 }

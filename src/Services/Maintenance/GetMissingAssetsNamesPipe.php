@@ -30,23 +30,23 @@ use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
-use Seatplus\Eveapi\Models\Assets\CharacterAsset;
+use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 class GetMissingAssetsNamesPipe
 {
     public function handle($payload, Closure $next)
     {
-        CharacterAsset::whereHas('type.group', function (Builder $query) {
+        Asset::whereHas('type.group', function (Builder $query) {
             // Only Celestials, Ships, Deployable, Starbases, Orbitals and Structures might be named
             $query->whereIn('category_id', [2, 6, 22, 23, 46, 65]);
         })
-            ->pluck('character_id')
+            ->pluck('assetable_id')
             ->unique()
             ->whenNotEmpty(function ($collection) {
-                $collection->each(function ($character_id) {
+                $collection->each(function ($assetable_id) {
                     $job_container = new JobContainer([
-                        'refresh_token' => RefreshToken::find($character_id),
+                        'refresh_token' => RefreshToken::find($assetable_id),
                     ]);
 
                     CharacterAssetsNameJob::dispatch($job_container)->onQueue('high');

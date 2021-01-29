@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Actions\Jobs\Assets\GetCharacterAssetsNamesAction;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
-use Seatplus\Eveapi\Models\Assets\CharacterAsset;
+use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Category;
 use Seatplus\Eveapi\Models\Universe\Group;
@@ -56,19 +56,19 @@ class GetCharacterAssetsNamesActionTest extends TestCase
             'category_id' => $group->category_id
         ]);
 
-        $asset = factory(CharacterAsset::class)->create([
+        $asset = Asset::factory()->create([
             'type_id' => $type->type_id,
             'is_singleton' => true,
         ]);
 
         //Assert that character asset created has no name
-        $this->assertDatabaseHas('character_assets', [
-            'character_id' => $asset->character_id,
+        $this->assertDatabaseHas('assets', [
+            'assetable_id' => $asset->assetable_id,
             'item_id' => $asset->item_id,
             'name' => null
         ]);
 
-        $refresh_token = RefreshToken::find($asset->character_id);
+        $refresh_token = factory(RefreshToken::class)->make(['character_id' =>$asset->assetable_id]);
 
         $this->mockRetrieveEsiDataAction([
             [
@@ -80,8 +80,8 @@ class GetCharacterAssetsNamesActionTest extends TestCase
         $this->action->execute($refresh_token);
 
         //Assert that character asset created has no name
-        $this->assertDatabaseHas('character_assets', [
-            'character_id' => $asset->character_id,
+        $this->assertDatabaseHas('assets', [
+            'assetable_id' => $asset->assetable_id,
             'item_id' => $asset->item_id,
             'name' => $this->name_to_create
         ]);
@@ -107,19 +107,19 @@ class GetCharacterAssetsNamesActionTest extends TestCase
             'category_id' => $group->category_id
         ]);
 
-        $asset = factory(CharacterAsset::class)->create([
+        $asset = Asset::factory()->create([
             'type_id' => $type->type_id,
             'is_singleton' => true,
         ]);
 
         //Assert that character asset created has no name
-        $this->assertDatabaseHas('character_assets', [
-            'character_id' => $asset->character_id,
+        $this->assertDatabaseHas('assets', [
+            'assetable_id' => $asset->assetable_id,
             'item_id' => $asset->item_id,
             'name' => null
         ]);
 
-        $refresh_token = RefreshToken::find($asset->character_id);
+        $refresh_token = factory(RefreshToken::class)->make(['character_id' =>$asset->assetable_id]);
 
         $this->mockRetrieveEsiDataAction([
             [
@@ -131,8 +131,8 @@ class GetCharacterAssetsNamesActionTest extends TestCase
         $this->action->execute($refresh_token);
 
         //Assert that character asset created has no name
-        $this->assertDatabaseMissing('character_assets', [
-            'character_id' => $asset->character_id,
+        $this->assertDatabaseMissing('assets', [
+            'assetable_id' => $asset->assetable_id,
             'item_id' => $asset->item_id,
             'name' => $this->name_to_create
         ]);
@@ -152,19 +152,19 @@ class GetCharacterAssetsNamesActionTest extends TestCase
             'category_id' => 5 //Only Celestials, Ships, Deployable, Starbases, Orbitals and Structures might be named
         ]));
 
-        $asset = factory(CharacterAsset::class)->create([
+        $asset = Asset::factory()->create([
             'type_id' => $type->type_id,
             'is_singleton' => true,
         ]);
 
         //Assert that character asset created has no name
-        $this->assertDatabaseHas('character_assets', [
-            'character_id' => $asset->character_id,
+        $this->assertDatabaseHas('assets', [
+            'assetable_id' => $asset->assetable_id,
             'item_id' => $asset->item_id,
             'name' => null
         ]);
 
-        $refresh_token = RefreshToken::find($asset->character_id);
+        $refresh_token = factory(RefreshToken::class)->make(['character_id' =>$asset->assetable_id]);
 
         $this->mockRetrieveEsiDataAction([
             [
@@ -176,8 +176,8 @@ class GetCharacterAssetsNamesActionTest extends TestCase
         $this->action->execute($refresh_token);
 
         //Assert that character asset created has no name
-        $this->assertDatabaseMissing('character_assets', [
-            'character_id' => $asset->character_id,
+        $this->assertDatabaseMissing('assets', [
+            'assetable_id' => $asset->assetable_id,
             'item_id' => $asset->item_id,
             'name' => $this->name_to_create
         ]);
@@ -192,14 +192,14 @@ class GetCharacterAssetsNamesActionTest extends TestCase
     {
         $type = factory(Type::class)->create();
 
-        $asset = factory(CharacterAsset::class)->create([
+        $asset = Asset::factory()->create([
             'type_id' => $type->type_id,
             'is_singleton' => true,
         ]);
 
         //Assert that character asset created has no name
-        $this->assertDatabaseHas('character_assets', [
-            'character_id' => $asset->character_id,
+        $this->assertDatabaseHas('assets', [
+            'assetable_id' => $asset->assetable_id,
             'item_id' => $asset->item_id,
             'name' => null
         ]);
@@ -207,7 +207,7 @@ class GetCharacterAssetsNamesActionTest extends TestCase
         /*$refresh_token = factory(RefreshToken::class)->create([
             'character_id' => $asset->character_id
         ]);*/
-        $refresh_token = RefreshToken::find($asset->character_id);
+        $refresh_token = factory(RefreshToken::class)->make(['character_id' =>$asset->assetable_id]);
 
         $this->mockRetrieveEsiDataAction([
             [
@@ -219,8 +219,8 @@ class GetCharacterAssetsNamesActionTest extends TestCase
         $this->action->execute($refresh_token);
 
         //Assert that character asset created has no name
-        $this->assertDatabaseMissing('character_assets', [
-            'character_id' => $asset->character_id,
+        $this->assertDatabaseMissing('assets', [
+            'assetable_id' => $asset->assetable_id,
             'item_id' => $asset->item_id,
             'name' => $this->name_to_create
         ]);
@@ -240,20 +240,20 @@ class GetCharacterAssetsNamesActionTest extends TestCase
             'category_id' => 22
         ]));
 
-        $asset = Event::fakeFor( fn() => factory(CharacterAsset::class)->create([
+        $asset = Event::fakeFor( fn() => Asset::factory()->create([
             'type_id' => $type->type_id,
             'is_singleton' => true,
         ]));
 
 
         //Assert that character asset created has no name
-        $this->assertDatabaseHas('character_assets', [
-            'character_id' => $asset->character_id,
+        $this->assertDatabaseHas('assets', [
+            'assetable_id' => $asset->assetable_id,
             'item_id' => $asset->item_id,
             'name' => null
         ]);
 
-        $refresh_token = RefreshToken::find($asset->character_id);
+        $refresh_token = factory(RefreshToken::class)->make(['character_id' =>$asset->assetable_id]);
 
         $this->mockRetrieveEsiDataAction([
             [
@@ -267,12 +267,19 @@ class GetCharacterAssetsNamesActionTest extends TestCase
         $job = new CharacterAssetsNameJob($job_container);
         $job->handle();
 
-        //Assert that character asset created has no name
-        $this->assertDatabaseHas('character_assets', [
-            'character_id' => $asset->character_id,
+
+
+        //Assert that character asset created has name
+        $this->assertCount(1, Asset::where('assetable_id', $asset->assetable_id)
+            ->where('item_id',$asset->item_id)
+            ->where('name', $this->name_to_create)
+            ->get()
+        );
+        /*$this->assertDatabaseHas('assets', [
+            'assetable_id' => $asset->assetable_id,
             'item_id' => $asset->item_id,
             'name' => $this->name_to_create
-        ]);
+        ]);*/
 
     }
 

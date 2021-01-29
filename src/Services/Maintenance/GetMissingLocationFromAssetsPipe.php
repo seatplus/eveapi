@@ -28,20 +28,23 @@ namespace Seatplus\Eveapi\Services\Maintenance;
 
 use Closure;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
-use Seatplus\Eveapi\Models\Assets\CharacterAsset;
+use Seatplus\Eveapi\Models\Assets\Asset;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 class GetMissingLocationFromAssetsPipe
 {
     public function handle($payload, Closure $next)
     {
-        CharacterAsset::doesntHave('location')
+        Asset::doesntHave('location')
             ->AssetsLocationIds()
             ->inRandomOrder()
-            ->addSelect('character_id')
+            ->addSelect('assetable_id', 'assetable_type')
             ->get()
             ->each(function ($asset) {
-                $refresh_token = RefreshToken::find($asset->character_id);
+
+                if($asset->assetable_type === CharacterInfo::class)
+                    $refresh_token = RefreshToken::find($asset->assetable_id);
 
                 dispatch(new ResolveLocationJob($asset->location_id, $refresh_token))->onQueue('high');
             });

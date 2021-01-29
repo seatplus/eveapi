@@ -30,7 +30,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseCategoriesByCategoryIdJob;
-use Seatplus\Eveapi\Models\Assets\CharacterAsset;
+use Seatplus\Eveapi\Models\Assets\Asset;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Group;
 
@@ -72,17 +73,26 @@ class GroupObserver
             return;
         }
 
-        CharacterAsset::whereHas('type.group', function (Builder $query) {
+        Asset::whereHas('type.group', function (Builder $query) {
             // Only Celestials, Ships, Deployable, Starbases, Orbitals and Structures might be named
             $query->where('group_id', $this->group->group_id)
                 ->whereIn('category_id', [2, 6, 22, 23, 46, 65]);
         })
-            ->pluck('character_id')
-            ->unique()
-            ->whenNotEmpty(function ($collection) {
-                $collection->each(function ($character_id) {
+            //->select('assetable_id', 'assetable_type')
+            ->get()
+            ->unique('assetable_id')
+            ->whenNotEmpty(function ($assets) {
+
+                $assets->each(function ($asset) {
+
+                    $refresh_token = $asset->assetable_type === CharacterInfo::class
+                        ? RefreshToken::find($asset->assetable_id)
+                        : null; //TODO Corp Implementation
+
+                    throw_unless($refresh_token, new \Exception('missing corporation implementation'));
+
                     $job_container = new JobContainer([
-                        'refresh_token' => RefreshToken::find($character_id),
+                        'refresh_token' => $refresh_token,
                     ]);
 
                     CharacterAssetsNameJob::dispatch($job_container)->onQueue('high');
