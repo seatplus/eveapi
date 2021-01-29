@@ -42,9 +42,9 @@ class GetMissingLocationFromAssetsPipe
             ->addSelect('assetable_id', 'assetable_type')
             ->get()
             ->each(function ($asset) {
-
-                if($asset->assetable_type === CharacterInfo::class)
+                if ($asset->assetable_type === CharacterInfo::class) {
                     $refresh_token = RefreshToken::find($asset->assetable_id);
+                }
 
                 dispatch(new ResolveLocationJob($asset->location_id, $refresh_token))->onQueue('high');
             });

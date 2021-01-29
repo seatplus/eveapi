@@ -37,9 +37,8 @@ class AssetFactory extends Factory
 
     public function definition()
     {
-
         return [
-            'assetable_id' => $this->faker->numberBetween(),//factory(CharacterInfo::class),
+            'assetable_id' => $this->faker->numberBetween(), //factory(CharacterInfo::class),
             'assetable_type' => CharacterInfo::class, //$this->faker->randomElement([CharacterInfo::class, CorporationInfo::class]),
             'item_id' => $this->faker->unique()->randomNumber(),
             'is_blueprint_copy' => false,
@@ -48,7 +47,7 @@ class AssetFactory extends Factory
             'location_id' => $this->faker->randomNumber(),
             'location_type' => $this->faker->randomElement(['station', 'solar_system', 'other']),
             'quantity' => $this->faker->randomDigit,
-            'type_id' => $this->faker->numberBetween(5,10000)
+            'type_id' => $this->faker->numberBetween(5, 10000),
         ];
     }
 
@@ -65,12 +64,12 @@ class AssetFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'type_id' => Type::factory()
+                'type_id' => Type::factory(),
             ];
         });
     }
 
-    private function getLocationFlagArray() : array
+    private function getLocationFlagArray(): array
     {
         return [
             'AssetSafety', 'AutoFit', 'BoosterBay', 'Cargo', 'CorpseBay', 'Deliveries', 'DroneBay', 'FighterBay',
@@ -84,7 +83,7 @@ class AssetFactory extends Factory
             'SpecializedMediumShipHold', 'SpecializedMineralHold', 'SpecializedOreHold', 'SpecializedPlanetaryCommoditiesHold',
             'SpecializedSalvageHold', 'SpecializedShipHold', 'SpecializedSmallShipHold', 'SubSystemBay', 'SubSystemSlot0',
             'SubSystemSlot1', 'SubSystemSlot2', 'SubSystemSlot3', 'SubSystemSlot4', 'SubSystemSlot5', 'SubSystemSlot6',
-            'SubSystemSlot7', 'Unlocked', 'Wardrobe'
+            'SubSystemSlot7', 'Unlocked', 'Wardrobe',
         ];
     }
 }

@@ -27,10 +27,6 @@
 namespace Seatplus\Eveapi\database\factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Seatplus\Eveapi\Models\Contacts\Contact;
-use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Universe\Type;
 
 class TypeFactory extends Factory
@@ -40,11 +36,11 @@ class TypeFactory extends Factory
     public function definition()
     {
         return [
-            'type_id' => $this->faker->numberBetween(0,10000),
-            'group_id' => $this->faker->numberBetween(0,10000),
+            'type_id' => $this->faker->numberBetween(0, 10000),
+            'group_id' => $this->faker->numberBetween(0, 10000),
             'description'  => $this->faker->company,
             'name'  => $this->faker->name,
-            'published' => $this->faker->boolean
+            'published' => $this->faker->boolean,
         ];
     }
 }

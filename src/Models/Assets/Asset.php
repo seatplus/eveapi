@@ -37,7 +37,6 @@ use Seatplus\Eveapi\Models\Universe\Type;
 
 class Asset extends Model
 {
-
     use HasFactory;
 
     const ASSET_SAFETY = 2004;
