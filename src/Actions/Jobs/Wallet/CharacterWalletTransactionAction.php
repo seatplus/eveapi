@@ -94,11 +94,11 @@ class CharacterWalletTransactionAction extends RetrieveFromEsiBase implements Re
             CharacterInfo::class
         );
 
-        $latest_transaction_id = WalletTransaction::where('wallet_transactionable_id', $this->refresh_token->character_id)
+        $latest_transaction = WalletTransaction::where('wallet_transactionable_id', $this->refresh_token->character_id)
             ->latest()->first();
 
-        if ($latest_transaction_id) {
-            $this->from_id = $latest_transaction_id - 1;
+        if ($latest_transaction) {
+            $this->from_id = $latest_transaction->transaction_id - 1;
         }
 
         while (true) {
@@ -108,7 +108,7 @@ class CharacterWalletTransactionAction extends RetrieveFromEsiBase implements Re
 
             $response = $this->retrieve();
 
-            if ($response->isCachedLoad() && ! is_null($latest_transaction_id)) {
+            if ($response->isCachedLoad() && ! is_null($latest_transaction)) {
                 return;
             }
 
