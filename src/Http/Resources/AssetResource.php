@@ -51,7 +51,7 @@ class AssetResource extends JsonResource
             'is_singleton' => $this->is_singleton,
             'is_blueprint_copy' => $this->is_blueprint_copy,
             'content' => $this::collection($this->whenLoaded('content')),
-            'owner' => $this->whenLoaded('owner'),
+            'owner' => $this->whenLoaded('assetable'),
         ];
     }
 }

@@ -111,12 +111,6 @@ class Asset extends Model
         return $this->hasOne(Location::class, 'location_id', 'location_id');
     }
 
-    public function owner()
-    {
-        return $this->assetable();
-        //return $this->belongsTo(CharacterInfo::class, 'character_id', 'character_id');
-    }
-
     public function scopeAssetsLocationIds(Builder $query): Builder
     {
         return $query->whereIn('location_flag', ['Hangar', 'AssetSafety', 'Deliveries'])
