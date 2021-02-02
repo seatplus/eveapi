@@ -31,7 +31,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Seatplus\Eveapi\database\factories\AssetFactory;
 use Seatplus\Eveapi\Events\AssetUpdating;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Type;
 
@@ -109,12 +108,6 @@ class Asset extends Model
     {
         //Todo create morphTo relation
         return $this->hasOne(Location::class, 'location_id', 'location_id');
-    }
-
-    public function owner()
-    {
-        return $this->assetable();
-        //return $this->belongsTo(CharacterInfo::class, 'character_id', 'character_id');
     }
 
     public function scopeAssetsLocationIds(Builder $query): Builder

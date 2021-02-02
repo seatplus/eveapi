@@ -38,6 +38,13 @@ class Enlistments extends Model
      */
     protected $guarded = [];
 
+    /**
+     * The primary key associated with the table.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'corporation_id';
+
     public $incrementing = false;
 
     public function corporation()
