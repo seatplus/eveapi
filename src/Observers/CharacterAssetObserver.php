@@ -86,8 +86,9 @@ class CharacterAssetObserver
             return;
         }
 
-        if($this->asset->assetable_type === CorporationInfo::class)
+        if ($this->asset->assetable_type === CorporationInfo::class) {
             return;
+        }
 
         $job_container = new JobContainer([
             'refresh_token' => RefreshToken::find($this->asset->assetable_id),
