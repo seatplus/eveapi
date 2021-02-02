@@ -30,6 +30,7 @@ use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsLocationJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
+use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 class CharacterAssetObserver
@@ -37,7 +38,7 @@ class CharacterAssetObserver
     /**
      * @var \Seatplus\Eveapi\Models\Assets\Asset
      */
-    private Asset $character_asset;
+    private Asset $asset;
 
     /**
      * Handle the User "created" event.
@@ -48,7 +49,7 @@ class CharacterAssetObserver
      */
     public function created(Asset $character_asset)
     {
-        $this->character_asset = $character_asset;
+        $this->asset = $character_asset;
 
         $this->handleTypes();
         $this->handleLocations();
@@ -57,36 +58,39 @@ class CharacterAssetObserver
     /**
      * Handle the User "updating" event.
      *
-     * @param \Seatplus\Eveapi\Models\Assets\Asset $character_asset
+     * @param \Seatplus\Eveapi\Models\Assets\Asset $asset
      *
      * @return void
      */
-    public function updating(Asset $character_asset)
+    public function updating(Asset $asset)
     {
-        $this->character_asset = $character_asset;
+        $this->asset = $asset;
 
-        if ($character_asset->isDirty('location_id')) {
+        if ($asset->isDirty('location_id')) {
             $this->handleLocations();
         }
     }
 
     private function handleTypes()
     {
-        if ($this->character_asset->type) {
+        if ($this->asset->type) {
             return;
         }
 
-        ResolveUniverseTypesByTypeIdJob::dispatch($this->character_asset->type_id)->onQueue('high');
+        ResolveUniverseTypesByTypeIdJob::dispatch($this->asset->type_id)->onQueue('high');
     }
 
     private function handleLocations()
     {
-        if ($this->character_asset->location) {
+        if ($this->asset->location) {
             return;
         }
 
+        if($this->asset->assetable_type === CorporationInfo::class)
+            return;
+
         $job_container = new JobContainer([
-            'refresh_token' => RefreshToken::find($this->character_asset->character_id),
+            'refresh_token' => RefreshToken::find($this->asset->assetable_id),
             'queue' => 'high',
         ]);
 
