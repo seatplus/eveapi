@@ -145,14 +145,14 @@ class AssetModelTest extends TestCase
     }
 
     /** @test */
-    public function it_has_owner_relationship()
+    public function it_has_assetable_relationship()
     {
         $test_asset = Asset::factory()->create([
             'assetable_id' => $this->test_character->character_id,//factory(CharacterInfo::class),
             'assetable_type' => CharacterInfo::class,
         ]);
 
-        $this->assertInstanceOf(CharacterInfo::class, $test_asset->owner);
+        $this->assertInstanceOf(CharacterInfo::class, $test_asset->assetable);
     }
 
     /** @test */
