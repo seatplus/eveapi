@@ -38,7 +38,6 @@ use Seatplus\Eveapi\Actions\Location\StructureChecker;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\RateLimitedJobMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Location;
@@ -75,7 +74,7 @@ class ResolveLocationJob implements ShouldQueue, ShouldBeUnique
             new RedisFunnelMiddleware,
             new HasRefreshTokenMiddleware,
             new EsiRateLimitedMiddleware,
-            new EsiAvailabilityMiddleware
+            new EsiAvailabilityMiddleware,
         ];
     }
 
@@ -103,8 +102,7 @@ class ResolveLocationJob implements ShouldQueue, ShouldBeUnique
     public function __construct(
         public int $location_id,
         public RefreshToken $refresh_token
-    )
-    {
+    ) {
         $this->asset_safety_checker = new AssetSafetyChecker;
         $this->station_checker = new StationChecker;
         $this->structure_checker = new StructureChecker($this->refresh_token);
