@@ -69,7 +69,7 @@ class MaintenanceJob implements ShouldQueue
         GetMissingLocationFromCorporationMemberTrackingPipe::class,
         GetMissingTypesFromWalletTransactionPipe::class,
         GetMissingLocationFromWalletTransactionPipe::class,
-        GetMissingCharacterInfosFromCorporationMemberTrackingPipe::class
+        GetMissingCharacterInfosFromCorporationMemberTrackingPipe::class,
         // TODO: Missing Affiliations from character_users, character_info and contacts
     ];
 
