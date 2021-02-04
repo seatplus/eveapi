@@ -41,6 +41,8 @@ class CorporationMemberTracking extends Model
      */
     protected $guarded = [];
 
+    protected $primaryKey = null;
+
     /**
      * Indicates if the IDs are auto-incrementing.
      *

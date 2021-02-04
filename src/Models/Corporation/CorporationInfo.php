@@ -95,4 +95,9 @@ class CorporationInfo extends Model
     {
         return $this->morphMany(Label::class, 'labelable');
     }
+
+    public function members()
+    {
+        return $this->hasMany(CorporationMemberTracking::class, 'corporation_id', 'corporation_id');
+    }
 }

@@ -7,6 +7,7 @@ use Seatplus\Eveapi\Models\Applications;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
+use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Models\SsoScopes;
 use Seatplus\Eveapi\Tests\TestCase;
 
@@ -97,6 +98,17 @@ class CorporationInfoTest extends TestCase
         ]);
 
         $this->assertInstanceOf(AllianceInfo::class, $corporation_info->alliance);
+    }
+
+    /** @test */
+    public function it_has_members_relationship()
+    {
+        $member_tracking = factory(CorporationMemberTracking::class)->create([
+            'character_id' => $this->test_character->character_id,
+            'corporation_id' => $this->test_character->corporation->corporation_id
+        ]);
+
+        $this->assertInstanceOf(CorporationMemberTracking::class, $this->test_character->refresh()->corporation->members->first());
     }
 
 

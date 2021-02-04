@@ -7,14 +7,15 @@ namespace Seatplus\Eveapi\Tests\Jobs\Seatplus;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
+use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\Seatplus\MaintenanceJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseCategoriesByCategoryIdJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseGroupsByGroupIdJob;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
-use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
@@ -171,6 +172,18 @@ class MaintenanceJobTest extends TestCase
         $this->job->handle();
 
         Queue::assertPushedOn('high', ResolveLocationJob::class);
+    }
+
+    /** @test */
+    public function it_dispatches_character_info_jog_for_missing_member_tracking_characters()
+    {
+        Event::fakeFor(fn() => factory(CorporationMemberTracking::class)->create([
+            'character_id' => factory(CharacterInfo::class)->make()
+        ]));
+
+        $this->job->handle();
+
+        Queue::assertPushedOn('high', CharacterInfoJob::class);
     }
 
 }
