@@ -37,6 +37,7 @@ use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
 use Seatplus\Eveapi\Services\Maintenance\GetMissingAssetsNamesPipe;
 use Seatplus\Eveapi\Services\Maintenance\GetMissingCategorysPipe;
+use Seatplus\Eveapi\Services\Maintenance\GetMissingCharacterInfosFromCorporationMemberTrackingPipe;
 use Seatplus\Eveapi\Services\Maintenance\GetMissingGroupsPipe;
 use Seatplus\Eveapi\Services\Maintenance\GetMissingLocationFromAssetsPipe;
 use Seatplus\Eveapi\Services\Maintenance\GetMissingLocationFromCorporationMemberTrackingPipe;
@@ -68,6 +69,7 @@ class MaintenanceJob implements ShouldQueue
         GetMissingLocationFromCorporationMemberTrackingPipe::class,
         GetMissingTypesFromWalletTransactionPipe::class,
         GetMissingLocationFromWalletTransactionPipe::class,
+        GetMissingCharacterInfosFromCorporationMemberTrackingPipe::class
         // TODO: Missing Affiliations from character_users, character_info and contacts
     ];
 
