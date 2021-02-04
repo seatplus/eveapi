@@ -27,6 +27,7 @@
 namespace Seatplus\Eveapi\Jobs\Universe;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -37,12 +38,11 @@ use Seatplus\Eveapi\Actions\Location\StructureChecker;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\RateLimitedJobMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Location;
 
-class ResolveLocationJob implements ShouldQueue
+class ResolveLocationJob implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -70,28 +70,39 @@ class ResolveLocationJob implements ShouldQueue
 
     public function middleware(): array
     {
-        $rate_limited_job_middleware = (new RateLimitedJobMiddleware)
-            ->setKey((string) $this->location_id)
-            ->setViaCharacterId($this->refresh_token->character_id)
-            ->setDuration(7200);
-
         return [
             new RedisFunnelMiddleware,
             new HasRefreshTokenMiddleware,
             new EsiRateLimitedMiddleware,
             new EsiAvailabilityMiddleware,
-            $rate_limited_job_middleware,
         ];
     }
 
-    public function __construct(/**
+    /**
+     * The number of seconds after which the job's unique lock will be released.
+     *
      * @var int
      */
-    public int $location_id, /**
-     * @var \Seatplus\Eveapi\Models\RefreshToken|null
+    public $uniqueFor = 7200;
+
+    /**
+     * The unique ID of the job.
+     *
+     * @return string
      */
-    public RefreshToken $refresh_token)
+    public function uniqueId()
     {
+        return sprintf('Location %s via %s (%s)',
+            $this->location_id,
+            $this->refresh_token->character->name,
+            $this->refresh_token->character_id
+        );
+    }
+
+    public function __construct(
+        public int $location_id,
+        public RefreshToken $refresh_token
+    ) {
         $this->asset_safety_checker = new AssetSafetyChecker;
         $this->station_checker = new StationChecker;
         $this->structure_checker = new StructureChecker($this->refresh_token);
