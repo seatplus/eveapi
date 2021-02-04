@@ -42,7 +42,6 @@ class GetMissingCharacterInfosFromCorporationMemberTrackingPipe
         }
 
         $character_ids->each(function ($character_id) {
-
             $job = new JobContainer([
                 'character_id' => $character_id,
             ]);
