@@ -41,8 +41,9 @@ class UpdatingRefreshTokenListener
 
             $corporation_id = $refresh_token?->character?->corporation?->corporation_id;
 
-            if($corporation_id)
+            if ($corporation_id) {
                 UpdateCorporation::dispatch($corporation_id)->onQueue('high');
+            }
         }
     }
 }
