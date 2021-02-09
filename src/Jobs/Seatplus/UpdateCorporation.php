@@ -43,10 +43,6 @@ class UpdateCorporation implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private array $pipes = [
-        CorporationMemberTrackingPipe::class,
-    ];
-
     public function __construct(private ?int $corporation_id = null)
     {
     }

@@ -28,6 +28,7 @@ namespace Seatplus\Eveapi\Listeners;
 
 use Seatplus\Eveapi\Events\UpdatingRefreshTokenEvent;
 use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
+use Seatplus\Eveapi\Jobs\Seatplus\UpdateCorporation;
 
 class UpdatingRefreshTokenListener
 {
@@ -37,6 +38,11 @@ class UpdatingRefreshTokenListener
 
         if ($refresh_token->isDirty('scopes')) {
             UpdateCharacter::dispatch($refresh_token)->onQueue('high');
+
+            $corporation_id = $refresh_token?->character?->corporation?->corporation_id;
+
+            if($corporation_id)
+                UpdateCorporation::dispatch($corporation_id)->onQueue('high');
         }
     }
 }
