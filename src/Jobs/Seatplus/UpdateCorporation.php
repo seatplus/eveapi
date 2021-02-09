@@ -37,7 +37,6 @@ use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Hydrate\Corporation\CorporationMemberTrackingHydrateBatch;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
-use Seatplus\Eveapi\Services\Pipes\Corporation\CorporationMemberTrackingPipe;
 
 class UpdateCorporation implements ShouldQueue
 {
