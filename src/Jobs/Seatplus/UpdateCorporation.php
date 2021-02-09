@@ -37,15 +37,10 @@ use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Hydrate\Corporation\CorporationMemberTrackingHydrateBatch;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
-use Seatplus\Eveapi\Services\Pipes\Corporation\CorporationMemberTrackingPipe;
 
 class UpdateCorporation implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-    private array $pipes = [
-        CorporationMemberTrackingPipe::class,
-    ];
 
     public function __construct(private ?int $corporation_id = null)
     {

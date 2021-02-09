@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Events\RefreshTokenCreated;
 use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
+use Seatplus\Eveapi\Jobs\Seatplus\UpdateCorporation;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Tests\TestCase;
 
@@ -50,5 +51,18 @@ class RefreshTokenLifeCycleTest extends TestCase
         $refresh_token->save();
 
         Queue::assertPushedOn('high', UpdateCharacter::class);
+    }
+
+    /** @test */
+    public function it_queues_update_corporation_job_after_scope_change()
+    {
+        $refresh_token = $this->test_character->refresh_token;
+
+        Queue::fake();
+
+        $refresh_token->scopes = ['updating'];
+        $refresh_token->save();
+
+        Queue::assertPushedOn('high', UpdateCorporation::class);
     }
 }
