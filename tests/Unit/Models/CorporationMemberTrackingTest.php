@@ -25,7 +25,7 @@ class CorporationMemberTrackingTest extends TestCase
 
         $station = factory(Station::class)->create();
 
-        factory(Location::class)->create([
+        Location::factory()->create([
             'location_id' => $station->station_id,
             'locatable_id' => $station->station_id,
             'locatable_type' => Station::class,

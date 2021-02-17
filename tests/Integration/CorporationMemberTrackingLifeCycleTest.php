@@ -68,7 +68,7 @@ class CorporationMemberTrackingLifeCycleTest extends TestCase
     public function it_does_not_dispatch_location_job_if_location_is_known()
     {
 
-        $location = factory(Location::class)->create();
+        $location = Location::factory()->create();
 
         $tracking = factory(CorporationMemberTracking::class)->create([
             'location_id' => $location->location_id

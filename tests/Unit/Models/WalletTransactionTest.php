@@ -43,7 +43,7 @@ class WalletTransactionTest extends TestCase
             'wallet_transactionable_id' => $this->test_character->character_id,
             'wallet_transactionable_type' => CharacterInfo::class,
             'type_id' => Type::factory()->create(),
-            'location_id' => factory(Location::class)->create()
+            'location_id' => Location::factory()->create()
         ]));
 
         $this->assertInstanceOf(Type::class, $wallet_transaction->type);

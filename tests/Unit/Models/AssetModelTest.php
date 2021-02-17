@@ -83,7 +83,7 @@ class AssetModelTest extends TestCase
     {
         $test_asset = Asset::factory()->create();
 
-        $test_asset->location()->save(factory(Location::class)->create());
+        $test_asset->location()->save(Location::factory()->create());
 
         $assets = Asset::has('location')->get();
 
