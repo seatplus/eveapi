@@ -24,44 +24,19 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Models\Universe;
+namespace Seatplus\Eveapi\database\factories;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\LocationFactory;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Seatplus\Eveapi\Models\Universe\Location;
 
-class Location extends Model
+class LocationFactory extends Factory
 {
-    use HasFactory;
+    protected $model = Location::class;
 
-    protected static function newFactory()
+    public function definition()
     {
-        return LocationFactory::new();
-    }
-
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
-    protected $guarded = [];
-
-    /**
-     * @var string
-     */
-    protected $primaryKey = 'location_id';
-
-    protected $with = ['locatable'];
-
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'universe_locations';
-
-    public function locatable()
-    {
-        return $this->morphTo();
+        return [
+            'location_id' => $this->faker->numberBetween(0, 10000),
+        ];
     }
 }

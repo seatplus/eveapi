@@ -56,7 +56,7 @@ class MaintenanceJobTest extends TestCase
     {
 
         $station = Event::fakeFor(fn() => factory(Station::class)->create());
-        $location = Event::fakeFor(fn() => factory(Location::class)->create([
+        $location = Event::fakeFor(fn() => Location::factory()->create([
             'location_id' => $station->station_id,
             'locatable_id' => $station->station_id,
             'locatable_type' => Station::class,

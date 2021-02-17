@@ -102,7 +102,7 @@ class ResolveLocationJobTest extends TestCase
             'updated_at' => carbon()->subWeeks(2)
         ]);
 
-        factory(Location::class)->create([
+        Location::factory()->create([
             'location_id' => $location_id,
             'locatable_id' => $location_id,
             'locatable_type' => Station::class
@@ -136,7 +136,7 @@ class ResolveLocationJobTest extends TestCase
             'updated_at' => carbon()->subDays(2)
         ]);
 
-        factory(Location::class)->create([
+        Location::factory()->create([
             'location_id' => $location_id,
             'locatable_id' => $location_id,
             'locatable_type' => Station::class
@@ -193,7 +193,7 @@ class ResolveLocationJobTest extends TestCase
             'updated_at' => carbon()->subWeeks(2)
         ]);
 
-        factory(Location::class)->create([
+        Location::factory()->create([
             'location_id' => $location_id,
             'locatable_id' => $location_id,
             'locatable_type' => Structure::class
@@ -228,7 +228,7 @@ class ResolveLocationJobTest extends TestCase
             'updated_at' => carbon()->subDays(2)
         ]);
 
-        factory(Location::class)->create([
+        Location::factory()->create([
             'location_id' => $location_id,
             'locatable_id' => $location_id,
             'locatable_type' => Structure::class

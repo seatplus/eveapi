@@ -43,7 +43,7 @@ class UniverseStructureModelTest extends TestCase
         ]);
 
         $structure = factory(Structure::class)->create();
-        $location = factory(Location::class)->create([
+        $location = Location::factory()->create([
             'location_id' => $structure->structure_id,
             'locatable_id' => $structure->structure_id,
             'locatable_type' => Structure::class,
