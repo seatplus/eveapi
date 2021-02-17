@@ -120,7 +120,7 @@ class ResolveUniverseStructureByActionTest extends TestCase
     private function buildMockEsiData()
     {
 
-        $mock_data = factory(Structure::class)->make();
+        $mock_data = Structure::factory()->make();
 
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
 

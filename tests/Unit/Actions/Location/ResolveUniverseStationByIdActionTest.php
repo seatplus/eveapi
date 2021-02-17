@@ -90,7 +90,7 @@ class ResolveUniverseStationByIdActionTest extends TestCase
      */
     public function it_does_not_create_structure_if_location_id_is_not_in_range()
     {
-        $mock_data = factory(Station::class)->make([
+        $mock_data = Station::factory()->make([
             'station_id' => 1234,
         ]);
 
@@ -106,7 +106,7 @@ class ResolveUniverseStationByIdActionTest extends TestCase
     private function buildMockEsiData()
     {
 
-        $mock_data = factory(Station::class)->make();
+        $mock_data = Station::factory()->make();
 
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
 

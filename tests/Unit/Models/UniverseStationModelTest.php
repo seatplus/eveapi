@@ -15,7 +15,7 @@ class UniverseStationModelTest extends TestCase
     public function characterHasCorporationRelationTest()
     {
 
-        $station = factory(Station::class)->create();
+        $station = Station::factory()->create();
 
         $this->assertInstanceOf(System::class, $station->system);
     }

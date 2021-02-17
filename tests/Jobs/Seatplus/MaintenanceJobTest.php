@@ -55,7 +55,7 @@ class MaintenanceJobTest extends TestCase
     public function it_fetches_missing_types_from_locations()
     {
 
-        $station = Event::fakeFor(fn() => factory(Station::class)->create());
+        $station = Event::fakeFor(fn() => Station::factory()->create());
         $location = Event::fakeFor(fn() => Location::factory()->create([
             'location_id' => $station->station_id,
             'locatable_id' => $station->station_id,

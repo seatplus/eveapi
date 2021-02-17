@@ -24,48 +24,22 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Models\Universe;
+namespace Seatplus\Eveapi\database\factories;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\RegionFactory;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Seatplus\Eveapi\Models\Contacts\Label;
+use Seatplus\Eveapi\Models\Universe\Region;
 
-class Region extends Model
+class RegionFactory extends Factory
 {
-    use HasFactory;
+    protected $model = Region::class;
 
-    protected static function newFactory()
+    public function definition()
     {
-        return RegionFactory::new();
+        return [
+            'region_id' => $this->faker->numberBetween(10000000,12000000),
+            'name' => $this->faker->name,
+            'description'  => $this->faker->optional()->text(),
+        ];
     }
-
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
-    protected $guarded = [];
-
-    /**
-     * @var string
-     */
-    protected $primaryKey = 'region_id';
-
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'universe_regions';
-
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'region_id' => 'integer',
-        'name' => 'string',
-        'description' => 'string',
-    ];
 }
