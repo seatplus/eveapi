@@ -27,11 +27,6 @@
 namespace Seatplus\Eveapi\database\factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
-use Seatplus\Eveapi\Models\Application;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
-use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Name;
 
 class NameFactory extends Factory
@@ -41,9 +36,9 @@ class NameFactory extends Factory
     public function definition()
     {
         return [
-            'id' => $this->faker->numberBetween(0,10000),
+            'id' => $this->faker->numberBetween(0, 10000),
             'category'  => $this->faker->company,
-            'name'  => $this->faker->name
+            'name'  => $this->faker->name,
         ];
     }
 }

@@ -27,11 +27,6 @@
 namespace Seatplus\Eveapi\database\factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
-use Seatplus\Eveapi\Models\Application;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
-use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Settings\GlobalSettings;
 
 class GlobalSettingsFactory extends Factory

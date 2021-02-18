@@ -29,7 +29,6 @@ namespace Seatplus\Eveapi\database\factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
-use Seatplus\Eveapi\Models\Application;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Character\CharacterRole;
@@ -48,7 +47,6 @@ class CharacterInfoFactory extends Factory
     public function configure()
     {
         return $this->afterCreating(function (CharacterInfo $character_info) {
-
             $character_affiliation = $character_info
                 ->character_affiliation()
                 ->save(CharacterAffiliation::factory()->withAlliance()->create());
@@ -59,7 +57,7 @@ class CharacterInfoFactory extends Factory
 
             $character_affiliation->corporation()->associate(CorporationInfo::factory()->create([
                 'corporation_id' => $character_affiliation->corporation_id,
-                'alliance_id' => $character_affiliation->alliance_id
+                'alliance_id' => $character_affiliation->alliance_id,
             ]));
 
             //$character_affiliation->alliance()->associate($alliance);
@@ -85,8 +83,8 @@ class CharacterInfoFactory extends Factory
             //'alliance_id'     => $this->faker->optional()->numberBetween(99000000,100000000),
             'ancestry_id'     => $this->faker->optional()->randomDigit,
             'description'     => $this->faker->optional()->realText(),
-            'security_status' => $this->faker->optional()->randomFloat(null,-10,+10),
-            'title'           => $this->faker->optional()->bs
+            'security_status' => $this->faker->optional()->randomFloat(null, -10, +10),
+            'title'           => $this->faker->optional()->bs,
         ];
     }
 }

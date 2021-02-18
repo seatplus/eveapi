@@ -28,11 +28,7 @@ namespace Seatplus\Eveapi\database\factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
-use Seatplus\Eveapi\Models\Application;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
-use Seatplus\Eveapi\Models\RefreshToken;
 
 class CharacterAffiliationFactory extends Factory
 {
@@ -43,9 +39,9 @@ class CharacterAffiliationFactory extends Factory
         return [
             'character_id'    => $this->faker->numberBetween(9000000, 98000000),
             'corporation_id'  => $this->faker->numberBetween(98000000, 99000000),
-            'alliance_id'     => $this->faker->optional()->numberBetween(99000000,100000000),
-            'faction_id'     => $this->faker->optional()->numberBetween(500000,1000000),
-            'last_pulled' => $this->faker->dateTime()
+            'alliance_id'     => $this->faker->optional()->numberBetween(99000000, 100000000),
+            'faction_id'     => $this->faker->optional()->numberBetween(500000, 1000000),
+            'last_pulled' => $this->faker->dateTime(),
         ];
     }
 

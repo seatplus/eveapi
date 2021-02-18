@@ -27,9 +27,7 @@
 namespace Seatplus\Eveapi\database\factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Seatplus\Eveapi\Models\Contacts\Label;
 use Seatplus\Eveapi\Models\Universe\Constellation;
-use Seatplus\Eveapi\Models\Universe\Region;
 use Seatplus\Eveapi\Models\Universe\System;
 
 class SystemFactory extends Factory
@@ -39,7 +37,7 @@ class SystemFactory extends Factory
     public function definition()
     {
         return [
-            'system_id' => $this->faker->numberBetween(30000000,32000000),
+            'system_id' => $this->faker->numberBetween(30000000, 32000000),
             'name' => $this->faker->name,
             'constellation_id'  => Constellation::factory(),
             'security_class'  => $this->faker->optional()->word,
@@ -49,8 +47,8 @@ class SystemFactory extends Factory
 
     public function noConstellation()
     {
-        return $this->state(fn() => [
-            'constellation_id'  => $this->faker->numberBetween(20000000,22000000),
+        return $this->state(fn () => [
+            'constellation_id'  => $this->faker->numberBetween(20000000, 22000000),
         ]);
     }
 }

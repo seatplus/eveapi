@@ -28,8 +28,6 @@ namespace Seatplus\Eveapi\database\factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Universe\Category;
-use Seatplus\Eveapi\Models\Universe\Structure;
-use Seatplus\Eveapi\Models\Universe\System;
 
 class CategoryFactory extends Factory
 {
@@ -38,9 +36,9 @@ class CategoryFactory extends Factory
     public function definition()
     {
         return [
-            'category_id' => $this->faker->numberBetween(0,10000),
+            'category_id' => $this->faker->numberBetween(0, 10000),
             'name'  => $this->faker->name,
-            'published' => $this->faker->boolean
+            'published' => $this->faker->boolean,
         ];
     }
 }

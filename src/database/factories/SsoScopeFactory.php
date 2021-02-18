@@ -28,10 +28,7 @@ namespace Seatplus\Eveapi\database\factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
-use Seatplus\Eveapi\Models\Application;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
-use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\SsoScopes;
 
 class SsoScopeFactory extends Factory
@@ -44,7 +41,7 @@ class SsoScopeFactory extends Factory
             'selected_scopes' => collect()->toJson(),
             'morphable_id' => 1,
             'morphable_type' => $this->faker->randomElement([AllianceInfo::class, CorporationInfo::class]),
-            'type' => 'default'
+            'type' => 'default',
         ];
     }
 }

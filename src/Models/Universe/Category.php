@@ -32,7 +32,6 @@ use Seatplus\Eveapi\database\factories\CategoryFactory;
 
 class Category extends Model
 {
-
     use HasFactory;
 
     protected static function newFactory()

@@ -40,7 +40,7 @@ class ApplicationFactory extends Factory
         return [
             'corporation_id' => CorporationInfo::factory(),
             'applicationable_type' => CharacterInfo::class,
-            'applicationable_id' => CharacterInfo::factory()
+            'applicationable_id' => CharacterInfo::factory(),
         ];
     }
 }

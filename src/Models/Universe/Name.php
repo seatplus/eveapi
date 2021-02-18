@@ -29,7 +29,6 @@ namespace Seatplus\Eveapi\Models\Universe;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Seatplus\Eveapi\database\factories\NameFactory;
-use Seatplus\Eveapi\database\factories\RegionFactory;
 
 class Name extends Model
 {
