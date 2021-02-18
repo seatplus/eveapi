@@ -27,7 +27,6 @@
 namespace Seatplus\Eveapi\database\factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Seatplus\Eveapi\Models\Contacts\Label;
 use Seatplus\Eveapi\Models\Universe\Location;
 
 class LocationFactory extends Factory
@@ -37,7 +36,7 @@ class LocationFactory extends Factory
     public function definition()
     {
         return [
-            'location_id' => $this->faker->numberBetween(0,10000)
+            'location_id' => $this->faker->numberBetween(0, 10000),
         ];
     }
 }

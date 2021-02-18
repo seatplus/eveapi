@@ -28,7 +28,6 @@ namespace Seatplus\Eveapi\Models\Settings;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\ApplicationFactory;
 use Seatplus\Eveapi\database\factories\GlobalSettingsFactory;
 
 class GlobalSettings extends Model

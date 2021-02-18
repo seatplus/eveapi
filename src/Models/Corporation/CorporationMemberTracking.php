@@ -29,7 +29,6 @@ namespace Seatplus\Eveapi\Models\Corporation;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\ApplicationFactory;
 use Seatplus\Eveapi\database\factories\CorporationMemberTrackingFactory;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Universe\Location;

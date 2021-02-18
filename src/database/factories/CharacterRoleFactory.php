@@ -27,10 +27,7 @@
 namespace Seatplus\Eveapi\database\factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Seatplus\Eveapi\Models\Application;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Character\CharacterRole;
-use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
 class CharacterRoleFactory extends Factory
 {
@@ -44,13 +41,13 @@ class CharacterRoleFactory extends Factory
         'Hangar_Query_2', 'Hangar_Query_3', 'Hangar_Query_4', 'Hangar_Query_5', 'Hangar_Query_6', 'Hangar_Query_7',
         'Hangar_Take_1', 'Hangar_Take_2', 'Hangar_Take_3', 'Hangar_Take_4', 'Hangar_Take_5', 'Hangar_Take_6', 'Hangar_Take_7',
         'Junior_Accountant', 'Personnel_Manager', 'Rent_Factory_Facility', 'Rent_Office', 'Rent_Research_Facility',
-        'Security_Officer', 'Starbase_Defense_Operator', 'Starbase_Fuel_Technician', 'Station_Manager', 'Trader'
+        'Security_Officer', 'Starbase_Defense_Operator', 'Starbase_Fuel_Technician', 'Station_Manager', 'Trader',
     ];
 
     public function definition()
     {
         return [
-            'character_id' => $this->faker->numberBetween(99000000,100000000),
+            'character_id' => $this->faker->numberBetween(99000000, 100000000),
             'roles'  => $this->faker->optional()->randomElements($this->roles_array, $count = $this->faker->randomDigitNotNull) ?? [],
             'roles_at_base' => $this->faker->optional()->randomElements($this->roles_array, $count = $this->faker->randomDigitNotNull),
             'roles_at_hq' => $this->faker->optional()->randomElements($this->roles_array, $count = $this->faker->randomDigitNotNull),

@@ -27,7 +27,6 @@
 namespace Seatplus\Eveapi\database\factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Seatplus\Eveapi\Models\Contacts\Label;
 use Seatplus\Eveapi\Models\Universe\Region;
 
 class RegionFactory extends Factory
@@ -37,7 +36,7 @@ class RegionFactory extends Factory
     public function definition()
     {
         return [
-            'region_id' => $this->faker->numberBetween(10000000,12000000),
+            'region_id' => $this->faker->numberBetween(10000000, 12000000),
             'name' => $this->faker->name,
             'description'  => $this->faker->optional()->text(),
         ];

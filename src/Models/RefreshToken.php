@@ -31,7 +31,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Seatplus\Eveapi\database\factories\RefreshTokenFactory;
-use Seatplus\Eveapi\database\factories\RegionFactory;
 use Seatplus\Eveapi\Events\RefreshTokenCreated;
 use Seatplus\Eveapi\Events\UpdatingRefreshTokenEvent;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;

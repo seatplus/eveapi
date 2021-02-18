@@ -28,10 +28,7 @@ namespace Seatplus\Eveapi\database\factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
-use Seatplus\Eveapi\Models\Application;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
-use Seatplus\Eveapi\Models\RefreshToken;
 
 class CorporationInfoFactory extends Factory
 {
@@ -46,8 +43,8 @@ class CorporationInfoFactory extends Factory
             'member_count' => $this->faker->randomDigitNotNull,
             'ceo_id' => $this->faker->numberBetween(90000000, 98000000),
             'creator_id' => $this->faker->numberBetween(90000000, 98000000),
-            'tax_rate' => $this->faker->randomFloat(2,0,1),
-            'alliance_id' => $this->faker->optional()->numberBetween(99000000,100000000)
+            'tax_rate' => $this->faker->randomFloat(2, 0, 1),
+            'alliance_id' => $this->faker->optional()->numberBetween(99000000, 100000000),
         ];
     }
 

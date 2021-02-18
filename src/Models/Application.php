@@ -32,7 +32,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Seatplus\Auth\Models\User;
 use Seatplus\Eveapi\database\factories\ApplicationFactory;
-use Seatplus\Eveapi\database\factories\RegionFactory;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 

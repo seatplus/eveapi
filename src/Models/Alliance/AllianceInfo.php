@@ -38,7 +38,6 @@ use Seatplus\Eveapi\Models\SsoScopes;
 
 class AllianceInfo extends Model
 {
-
     use HasFactory;
 
     protected static function newFactory()

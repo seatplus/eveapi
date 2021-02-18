@@ -27,12 +27,9 @@
 namespace Seatplus\Eveapi\database\factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
-use Seatplus\Eveapi\Models\Application;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
-use Seatplus\Eveapi\Models\RefreshToken;
 
 class CorporationMemberTrackingFactory extends Factory
 {
@@ -43,8 +40,8 @@ class CorporationMemberTrackingFactory extends Factory
         return [
             'corporation_id'  => CorporationInfo::factory(),
             'character_id' => CharacterInfo::factory(),
-            'location_id'  => $this->faker->numberBetween(0,10000),
-            'ship_type_id' => $this->faker->numberBetween(0,10000)
+            'location_id'  => $this->faker->numberBetween(0, 10000),
+            'ship_type_id' => $this->faker->numberBetween(0, 10000),
         ];
     }
 }

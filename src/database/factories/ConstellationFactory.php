@@ -27,7 +27,6 @@
 namespace Seatplus\Eveapi\database\factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Seatplus\Eveapi\Models\Contacts\Label;
 use Seatplus\Eveapi\Models\Universe\Constellation;
 use Seatplus\Eveapi\Models\Universe\Region;
 
@@ -40,15 +39,14 @@ class ConstellationFactory extends Factory
         return [
             'region_id' => Region::factory(),
             'name' => $this->faker->name,
-            'constellation_id'  => $this->faker->numberBetween(20000000,22000000),
+            'constellation_id'  => $this->faker->numberBetween(20000000, 22000000),
         ];
     }
 
     public function noRegion()
     {
-        return $this->state(fn() => [
-            'region_id' => $this->faker->numberBetween(10000000,12000000),
+        return $this->state(fn () => [
+            'region_id' => $this->faker->numberBetween(10000000, 12000000),
         ]);
     }
-
 }
