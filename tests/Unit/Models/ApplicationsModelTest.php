@@ -4,7 +4,7 @@
 namespace Seatplus\Eveapi\Tests\Unit\Models;
 
 
-use Seatplus\Eveapi\Models\Applications;
+use Seatplus\Eveapi\Models\Application;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Tests\TestCase;
@@ -15,20 +15,20 @@ class ApplicationsModelTest extends TestCase
     public function character_has_application_relationship()
     {
 
-        $application = factory(Applications::class)->create([
+        $application = Application::factory()->create([
             'corporation_id' => $this->test_character->corporation->corporation_id,
             'applicationable_type' => CharacterInfo::class,
             'applicationable_id' => $this->test_character->character_id
         ]);
 
         $this->assertInstanceOf(CharacterInfo::class, $application->applicationable);
-        $this->assertInstanceOf(Applications::class, $this->test_character->application);
+        $this->assertInstanceOf(Application::class, $this->test_character->application);
     }
 
     /** @test */
     public function it_has_corporation_relationship()
     {
-        $application = factory(Applications::class)->create([
+        $application = Application::factory()->create([
             'corporation_id' => $this->test_character->corporation->corporation_id,
             'applicationable_type' => CharacterInfo::class,
             'applicationable_id' => $this->test_character->character_id
@@ -43,20 +43,20 @@ class ApplicationsModelTest extends TestCase
 
         $this->test_character->application()->create(['corporation_id' => $this->test_character->corporation->corporation_id]);
 
-        $this->assertInstanceOf(Applications::class, $this->test_character->application);
+        $this->assertInstanceOf(Application::class, $this->test_character->application);
     }
 
     /** @test */
     public function has_ofCorporation_scope()
     {
 
-        $application = factory(Applications::class)->create([
+        $application = Application::factory()->create([
             'corporation_id' => $this->test_character->corporation->corporation_id,
             'applicationable_type' => CharacterInfo::class,
             'applicationable_id' => $this->test_character->character_id
         ]);
 
-        $this->assertInstanceOf(CharacterInfo::class, Applications::ofCorporation($this->test_character->corporation->corporation_id)->first()->applicationable);
+        $this->assertInstanceOf(CharacterInfo::class, Application::ofCorporation($this->test_character->corporation->corporation_id)->first()->applicationable);
     }
 
 }

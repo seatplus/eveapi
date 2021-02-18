@@ -80,7 +80,7 @@ class CharacterUpdateTest extends TestCase
     public function assets_hydration_job_dispatches_character_assets_job()
     {
         $refresh_token = Event::fakeFor( function () {
-            return factory(RefreshToken::class)->create([
+            return RefreshToken::factory()->create([
                 'scopes' => ['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1']
             ]);
         });
@@ -110,7 +110,7 @@ class CharacterUpdateTest extends TestCase
     public function if_constructor_receives_single_refresh_token_push_update_to_high_queue()
     {
         $refresh_token = Event::fakeFor( function () {
-            return factory(RefreshToken::class)->create([
+            return RefreshToken::factory()->create([
                 'scopes' => ['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1']
             ]);
         });
@@ -126,7 +126,7 @@ class CharacterUpdateTest extends TestCase
     public function it_dispatches_character_role_job()
     {
         $refresh_token = Event::fakeFor( function () {
-            return factory(RefreshToken::class)->create([
+            return RefreshToken::factory()->create([
                 'scopes' => ['esi-characters.read_corporation_roles.v1']
             ]);
         });
@@ -142,7 +142,7 @@ class CharacterUpdateTest extends TestCase
     public function roles_hydration_job_dispatches_character_roles_job()
     {
         $refresh_token = Event::fakeFor( function () {
-            return factory(RefreshToken::class)->create([
+            return RefreshToken::factory()->create([
                 'scopes' => ['esi-characters.read_corporation_roles.v1']
             ]);
         });
@@ -189,7 +189,7 @@ class CharacterUpdateTest extends TestCase
     public function character_contact_hydration_adds_no_jobs_to_batch_if_scopes_are_missing()
     {
         $refresh_token = Event::fakeFor( function () {
-            return factory(RefreshToken::class)->create([
+            return RefreshToken::factory()->create([
                 'scopes' => ['derp']
             ]);
         });
@@ -211,7 +211,7 @@ class CharacterUpdateTest extends TestCase
     public function character_contact_hydration_adds_jobs_to_batch()
     {
         $refresh_token = Event::fakeFor( function () {
-            return factory(RefreshToken::class)->create([
+            return RefreshToken::factory()->create([
                 'scopes' => ['esi-characters.read_contacts.v1']
             ]);
         });
@@ -241,7 +241,7 @@ class CharacterUpdateTest extends TestCase
     public function corporation_contact_hydration_adds_jobs_to_batch()
     {
         $refresh_token = Event::fakeFor( function () {
-            return factory(RefreshToken::class)->create([
+            return RefreshToken::factory()->create([
                 'scopes' => ['esi-corporations.read_contacts.v1']
             ]);
         });
@@ -271,7 +271,7 @@ class CharacterUpdateTest extends TestCase
     public function alliance_contact_hydration_adds_jobs_to_batch()
     {
         $refresh_token = Event::fakeFor( function () {
-            return factory(RefreshToken::class)->create([
+            return RefreshToken::factory()->create([
                 'scopes' => ['esi-alliances.read_contacts.v1']
             ]);
         });
@@ -301,7 +301,7 @@ class CharacterUpdateTest extends TestCase
     public function characterWalletHydrationAddsJobsToBatch()
     {
         $refresh_token = Event::fakeFor( function () {
-            return factory(RefreshToken::class)->create([
+            return RefreshToken::factory()->create([
                 'scopes' => ['esi-wallet.read_character_wallet.v1']
             ]);
         });

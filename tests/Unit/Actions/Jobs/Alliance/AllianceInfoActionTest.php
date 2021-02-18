@@ -36,7 +36,7 @@ class AllianceInfoActionTest extends TestCase
     private function buildMockEsiData()
     {
 
-        $mock_data = factory(AllianceInfo::class)->make();
+        $mock_data = AllianceInfo::factory()->make();
 
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
 

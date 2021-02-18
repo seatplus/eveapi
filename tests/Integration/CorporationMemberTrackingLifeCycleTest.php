@@ -21,7 +21,7 @@ class CorporationMemberTrackingLifeCycleTest extends TestCase
     /** @test */
     public function it_dispatches_type_job()
     {
-        $tracking = factory(CorporationMemberTracking::class)->make([
+        $tracking = CorporationMemberTracking::factory()->make([
             'ship_type_id' => Type::factory()->make()
         ]);
 
@@ -46,7 +46,7 @@ class CorporationMemberTrackingLifeCycleTest extends TestCase
 
         $type = Type::factory()->create();
 
-        $tracking = factory(CorporationMemberTracking::class)->create([
+        $tracking = CorporationMemberTracking::factory()->create([
             'ship_type_id' => $type->type_id
         ]);
 
@@ -57,7 +57,7 @@ class CorporationMemberTrackingLifeCycleTest extends TestCase
     public function it_dispatches_location_job()
     {
 
-        $tracking = factory(CorporationMemberTracking::class)->create([
+        $tracking = CorporationMemberTracking::factory()->create([
             'character_id' => $this->test_character->character_id
         ]);
 
@@ -70,7 +70,7 @@ class CorporationMemberTrackingLifeCycleTest extends TestCase
 
         $location = Location::factory()->create();
 
-        $tracking = factory(CorporationMemberTracking::class)->create([
+        $tracking = CorporationMemberTracking::factory()->create([
             'location_id' => $location->location_id
         ]);
 
@@ -82,7 +82,7 @@ class CorporationMemberTrackingLifeCycleTest extends TestCase
     {
 
         $tracking = Event::fakeFor( function () {
-            return factory(CorporationMemberTracking::class)->create([
+            return CorporationMemberTracking::factory()->create([
                 'location_id' => 1234
             ]);
         });
@@ -101,7 +101,7 @@ class CorporationMemberTrackingLifeCycleTest extends TestCase
     {
 
         $tracking = Event::fakeFor( function () {
-            return factory(CorporationMemberTracking::class)->create([
+            return CorporationMemberTracking::factory()->create([
                 'ship_type_id' => 1234
             ]);
         });
@@ -119,9 +119,9 @@ class CorporationMemberTrackingLifeCycleTest extends TestCase
     public function it_does_not_dispatch_character_job_if_character_is_known()
     {
 
-        $character = factory(CharacterInfo::class)->create();
+        $character = CharacterInfo::factory()->create();
 
-        $tracking = factory(CorporationMemberTracking::class)->create([
+        $tracking = CorporationMemberTracking::factory()->create([
             'character_id' => $character->character_id
         ]);
 

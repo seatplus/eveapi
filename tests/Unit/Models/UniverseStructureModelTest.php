@@ -30,7 +30,7 @@ class UniverseStructureModelTest extends TestCase
             UniverseStructureCreated::class,
         ]);
 
-        $structure = factory(Structure::class)->create();
+        $structure = Structure::factory()->create();
 
         $this->assertInstanceOf(System::class, $structure->system);
     }
@@ -42,7 +42,7 @@ class UniverseStructureModelTest extends TestCase
             UniverseStructureCreated::class,
         ]);
 
-        $structure = factory(Structure::class)->create();
+        $structure = Structure::factory()->create();
         $location = Location::factory()->create([
             'location_id' => $structure->structure_id,
             'locatable_id' => $structure->structure_id,

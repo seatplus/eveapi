@@ -40,7 +40,7 @@ class HasRefreshTokenMiddlewareTest extends TestCase
 
         $this->job->shouldReceive('fire')->times(1);
 
-        $this->job->refresh_token = factory(RefreshToken::class)->make();
+        $this->job->refresh_token = RefreshToken::factory()->make();
 
         $this->middleware->handle($this->job, $this->next);
     }

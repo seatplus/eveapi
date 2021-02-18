@@ -26,11 +26,20 @@
 
 namespace Seatplus\Eveapi\Models\Universe;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Seatplus\Eveapi\database\factories\ConstellationFactory;
 use Seatplus\Eveapi\Events\UniverseConstellationCreated;
 
 class Constellation extends Model
 {
+    use HasFactory;
+
+    protected static function newFactory()
+    {
+        return ConstellationFactory::new();
+    }
+
     /**
      * The attributes that aren't mass assignable.
      *

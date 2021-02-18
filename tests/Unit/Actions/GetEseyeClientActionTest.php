@@ -18,7 +18,7 @@ class GetEseyeClientActionTest extends TestCase
         parent::setUp();
 
         Event::fakeFor(function () {
-            $this->refresh_token = factory(RefreshToken::class)->create([
+            $this->refresh_token = RefreshToken::factory()->create([
                 'expires_on' => now()->addMinutes(5)
             ]);
         });

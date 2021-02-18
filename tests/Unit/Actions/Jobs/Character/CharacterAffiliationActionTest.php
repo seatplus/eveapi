@@ -36,7 +36,7 @@ class CharacterAffiliationActionTest extends TestCase
     public function it_updates_affiliation_older_then_an_hours()
     {
 
-        $old_data = factory(CharacterAffiliation::class)->create([
+        $old_data = CharacterAffiliation::factory()->create([
             'last_pulled' => now()->subMinutes(61)
         ]);
 
@@ -64,7 +64,7 @@ class CharacterAffiliationActionTest extends TestCase
             $character_affiliation->delete();
         });
 
-        $old_data = factory(CharacterAffiliation::class)->create([
+        $old_data = CharacterAffiliation::factory()->create([
             'last_pulled' => now()->subMinutes(42)
         ]);
 
@@ -92,7 +92,7 @@ class CharacterAffiliationActionTest extends TestCase
             $character_affiliation->delete();
         });
 
-        $old_datas = factory(CharacterAffiliation::class, 3)->create([
+        $old_datas = CharacterAffiliation::factory()->count(3)->create([
             'last_pulled' => now()->subMinutes(90)
         ]);
 
@@ -127,7 +127,7 @@ class CharacterAffiliationActionTest extends TestCase
             $character_affiliation->delete();
         });
 
-        $old_data = factory(CharacterAffiliation::class)->create([
+        $old_data = CharacterAffiliation::factory()->create([
             'last_pulled' => now()->subMinutes(61)
         ]);
 
@@ -151,7 +151,7 @@ class CharacterAffiliationActionTest extends TestCase
 
     private function buildMockEsiData()
     {
-        $mock_data = factory(CharacterAffiliation::class)->make();
+        $mock_data = CharacterAffiliation::factory()->make();
 
         $this->mockRetrieveEsiDataAction([$mock_data->toArray()]);
 

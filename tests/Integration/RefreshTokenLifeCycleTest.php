@@ -19,7 +19,7 @@ class RefreshTokenLifeCycleTest extends TestCase
     {
         Event::fake();
 
-        $refresh_token = factory(RefreshToken::class)->create();
+        $refresh_token = RefreshToken::factory()->create();
 
         Event::assertDispatched(RefreshTokenCreated::class, function ($e) use ($refresh_token) {
             return $e->refresh_token === $refresh_token;
@@ -31,7 +31,7 @@ class RefreshTokenLifeCycleTest extends TestCase
     {
         Queue::fake();
 
-        $refresh_token = factory(RefreshToken::class)->create();
+        $refresh_token = RefreshToken::factory()->create();
 
         Queue::assertPushedOn('high', UpdateCharacter::class);
     }
@@ -40,7 +40,7 @@ class RefreshTokenLifeCycleTest extends TestCase
     public function it_queues_update_Character_job_after_scope_change()
     {
         $refresh_token = Event::fakeFor( function () {
-            return factory(RefreshToken::class)->create([
+            return RefreshToken::factory()->create([
                 'scopes' => ['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1']
             ]);
         });

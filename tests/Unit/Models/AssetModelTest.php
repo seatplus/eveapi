@@ -107,7 +107,7 @@ class AssetModelTest extends TestCase
     public function it_has_scopeAffiliated_withoutRequest()
     {
         $test_asset = Asset::factory()->create([
-            'assetable_id' => $this->test_character->character_id,//factory(CharacterInfo::class),
+            'assetable_id' => $this->test_character->character_id,//CharacterInfo::factory(),
             'assetable_type' => CharacterInfo::class,
         ]);;
 
@@ -135,7 +135,7 @@ class AssetModelTest extends TestCase
     public function it_has_scopeAffiliated_withRequest()
     {
         $test_asset = Asset::factory()->create([
-            'assetable_id' => $this->test_character->character_id,//factory(CharacterInfo::class),
+            'assetable_id' => $this->test_character->character_id,//CharacterInfo::factory(),
             'assetable_type' => CharacterInfo::class,
         ]);
 
@@ -148,7 +148,7 @@ class AssetModelTest extends TestCase
     public function it_has_assetable_relationship()
     {
         $test_asset = Asset::factory()->create([
-            'assetable_id' => $this->test_character->character_id,//factory(CharacterInfo::class),
+            'assetable_id' => $this->test_character->character_id,//CharacterInfo::factory(),
             'assetable_type' => CharacterInfo::class,
         ]);
 

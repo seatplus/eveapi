@@ -52,7 +52,7 @@ class JobContainerTest extends TestCase
     {
         Event::fake();
 
-        $refresh_token = factory(RefreshToken::class)->create([
+        $refresh_token = RefreshToken::factory()->create([
             'expires_on' => now()->addDay()
         ]);
 

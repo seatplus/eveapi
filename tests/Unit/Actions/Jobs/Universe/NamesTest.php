@@ -62,7 +62,7 @@ class NamesTest extends TestCase
 
     private function buildMockEsiData(int $times = 1)
     {
-        $mock_data = factory(Name::class, $times)->make();
+        $mock_data = Name::factory()->count($times)->make();
 
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
 

@@ -47,12 +47,12 @@ class GetCharacterAssetsNamesActionTest extends TestCase
     {
         $type = Type::factory()->create();
 
-        $group = Event::fakeFor(fn () => factory(Group::class)->create([
+        $group = Event::fakeFor(fn () => Group::factory()->create([
             'group_id' => $type->group_id,
             'category_id' => 22
         ]));
 
-        $category = factory(Category::class)->create([
+        $category = Category::factory()->create([
             'category_id' => $group->category_id
         ]);
 
@@ -68,7 +68,7 @@ class GetCharacterAssetsNamesActionTest extends TestCase
             'name' => null
         ]);
 
-        $refresh_token = factory(RefreshToken::class)->make(['character_id' =>$asset->assetable_id]);
+        $refresh_token = RefreshToken::factory()->make(['character_id' =>$asset->assetable_id]);
 
         $this->mockRetrieveEsiDataAction([
             [
@@ -98,12 +98,12 @@ class GetCharacterAssetsNamesActionTest extends TestCase
     {
         $type = Type::factory()->create();
 
-        $group = Event::fakeFor(fn () => factory(Group::class)->create([
+        $group = Event::fakeFor(fn () => Group::factory()->create([
             'group_id' => $type->group_id,
             'category_id' => 11
         ]));
 
-        factory(Category::class)->create([
+        Category::factory()->create([
             'category_id' => $group->category_id
         ]);
 
@@ -119,7 +119,7 @@ class GetCharacterAssetsNamesActionTest extends TestCase
             'name' => null
         ]);
 
-        $refresh_token = factory(RefreshToken::class)->make(['character_id' =>$asset->assetable_id]);
+        $refresh_token = RefreshToken::factory()->make(['character_id' =>$asset->assetable_id]);
 
         $this->mockRetrieveEsiDataAction([
             [
@@ -147,7 +147,7 @@ class GetCharacterAssetsNamesActionTest extends TestCase
     {
         $type = Type::factory()->create();
 
-        $group = Event::fakeFor(fn () => factory(Group::class)->create([
+        $group = Event::fakeFor(fn () => Group::factory()->create([
             'group_id' => $type->group_id,
             'category_id' => 5 //Only Celestials, Ships, Deployable, Starbases, Orbitals and Structures might be named
         ]));
@@ -164,7 +164,7 @@ class GetCharacterAssetsNamesActionTest extends TestCase
             'name' => null
         ]);
 
-        $refresh_token = factory(RefreshToken::class)->make(['character_id' =>$asset->assetable_id]);
+        $refresh_token = RefreshToken::factory()->make(['character_id' =>$asset->assetable_id]);
 
         $this->mockRetrieveEsiDataAction([
             [
@@ -204,10 +204,10 @@ class GetCharacterAssetsNamesActionTest extends TestCase
             'name' => null
         ]);
 
-        /*$refresh_token = factory(RefreshToken::class)->create([
+        /*$refresh_token = RefreshToken::factory()->create([
             'character_id' => $asset->character_id
         ]);*/
-        $refresh_token = factory(RefreshToken::class)->make(['character_id' =>$asset->assetable_id]);
+        $refresh_token = RefreshToken::factory()->make(['character_id' =>$asset->assetable_id]);
 
         $this->mockRetrieveEsiDataAction([
             [
@@ -235,7 +235,7 @@ class GetCharacterAssetsNamesActionTest extends TestCase
     {
         $type = Event::fakeFor( fn() => Type::factory()->create());
 
-        $group = Event::fakeFor(fn () => factory(Group::class)->create([
+        $group = Event::fakeFor(fn () => Group::factory()->create([
             'group_id' => $type->group_id,
             'category_id' => 22
         ]));
@@ -253,7 +253,7 @@ class GetCharacterAssetsNamesActionTest extends TestCase
             'name' => null
         ]);
 
-        $refresh_token = factory(RefreshToken::class)->make(['character_id' =>$asset->assetable_id]);
+        $refresh_token = RefreshToken::factory()->make(['character_id' =>$asset->assetable_id]);
 
         $this->mockRetrieveEsiDataAction([
             [

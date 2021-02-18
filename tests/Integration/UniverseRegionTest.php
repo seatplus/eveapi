@@ -32,7 +32,7 @@ class UniverseRegionTest extends TestCase
     {
         Event::fake();
 
-        $station = factory(Station::class)->create();
+        $station = Station::factory()->create();
 
         Event::assertDispatched(UniverseStationCreated::class);
 
@@ -46,7 +46,7 @@ class UniverseRegionTest extends TestCase
         // Assert that no jobs were pushed...
         Queue::assertNothingPushed();
 
-        $station = factory(Station::class)->state('noSystem')->create();
+        $station = Station::factory()->noSystem()->create();
 
         Queue::assertPushedOn('default', ResolveUniverseSystemBySystemIdJob::class);
     }
@@ -59,7 +59,7 @@ class UniverseRegionTest extends TestCase
         // Assert that no jobs were pushed...
         Queue::assertNothingPushed();
 
-        $station = factory(Station::class)->create();
+        $station = Station::factory()->create();
 
         Queue::assertNotPushed(ResolveUniverseSystemBySystemIdJob::class);
     }
@@ -68,7 +68,7 @@ class UniverseRegionTest extends TestCase
     public function it_resolves_system()
     {
 
-        $mock_data = factory(System::class)->make();
+        $mock_data = System::factory()->make();
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
 
         $job = new ResolveUniverseSystemBySystemIdJob;
@@ -93,7 +93,7 @@ class UniverseRegionTest extends TestCase
 
     public function event_starts_dispatcher()
     {
-        $system = factory(System::class)->state('noConstellation')->make();
+        $system = System::factory()->noConstellation()->make();
 
         Queue::fake();
 
@@ -107,7 +107,7 @@ class UniverseRegionTest extends TestCase
     {
         Event::fake();
 
-        $station = factory(Structure::class)->create();
+        $station = Structure::factory()->create();
 
         Event::assertDispatched(UniverseStructureCreated::class);
     }
@@ -117,7 +117,7 @@ class UniverseRegionTest extends TestCase
     {
         Event::fake();
 
-        $station = factory(System::class)->create();
+        $station = System::factory()->create();
 
         Event::assertDispatched(UniverseSystemCreated::class);
     }
@@ -130,7 +130,7 @@ class UniverseRegionTest extends TestCase
         // Assert that no jobs were pushed...
         Queue::assertNothingPushed();
 
-        $station = factory(System::class)->create();
+        $station = System::factory()->create();
 
         Queue::assertNotPushed(ResolveUniverseConstellationByConstellationIdJob::class);
     }
@@ -138,7 +138,7 @@ class UniverseRegionTest extends TestCase
     /** @test */
     public function it_resolves_constellations()
     {
-        $mock_data = factory(Constellation::class)->make();
+        $mock_data = Constellation::factory()->make();
 
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
 
@@ -163,7 +163,7 @@ class UniverseRegionTest extends TestCase
     {
         Event::fake();
 
-        factory(Constellation::class)->create();
+        Constellation::factory()->create();
 
         Event::assertDispatched(UniverseConstellationCreated::class);
     }
@@ -176,7 +176,7 @@ class UniverseRegionTest extends TestCase
         // Assert that no jobs were pushed...
         Queue::assertNothingPushed();
 
-        $station = factory(Constellation::class)->state('noRegion')->create();
+        $station = Constellation::factory()->noRegion()->create();
 
         Queue::assertPushedOn('default', ResolveUniverseRegionByRegionIdJob::class);
     }
@@ -189,7 +189,7 @@ class UniverseRegionTest extends TestCase
         // Assert that no jobs were pushed...
         Queue::assertNothingPushed();
 
-        $station = factory(Constellation::class)->create();
+        $station = Constellation::factory()->create();
 
         Queue::assertNotPushed(ResolveUniverseRegionByRegionIdJob::class);
     }
@@ -197,7 +197,7 @@ class UniverseRegionTest extends TestCase
     /** @test */
     public function it_resolves_regions()
     {
-        $mock_data = factory(Region::class)->make();
+        $mock_data = Region::factory()->make();
 
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
 

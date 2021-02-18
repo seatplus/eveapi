@@ -13,7 +13,7 @@ class AllianceInfoResourceTest extends TestCase
     /** @test */
     public function testCorrectDataIsReturnedInResponse()
     {
-        $resource = (new AllianceInfoResource($alliance_info = factory(AllianceInfo::class)->create()));
+        $resource = (new AllianceInfoResource($alliance_info = AllianceInfo::factory()->create()));
 
         $this->assertTrue($resource instanceof AllianceInfoResource);
         $this->assertEquals($alliance_info->alliance_id, $resource->alliance_id);

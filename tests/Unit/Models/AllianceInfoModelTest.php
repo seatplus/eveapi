@@ -16,9 +16,9 @@ class AllianceInfoModelTest extends TestCase
     /** @test */
     public function it_has_morphable_sso_scope()
     {
-        $alliance_info = factory(AllianceInfo::class)->create();
+        $alliance_info = AllianceInfo::factory()->create();
 
-        $alliance_info->ssoScopes()->save(factory(SsoScopes::class)->make());
+        $alliance_info->ssoScopes()->save(SsoScopes::factory()->make());
 
         $this->assertInstanceOf(SsoScopes::class, $alliance_info->refresh()->ssoScopes);
     }
@@ -29,7 +29,7 @@ class AllianceInfoModelTest extends TestCase
         $affiliation = $this->test_character->character_affiliation;
 
         if(!$affiliation->alliance_id) {
-            $alliance = factory(AllianceInfo::class)->create();
+            $alliance = AllianceInfo::factory()->create();
             $affiliation->alliance_id = $alliance->alliance_id;
             $affiliation->save();
         }
@@ -50,7 +50,7 @@ class AllianceInfoModelTest extends TestCase
     public function it_has_corporations_relation()
     {
         $character_affiliation = $this->test_character->character_affiliation;
-        $character_affiliation->alliance_id = factory(AllianceInfo::class)->create()->alliance_id;
+        $character_affiliation->alliance_id = AllianceInfo::factory()->create()->alliance_id;
         $character_affiliation->save();
 
         $corporation = $this->test_character->corporation;

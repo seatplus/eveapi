@@ -41,7 +41,7 @@ class CharacterInfoActionTest extends TestCase
     private function buildMockEsiData()
     {
 
-        $mock_data = factory(CharacterInfo::class)->make();
+        $mock_data = CharacterInfo::factory()->make();
 
         $faker = Factory::create();
         $alliance_id = $faker->optional()->numberBetween(99000000,100000000);

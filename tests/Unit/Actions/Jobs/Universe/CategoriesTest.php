@@ -71,7 +71,7 @@ class CategoriesTest extends TestCase
 
     private function buildMockEsiData()
     {
-        $mock_data = factory(Category::class)->make();
+        $mock_data = Category::factory()->make();
 
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
 

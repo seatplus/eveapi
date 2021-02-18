@@ -70,7 +70,7 @@ class CacheAllPublicStructuresIdActionTest extends TestCase
     {
         $mock_data = $this->buildMockEsiData();
 
-        factory(Structure::class)->create([
+        Structure::factory()->create([
             'structure_id' => 1030200598530,
             'updated_at' => carbon('now')->subWeek()->subDay()
         ]);
@@ -91,7 +91,7 @@ class CacheAllPublicStructuresIdActionTest extends TestCase
     {
         $mock_data = $this->buildMockEsiData();
 
-        factory(Structure::class)->create([
+        Structure::factory()->create([
             'structure_id' => 1030200598530,
             'updated_at' => carbon('now')->subWeek()->addDay()
         ]);

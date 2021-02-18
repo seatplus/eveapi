@@ -27,13 +27,22 @@
 namespace Seatplus\Eveapi\Models\Corporation;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Seatplus\Eveapi\database\factories\CorporationMemberTrackingFactory;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Type;
 
 class CorporationMemberTracking extends Model
 {
+    use HasFactory;
+
+    protected static function newFactory()
+    {
+        return CorporationMemberTrackingFactory::new();
+    }
+
     /**
      * The attributes that aren't mass assignable.
      *

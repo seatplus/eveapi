@@ -13,11 +13,11 @@ class SsoScopesModelTest extends TestCase
     /** @test */
     public function one_can_set_an_alliance_relationship_from_sso_scope_model()
     {
-        $alliance_info = factory(AllianceInfo::class)->create();
+        $alliance_info = AllianceInfo::factory()->create();
 
-        $alliance_info->ssoScopes()->save(factory(SsoScopes::class)->make());
+        $alliance_info->ssoScopes()->save(SsoScopes::factory()->make());
 
-        $sso = factory(SsoScopes::class)->create([
+        $sso = SsoScopes::factory()->create([
             'morphable_type' => AllianceInfo::class,
             'morphable_id' => $alliance_info->alliance_id
         ]);

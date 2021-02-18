@@ -54,7 +54,7 @@ class ResolvePublicStructureJobTest extends TestCase
 
     private function buildMockEsiData()
     {
-        $mock_data = factory(Structure::class)->make([
+        $mock_data = Structure::factory()->make([
             'structure_id' => $this->location_id
         ]);
 

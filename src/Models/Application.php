@@ -27,14 +27,23 @@
 namespace Seatplus\Eveapi\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Seatplus\Auth\Models\User;
+use Seatplus\Eveapi\database\factories\ApplicationFactory;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
-class Applications extends Model
+class Application extends Model
 {
+    use HasFactory;
+
+    protected static function newFactory()
+    {
+        return ApplicationFactory::new();
+    }
+
     /**
      * The attributes that aren't mass assignable.
      *

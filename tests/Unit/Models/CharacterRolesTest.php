@@ -33,7 +33,7 @@ class CharacterRolesTest extends TestCase
     public function hasRoleTest()
     {
 
-        $character_role = factory(CharacterRole::class)->make([
+        $character_role = CharacterRole::factory()->make([
             'roles' => ["Contract_Manager"]
         ]);
 
@@ -44,7 +44,7 @@ class CharacterRolesTest extends TestCase
     public function hasDirectorRoleTest()
     {
 
-        $character_role = factory(CharacterRole::class)->make([
+        $character_role = CharacterRole::factory()->make([
             'roles' => ['Contract_Manager', 'Director']
         ]);
 
@@ -55,7 +55,7 @@ class CharacterRolesTest extends TestCase
     public function hasNoMadeUpRole()
     {
 
-        $character_role = factory(CharacterRole::class)->make([
+        $character_role = CharacterRole::factory()->make([
             'roles' => ['Contract_Manager', 'Director']
         ]);
 

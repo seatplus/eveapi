@@ -73,7 +73,7 @@ class GroupsTest extends TestCase
 
     private function buildMockEsiData()
     {
-        $mock_data = Event::fakeFor(fn () => factory(Group::class)->make());//factory(Group::class)->make();
+        $mock_data = Event::fakeFor(fn () => Group::factory()->make());//Group::factory()->make();
 
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
 

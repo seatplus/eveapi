@@ -35,7 +35,7 @@ class ResolveLocationJobTest extends TestCase
 
     private function buildJob(int $location_id) : ResolveLocationJob
     {
-        $refresh_token = factory(RefreshToken::class)->create([
+        $refresh_token = RefreshToken::factory()->create([
             'scopes' => ['esi-universe.read_structures.v1']
         ]);
 
@@ -70,7 +70,7 @@ class ResolveLocationJobTest extends TestCase
             'location_type' => 'station'
         ]);
 
-        $mock_data = factory(Station::class)->make([
+        $mock_data = Station::factory()->make([
             'station_id' => 60003760,
         ]);
 
@@ -97,7 +97,7 @@ class ResolveLocationJobTest extends TestCase
             'location_type' => 'station',
         ]);
 
-        $mock_data = factory(Station::class)->create([
+        $mock_data = Station::factory()->create([
             'station_id' => $location_id,
             'updated_at' => carbon()->subWeeks(2)
         ]);
@@ -131,7 +131,7 @@ class ResolveLocationJobTest extends TestCase
             'location_type' => 'station',
         ]);
 
-        factory(Station::class)->create([
+        Station::factory()->create([
             'station_id' => $location_id,
             'updated_at' => carbon()->subDays(2)
         ]);
@@ -162,7 +162,7 @@ class ResolveLocationJobTest extends TestCase
             'location_type' => 'station'
         ]);
 
-        $mock_data = factory(Structure::class)->make([
+        $mock_data = Structure::factory()->make([
             'station_id' => 1028832949394,
         ]);
 
@@ -188,7 +188,7 @@ class ResolveLocationJobTest extends TestCase
             'location_type' => 'station',
         ]);
 
-        $mock_data = factory(Structure::class)->create([
+        $mock_data = Structure::factory()->create([
             'structure_id' => $location_id,
             'updated_at' => carbon()->subWeeks(2)
         ]);
@@ -223,7 +223,7 @@ class ResolveLocationJobTest extends TestCase
             'location_type' => 'other',
         ]);
 
-        factory(Structure::class)->create([
+        Structure::factory()->create([
             'structure_id' => $location_id,
             'updated_at' => carbon()->subDays(2)
         ]);

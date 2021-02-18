@@ -55,7 +55,7 @@ class MaintenanceJobTest extends TestCase
     public function it_fetches_missing_types_from_locations()
     {
 
-        $station = Event::fakeFor(fn() => factory(Station::class)->create());
+        $station = Event::fakeFor(fn() => Station::factory()->create());
         $location = Event::fakeFor(fn() => Location::factory()->create([
             'location_id' => $station->station_id,
             'locatable_id' => $station->station_id,
@@ -84,7 +84,7 @@ class MaintenanceJobTest extends TestCase
     /** @test */
     public function it_caches_missing_categories_from_group()
     {
-        $group = Event::fakeFor(fn() => factory(Group::class)->create());
+        $group = Event::fakeFor(fn() => Group::factory()->create());
 
         $this->job->handle();
 
@@ -116,7 +116,7 @@ class MaintenanceJobTest extends TestCase
 
         $type = Event::fakeFor(fn() => Type::factory()->create([
             'type_id' => $asset->type_id,
-            'group_id' => factory(Group::class)->create(['category_id' => 2])
+            'group_id' => Group::factory()->create(['category_id' => 2])
         ]));
 
         $this->job->handle();
@@ -127,7 +127,7 @@ class MaintenanceJobTest extends TestCase
     /** @test */
     public function it_dispatch_resolve_location_jog_for_missing_corporation_member_tracking_location()
     {
-        Event::fakeFor(fn() => factory(CorporationMemberTracking::class)->create([
+        Event::fakeFor(fn() => CorporationMemberTracking::factory()->create([
             'character_id' => $this->test_character->character_id,
         ]));
 
@@ -139,7 +139,7 @@ class MaintenanceJobTest extends TestCase
     /** @test */
     public function it_fetches_missing_types_from_corporation_member_tracking()
     {
-        $corporation_member_tracking = Event::fakeFor(fn() => factory(CorporationMemberTracking::class)->create());
+        $corporation_member_tracking = Event::fakeFor(fn() => CorporationMemberTracking::factory()->create());
 
         $this->job->handle();
 
@@ -177,8 +177,8 @@ class MaintenanceJobTest extends TestCase
     /** @test */
     public function it_dispatches_character_info_jog_for_missing_member_tracking_characters()
     {
-        Event::fakeFor(fn() => factory(CorporationMemberTracking::class)->create([
-            'character_id' => factory(CharacterInfo::class)->make()
+        Event::fakeFor(fn() => CorporationMemberTracking::factory()->create([
+            'character_id' => CharacterInfo::factory()->make()
         ]));
 
         $this->job->handle();

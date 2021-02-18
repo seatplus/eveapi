@@ -18,10 +18,10 @@ class CharacterAffiliationLifeCycleTest extends TestCase
 
         Queue::assertNothingPushed();
 
-        $character = factory(CharacterInfo::class)->create();
+        $character = CharacterInfo::factory()->create();
         $character->character_affiliation()->delete();
 
-        $character_affiliation = factory(CharacterAffiliation::class)->create([
+        $character_affiliation = CharacterAffiliation::factory()->create([
             'character_id' => $character->character_id,
             'alliance_id' => 123456
         ]);
@@ -34,10 +34,10 @@ class CharacterAffiliationLifeCycleTest extends TestCase
     {
         Queue::assertNothingPushed();
 
-        $character = factory(CharacterInfo::class)->create();
+        $character = CharacterInfo::factory()->create();
         $character->character_affiliation()->delete();
 
-        $character_affiliation = factory(CharacterAffiliation::class)->create([
+        $character_affiliation = CharacterAffiliation::factory()->create([
             'character_id' => $character->character_id,
             'alliance_id' => null
         ]);
