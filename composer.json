@@ -43,8 +43,7 @@
         "spatie/phpunit-watcher": "^1.11",
         "itsgoingd/clockwork": "^5.0",
         "barryvdh/laravel-ide-helper": "^2.6",
-        "phpunit/phpunit":  "^9.0",
-        "laravel/legacy-factories": "^1.0"
+        "phpunit/phpunit":  "^9.0"
     },
     "extra": {
         "laravel": {
