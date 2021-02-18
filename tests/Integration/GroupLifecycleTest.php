@@ -22,7 +22,7 @@ class GroupLifecycleTest extends TestCase
     {
         Queue::fake();
 
-        $group = factory(Group::class)->create();
+        $group = Group::factory()->create();
 
         Queue::assertPushedOn('high', ResolveUniverseCategoriesByCategoryIdJob::class);
     }
@@ -32,9 +32,9 @@ class GroupLifecycleTest extends TestCase
     {
         Queue::fake();
 
-        $category = factory(Category::class)->create();
+        $category = Category::factory()->create();
 
-        $group = factory(Group::class)->create([
+        $group = Group::factory()->create([
             'category_id' => $category->category_id
         ]);
 
@@ -57,7 +57,7 @@ class GroupLifecycleTest extends TestCase
 
         Queue::fake();
 
-        $group = factory(Group::class)->create([
+        $group = Group::factory()->create([
             'group_id' => $type->group_id,
             'category_id' => 6
         ]);

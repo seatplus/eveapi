@@ -16,7 +16,7 @@ class CharacterInfoResourceTest extends TestCase
     /** @test */
     public function testCorrectDataIsReturnedInResponse()
     {
-        $resource = (new CharacterInfoResource($character_info = factory(CharacterInfo::class)->create()));
+        $resource = (new CharacterInfoResource($character_info = CharacterInfo::factory()->create()));
 
         $this->assertTrue($resource instanceof CharacterInfoResource);
         $this->assertEquals($character_info->character_id, $resource->character_id);

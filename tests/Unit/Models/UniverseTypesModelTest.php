@@ -27,7 +27,7 @@ class UniverseTypesModelTest extends TestCase
     /** @test */
     public function it_has_group()
     {
-        $group = Event::fakeFor(fn () => factory(Group::class)->create(['group_id' => $this->type->group_id]));
+        $group = Event::fakeFor(fn () => Group::factory()->create(['group_id' => $this->type->group_id]));
 
         //$this->type->group()->save($group);
 
@@ -45,7 +45,7 @@ class UniverseTypesModelTest extends TestCase
     public function it_has_no_category()
     {
 
-        $group = Event::fakeFor(fn () => factory(Group::class)->create());
+        $group = Event::fakeFor(fn () => Group::factory()->create());
 
         $this->type->group()->save($group);
 

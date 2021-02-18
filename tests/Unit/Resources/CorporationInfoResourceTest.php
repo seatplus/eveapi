@@ -15,7 +15,7 @@ class CorporationInfoResourceTest extends TestCase
     public function testCorrectDataIsReturnedInResponse()
     {
 
-        $resource = (new CorporationInfoResource($corporation_info = factory(CorporationInfo::class)->create()));
+        $resource = (new CorporationInfoResource($corporation_info = CorporationInfo::factory()->create()));
 
         $this->assertTrue($resource instanceof CorporationInfoResource);
         $this->assertEquals($corporation_info->corporation_id, $resource->corporation_id);

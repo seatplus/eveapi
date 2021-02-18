@@ -30,7 +30,7 @@ class ResolveUniverseStructureByActionTest extends TestCase
             RefreshTokenCreated::class
         ]);
 
-        $this->refresh_token = factory(RefreshToken::class)->create([
+        $this->refresh_token = RefreshToken::factory()->create([
             'scopes' => ['esi-universe.read_structures.v1']
         ]);
     }
@@ -100,7 +100,7 @@ class ResolveUniverseStructureByActionTest extends TestCase
     {
         $mock_data = $this->buildMockEsiData();
 
-        $refresh_token = factory(RefreshToken::class)->make([
+        $refresh_token = RefreshToken::factory()->make([
             'scopes' => []
         ]);
 

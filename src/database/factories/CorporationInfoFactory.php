@@ -27,21 +27,36 @@
 namespace Seatplus\Eveapi\database\factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Seatplus\Eveapi\Models\Universe\Structure;
-use Seatplus\Eveapi\Models\Universe\System;
+use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
+use Seatplus\Eveapi\Models\Application;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
+use Seatplus\Eveapi\Models\RefreshToken;
 
-class StructureFactory extends Factory
+class CorporationInfoFactory extends Factory
 {
-    protected $model = Structure::class;
+    protected $model = CorporationInfo::class;
 
     public function definition()
     {
         return [
-            'structure_id' => $this->faker->numberBetween(0,10000),
-            'name' => $this->faker->name,
-            'owner_id'  => $this->faker->numberBetween(98000000,99000000),
-            'solar_system_id'  => System::factory(),
-            'type_id' => $this->faker->optional()->numberBetween(0,10000),
+            'corporation_id'  => $this->faker->numberBetween(98000000, 99000000),
+            'ticker' => $this->faker->bothify('[##??]'),
+            'name'            => $this->faker->name,
+            'member_count' => $this->faker->randomDigitNotNull,
+            'ceo_id' => $this->faker->numberBetween(90000000, 98000000),
+            'creator_id' => $this->faker->numberBetween(90000000, 98000000),
+            'tax_rate' => $this->faker->randomFloat(2,0,1),
+            'alliance_id' => $this->faker->optional()->numberBetween(99000000,100000000)
         ];
+    }
+
+    public function withAlliance()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'alliance_id' => AllianceInfo::factory(),
+            ];
+        });
     }
 }

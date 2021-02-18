@@ -24,7 +24,7 @@ class CharacterRoleActionTest extends TestCase
 
         $mock_data = $this->buildMockEsiData();
 
-        $refresh_token = factory(RefreshToken::class)->make([
+        $refresh_token = RefreshToken::factory()->make([
             'character_id' => $mock_data->character_id,
             'scopes' => ['esi-characters.read_corporation_roles.v1']
         ]);
@@ -51,7 +51,7 @@ class CharacterRoleActionTest extends TestCase
         // We require to mock RetrieveEsiRespone as the action is build in the constructor
         $mock_data = $this->buildMockEsiData();
 
-        $refresh_token = factory(RefreshToken::class)->make([
+        $refresh_token = RefreshToken::factory()->make([
             'character_id' => $mock_data->character_id,
             'scopes' => ['esi-characters.read_corporation_roles.v1']
         ]);
@@ -75,7 +75,7 @@ class CharacterRoleActionTest extends TestCase
     private function buildMockEsiData()
     {
 
-        $mock_data = factory(CharacterRole::class)->make([
+        $mock_data = CharacterRole::factory()->make([
             'roles' => ['Personnel_Manager']
         ]);
 

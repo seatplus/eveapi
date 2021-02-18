@@ -26,7 +26,9 @@
 
 namespace Seatplus\Eveapi\Models\Alliance;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Seatplus\Eveapi\database\factories\AllianceInfoFactory;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contacts\Contact;
@@ -36,6 +38,13 @@ use Seatplus\Eveapi\Models\SsoScopes;
 
 class AllianceInfo extends Model
 {
+
+    use HasFactory;
+
+    protected static function newFactory()
+    {
+        return AllianceInfoFactory::new();
+    }
 
     /**
      * The attributes that aren't mass assignable.

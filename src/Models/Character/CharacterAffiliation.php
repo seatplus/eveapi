@@ -26,12 +26,21 @@
 
 namespace Seatplus\Eveapi\Models\Character;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Seatplus\Eveapi\database\factories\CharacterAffiliationFactory;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
 class CharacterAffiliation extends Model
 {
+    use HasFactory;
+
+    protected static function newFactory()
+    {
+        return CharacterAffiliationFactory::new();
+    }
+
     /**
      * The attributes that aren't mass assignable.
      *

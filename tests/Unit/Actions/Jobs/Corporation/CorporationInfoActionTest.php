@@ -38,7 +38,7 @@ class CorporationInfoActionTest extends TestCase
     private function buildMockEsiData()
     {
 
-        $mock_data = factory(CorporationInfo::class)->make();
+        $mock_data = CorporationInfo::factory()->make();
 
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
 

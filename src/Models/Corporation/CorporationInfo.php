@@ -26,9 +26,11 @@
 
 namespace Seatplus\Eveapi\Models\Corporation;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Seatplus\Eveapi\database\factories\CorporationInfoFactory;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
-use Seatplus\Eveapi\Models\Applications;
+use Seatplus\Eveapi\Models\Application;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contacts\Contact;
@@ -37,6 +39,13 @@ use Seatplus\Eveapi\Models\SsoScopes;
 
 class CorporationInfo extends Model
 {
+    use HasFactory;
+
+    protected static function newFactory()
+    {
+        return CorporationInfoFactory::new();
+    }
+
     /**
      * The attributes that aren't mass assignable.
      *
@@ -83,7 +92,7 @@ class CorporationInfo extends Model
 
     public function candidates()
     {
-        return $this->hasMany(Applications::class, 'corporation_id', 'corporation_id');
+        return $this->hasMany(Application::class, 'corporation_id', 'corporation_id');
     }
 
     public function contacts()

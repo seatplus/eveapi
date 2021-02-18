@@ -24,35 +24,23 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Models\Settings;
+namespace Seatplus\Eveapi\database\factories;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\ApplicationFactory;
-use Seatplus\Eveapi\database\factories\GlobalSettingsFactory;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Seatplus\Eveapi\Models\Universe\Category;
+use Seatplus\Eveapi\Models\Universe\Structure;
+use Seatplus\Eveapi\Models\Universe\System;
 
-class GlobalSettings extends Model
+class CategoryFactory extends Factory
 {
-    use HasFactory;
+    protected $model = Category::class;
 
-    protected static function newFactory()
+    public function definition()
     {
-        return GlobalSettingsFactory::new();
+        return [
+            'category_id' => $this->faker->numberBetween(0,10000),
+            'name'  => $this->faker->name,
+            'published' => $this->faker->boolean
+        ];
     }
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = ['name', 'value'];
-
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'value' => 'object',
-    ];
 }

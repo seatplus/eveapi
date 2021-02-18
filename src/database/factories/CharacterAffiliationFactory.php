@@ -24,59 +24,37 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Models\Universe;
+namespace Seatplus\Eveapi\database\factories;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\GroupFactory;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
+use Seatplus\Eveapi\Models\Application;
+use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
+use Seatplus\Eveapi\Models\RefreshToken;
 
-class Group extends Model
+class CharacterAffiliationFactory extends Factory
 {
-    use HasFactory;
+    protected $model = CharacterAffiliation::class;
 
-    protected static function newFactory()
+    public function definition()
     {
-        return GroupFactory::new();
+        return [
+            'character_id'    => $this->faker->numberBetween(9000000, 98000000),
+            'corporation_id'  => $this->faker->numberBetween(98000000, 99000000),
+            'alliance_id'     => $this->faker->optional()->numberBetween(99000000,100000000),
+            'faction_id'     => $this->faker->optional()->numberBetween(500000,1000000),
+            'last_pulled' => $this->faker->dateTime()
+        ];
     }
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
-    protected $guarded = [];
-
-    /**
-     * @var string
-     */
-    protected $primaryKey = 'group_id';
-
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'universe_groups';
-
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'group_id' => 'integer',
-        'category_id' => 'integer',
-        'name' => 'string',
-        'published' => 'boolean',
-    ];
-
-    public function types()
+    public function withAlliance()
     {
-        return $this->hasMany(Type::class, 'group_id', 'group_id');
-    }
-
-    public function category()
-    {
-        return $this->belongsTo(Category::class, 'category_id', 'category_id');
+        return $this->state(function (array $attributes) {
+            return [
+                'alliance_id' => AllianceInfo::factory(),
+            ];
+        });
     }
 }

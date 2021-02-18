@@ -27,7 +27,7 @@ class TypeLifeCycleTest extends TestCase
     {
         Queue::fake();
 
-        $group = factory(Group::class)->create();
+        $group = Group::factory()->create();
 
         $type = Type::factory()->create([
             'group_id' => $group->group_id

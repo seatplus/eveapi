@@ -17,7 +17,7 @@ class GroupResourceTest extends TestCase
     /** @test */
     public function testCorrectDataIsReturnedInResponse()
     {
-        $group = Event::fakeFor(fn () => factory(Group::class)->create());
+        $group = Event::fakeFor(fn () => Group::factory()->create());
 
         $resource = (new GroupResource($group));
 

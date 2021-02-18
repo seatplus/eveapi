@@ -50,7 +50,7 @@ class HasRequiredScopeMiddlewareTest extends TestCase
 
         $this->actionClass->shouldReceive('getRequiredScope')->andReturn('someScope');;
 
-        $this->job->refresh_token = factory(RefreshToken::class)->make([
+        $this->job->refresh_token = RefreshToken::factory()->make([
             'scopes' => ['someScope']
         ]);
 
@@ -66,7 +66,7 @@ class HasRequiredScopeMiddlewareTest extends TestCase
 
         $this->actionClass->shouldReceive('getRequiredScope')->andReturn('someScope');
 
-        $this->job->refresh_token = factory(RefreshToken::class)->make([
+        $this->job->refresh_token = RefreshToken::factory()->make([
             'scopes' => ['someDifferentScope']
         ]);
 

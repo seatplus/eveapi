@@ -53,7 +53,7 @@ class CorporationMemberTrackingActionTest extends TestCase
     private function buildMockEsiData()
     {
 
-        $mock_data = factory(CorporationMemberTracking::class)->make([
+        $mock_data = CorporationMemberTracking::factory()->make([
             'character_id' => $this->test_character->character_id,
             'corporation_id' => $this->test_character->corporation->corporation_id
         ]);

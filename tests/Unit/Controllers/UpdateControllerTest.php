@@ -106,7 +106,7 @@ class UpdateControllerTest extends TestCase
         $this->markTestSkipped();
 
         Event::fakeFor(function () {
-            factory(RefreshToken::class)->create([
+            RefreshToken::factory()->create([
                 'scopes' => ['esi-universe.read_structures.v1']
             ]);
         });

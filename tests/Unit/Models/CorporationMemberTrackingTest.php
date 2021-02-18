@@ -3,7 +3,7 @@
 namespace Seatplus\Eveapi\Tests\Unit\Models;
 
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
-use Seatplus\Eveapi\Models\Applications;
+use Seatplus\Eveapi\Models\Application;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
@@ -31,7 +31,7 @@ class CorporationMemberTrackingTest extends TestCase
             'locatable_type' => Station::class,
         ]);
 
-        $this->tracking = factory(CorporationMemberTracking::class)->create([
+        $this->tracking = CorporationMemberTracking::factory()->create([
             'location_id' => $station->station_id,
         ]);
 

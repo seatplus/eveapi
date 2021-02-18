@@ -24,35 +24,26 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Models\Settings;
+namespace Seatplus\Eveapi\database\factories;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\ApplicationFactory;
-use Seatplus\Eveapi\database\factories\GlobalSettingsFactory;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Seatplus\Eveapi\Models\Application;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
+use Seatplus\Eveapi\Models\RefreshToken;
 
-class GlobalSettings extends Model
+class RefreshTokenFactory extends Factory
 {
-    use HasFactory;
+    protected $model = RefreshToken::class;
 
-    protected static function newFactory()
+    public function definition()
     {
-        return GlobalSettingsFactory::new();
+        return [
+            'character_id' => $this->faker->numberBetween(9000000, 98000000),
+            'refresh_token' => 'MmLZC2vwExCby2vbdgEVpOxXPUG3mIGfkQM5gl9IPtA',
+            'scopes'  => config('eveapi.scopes.minimum'),
+            'expires_on' => now()->addMinutes(10),
+            'token' => '1|CfDJ8O+5Z0aH+aBNj61BXVSPWfj8DD6qBe5+pX4wW3xbFK7HHkOj+iGMNK77msOP0MvPSE/2h4v8AypOYxL9g+yUeiCixwOnY7arXZ+y0koNeujlyl9V5Zp1ju1Vr1/JZASzK6r/d16UMj4CVma/FqPYwjFtP0WpO24jokw1X4A2LQXm',
+        ];
     }
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = ['name', 'value'];
-
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'value' => 'object',
-    ];
 }

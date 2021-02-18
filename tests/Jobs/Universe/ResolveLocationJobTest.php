@@ -35,7 +35,7 @@ class ResolveLocationJobTest extends TestCase
 
     private function buildJob(int $location_id) : ResolveLocationJob
     {
-        $refresh_token = factory(RefreshToken::class)->create([
+        $refresh_token = RefreshToken::factory()->create([
             'scopes' => ['esi-universe.read_structures.v1']
         ]);
 

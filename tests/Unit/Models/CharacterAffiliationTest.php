@@ -20,7 +20,7 @@ class CharacterAffiliationTest extends TestCase
         Queue::fake();
 
         // It needs an existing character on record else we don't bother
-        $character = factory(CharacterInfo::class)->create();
+        $character = CharacterInfo::factory()->create();
 
 
         // remove corporation and alliance
@@ -45,7 +45,7 @@ class CharacterAffiliationTest extends TestCase
         Queue::fake();
 
         // It needs an existing character on record else we don't bother
-        $character = factory(CharacterInfo::class)->create();
+        $character = CharacterInfo::factory()->create();
 
         $character_affiliation = $character->character_affiliation;
         $character_affiliation->corporation_id = 1234;
