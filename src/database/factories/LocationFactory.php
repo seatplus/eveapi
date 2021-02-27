@@ -28,6 +28,7 @@ namespace Seatplus\Eveapi\database\factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Universe\Location;
+use Seatplus\Eveapi\Models\Universe\Station;
 
 class LocationFactory extends Factory
 {
@@ -38,5 +39,12 @@ class LocationFactory extends Factory
         return [
             'location_id' => $this->faker->numberBetween(0, 10000),
         ];
+    }
+
+    public function withStation()
+    {
+        return $this->state(fn() => [
+            'location_id' => Station::factory()
+        ]);
     }
 }

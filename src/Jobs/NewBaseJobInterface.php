@@ -24,26 +24,30 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\database\factories;
+namespace Seatplus\Eveapi\Jobs;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
+use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
 
-class AllianceInfoFactory extends Factory
+interface NewBaseJobInterface
 {
-    protected $model = AllianceInfo::class;
+    /**
+     * Get the middleware the job should pass through.
+     *
+     * @return array
+     */
+    public function middleware(): array;
 
-    public function definition()
-    {
-        return [
-            'alliance_id' => $this->faker->numberBetween(99000000, 100000000),
-            'creator_corporation_id'  => $this->faker->numberBetween(98000000, 99000000),
-            'creator_id' => $this->faker->numberBetween(90000000, 98000000),
-            'date_founded' => $this->faker->iso8601($max = 'now'),
-            'executor_corporation_id'  => $this->faker->optional()->numberBetween(98000000, 99000000),
-            'name'            => $this->faker->name,
-            'ticker' => $this->faker->bothify('[##??]'),
-            'faction_id' => $this->faker->optional()->numberBetween(500000, 1000000),
-        ];
-    }
+    /**
+     * Get the tags that should be assigned to the job.
+     *
+     * @return array
+     */
+    public function tags(): array;
+
+    /**
+     * Execute the job.
+     *
+     * @return void
+     */
+    public function handle(): void;
 }

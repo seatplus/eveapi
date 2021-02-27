@@ -24,26 +24,26 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\database\factories;
+namespace Seatplus\Eveapi\Services\Maintenance;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
+use Closure;
+use Seatplus\Eveapi\Actions\Seatplus\CreateOrUpdateMissingIdsCache;
+use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
+use Seatplus\Eveapi\Models\Contracts\ContractItem;
+use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 
-class AllianceInfoFactory extends Factory
+class GetMissingTypesFromContractItemPipe
 {
-    protected $model = AllianceInfo::class;
-
-    public function definition()
+    public function handle($payload, Closure $next)
     {
-        return [
-            'alliance_id' => $this->faker->numberBetween(99000000, 100000000),
-            'creator_corporation_id'  => $this->faker->numberBetween(98000000, 99000000),
-            'creator_id' => $this->faker->numberBetween(90000000, 98000000),
-            'date_founded' => $this->faker->iso8601($max = 'now'),
-            'executor_corporation_id'  => $this->faker->optional()->numberBetween(98000000, 99000000),
-            'name'            => $this->faker->name,
-            'ticker' => $this->faker->bothify('[##??]'),
-            'faction_id' => $this->faker->optional()->numberBetween(500000, 1000000),
-        ];
+        $type_ids = ContractItem::doesntHave('type')->pluck('type_id')->unique()->values();
+
+        if ($type_ids->isNotEmpty()) {
+            (new CreateOrUpdateMissingIdsCache('type_ids_to_resolve', $type_ids))->handle();
+        }
+
+        ResolveUniverseTypesByTypeIdJob::dispatch()->onQueue('high');
+
+        return $next($payload);
     }
 }

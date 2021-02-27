@@ -15,6 +15,8 @@ use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\Contracts\Contract;
+use Seatplus\Eveapi\Models\Contracts\ContractItem;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Location;
@@ -184,6 +186,32 @@ class MaintenanceJobTest extends TestCase
         $this->job->handle();
 
         Queue::assertPushedOn('high', CharacterInfoJob::class);
+    }
+
+    /** @test */
+    public function it_dispatches_resolve_location_job_for_missing_contract_locations()
+    {
+        Event::fakeFor(fn() => Contract::factory()->create([
+            'start_location_id' => 12345,
+            'end_location_id' => 12345,
+            'assignee_id' => $this->test_character->character_id
+        ]));
+
+        $this->job->handle();
+
+        Queue::assertPushedOn('high', ResolveLocationJob::class);
+    }
+
+    /** @test */
+    public function it_dispatches_resolve_types_job_for_missing_contract_item_types()
+    {
+        $contract_item = Event::fakeFor(fn() => ContractItem::factory()->withoutType()->create());
+
+        $this->job->handle();
+
+        Queue::assertPushedOn('high', ResolveUniverseTypesByTypeIdJob::class);
+
+        $this->assertTrue(in_array($contract_item->type_id, cache('type_ids_to_resolve')));
     }
 
 }

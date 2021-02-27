@@ -28,22 +28,33 @@ namespace Seatplus\Eveapi\database\factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\Contracts\Contract;
+use Seatplus\Eveapi\Models\Contracts\ContractItem;
+use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
+use Seatplus\Eveapi\Models\Universe\Location;
+use Seatplus\Eveapi\Models\Universe\Station;
+use Seatplus\Eveapi\Models\Universe\Type;
 
-class AllianceInfoFactory extends Factory
+class ContractItemFactory extends Factory
 {
-    protected $model = AllianceInfo::class;
+    protected $model = ContractItem::class;
 
     public function definition()
     {
+
         return [
-            'alliance_id' => $this->faker->numberBetween(99000000, 100000000),
-            'creator_corporation_id'  => $this->faker->numberBetween(98000000, 99000000),
-            'creator_id' => $this->faker->numberBetween(90000000, 98000000),
-            'date_founded' => $this->faker->iso8601($max = 'now'),
-            'executor_corporation_id'  => $this->faker->optional()->numberBetween(98000000, 99000000),
-            'name'            => $this->faker->name,
-            'ticker' => $this->faker->bothify('[##??]'),
-            'faction_id' => $this->faker->optional()->numberBetween(500000, 1000000),
+            'record_id' => $this->faker->unique()->randomNumber(8),
+            'contract_id' => $this->faker->numberBetween(60000000, 68000000),
+            'is_included' => $this->faker->boolean,
+            'is_singleton' => $this->faker->boolean,
+            'type_id' => Type::factory(),
+            'quantity' => $this->faker->randomDigit,
         ];
+    }
+
+    public function withoutType()
+    {
+        return $this->state(fn() => ['type_id' => $this->faker->numberBetween(0, 10000)]);
     }
 }

@@ -27,6 +27,7 @@
 namespace Seatplus\Eveapi\Jobs\Middleware;
 
 use Exception;
+use Seatplus\Eveapi\Jobs\EsiBase;
 
 class HasRequiredScopeMiddleware
 {
@@ -39,7 +40,7 @@ class HasRequiredScopeMiddleware
      */
     public function handle($job, $next)
     {
-        $required_socpe = $job->getActionClass()->getRequiredScope();
+        $required_socpe = $job instanceof EsiBase ? $job->getActionClass()->getRequiredScope() : $job->getRequiredScope();
 
         if (in_array($required_socpe, $job->refresh_token->scopes)) {
             return $next($job);

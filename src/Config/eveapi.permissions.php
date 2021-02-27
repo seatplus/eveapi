@@ -26,6 +26,7 @@
 
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Contacts\Contact;
+use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Models\Wallet\WalletJournal;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
@@ -38,5 +39,6 @@ return [
     'can accept or deny applications',
     Contact::class => 'contacts',
     WalletJournal::class => 'wallet_journals',
+    Contract::class => 'contracts'
     /*WalletTransaction::class => 'wallet_transaction',*/
 ];

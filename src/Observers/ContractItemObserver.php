@@ -24,26 +24,39 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\database\factories;
+namespace Seatplus\Eveapi\Observers;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
+use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsLocationJob;
+use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
+use Seatplus\Eveapi\Models\Assets\Asset;
+use Seatplus\Eveapi\Models\Contracts\ContractItem;
+use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
+use Seatplus\Eveapi\Models\RefreshToken;
 
-class AllianceInfoFactory extends Factory
+class ContractItemObserver
 {
-    protected $model = AllianceInfo::class;
+    private ContractItem $contract_item;
 
-    public function definition()
+    /**
+     * Handle the User "created" event.
+     *
+     * @param ContractItem $contract_item
+     * @return void
+     */
+    public function created(ContractItem $contract_item)
     {
-        return [
-            'alliance_id' => $this->faker->numberBetween(99000000, 100000000),
-            'creator_corporation_id'  => $this->faker->numberBetween(98000000, 99000000),
-            'creator_id' => $this->faker->numberBetween(90000000, 98000000),
-            'date_founded' => $this->faker->iso8601($max = 'now'),
-            'executor_corporation_id'  => $this->faker->optional()->numberBetween(98000000, 99000000),
-            'name'            => $this->faker->name,
-            'ticker' => $this->faker->bothify('[##??]'),
-            'faction_id' => $this->faker->optional()->numberBetween(500000, 1000000),
-        ];
+        $this->contract_item = $contract_item;
+
+        $this->handleTypes();
+    }
+
+    private function handleTypes()
+    {
+        if ($this->contract_item->type) {
+            return;
+        }
+
+        ResolveUniverseTypesByTypeIdJob::dispatch($this->contract_item->type_id)->onQueue('high');
     }
 }
