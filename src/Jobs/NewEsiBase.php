@@ -3,7 +3,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019, 2020 Felix Huber
+ * Copyright (c) 2019, 2020, 2021 Felix Huber
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -104,7 +104,6 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
      * EsiBase constructor.
      *
      * @param JobContainer|null $job_container
-     *
      */
     public function __construct(?JobContainer $job_container = null)
     {

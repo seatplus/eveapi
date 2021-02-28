@@ -3,7 +3,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019, 2020 Felix Huber
+ * Copyright (c) 2019, 2020, 2021 Felix Huber
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,13 +27,7 @@
 namespace Seatplus\Eveapi\database\factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\Contracts\ContractItem;
-use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
-use Seatplus\Eveapi\Models\Universe\Location;
-use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\Type;
 
 class ContractItemFactory extends Factory
@@ -42,7 +36,6 @@ class ContractItemFactory extends Factory
 
     public function definition()
     {
-
         return [
             'record_id' => $this->faker->unique()->randomNumber(8),
             'contract_id' => $this->faker->numberBetween(60000000, 68000000),
@@ -55,6 +48,6 @@ class ContractItemFactory extends Factory
 
     public function withoutType()
     {
-        return $this->state(fn() => ['type_id' => $this->faker->numberBetween(0, 10000)]);
+        return $this->state(fn () => ['type_id' => $this->faker->numberBetween(0, 10000)]);
     }
 }

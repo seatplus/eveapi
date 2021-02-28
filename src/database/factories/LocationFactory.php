@@ -3,7 +3,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019, 2020 Felix Huber
+ * Copyright (c) 2019, 2020, 2021 Felix Huber
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,8 +43,8 @@ class LocationFactory extends Factory
 
     public function withStation()
     {
-        return $this->state(fn() => [
-            'location_id' => Station::factory()
+        return $this->state(fn () => [
+            'location_id' => Station::factory(),
         ]);
     }
 }

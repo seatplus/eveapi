@@ -3,7 +3,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019, 2020 Felix Huber
+ * Copyright (c) 2019, 2020, 2021 Felix Huber
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -81,7 +81,7 @@ class UpdateCharacter implements ShouldQueue
             new CharacterRolesHydrateBatch($job_container),
             new ContactHydrateBatch($job_container),
             new WalletHydrateBatch($job_container),
-            new ContractHydrateBatch($job_container)
+            new ContractHydrateBatch($job_container),
 
         ])->then(fn (Batch $batch) => logger()->info($success_message)
         )->name($batch_name)->onQueue($queue)->allowFailures()->dispatch();

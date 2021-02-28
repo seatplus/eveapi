@@ -3,7 +3,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019, 2020 Felix Huber
+ * Copyright (c) 2019, 2020, 2021 Felix Huber
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,13 +27,9 @@
 namespace Seatplus\Eveapi\database\factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contracts\Contract;
-use Seatplus\Eveapi\Models\Contracts\ContractItem;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Universe\Location;
-use Seatplus\Eveapi\Models\Universe\Station;
 
 class ContractFactory extends Factory
 {
@@ -41,19 +37,18 @@ class ContractFactory extends Factory
 
     public function definition()
     {
-
         return [
             'contract_id' => $this->faker->numberBetween(60000000, 68000000),
             'acceptor_id' => $this->faker->numberBetween(9000000, 98000000),
             'assignee_id' => $this->faker->numberBetween(9000000, 98000000),
-            'availability' => $this->faker->randomElement([ 'public', 'personal', 'corporation', 'alliance']),
+            'availability' => $this->faker->randomElement(['public', 'personal', 'corporation', 'alliance']),
             'date_expired' => carbon()->addDay(),
             'date_issued' => carbon()->subDay(),
             'for_corporation' => $this->faker->boolean,
             'issuer_corporation_id' => CorporationInfo::factory(),
             'issuer_id' => $this->faker->numberBetween(9000000, 98000000),
             'status' => $this->faker->randomElement(['outstanding', 'in_progress', 'finished_issuer', 'finished_contractor', 'finished', 'cancelled', 'rejected', 'failed', 'deleted', 'reversed']),
-            'type' => $this->faker->randomElement( ['unknown', 'item_exchange', 'auction', 'courier', 'loan']),
+            'type' => $this->faker->randomElement(['unknown', 'item_exchange', 'auction', 'courier', 'loan']),
 
             //optionals
             'buyout' => $this->faker->randomFloat(),
