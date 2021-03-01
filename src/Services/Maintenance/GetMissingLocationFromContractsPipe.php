@@ -3,7 +3,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019, 2020 Felix Huber
+ * Copyright (c) 2019, 2020, 2021 Felix Huber
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,40 +28,38 @@ namespace Seatplus\Eveapi\Services\Maintenance;
 
 use Closure;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contracts\Contract;
-use Seatplus\Eveapi\Models\Contracts\ContractItem;
-use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
-use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
-use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 
 class GetMissingLocationFromContractsPipe
 {
     public function handle($payload, Closure $next)
     {
         Contract::query()
-            ->whereDoesntHave('start_location', fn($query) => $query->whereNotNull('start_location_id'))
-            ->orWhereDoesntHave('end_location', fn($query) => $query->whereNotNull('end_location_id'))
+            ->whereDoesntHave('start_location', fn ($query) => $query->whereNotNull('start_location_id'))
+            ->orWhereDoesntHave('end_location', fn ($query) => $query->whereNotNull('end_location_id'))
             ->get()
             ->each(function ($contract) {
                 $unknown_location_ids = collect();
 
-                if(is_null($contract->start_location))
+                if (is_null($contract->start_location)) {
                     $unknown_location_ids->push($contract->start_location_id);
+                }
 
-                if(is_null($contract->end_location))
+                if (is_null($contract->end_location)) {
                     $unknown_location_ids->push($contract->end_location_id);
+                }
 
                 $refresh_token = RefreshToken::find($contract->issuer_id) ?? RefreshToken::find($contract->assignee_id);
 
-                if(is_null($refresh_token))
+                if (is_null($refresh_token)) {
                     return;
+                }
 
                 $unknown_location_ids
                     ->filter()
                     ->unique()
-                    ->each(fn($location_id) => ResolveLocationJob::dispatch($location_id, $refresh_token)->onQueue('high'));
+                    ->each(fn ($location_id) => ResolveLocationJob::dispatch($location_id, $refresh_token)->onQueue('high'));
             });
 
         return $next($payload);

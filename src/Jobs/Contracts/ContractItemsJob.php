@@ -1,8 +1,30 @@
 <?php
 
+/*
+ * MIT License
+ *
+ * Copyright (c) 2019, 2020, 2021 Felix Huber
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 
 namespace Seatplus\Eveapi\Jobs\Contracts;
-
 
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Seatplus\Eveapi\Actions\HasPathValuesInterface;
@@ -13,7 +35,6 @@ use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
-use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\Contracts\ContractItem;
 
 class ContractItemsJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, ShouldBeUnique
@@ -36,7 +57,6 @@ class ContractItemsJob extends NewEsiBase implements HasPathValuesInterface, Has
     {
         return $this->type === 'character' ? $this->getCharacterId() : $this->getCorporationId();
     }
-
 
     public function __construct(
         public int $contract_id,
@@ -67,7 +87,7 @@ class ContractItemsJob extends NewEsiBase implements HasPathValuesInterface, Has
         return [
             'contract',
             'items',
-            'contract_items'
+            'contract_items',
         ];
     }
 
@@ -85,8 +105,8 @@ class ContractItemsJob extends NewEsiBase implements HasPathValuesInterface, Has
             return;
         }
 
-        collect($response)->each(fn($item) => ContractItem::updateOrCreate([
-            'record_id' => $item->record_id
+        collect($response)->each(fn ($item) => ContractItem::updateOrCreate([
+            'record_id' => $item->record_id,
         ], [
             'contract_id' => $this->contract_id,
             'is_included' => $item->is_included,
@@ -97,7 +117,6 @@ class ContractItemsJob extends NewEsiBase implements HasPathValuesInterface, Has
             // optionals
             'raw_quantity' => optional($item)->raw_quantity,
         ]));
-
     }
 
     public function getMethod(): string

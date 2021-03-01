@@ -3,7 +3,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019, 2020 Felix Huber
+ * Copyright (c) 2019, 2020, 2021 Felix Huber
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,27 +26,18 @@
 
 namespace Seatplus\Eveapi\Jobs\Hydrate\Character;
 
-use Seatplus\Eveapi\Jobs\Contacts\AllianceContactJob;
-use Seatplus\Eveapi\Jobs\Contacts\AllianceContactLabelJob;
-use Seatplus\Eveapi\Jobs\Contacts\CharacterContactJob;
-use Seatplus\Eveapi\Jobs\Contacts\CharacterContactLabelJob;
-use Seatplus\Eveapi\Jobs\Contacts\CorporationContactJob;
-use Seatplus\Eveapi\Jobs\Contacts\CorporationContactLabelJob;
 use Seatplus\Eveapi\Jobs\Contracts\CharacterContractsJob;
 
 class ContractHydrateBatch extends HydrateCharacterBase
 {
     public function handle()
     {
-
         $job = new CharacterContractsJob($this->job_container);
 
         parent::setRequiredScope($job->getRequiredScope());
 
         $this->hydrate([$job]);
-
     }
-
 
     private function hydrate(array $array)
     {

@@ -1,8 +1,30 @@
 <?php
 
+/*
+ * MIT License
+ *
+ * Copyright (c) 2019, 2020, 2021 Felix Huber
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 
 namespace Seatplus\Eveapi\Jobs\Contracts;
-
 
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Seatplus\Eveapi\Actions\HasPathValuesInterface;
@@ -37,11 +59,9 @@ class CharacterContractsJob extends NewEsiBase implements HasPathValuesInterface
         return sprintf('contract_job:%s', $this->getCharacterId());
     }
 
-
     public function __construct(
         public JobContainer $job_container
-    )
-    {
+    ) {
         parent::__construct($job_container);
 
         $this->setPathValues([
@@ -70,7 +90,6 @@ class CharacterContractsJob extends NewEsiBase implements HasPathValuesInterface
 
     public function handle(): void
     {
-
         if ($this->batching() && $this->batch()->cancelled()) {
             // Determine if the batch has been cancelled...
 
@@ -86,8 +105,8 @@ class CharacterContractsJob extends NewEsiBase implements HasPathValuesInterface
                 return;
             }
 
-            collect($response)->each(fn($contract) => Contract::updateOrCreate([
-                'contract_id' => $contract->contract_id
+            collect($response)->each(fn ($contract) => Contract::updateOrCreate([
+                'contract_id' => $contract->contract_id,
             ], [
                 'acceptor_id' => $contract->acceptor_id,
                 'assignee_id' => $contract->assignee_id,
@@ -118,8 +137,9 @@ class CharacterContractsJob extends NewEsiBase implements HasPathValuesInterface
 
             $character = CharacterInfo::find($this->job_container->getCharacterId());
 
-            if($character)
+            if ($character) {
                 $character->contracts()->syncWithoutDetaching($contract_ids);
+            }
 
             $location_job_array = Contract::query()
                 ->whereIn('contract_id', $contract_ids)
@@ -128,10 +148,11 @@ class CharacterContractsJob extends NewEsiBase implements HasPathValuesInterface
                 ->where('status', '<>', 'deleted')
                 ->where('type', '<>', 'courier')
                 ->get()
-                ->map(fn($contract) => new ContractItemsJob($contract->contract_id, $this->job_container, 'character'));
+                ->map(fn ($contract) => new ContractItemsJob($contract->contract_id, $this->job_container, 'character'));
 
-            if($this->batching())
+            if ($this->batching()) {
                 $this->batch()->add($location_job_array);
+            }
 
             // Lastly if more pages are present load next page
             if ($page >= $response->pages) {
