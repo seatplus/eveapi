@@ -3,7 +3,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019, 2020 Felix Huber
+ * Copyright (c) 2019, 2020, 2021 Felix Huber
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,18 +26,13 @@
 
 namespace Seatplus\Eveapi\Observers;
 
-use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsLocationJob;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Contracts\Contract;
-use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 class ContractObserver
 {
-
     private Contract $contract;
 
     /**
@@ -56,22 +51,22 @@ class ContractObserver
 
     private function handleLocations()
     {
-
-        if(is_null($this->contract->start_location_id) && is_null($this->contract->end_location_id))
+        if (is_null($this->contract->start_location_id) && is_null($this->contract->end_location_id)) {
             return;
+        }
 
         if ($this->contract->start_location && $this->contract->end_location) {
             return;
         }
 
-
         $refresh_token = RefreshToken::find($this->contract->issuer_id) ?? RefreshToken::find($this->contract->assignee_id);
 
-        if(is_null($refresh_token))
+        if (is_null($refresh_token)) {
             return;
+        }
 
         collect([$this->contract->start_location_id, $this->contract->end_location_id])
             ->filter()
-            ->each(fn($location_id) => ResolveLocationJob::dispatch($location_id, $refresh_token)->onQueue('high'));
+            ->each(fn ($location_id) => ResolveLocationJob::dispatch($location_id, $refresh_token)->onQueue('high'));
     }
 }
