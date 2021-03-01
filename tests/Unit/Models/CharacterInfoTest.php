@@ -12,6 +12,7 @@ use Seatplus\Eveapi\Models\Application;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Tests\TestCase;
@@ -83,6 +84,18 @@ class CharacterInfoTest extends TestCase
         $character = CharacterInfo::factory()->create();
 
         Queue::assertPushedOn('high', CharacterAffiliationJob::class);
+    }
+
+    /** @test */
+    public function it_has_contract_relationship()
+    {
+        $contract = Contract::factory()->create();
+        $this->test_character->contracts()->attach($contract->contract_id);
+
+        $this->assertInstanceOf(Contract::class, $this->test_character->refresh()->contracts->first());
+
+        // Test reverse too
+        $this->assertInstanceOf(CharacterInfo::class, $contract->characters->first());
     }
 
 }

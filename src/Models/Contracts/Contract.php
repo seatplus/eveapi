@@ -32,13 +32,6 @@ class Contract extends Model
      */
     protected $primaryKey = 'contract_id';
 
-    /**
-     * The relationships that should always be loaded.
-     *
-     * @var array
-     */
-    //protected $with = ['items', 'start_location', 'end_location', 'assignee_character', 'assignee_corporation' ,'issuer_character', 'issuer_corporation' ];
-
     public function getIssuerAttribute()
     {
         return $this->for_corporation ? $this->issuer_corporation : $this->issuer_character;
@@ -46,7 +39,7 @@ class Contract extends Model
 
     public function getAsigneeAttribute()
     {
-        return $this->issuer_character ?? $this->issuer_corporation;
+        return $this->assignee_character ?? $this->assignee_corporation;
     }
 
     public function items()
@@ -82,6 +75,11 @@ class Contract extends Model
     public function issuer_corporation()
     {
         return $this->belongsTo(CorporationInfo::class, 'issuer_corporation_id', 'corporation_id');
+    }
+
+    public function characters()
+    {
+        return $this->morphedByMany(CharacterInfo::class, 'contractable', null, 'contract_id');
     }
 
 

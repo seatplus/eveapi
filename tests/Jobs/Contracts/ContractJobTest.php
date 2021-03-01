@@ -61,9 +61,12 @@ class ContractJobTest extends TestCase
 
         $job = new CharacterContractsJob($job_container);
 
+        $this->assertCount(0, $this->test_character->refresh()->contracts);
+
         Event::fakeFor(fn() => dispatch_now($job));
 
         $this->assertCount(5, Contract::all());
+        $this->assertCount(5, $this->test_character->refresh()->contracts);
 
     }
 

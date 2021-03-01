@@ -13,6 +13,7 @@ use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contracts\Contract;
 
 class CharacterContractsJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, ShouldBeUnique
@@ -114,6 +115,11 @@ class CharacterContractsJob extends NewEsiBase implements HasPathValuesInterface
             ]));
 
             $contract_ids = collect($response)->pluck('contract_id')->toArray();
+
+            $character = CharacterInfo::find($this->job_container->getCharacterId());
+
+            if($character)
+                $character->contracts()->syncWithoutDetaching($contract_ids);
 
             $location_job_array = Contract::query()
                 ->whereIn('contract_id', $contract_ids)
