@@ -3,7 +3,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019, 2020 Felix Huber
+ * Copyright (c) 2019, 2020, 2021 Felix Huber
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -47,6 +47,8 @@ use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contacts\Contact;
+use Seatplus\Eveapi\Models\Contracts\Contract;
+use Seatplus\Eveapi\Models\Contracts\ContractItem;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Models\Schedules;
 use Seatplus\Eveapi\Models\Universe\Group;
@@ -56,6 +58,8 @@ use Seatplus\Eveapi\Observers\CharacterAffiliationObserver;
 use Seatplus\Eveapi\Observers\CharacterAssetObserver;
 use Seatplus\Eveapi\Observers\CharacterInfoObserver;
 use Seatplus\Eveapi\Observers\ContactObserver;
+use Seatplus\Eveapi\Observers\ContractItemObserver;
+use Seatplus\Eveapi\Observers\ContractObserver;
 use Seatplus\Eveapi\Observers\CorporationMemberTrackingObserver;
 use Seatplus\Eveapi\Observers\GroupObserver;
 use Seatplus\Eveapi\Observers\TypeObserver;
@@ -202,6 +206,10 @@ class EveapiServiceProvider extends ServiceProvider
 
         //Contact Observers
         Contact::observe(ContactObserver::class);
+
+        //Contract Observer
+        Contract::observe(ContractObserver::class);
+        ContractItem::observe(ContractItemObserver::class);
 
         //WalletObserver
         WalletTransaction::observe(WalletTransactionObserver::class);

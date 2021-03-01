@@ -21,10 +21,12 @@ use Seatplus\Eveapi\Jobs\Contacts\CharacterContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\CharacterContactLabelJob;
 use Seatplus\Eveapi\Jobs\Contacts\CorporationContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\CorporationContactLabelJob;
+use Seatplus\Eveapi\Jobs\Contracts\CharacterContractsJob;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\CharacterAssetsHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\CharacterRolesHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\ContactHydrateBatch;
+use Seatplus\Eveapi\Jobs\Hydrate\Character\ContractHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\WalletHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Corporation\CorporationMemberTrackingHydrateBatch;
 use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
@@ -315,6 +317,33 @@ class CharacterUpdateTest extends TestCase
         $batch->shouldReceive('add')->once()->with([
             new CharacterWalletJournalJob($job_container),
             new CharacterWalletTransactionJob($job_container)
+        ]);
+
+        $job->shouldReceive('batch')
+            ->once()->andReturn($batch);
+
+        Bus::fake();
+
+        $job->handle();
+    }
+
+    /** @test */
+    public function characterContractHydrationAddsJobsToBatch()
+    {
+        $refresh_token = Event::fakeFor( function () {
+            return RefreshToken::factory()->create([
+                'scopes' => ['esi-contracts.read_character_contracts.v1']
+            ]);
+        });
+
+        $job_container = new JobContainer(['refresh_token' => $refresh_token]);
+
+        $job = Mockery::mock(ContractHydrateBatch::class . '[batch]', [$job_container]);
+
+        $batch = Mockery::mock(Batch::class)->makePartial();
+
+        $batch->shouldReceive('add')->once()->with([
+            new CharacterContractsJob($job_container)
         ]);
 
         $job->shouldReceive('batch')

@@ -3,7 +3,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019, 2020 Felix Huber
+ * Copyright (c) 2019, 2020, 2021 Felix Huber
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,7 @@ use Seatplus\Eveapi\Models\Application;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Contacts\Contact;
 use Seatplus\Eveapi\Models\Contacts\Label;
+use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Wallet\WalletJournal;
@@ -149,5 +150,16 @@ class CharacterInfo extends Model
     public function wallet_transactions()
     {
         return $this->morphMany(WalletTransaction::class, 'wallet_transactionable');
+    }
+
+    public function contracts()
+    {
+        return $this->morphToMany(
+            Contract::class,
+            'contractable',
+            null,
+            null,
+            'contract_id'
+        );
     }
 }

@@ -3,7 +3,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019, 2020 Felix Huber
+ * Copyright (c) 2019, 2020, 2021 Felix Huber
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,9 +33,11 @@ return [
         'roles' => ['esi-characters.read_corporation_roles.v1'],
         'contacts' => ['esi-characters.read_contacts.v1', 'esi-corporations.read_contacts.v1', 'esi-alliances.read_contacts.v1'],
         'wallet' => ['esi-wallet.read_character_wallet.v1'],
+        'contracts' => ['esi-contracts.read_character_contracts.v1'],
     ],
     'corporation' => [
         'assets' => ['esi-assets.read_corporation_assets.v1'],
         'membertracking' => ['esi-corporations.track_members.v1'],
+        'contracts' => ['esi-contracts.read_corporation_contracts.v1'],
     ],
 ];
