@@ -4,7 +4,6 @@
 namespace Seatplus\Eveapi\Tests\Jobs\Seatplus;
 
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
@@ -22,7 +21,6 @@ use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
-use Seatplus\Eveapi\Models\Universe\Structure;
 use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 use Seatplus\Eveapi\Tests\TestCase;
@@ -46,7 +44,9 @@ class MaintenanceJobTest extends TestCase
     /** @test */
     public function it_fetches_missing_types_from_assets()
     {
-        $asset = Event::fakeFor(fn() => Asset::factory()->create());
+        $asset = Event::fakeFor(fn() => Asset::factory()->create([
+            'assetable_id' => $this->test_character->character_id,
+        ]));
 
         $this->job->handle();
 
