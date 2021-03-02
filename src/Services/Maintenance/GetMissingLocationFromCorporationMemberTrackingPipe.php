@@ -40,7 +40,7 @@ class GetMissingLocationFromCorporationMemberTrackingPipe
     {
         $find_corporation_refresh_token = new FindCorporationRefreshToken;
 
-        CorporationMemberTracking::whereDoesntHave('location', fn($query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]))
+        CorporationMemberTracking::whereDoesntHave('location', fn ($query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]))
             ->inRandomOrder()
             ->get()
             ->each(function (CorporationMemberTracking $corporation_member_tracking) use ($find_corporation_refresh_token) {

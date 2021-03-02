@@ -40,13 +40,13 @@ class GetMissingLocationFromContractsPipe
     public function handle($payload, Closure $next)
     {
         Contract::query()
-            ->where(function(Builder $query) {
+            ->where(function (Builder $query) {
                 $query->whereNotNull('start_location_id')
-                    ->whereDoesntHave('start_location', fn($query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]));
+                    ->whereDoesntHave('start_location', fn ($query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]));
             })
-            ->orWhere(function(Builder $query) {
+            ->orWhere(function (Builder $query) {
                 $query->whereNotNull('end_location_id')
-                    ->whereDoesntHave('end_location', fn($query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]));
+                    ->whereDoesntHave('end_location', fn ($query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]));
             })
             //->whereDoesntHave('start_location', fn ($query) => $query->whereNotNull('start_location_id'))
             //->orWhereDoesntHave('end_location', fn ($query) => $query->whereNotNull('end_location_id'))
@@ -77,7 +77,7 @@ class GetMissingLocationFromContractsPipe
         return $next($payload);
     }
 
-    private function isNotStationOrStructure($location) : bool
+    private function isNotStationOrStructure($location): bool
     {
         return ! (is_a($location, Structure::class) || is_a($location, Structure::class));
     }
