@@ -135,17 +135,19 @@ class Asset extends Model
         return $query->whereIn('assetable_id', $character_ids);
     }
 
-    public function scopeInRegion(Builder $query, int $region_id): Builder
+    public function scopeInRegion(Builder $query, int | array $regions): Builder
     {
+        $region_ids = is_array($regions) ? $regions : [$regions];
+
         return $query->whereHas('location', fn (Builder $query) => $query
             ->whereHasMorph(
                 'locatable',
                 '*',
                 fn (Builder $query) => $query
                     ->whereHas('system.region', fn (Builder $query) => $query
-                        ->where('universe_regions.region_id', $region_id)
+                        ->whereIn('universe_regions.region_id', $region_ids)
                     )
-            )
+                )
         );
     }
 
