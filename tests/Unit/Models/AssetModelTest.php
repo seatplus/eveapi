@@ -10,7 +10,11 @@ use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Events\AssetUpdating;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Assets\Asset;
+use Seatplus\Eveapi\Models\Universe\Constellation;
 use Seatplus\Eveapi\Models\Universe\Location;
+use Seatplus\Eveapi\Models\Universe\Region;
+use Seatplus\Eveapi\Models\Universe\Station;
+use Seatplus\Eveapi\Models\Universe\System;
 use Seatplus\Eveapi\Tests\TestCase;
 
 class AssetModelTest extends TestCase
@@ -270,6 +274,58 @@ class AssetModelTest extends TestCase
         ]));
 
         $this->assertInstanceOf(Asset::class, $test_asset->content->first()->container);
+    }
+
+    /** @test */
+    public function itHasInRegionScope()
+    {
+
+        $this->assertCount(0, Asset::all());
+
+        $test_asset = Event::fakeFor( fn () => Asset::factory()->create([
+            'location_flag' => 'Hangar',
+            'location_id' => Location::factory()->create([
+                'locatable_type' => Station::class,
+                'locatable_id' => Station::factory()->create([
+                    'system_id' => System::factory()->create([
+                        'constellation_id' => Constellation::factory()->create([
+                            'region_id' => Region::factory()
+                        ])
+                    ])
+                ]),
+            ])
+        ]));
+
+        $region_id = $test_asset->location->locatable->system->region->region_id;
+
+        $this->assertCount(1, Asset::inRegion($region_id)->get());
+        $this->assertCount(0, Asset::inRegion($region_id+1)->get());
+    }
+
+    /** @test */
+    public function itHasInSystemScope()
+    {
+
+        $this->assertCount(0, Asset::all());
+
+        $test_asset = Event::fakeFor( fn () => Asset::factory()->create([
+            'location_flag' => 'Hangar',
+            'location_id' => Location::factory()->create([
+                'locatable_type' => Station::class,
+                'locatable_id' => Station::factory()->create([
+                    'system_id' => System::factory()->create([
+                        'constellation_id' => Constellation::factory()->create([
+                            'region_id' => Region::factory()
+                        ])
+                    ])
+                ]),
+            ])
+        ]));
+
+        $system_id = $test_asset->location->locatable->system->system_id;
+
+        $this->assertCount(1, Asset::inSystems($system_id)->get());
+        $this->assertCount(0, Asset::inSystems($system_id+1)->get());
     }
 
 
