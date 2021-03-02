@@ -108,7 +108,7 @@ class ResolveUniverseStationByIdAction extends RetrieveFromEsiBase implements Ha
             'office_rental_cost'         => $result->office_rental_cost,
         ])->touch();
 
-        Location::firstOrCreate([
+        Location::updateOrCreate([
             'location_id' => $location_id,
         ], [
             'locatable_id' => $location_id,

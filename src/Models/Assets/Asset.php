@@ -137,16 +137,32 @@ class Asset extends Model
 
     public function scopeInRegion(Builder $query, int $region_id): Builder
     {
-        return $query->whereHas('location', function (Builder $query) use ($region_id) {
-            $query->whereHasMorph(
+        return $query->whereHas('location', fn (Builder $query) => $query
+            ->whereHasMorph(
                 'locatable',
                 '*',
-                function (Builder $query) use ($region_id) {
-                    $query->whereHas('system.region', function (Builder $query) use ($region_id) {
-                        $query->where('universe_regions.region_id', $region_id);
-                    });
-                });
-        });
+                fn (Builder $query) => $query
+                    ->whereHas('system.region', fn (Builder $query) => $query
+                        ->where('universe_regions.region_id', $region_id)
+                    )
+            )
+        );
+    }
+
+    public function scopeInSystems(Builder $query, int | array $systems): Builder
+    {
+        $system_ids = is_array($systems) ? $systems : [$systems];
+
+        return $query->whereHas('location', fn (Builder $query) => $query
+            ->whereHasMorph(
+                'locatable',
+                '*',
+                fn (Builder $query) => $query
+                    ->whereHas('system', fn (Builder $query) => $query
+                        ->whereIn('universe_systems.system_id', $system_ids)
+                    )
+            )
+        );
     }
 
     public function scopeSearch(Builder $query, string $query_string): Builder

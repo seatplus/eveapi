@@ -126,7 +126,7 @@ class ResolveUniverseStructureByIdAction extends RetrieveFromEsiBase implements 
             'type_id'         => $result->type_id ?? null,
         ])->touch();
 
-        Location::firstOrCreate([
+        Location::updateOrCreate([
             'location_id' => $location_id,
         ], [
             'locatable_id' => $location_id,
