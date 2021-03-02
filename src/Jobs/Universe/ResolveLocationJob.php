@@ -88,8 +88,7 @@ class ResolveLocationJob implements ShouldQueue, ShouldBeUnique
     public function __construct(
         public int $location_id,
         public RefreshToken $refresh_token
-    )
-    {
+    ) {
     }
 
     public function tags()
@@ -103,17 +102,16 @@ class ResolveLocationJob implements ShouldQueue, ShouldBeUnique
 
     public function handle(): void
     {
-
         $payload = new ResolveLocationDTO([
             'location' => Location::with('locatable')->findOrNew($this->location_id),
-            'log_message' => ''
+            'log_message' => '',
         ]);
 
         app(Pipeline::class)
             ->send($payload)
             ->through([
                 new ResolveStationPipe($this->location_id),
-                new ResolveStructurePipe($this->location_id, $this->refresh_token)
+                new ResolveStructurePipe($this->location_id, $this->refresh_token),
             ])
             ->then(fn ($payload) => logger()->info($payload->log_message));
     }
