@@ -30,6 +30,8 @@ use Closure;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Models\Universe\Station;
+use Seatplus\Eveapi\Models\Universe\Structure;
 use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 
 class GetMissingLocationFromCorporationMemberTrackingPipe
@@ -38,7 +40,7 @@ class GetMissingLocationFromCorporationMemberTrackingPipe
     {
         $find_corporation_refresh_token = new FindCorporationRefreshToken;
 
-        CorporationMemberTracking::doesntHave('location')
+        CorporationMemberTracking::whereDoesntHave('location', fn($query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]))
             ->inRandomOrder()
             ->get()
             ->each(function (CorporationMemberTracking $corporation_member_tracking) use ($find_corporation_refresh_token) {

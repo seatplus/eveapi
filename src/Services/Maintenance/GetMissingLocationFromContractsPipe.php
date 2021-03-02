@@ -26,27 +26,39 @@
 
 namespace Seatplus\Eveapi\Services\Maintenance;
 
+use Barryvdh\Reflection\DocBlock\Location;
 use Closure;
+use Illuminate\Database\Eloquent\Builder;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Models\Universe\Station;
+use Seatplus\Eveapi\Models\Universe\Structure;
 
 class GetMissingLocationFromContractsPipe
 {
     public function handle($payload, Closure $next)
     {
         Contract::query()
-            ->whereDoesntHave('start_location', fn ($query) => $query->whereNotNull('start_location_id'))
-            ->orWhereDoesntHave('end_location', fn ($query) => $query->whereNotNull('end_location_id'))
+            ->where(function(Builder $query) {
+                $query->whereNotNull('start_location_id')
+                    ->whereDoesntHave('start_location', fn($query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]));
+            })
+            ->orWhere(function(Builder $query) {
+                $query->whereNotNull('end_location_id')
+                    ->whereDoesntHave('end_location', fn($query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]));
+            })
+            //->whereDoesntHave('start_location', fn ($query) => $query->whereNotNull('start_location_id'))
+            //->orWhereDoesntHave('end_location', fn ($query) => $query->whereNotNull('end_location_id'))
             ->get()
             ->each(function ($contract) {
                 $unknown_location_ids = collect();
 
-                if (is_null($contract->start_location)) {
+                if (is_null($contract->start_location) || $this->isNotStationOrStructure($contract->start_location)) {
                     $unknown_location_ids->push($contract->start_location_id);
                 }
 
-                if (is_null($contract->end_location)) {
+                if (is_null($contract->end_location) || $this->isNotStationOrStructure($contract->end_location)) {
                     $unknown_location_ids->push($contract->end_location_id);
                 }
 
@@ -63,5 +75,10 @@ class GetMissingLocationFromContractsPipe
             });
 
         return $next($payload);
+    }
+
+    private function isNotStationOrStructure($location) : bool
+    {
+        return ! (is_a($location, Structure::class) || is_a($location, Structure::class));
     }
 }

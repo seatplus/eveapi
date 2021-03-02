@@ -31,6 +31,8 @@ use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Models\Universe\Station;
+use Seatplus\Eveapi\Models\Universe\Structure;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 
@@ -38,7 +40,7 @@ class GetMissingLocationFromWalletTransactionPipe
 {
     public function handle($payload, Closure $next)
     {
-        WalletTransaction::doesntHave('location')
+        WalletTransaction::whereDoesntHave('location', fn($query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]))
             ->inRandomOrder()
             ->get()
             ->unique('location_id')

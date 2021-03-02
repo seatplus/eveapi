@@ -31,12 +31,14 @@ use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Models\Universe\Station;
+use Seatplus\Eveapi\Models\Universe\Structure;
 
 class GetMissingLocationFromAssetsPipe
 {
     public function handle($payload, Closure $next)
     {
-        Asset::doesntHave('location')
+        Asset::whereDoesntHave('location', fn($query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]))
             ->AssetsLocationIds()
             ->inRandomOrder()
             ->addSelect('assetable_id', 'assetable_type')
