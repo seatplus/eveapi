@@ -38,7 +38,7 @@ class GetMissingLocationFromAssetsPipe
 {
     public function handle($payload, Closure $next)
     {
-        Asset::whereDoesntHave('location', fn($query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]))
+        Asset::whereDoesntHave('location', fn ($query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]))
             ->AssetsLocationIds()
             ->inRandomOrder()
             ->addSelect('assetable_id', 'assetable_type')
