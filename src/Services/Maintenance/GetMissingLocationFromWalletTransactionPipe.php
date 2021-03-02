@@ -40,7 +40,7 @@ class GetMissingLocationFromWalletTransactionPipe
 {
     public function handle($payload, Closure $next)
     {
-        WalletTransaction::whereDoesntHave('location', fn($query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]))
+        WalletTransaction::whereDoesntHave('location', fn ($query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]))
             ->inRandomOrder()
             ->get()
             ->unique('location_id')
