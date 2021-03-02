@@ -24,26 +24,43 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Actions\Location;
+namespace Seatplus\Eveapi\Services\ResolveLocation;
 
-use Seatplus\Eveapi\Models\Universe\Location;
+use Closure;
+use Seatplus\Eveapi\Actions\Location\ResolveUniverseStationByIdAction;
 use Seatplus\Eveapi\Models\Universe\Station;
+use Seatplus\Eveapi\Models\Universe\Structure;
 
-class StationChecker extends LocationChecker
+class ResolveStationPipe
 {
-    public function check(Location $location)
+    public function __construct(
+        public int $location_id
+    ) {
+    }
+
+    public function handle(ResolveLocationDTO $payload, Closure $next)
     {
-        if (
-            // if locatable exists and if locatable is of type Station and if last update is greater then a week
-            (! is_null($location->locatable) && is_a($location->locatable, Station::class) && $location->locatable->updated_at < carbon()->subWeek())
-            // or if location does not exist and id is between 60000000 and 64000000
-            || (is_null($location->locatable) && $location->location_id > 60000000 && $location->location_id < 64000000)
-        ) {
-            return (new ResolveUniverseStationByIdAction)->execute($location->location_id);
+
+        // if structure just return early
+        if (is_a($payload->location->locatable, Structure::class)) {
+            return $next($payload);
         }
 
-        if ($location->location_id < 60000000 || $location->location_id > 64000000) {
-            $this->next($location);
+        // if location is station and last update is greater then a week don't bother no longer
+        if (is_a($payload->location->locatable, Station::class) && $payload->location->locatable->updated_at > carbon()->subWeek()) {
+            return $next($payload);
         }
+
+        if ($this->location_id > 60_000_000 && $this->location_id < 64_000_000) {
+            $this->getStation();
+            $payload->log_message = sprintf('successfully resolved station with id %s', $this->location_id);
+        }
+
+        return $next($payload);
+    }
+
+    private function getStation()
+    {
+        (new ResolveUniverseStationByIdAction)->execute($this->location_id);
     }
 }

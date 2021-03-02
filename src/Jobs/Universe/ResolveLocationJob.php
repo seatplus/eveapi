@@ -30,17 +30,18 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Pipeline\Pipeline;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Seatplus\Eveapi\Actions\Location\AssetSafetyChecker;
-use Seatplus\Eveapi\Actions\Location\StationChecker;
-use Seatplus\Eveapi\Actions\Location\StructureChecker;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Location;
+use Seatplus\Eveapi\Services\ResolveLocation\ResolveLocationDTO;
+use Seatplus\Eveapi\Services\ResolveLocation\ResolveStationPipe;
+use Seatplus\Eveapi\Services\ResolveLocation\ResolveStructurePipe;
 
 class ResolveLocationJob implements ShouldQueue, ShouldBeUnique
 {
@@ -52,21 +53,6 @@ class ResolveLocationJob implements ShouldQueue, ShouldBeUnique
      * @var int
      */
     public $tries = 1;
-
-    /**
-     * @var \Seatplus\Eveapi\Actions\Location\AssetSafetyChecker
-     */
-    private $asset_safety_checker;
-
-    /**
-     * @var \Seatplus\Eveapi\Actions\Location\StationChecker
-     */
-    private $station_checker;
-
-    /**
-     * @var \Seatplus\Eveapi\Actions\Location\StructureChecker
-     */
-    private $structure_checker;
 
     public function middleware(): array
     {
@@ -103,12 +89,6 @@ class ResolveLocationJob implements ShouldQueue, ShouldBeUnique
         public int $location_id,
         public RefreshToken $refresh_token
     ) {
-        $this->asset_safety_checker = new AssetSafetyChecker;
-        $this->station_checker = new StationChecker;
-        $this->structure_checker = new StructureChecker($this->refresh_token);
-
-        $this->asset_safety_checker->succeedWith($this->station_checker);
-        $this->station_checker->succeedWith($this->structure_checker);
     }
 
     public function tags()
@@ -122,8 +102,17 @@ class ResolveLocationJob implements ShouldQueue, ShouldBeUnique
 
     public function handle(): void
     {
-        $location = Location::firstOrNew(['location_id' => $this->location_id]);
+        $payload = new ResolveLocationDTO([
+            'location' => Location::with('locatable')->findOrNew($this->location_id),
+            'log_message' => '',
+        ]);
 
-        $this->asset_safety_checker->check($location);
+        app(Pipeline::class)
+            ->send($payload)
+            ->through([
+                new ResolveStationPipe($this->location_id),
+                new ResolveStructurePipe($this->location_id, $this->refresh_token),
+            ])
+            ->then(fn ($payload) => logger()->info($payload->log_message));
     }
 }

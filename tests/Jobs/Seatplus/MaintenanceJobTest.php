@@ -44,7 +44,9 @@ class MaintenanceJobTest extends TestCase
     /** @test */
     public function it_fetches_missing_types_from_assets()
     {
-        $asset = Event::fakeFor(fn() => Asset::factory()->create());
+        $asset = Event::fakeFor(fn() => Asset::factory()->create([
+            'assetable_id' => $this->test_character->character_id,
+        ]));
 
         $this->job->handle();
 
@@ -127,11 +129,41 @@ class MaintenanceJobTest extends TestCase
     }
 
     /** @test */
-    public function it_dispatch_resolve_location_jog_for_missing_corporation_member_tracking_location()
+    public function it_dispatch_resolve_location_job_for_missing_corporation_member_tracking_location()
     {
         Event::fakeFor(fn() => CorporationMemberTracking::factory()->create([
             'character_id' => $this->test_character->character_id,
         ]));
+
+        $this->job->handle();
+
+        Queue::assertPushedOn('high', ResolveLocationJob::class);
+    }
+
+    /** @test */
+    public function getMissingLocationFromCorporationMemberTrackingPipeCanHandleNonStationOrStructureLocations()
+    {
+
+        $type = Type::factory()->create();
+
+        $this->assertCount(0, Location::all());
+
+        $non_structure_or_station_location = Location::factory()->create([
+            'location_id' => $type->type_id,
+            'locatable_id' => $type->type_id,
+            'locatable_type' => Type::class
+        ]);
+
+        $this->assertCount(1, Location::all());
+
+
+        Event::fakeFor(fn() => CorporationMemberTracking::factory()->create([
+            'character_id' => $this->test_character->character_id,
+            'location_id' => $type->type_id
+        ]));
+
+        $this->assertCount(1, CorporationMemberTracking::all());
+        $this->assertNotNull(CorporationMemberTracking::first()->location);
 
         $this->job->handle();
 
@@ -165,7 +197,7 @@ class MaintenanceJobTest extends TestCase
     }
 
     /** @test */
-    public function it_dispatch_resolve_location_jog_for_missing_wallet_transaction_location()
+    public function it_dispatch_resolve_location_job_for_missing_wallet_transaction_location()
     {
         Event::fakeFor(fn() => WalletTransaction::factory()->create([
             'wallet_transactionable_id' => $this->test_character->character_id
@@ -177,7 +209,33 @@ class MaintenanceJobTest extends TestCase
     }
 
     /** @test */
-    public function it_dispatches_character_info_jog_for_missing_member_tracking_characters()
+    public function getMissingLocationFromWalletTransactionPipeCanHandleNonStationOrStructureLocations()
+    {
+        $type = Type::factory()->create();
+
+        $this->assertCount(0, Location::all());
+
+        $non_structure_or_station_location = Location::factory()->create([
+            'location_id' => $type->type_id,
+            'locatable_id' => $type->type_id,
+            'locatable_type' => Type::class
+        ]);
+
+        $this->assertCount(1, Location::all());
+
+
+        Event::fakeFor(fn() => WalletTransaction::factory()->create([
+            'wallet_transactionable_id' => $this->test_character->character_id,
+            'location_id' => $type->type_id
+        ]));
+
+        $this->job->handle();
+
+        Queue::assertPushedOn('high', ResolveLocationJob::class);
+    }
+
+    /** @test */
+    public function it_dispatches_character_info_job_for_missing_member_tracking_characters()
     {
         Event::fakeFor(fn() => CorporationMemberTracking::factory()->create([
             'character_id' => CharacterInfo::factory()->make()
@@ -212,6 +270,82 @@ class MaintenanceJobTest extends TestCase
         Queue::assertPushedOn('high', ResolveUniverseTypesByTypeIdJob::class);
 
         $this->assertTrue(in_array($contract_item->type_id, cache('type_ids_to_resolve')));
+    }
+
+    /** @test */
+    public function getMissingLocationFromAssetsPipeCanHandleNonStationOrStructureLocations()
+    {
+        $type = Type::factory()->create();
+
+        $this->assertCount(0, Location::all());
+
+        $non_structure_or_station_location = Location::factory()->create([
+            'location_id' => $type->type_id,
+            'locatable_id' => $type->type_id,
+            'locatable_type' => Type::class
+        ]);
+
+        $this->assertCount(1, Location::all());
+
+        $asset = Event::fakeFor(fn() => Asset::factory()->create([
+            'assetable_id' => $this->test_character->character_id,
+            'location_flag' => 'Hangar',
+            'location_id' => $type->type_id
+        ]));
+
+        $this->job->handle();
+
+        Queue::assertPushedOn('high', ResolveLocationJob::class);
+    }
+
+    /** @test */
+    public function getMissingStartLocationFromContractsPipeCanHandleNonStationOrStructureLocations()
+    {
+        $type = Type::factory()->create();
+
+        $this->assertCount(0, Location::all());
+
+        $non_structure_or_station_location = Location::factory()->create([
+            'location_id' => $type->type_id,
+            'locatable_id' => $type->type_id,
+            'locatable_type' => Type::class
+        ]);
+
+        $this->assertCount(1, Location::all());
+
+        $contract = Event::fakeFor(fn() => Contract::factory()->create([
+            'start_location_id' => $type->type_id,
+            'assignee_id' => $this->test_character->character_id
+        ]));
+
+        $this->job->handle();
+
+        Queue::assertPushedOn('high', ResolveLocationJob::class);
+    }
+
+    /** @test */
+    public function getMissingEndLocationFromContractsPipeCanHandleNonStationOrStructureLocations()
+    {
+        $type = Type::factory()->create();
+
+        $this->assertCount(0, Location::all());
+
+        $non_structure_or_station_location = Location::factory()->create([
+            'location_id' => $type->type_id,
+            'locatable_id' => $type->type_id,
+            'locatable_type' => Type::class
+        ]);
+
+        $this->assertCount(1, Location::all());
+
+        $contract = Event::fakeFor(fn() => Contract::factory()->create([
+            'end_location_id' => $type->type_id,
+            'assignee_id' => $this->test_character->character_id
+        ]));
+
+        $this->job->handle();
+
+        Queue::assertPushedOn('high', ResolveLocationJob::class);
     }
 
 }
