@@ -70,9 +70,8 @@ class Application extends Model
         return $this->morphTo();
     }
 
-    public function scopeOfCorporation(Builder $query, int|array $corporation): Builder
+    public function scopeOfCorporation(Builder $query, int | array $corporation): Builder
     {
-
         $corporation_ids = is_int($corporation) ? [$corporation] : $corporation;
 
         return $query->whereIn('corporation_id', $corporation_ids)
