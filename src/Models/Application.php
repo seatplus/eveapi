@@ -70,9 +70,11 @@ class Application extends Model
         return $this->morphTo();
     }
 
-    public function scopeOfCorporation(Builder $query, int $corporation_id): Builder
+    public function scopeOfCorporation(Builder $query, int | array $corporation): Builder
     {
-        return $query->where('corporation_id', $corporation_id)
+        $corporation_ids = is_int($corporation) ? [$corporation] : $corporation;
+
+        return $query->whereIn('corporation_id', $corporation_ids)
             ->with([
                 'applicationable' => fn (MorphTo $morph_to) => $morph_to->morphWith([
                     User::class => ['characters.refresh_token', 'main_character', 'characters.application.corporation.ssoScopes', 'characters.application.corporation.alliance.ssoScopes'],
