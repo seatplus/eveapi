@@ -77,7 +77,7 @@ class CorporationMemberTrackingAction extends RetrieveFromEsiBase implements Ret
         collect($response)
             ->each(fn ($member) => CorporationMemberTracking::updateOrCreate([
                 'corporation_id' => $refresh_token->corporation_id,
-                'character_id'   => data_get($member, 'character_id')
+                'character_id'   => data_get($member, 'character_id'),
             ], [
                 'start_date'   => data_get($member, 'start_date') ? carbon($member->start_date) : null,
                 'base_id'      => data_get($member, 'base_id'),
