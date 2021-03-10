@@ -75,17 +75,16 @@ class CorporationMemberTrackingAction extends RetrieveFromEsiBase implements Ret
         }
 
         collect($response)
-            ->lazy()
             ->each(fn ($member) => CorporationMemberTracking::updateOrCreate([
                 'corporation_id' => $refresh_token->corporation_id,
-                'character_id'   => $member->character_id,
+                'character_id'   => data_get($member, 'character_id')
             ], [
-                'start_date'   => property_exists($member, 'start_date') ? carbon($member->start_date) : null,
-                'base_id'      => $member->base_id ?? null,
-                'logon_date'   => property_exists($member, 'logon_date') ? carbon($member->logon_date) : null,
-                'logoff_date'  => property_exists($member, 'logoff_date') ? carbon($member->logoff_date) : null,
-                'location_id'  => $member->location_id ?? null,
-                'ship_type_id' => $member->ship_type_id ?? null,
+                'start_date'   => data_get($member, 'start_date') ? carbon($member->start_date) : null,
+                'base_id'      => data_get($member, 'base_id'),
+                'logon_date'   => data_get($member, 'logon_date') ? carbon($member->logon_date) : null,
+                'logoff_date'  => data_get($member, 'logoff_date') ? carbon($member->logoff_date) : null,
+                'location_id'  => data_get($member, 'location_id'),
+                'ship_type_id' => data_get($member, 'ship_type_id'),
             ])
             )->pipe(fn ($members) => CorporationMemberTracking::where('corporation_id', $refresh_token->corporation_id)
                 ->whereNotIn('character_id', $members->pluck('character_id')->all())->delete()
