@@ -85,7 +85,7 @@ class ContractItemsJob extends NewEsiBase implements HasPathValuesInterface, Has
     public function tags(): array
     {
         return [
-            'contract',
+            'contract:' . $this->contract_id,
             'items',
             'contract_items',
         ];
@@ -151,5 +151,10 @@ class ContractItemsJob extends NewEsiBase implements HasPathValuesInterface, Has
         $key = sprintf('eveapi.scopes.%s.contracts', $this->type);
 
         return head(config($key));
+    }
+
+    public function getJobType(): string
+    {
+        return $this->type;
     }
 }
