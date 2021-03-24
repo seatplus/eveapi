@@ -238,6 +238,10 @@ class EveapiServiceProvider extends ServiceProvider
             Schedules::cursor()->each(function ($entry) use ($schedule) {
                 $schedule->job(new $entry->job)->cron($entry->expression);
             });
+
+            // Cleanup Batches Table
+            $schedule->command('queue:prune-batches')->daily();
+
         });
     }
 
