@@ -86,7 +86,7 @@ class GetCharacterAssetsNamesAction extends RetrieveFromEsiBase implements HasPa
             ->pluck('item_id')
             ->filter(fn ($item_id) => is_null(cache()->store('file')->get($item_id)))
             ->chunk(1000)->each(function ($item_ids) {
-                $this->setRequestBody($item_ids->all());
+                $this->setRequestBody($item_ids->flatten()->toArray());
 
                 $responses = $this->retrieve();
 
