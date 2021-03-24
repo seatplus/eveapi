@@ -40,10 +40,11 @@ use Seatplus\Eveapi\Jobs\Seatplus\UpdateCorporation;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\MinutesUntilNextSchedule;
+use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 
 abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, NewBaseJobInterface, ShouldBeUnique
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, RateLimitsEsiCalls;
 
     public int $tries = 1;
 
@@ -119,6 +120,14 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
     public function setAllianceId(?int $alliance_id): void
     {
         $this->alliance_id = $alliance_id;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getAllianceId(): ?int
+    {
+        return $this->alliance_id;
     }
 
     /**

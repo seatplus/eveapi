@@ -3,10 +3,8 @@
 namespace Seatplus\Eveapi\Tests\Unit\Actions\Jobs\Character;
 
 use Faker\Factory;
-use Faker\Generator;
 use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Actions\Jobs\Character\CharacterInfoAction;
-use Seatplus\Eveapi\Jobs\Alliances\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;

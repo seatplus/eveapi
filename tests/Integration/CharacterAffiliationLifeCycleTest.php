@@ -5,7 +5,7 @@ namespace Seatplus\Eveapi\Tests\Integration;
 
 
 use Illuminate\Support\Facades\Queue;
-use Seatplus\Eveapi\Jobs\Alliances\AllianceInfo;
+use Seatplus\Eveapi\Jobs\Alliances\AllianceInfoJob;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Tests\TestCase;
@@ -26,7 +26,7 @@ class CharacterAffiliationLifeCycleTest extends TestCase
             'alliance_id' => 123456
         ]);
 
-        Queue::assertPushedOn('high', AllianceInfo::class);
+        Queue::assertPushedOn('high', AllianceInfoJob::class);
     }
 
     /** @test */
@@ -42,7 +42,7 @@ class CharacterAffiliationLifeCycleTest extends TestCase
             'alliance_id' => null
         ]);
 
-        Queue::assertNotPushed(AllianceInfo::class);
+        Queue::assertNotPushed(AllianceInfoJob::class);
     }
 
 }

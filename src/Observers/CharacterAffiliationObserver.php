@@ -27,7 +27,7 @@
 namespace Seatplus\Eveapi\Observers;
 
 use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Jobs\Alliances\AllianceInfo;
+use Seatplus\Eveapi\Jobs\Alliances\AllianceInfoJob;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationInfoJob;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 
@@ -70,7 +70,7 @@ class CharacterAffiliationObserver
         }
 
         if ($character_affiliation->alliance_id && ! $character_affiliation->alliance) {
-            AllianceInfo::dispatch($job)->onQueue('high');
+            AllianceInfoJob::dispatch($job)->onQueue('high');
         }
     }
 }

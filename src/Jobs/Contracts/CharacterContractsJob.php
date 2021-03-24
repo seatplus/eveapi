@@ -41,8 +41,6 @@ use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 
 class CharacterContractsJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, ShouldBeUnique
 {
-    use RateLimitsEsiCalls;
-
     public array $path_values;
 
     public function __construct(

@@ -3,11 +3,7 @@
 namespace Seatplus\Eveapi\Tests\Unit\Actions\Jobs\Corporation;
 
 use Illuminate\Support\Facades\Bus;
-use Seatplus\Eveapi\Actions\Jobs\Corporation\CorporationInfoAction;
 use Seatplus\Eveapi\Actions\Jobs\Corporation\CorporationMemberTrackingAction;
-use Seatplus\Eveapi\Jobs\Alliances\AllianceInfo;
-use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
-use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;

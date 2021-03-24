@@ -4,7 +4,6 @@ namespace Seatplus\Eveapi\Tests\Unit\Actions\Jobs\Corporation;
 
 use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Actions\Jobs\Corporation\CorporationInfoAction;
-use Seatplus\Eveapi\Jobs\Alliances\AllianceInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
