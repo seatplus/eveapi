@@ -28,22 +28,27 @@ namespace Seatplus\Eveapi\Jobs\Alliances;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Actions\HasPathValuesInterface;
-use Seatplus\Eveapi\Actions\Jobs\Alliance\AllianceInfoAction;
-use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
+use Seatplus\Eveapi\Traits\HasPathValues;
 
 class AllianceInfoJob extends NewEsiBase implements HasPathValuesInterface
 {
-    public array $path_values;
+    use HasPathValues;
 
     public function __construct(
         public JobContainer $job_container
     ) {
+
+        $this->setJobType('public');
         parent::__construct($job_container);
+
+        $this->setMethod('get');
+        $this->setEndpoint('/alliances/{alliance_id}/');
+        $this->setVersion('v3');
 
         $this->setPathValues([
             'alliance_id' => $job_container->getAllianceId(),
@@ -109,36 +114,5 @@ class AllianceInfoJob extends NewEsiBase implements HasPathValuesInterface
             'name' => $response->name,
             'ticker' => $response->ticker,
         ])->save();
-    }
-
-
-    public function getPathValues(): array
-    {
-        return $this->path_values;
-    }
-
-    public function setPathValues(array $array): void
-    {
-        $this->path_values = $array;
-    }
-
-    public function getJobType(): string
-    {
-        return 'character';
-    }
-
-    public function getMethod(): string
-    {
-        return 'get';
-    }
-
-    public function getEndpoint(): string
-    {
-        return '/alliances/{alliance_id}/';
-    }
-
-    public function getVersion(): string
-    {
-        return 'v3';
     }
 }

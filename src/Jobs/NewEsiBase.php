@@ -56,6 +56,14 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
 
     public ?int $alliance_id;
 
+    protected string $method;
+
+    protected string $version;
+
+    protected string $endpoint;
+
+    protected string $jobType;
+
     /**
      * The number of seconds after which the job's unique lock will be released.
      *
@@ -163,12 +171,6 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
      */
     abstract public function handle(): void;
 
-    /**
-     * Get the job type.
-     *
-     * @return void
-     */
-    abstract public function getJobType(): string;
 
     final public function getMinutesUntilTimeout(): int
     {
@@ -176,7 +178,8 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
 
         $map = [
             'character' => UpdateCharacter::class,
-            'corporation' => UpdateCorporation::class
+            'corporation' => UpdateCorporation::class,
+            'public' =>UpdateCharacter::class
         ];
 
         $scheduled_class = data_get($map, $type);
@@ -187,4 +190,69 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
         return MinutesUntilNextSchedule::get($scheduled_class);
 
     }
+
+    /**
+     * @return string
+     */
+    public function getMethod(): string
+    {
+        return $this->method;
+    }
+
+    /**
+     * @param string $method
+     */
+    public function setMethod(string $method): void
+    {
+        $this->method = $method;
+    }
+
+    /**
+     * @return string
+     */
+    public function getVersion(): string
+    {
+        return $this->version;
+    }
+
+    /**
+     * @param string $version
+     */
+    public function setVersion(string $version): void
+    {
+        $this->version = $version;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEndpoint(): string
+    {
+        return $this->endpoint;
+    }
+
+    /**
+     * @param string $endpoint
+     */
+    public function setEndpoint(string $endpoint): void
+    {
+        $this->endpoint = $endpoint;
+    }
+
+    /**
+     * @return string
+     */
+    public function getJobType(): string
+    {
+        return $this->jobType;
+    }
+
+    /**
+     * @param string $jobType
+     */
+    public function setJobType(string $jobType): void
+    {
+        $this->jobType = $jobType;
+    }
+
 }

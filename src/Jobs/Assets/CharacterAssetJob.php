@@ -26,17 +26,50 @@
 
 namespace Seatplus\Eveapi\Jobs\Assets;
 
-use Seatplus\Eveapi\Actions\Jobs\Assets\CharacterAssetsAction;
-use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
-use Seatplus\Eveapi\Jobs\EsiBase;
+use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
+use Illuminate\Support\Collection;
+use Seatplus\Eveapi\Actions\Character\AssetCleanupAction;
+use Seatplus\Eveapi\Actions\HasPathValuesInterface;
+use Seatplus\Eveapi\Actions\HasRequiredScopeInterface;
+use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\RateLimitedJobMiddleware;
+use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Models\Assets\Asset;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Traits\HasPathValues;
+use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CharacterAssetJob extends EsiBase
+class CharacterAssetJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
+
+    use HasPathValues, HasRequiredScopes;
+
+    private Collection $known_assets;
+
+    private int $page = 1;
+
+    public function __construct(
+        public JobContainer $job_container
+    ) {
+        $this->setJobType('character');
+        parent::__construct($job_container);
+
+
+        $this->setMethod('get');
+        $this->setEndpoint('/characters/{character_id}/assets/');
+        $this->setVersion('v5');
+
+        $this->setPathValues([
+            'character_id' => $job_container->getCharacterId(),
+        ]);
+
+        $this->setRequiredScope('esi-assets.read_assets.v1');
+
+        $this->known_assets =  collect();
+    }
+
     /**
      * Get the middleware the job should pass through.
      *
@@ -44,17 +77,15 @@ class CharacterAssetJob extends EsiBase
      */
     public function middleware(): array
     {
-        $rate_limited_middleware = (new RateLimitedJobMiddleware)
-            ->setKey(self::class)
-            ->setViaCharacterId($this->refresh_token->character_id)
-            ->setDuration(3600);
 
         return [
             new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
-            new EsiRateLimitedMiddleware,
             new EsiAvailabilityMiddleware,
-            $rate_limited_middleware,
+            (new ThrottlesExceptionsWithRedis(80,5))
+                ->by($this->uniqueId())
+                ->when(fn() => !$this->isEsiRateLimited())
+                ->backoff(5)
         ];
     }
 
@@ -67,11 +98,6 @@ class CharacterAssetJob extends EsiBase
         ];
     }
 
-    public function getActionClass(): RetrieveFromEsiInterface
-    {
-        return new CharacterAssetsAction;
-    }
-
     /**
      * Execute the job.
      *
@@ -79,6 +105,38 @@ class CharacterAssetJob extends EsiBase
      */
     public function handle(): void
     {
-        $this->getActionClass()->execute($this->refresh_token);
+
+        while (true) {
+            $response = $this->retrieve($this->page);
+
+            if ($response->isCachedLoad()) {
+                return;
+            }
+
+            // First update the
+            collect($response)->each(fn ($asset) => Asset::updateOrCreate([
+                'item_id' => $asset->item_id,
+            ], [
+                'assetable_id' => $this->refresh_token->character_id,
+                'assetable_type' => CharacterInfo::class,
+                'is_blueprint_copy' => optional($asset)->is_blueprint_copy ?? false,
+                'is_singleton'  => $asset->is_singleton,
+                'location_flag'     => $asset->location_flag,
+                'location_id'        => $asset->location_id,
+                'location_type'          => $asset->location_type,
+                'quantity'   => $asset->quantity,
+                'type_id' => $asset->type_id,
+            ]))->pipe(fn (Collection $response) => $response->pluck('item_id')->each(fn ($id) => $this->known_assets->push($id)));
+
+            // Lastly if more pages are present load next page
+            if ($this->page >= $response->pages) {
+                break;
+            }
+
+            $this->page++;
+        }
+
+        // Cleanup old items
+        (new AssetCleanupAction)->execute($this->refresh_token->character_id, $this->known_assets->toArray());
     }
 }

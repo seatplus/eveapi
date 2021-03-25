@@ -66,7 +66,9 @@ class CharacterAssetLifeCycleTest extends TestCase
     /** @test */
     public function it_dispatches_location_job()
     {
-        $asset = Asset::factory()->create();
+        $asset = Asset::factory()->create([
+            'assetable_id' => $this->test_character->character_id
+        ]);
 
         Queue::assertPushedOn('high', CharacterAssetsLocationJob::class);
     }
@@ -90,7 +92,8 @@ class CharacterAssetLifeCycleTest extends TestCase
 
         $asset = Event::fakeFor( function () {
             return Asset::factory()->create([
-                'location_id' => 1234
+                'location_id' => 1234,
+                'assetable_id' => $this->test_character->character_id
             ]);
         });
 

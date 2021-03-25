@@ -37,6 +37,7 @@ use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
+use Seatplus\Eveapi\Models\RefreshToken;
 
 class CharacterAssetsLocationJob implements ShouldQueue
 {
@@ -48,15 +49,9 @@ class CharacterAssetsLocationJob implements ShouldQueue
      */
     public $tries = 1;
 
-    /**
-     * @var \Seatplus\Eveapi\Models\RefreshToken|null
-     */
-    public $refresh_token;
+    public RefreshToken $refresh_token;
 
-    /**
-     * @var \Seatplus\Eveapi\Containers\JobContainer
-     */
-    private $job_container;
+    private JobContainer $job_container;
 
     public function __construct(JobContainer $job_container)
     {
@@ -86,7 +81,7 @@ class CharacterAssetsLocationJob implements ShouldQueue
 
     public function handle(): void
     {
-        // TODO: ADD HAS REQUIRED SCOPE MIDDLEWARE
+
         $action = new CharacterAssetsLocationAction($this->refresh_token);
         $action->buildLocationIds();
 

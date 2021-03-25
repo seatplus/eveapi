@@ -37,20 +37,28 @@ use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contracts\Contract;
-use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
+use Seatplus\Eveapi\Traits\HasPathValues;
+use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CharacterContractsJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, ShouldBeUnique
+class CharacterContractsJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
-    public array $path_values;
+    use HasPathValues, HasRequiredScopes;
 
     public function __construct(
         public JobContainer $job_container
     ) {
+        $this->setJobType('character');
         parent::__construct($job_container);
+
+        $this->setMethod('get');
+        $this->setEndpoint('/characters/{character_id}/contracts/');
+        $this->setVersion('v1');
 
         $this->setPathValues([
             'character_id' => $job_container->getCharacterId(),
         ]);
+
+        $this->setRequiredScope(head(config('eveapi.scopes.character.contracts')));
     }
 
     public function middleware(): array
@@ -148,40 +156,5 @@ class CharacterContractsJob extends NewEsiBase implements HasPathValuesInterface
 
             $page++;
         }
-    }
-
-    public function getMethod(): string
-    {
-        return 'get';
-    }
-
-    public function getEndpoint(): string
-    {
-        return '/characters/{character_id}/contracts/';
-    }
-
-    public function getVersion(): string
-    {
-        return 'v1';
-    }
-
-    public function getPathValues(): array
-    {
-        return $this->path_values;
-    }
-
-    public function setPathValues(array $array): void
-    {
-        $this->path_values = $array;
-    }
-
-    public function getRequiredScope(): string
-    {
-        return head(config('eveapi.scopes.character.contracts'));
-    }
-
-    public function getJobType(): string
-    {
-        return 'character';
     }
 }

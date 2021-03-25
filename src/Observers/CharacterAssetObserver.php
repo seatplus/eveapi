@@ -90,8 +90,13 @@ class CharacterAssetObserver
             return;
         }
 
+        $refresh_token = RefreshToken::find($this->asset->assetable_id);
+
+        if(is_null($refresh_token))
+            return;
+
         $job_container = new JobContainer([
-            'refresh_token' => RefreshToken::find($this->asset->assetable_id),
+            'refresh_token' => $refresh_token,
             'queue' => 'high',
         ]);
 

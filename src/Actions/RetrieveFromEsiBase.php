@@ -70,19 +70,19 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
     {
         $this->esi_request_container = $this->getBaseEsiReuestContainer();
 
-        if (method_exists($this, 'getPathValues')) {
+        if ($this instanceof HasPathValuesInterface) {
             $this->esi_request_container->path_values = $this->getPathValues();
         }
 
-        if (method_exists($this, 'getRequestBody')) {
+        if ($this instanceof HasRequestBodyInterface) {
             $this->esi_request_container->request_body = $this->getRequestBody();
         }
 
-        if (method_exists($this, 'getRefreshToken')) {
+        if ($this instanceof HasRequiredScopeInterface) {
             $this->esi_request_container->refresh_token = $this->getRefreshToken();
         }
 
-        if (method_exists($this, 'getQueryString')) {
+        if ($this instanceof HasQueryStringInterface) {
             $this->esi_request_container->query_string = $this->getQueryString();
         }
 
