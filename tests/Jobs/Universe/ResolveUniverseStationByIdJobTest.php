@@ -5,7 +5,7 @@ namespace Seatplus\Eveapi\Tests\Jobs\Universe;
 
 
 use Illuminate\Support\Facades\Event;
-use Seatplus\Eveapi\Actions\Location\ResolveUniverseStationByIdAction;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseStationByIdAction;
 use Seatplus\Eveapi\Events\UniverseStationCreated;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseStationByIdJob;
 use Seatplus\Eveapi\Models\Universe\Location;

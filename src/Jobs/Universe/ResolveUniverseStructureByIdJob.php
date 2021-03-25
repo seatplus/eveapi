@@ -28,41 +28,46 @@ namespace Seatplus\Eveapi\Jobs\Universe;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Actions\HasPathValuesInterface;
+use Seatplus\Eveapi\Actions\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
+use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Location;
-use Seatplus\Eveapi\Models\Universe\Station;
+use Seatplus\Eveapi\Models\Universe\Structure;
 use Seatplus\Eveapi\Traits\HasPathValues;
+use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class ResolveUniverseStationByIdJob extends NewEsiBase implements HasPathValuesInterface
+class ResolveUniverseStructureByIdJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
-    use HasPathValues;
 
-    const STATION_IDS_RANGE = [60000000, 64000000];
+    use HasPathValues, HasRequiredScopes;
+    
 
     public function __construct(
+        RefreshToken $refresh_token,
         public int $location_id
     )
     {
-        $this->setJobType('public');
-        parent::__construct();
+        $this->setRefreshToken($refresh_token);
 
         $this->setMethod('get');
-        $this->setEndpoint('/universe/stations/{station_id}/');
+        $this->setEndpoint('/universe/structures/{structure_id}/');
         $this->setVersion('v2');
+        
+        $this->setRequiredScope('esi-universe.read_structures.v1');
 
         $this->setPathValues([
-            'station_id' => $this->location_id,
+            'structure_id' => $this->location_id,
         ]);
     }
-
 
     public function tags(): array
     {
         return [
             'resolve',
             'universe',
-            'station',
+            'structure',
             'location_id:' . $this->location_id
         ];
     }
@@ -71,6 +76,7 @@ class ResolveUniverseStationByIdJob extends NewEsiBase implements HasPathValuesI
     {
         return [
             new EsiAvailabilityMiddleware,
+            new HasRequiredScopeMiddleware,
             (new ThrottlesExceptionsWithRedis(80,5))
                 ->by($this->uniqueId())
                 ->when(fn() => !$this->isEsiRateLimited())
@@ -81,37 +87,26 @@ class ResolveUniverseStationByIdJob extends NewEsiBase implements HasPathValuesI
     public function handle(): void
     {
 
-        // If rate limited or not within ids range skip execution
-        if (($this->location_id < head(self::STATION_IDS_RANGE) || $this->location_id > last(self::STATION_IDS_RANGE))) {
-            return;
-        }
-
         $result = $this->retrieve();
 
         if($result->isCachedLoad()) {
             return;
         }
 
-        Station::updateOrCreate([
-            'station_id' => $this->location_id,
+        Structure::updateOrCreate([
+            'structure_id' => $this->location_id,
         ], [
-            'type_id'                    => $result->type_id,
-            'name'                       => $result->name,
-            'owner_id'                   => $result->owner ?? null,
-            'race_id'                    => $result->race_id ?? null,
-            'system_id'                  => $result->system_id,
-            'reprocessing_efficiency'    => $result->reprocessing_efficiency,
-            'reprocessing_stations_take' => $result->reprocessing_stations_take,
-            'max_dockable_ship_volume'   => $result->max_dockable_ship_volume,
-            'office_rental_cost'         => $result->office_rental_cost,
+            'name'            => $result->name,
+            'owner_id'        => $result->owner_id,
+            'solar_system_id' => $result->solar_system_id,
+            'type_id'         => $result->type_id ?? null,
         ])->touch();
 
         Location::updateOrCreate([
             'location_id' => $this->location_id,
         ], [
             'locatable_id' => $this->location_id,
-            'locatable_type' => Station::class,
+            'locatable_type' => Structure::class,
         ]);
     }
-
 }

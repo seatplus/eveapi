@@ -5,7 +5,7 @@ namespace Seatplus\Eveapi\Tests\Unit\Actions\Location;
 
 
 use Illuminate\Support\Facades\Event;
-use Seatplus\Eveapi\Actions\Location\ResolveUniverseStructureByIdAction;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseStructureByIdJob;
 use Seatplus\Eveapi\Events\RefreshTokenCreated;
 use Seatplus\Eveapi\Events\UniverseStructureCreated;
 use Seatplus\Eveapi\Models\RefreshToken;
@@ -14,7 +14,7 @@ use Seatplus\Eveapi\Models\Universe\Structure;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
-class ResolveUniverseStructureByActionTest extends TestCase
+class ResolveUniverseStructureByIdJobTest extends TestCase
 {
     use MockRetrieveEsiDataAction;
 
@@ -48,7 +48,7 @@ class ResolveUniverseStructureByActionTest extends TestCase
             'structure_id' => $mock_data->structure_id
         ]);
 
-        (new ResolveUniverseStructureByIdAction($this->refresh_token))->execute($mock_data->structure_id);
+        (new ResolveUniverseStructureByIdJob($this->refresh_token, $mock_data->structure_id))->handle();
 
         //Assert that structure is created
         $this->assertDatabaseHas('universe_structures', [
@@ -69,7 +69,7 @@ class ResolveUniverseStructureByActionTest extends TestCase
             'location_id' => $mock_data->structure_id
         ]);
 
-        (new ResolveUniverseStructureByIdAction($this->refresh_token))->execute($mock_data->structure_id);
+        (new ResolveUniverseStructureByIdJob($this->refresh_token, $mock_data->structure_id))->handle();
 
         //Assert that structure is created
         $this->assertDatabaseHas('universe_locations', [
@@ -85,36 +85,11 @@ class ResolveUniverseStructureByActionTest extends TestCase
     {
         $mock_data = $this->buildMockEsiData();
 
-        (new ResolveUniverseStructureByIdAction($this->refresh_token))->execute($mock_data->structure_id);
+        (new ResolveUniverseStructureByIdJob($this->refresh_token, $mock_data->structure_id))->handle();
 
         $location = Location::find($mock_data->structure_id);
 
         $this->assertInstanceOf(Structure::class,$location->locatable);
-    }
-
-    /**
-     * @test
-     * @runTestsInSeparateProcesses
-     */
-    public function it_does_not_create_structure_if_scope_is_missing()
-    {
-        $mock_data = $this->buildMockEsiData();
-
-        $refresh_token = RefreshToken::factory()->make([
-            'scopes' => []
-        ]);
-
-        //Assert that no structure is created
-        $this->assertDatabaseMissing('universe_structures', [
-            'structure_id' => $mock_data->structure_id
-        ]);
-
-        (new ResolveUniverseStructureByIdAction($refresh_token))->execute($mock_data->structure_id);
-
-        //Assert that no structure is created
-        $this->assertDatabaseMissing('universe_structures', [
-            'structure_id' => $mock_data->structure_id
-        ]);
     }
 
     private function buildMockEsiData()

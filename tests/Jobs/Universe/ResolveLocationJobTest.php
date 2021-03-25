@@ -11,6 +11,7 @@ use Seatplus\Eveapi\Events\UniverseStationCreated;
 use Seatplus\Eveapi\Events\UniverseStructureCreated;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseStationByIdJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseStructureByIdJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
@@ -123,11 +124,6 @@ class ResolveLocationJobTest extends TestCase
         $this->buildJob($location_id)->handle();
 
         Queue::assertPushedOn('high', fn(ResolveUniverseStationByIdJob $job) => $job->location_id === $location_id);
-
-
-        /*$this->assertNotNull(Location::find($location_id)->locatable);
-
-        $this->assertTrue(carbon(Station::find($location_id)->updated_at)->isAfter(carbon()->subWeek()));*/
     }
 
     /** @test */
@@ -179,9 +175,12 @@ class ResolveLocationJobTest extends TestCase
 
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
 
+        Queue::fake();
+        Queue::assertNothingPushed();
+
         $this->buildJob(1028832949394)->handle();
 
-        $this->assertNotNull(Location::find(1028832949394)->locatable);
+        Queue::assertPushedOn('high', fn(ResolveUniverseStructureByIdJob $job) => $job->location_id === $mock_data->station_id);
     }
 
     /**
@@ -190,7 +189,7 @@ class ResolveLocationJobTest extends TestCase
      */
     public function it_checks_only_structure_older_then_a_week()
     {
-        $location_id = 1028832949394;
+        $location_id = 1_028_832_949_394;
 
         Asset::factory()->count(5)->create([
             'location_id' => $location_id,
@@ -214,11 +213,16 @@ class ResolveLocationJobTest extends TestCase
 
         $this->assertTrue(carbon(Structure::find($location_id)->updated_at)->isBefore(carbon()->subWeek()));
 
+        Queue::fake();
+        Queue::assertNothingPushed();
+
         $this->buildJob($location_id)->handle();
 
-        $this->assertNotNull(Location::find($location_id)->locatable);
+        Queue::assertPushedOn('high', fn(ResolveUniverseStructureByIdJob $job) => $job->location_id === $location_id);
 
-        $this->assertTrue(carbon(Structure::find($location_id)->updated_at)->isAfter(carbon()->subWeek()));
+        /*$this->assertNotNull(Location::find($location_id)->locatable);
+
+        $this->assertTrue(carbon(Structure::find($location_id)->updated_at)->isAfter(carbon()->subWeek()));*/
 
     }
 
@@ -247,12 +251,17 @@ class ResolveLocationJobTest extends TestCase
 
         $this->assertTrue(carbon(Structure::find($location_id)->updated_at)->isAfter(carbon()->subWeek()));
 
+        Queue::fake();
+        Queue::assertNothingPushed();
+
         $this->buildJob($location_id)->handle();
 
-        $this->assertNotNull(Location::find($location_id)->locatable);
+        Queue::assertNothingPushed();
+
+        /*$this->assertNotNull(Location::find($location_id)->locatable);
 
         $this->assertTrue(carbon(Structure::find($location_id)->updated_at)->isAfter(carbon()->subWeek()));
-        $this->assertTrue(carbon(Structure::find($location_id)->updated_at)->isBefore(carbon()->subDay()));
+        $this->assertTrue(carbon(Structure::find($location_id)->updated_at)->isBefore(carbon()->subDay()));*/
     }
 
 }

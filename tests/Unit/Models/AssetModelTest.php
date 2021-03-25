@@ -222,7 +222,7 @@ class AssetModelTest extends TestCase
     /** @test */
     public function it_has_scopeSearch_asset_content_content()
     {
-        $test_asset = Asset::factory()->create([
+        $test_asset = Asset::factory()->withName()->create([
             'location_flag' => 'Hangar'
         ]);
 
