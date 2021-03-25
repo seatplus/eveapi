@@ -1,18 +1,19 @@
 <?php
 
 
-namespace Seatplus\Eveapi\Tests\Unit\Actions\Location;
+namespace Seatplus\Eveapi\Tests\Jobs\Universe;
 
 
 use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Actions\Location\ResolveUniverseStationByIdAction;
 use Seatplus\Eveapi\Events\UniverseStationCreated;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseStationByIdJob;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
-class ResolveUniverseStationByIdActionTest extends TestCase
+class ResolveUniverseStationByIdJobTest extends TestCase
 {
     use MockRetrieveEsiDataAction;
 
@@ -40,7 +41,8 @@ class ResolveUniverseStationByIdActionTest extends TestCase
 
         $this->assertNull(Station::find($mock_data->station_id));
 
-        (new ResolveUniverseStationByIdAction)->execute($mock_data->station_id);
+
+        (new ResolveUniverseStationByIdJob($mock_data->station_id))->handle();
 
         //Assert that structure is created
         $this->assertDatabaseHas('universe_stations', [
@@ -61,7 +63,7 @@ class ResolveUniverseStationByIdActionTest extends TestCase
             'location_id' => $mock_data->station_id
         ]);
 
-        (new ResolveUniverseStationByIdAction)->execute($mock_data->station_id);
+        (new ResolveUniverseStationByIdJob($mock_data->station_id))->handle();
 
         //Assert that structure is created
         $this->assertDatabaseHas('universe_locations', [
@@ -77,7 +79,7 @@ class ResolveUniverseStationByIdActionTest extends TestCase
     {
         $mock_data = $this->buildMockEsiData();
 
-        (new ResolveUniverseStationByIdAction)->execute($mock_data->station_id);
+        (new ResolveUniverseStationByIdJob($mock_data->station_id))->handle();
 
         $location = Location::find($mock_data->station_id);
 
@@ -94,7 +96,7 @@ class ResolveUniverseStationByIdActionTest extends TestCase
             'station_id' => 1234,
         ]);
 
-        (new ResolveUniverseStationByIdAction)->execute($mock_data->station_id);
+        (new ResolveUniverseStationByIdJob($mock_data->station_id))->handle();
 
         //Assert that no structure is created
         $this->assertDatabaseMissing('universe_stations', [

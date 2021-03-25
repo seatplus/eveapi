@@ -24,78 +24,73 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Actions\Location;
+namespace Seatplus\Eveapi\Jobs\Universe;
 
+use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Actions\HasPathValuesInterface;
-use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
+use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
+use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
+use Seatplus\Eveapi\Traits\HasPathValues;
 
-class ResolveUniverseStationByIdAction extends RetrieveFromEsiBase implements HasPathValuesInterface
+class ResolveUniverseStationByIdJob extends NewEsiBase implements HasPathValuesInterface
 {
+
+    use HasPathValues;
+
     const STATION_IDS_RANGE = [60000000, 64000000];
 
-    /**
-     * @var string
-     */
-    protected $method = 'get';
-
-    /**
-     * @var string
-     */
-    protected $endpoint = '/universe/stations/{station_id}/';
-
-    /**
-     * @var string
-     */
-    protected $version = 'v2';
-
-    /**
-     * @var array
-     */
-    private $path_values = [];
-
-    public function getPathValues(): array
+    public function __construct(
+        public int $location_id
+    )
     {
-        return $this->path_values;
+        $this->setJobType('public');
+        parent::__construct();
+
+        $this->setMethod('get');
+        $this->setEndpoint('/universe/stations/{station_id}/');
+        $this->setVersion('v2');
+
+        $this->setPathValues([
+            'station_id' => $this->location_id,
+        ]);
     }
 
-    public function setPathValues(array $array): void
+
+    public function tags(): array
     {
-        $this->path_values = $array;
+        return [
+            'resolve',
+            'universe',
+            'station',
+            'location_id:' . $this->location_id
+        ];
     }
 
-    public function getMethod(): string
+    public function middleware(): array
     {
-        return $this->method;
+        return [
+            new EsiAvailabilityMiddleware,
+            (new ThrottlesExceptionsWithRedis(80,5))
+                ->by($this->uniqueId())
+                ->when(fn() => !$this->isEsiRateLimited())
+                ->backoff(5)
+        ];
     }
 
-    public function getEndpoint(): string
-    {
-        return $this->endpoint;
-    }
-
-    public function getVersion(): string
-    {
-        return $this->version;
-    }
-
-    public function execute(int $location_id)
+    public function handle(): void
     {
 
         // If rate limited or not within ids range skip execution
-        if ($this->isEsiRateLimited() || ($location_id < head(self::STATION_IDS_RANGE) || $location_id > last(self::STATION_IDS_RANGE))) {
+        if ($this->isEsiRateLimited() || ($this->location_id < head(self::STATION_IDS_RANGE) || $this->location_id > last(self::STATION_IDS_RANGE))) {
             return;
         }
-
-        $this->setPathValues([
-            'station_id' => $location_id,
-        ]);
 
         $result = $this->retrieve();
 
         Station::updateOrCreate([
-            'station_id' => $location_id,
+            'station_id' => $this->location_id,
         ], [
             'type_id'                    => $result->type_id,
             'name'                       => $result->name,
@@ -109,10 +104,11 @@ class ResolveUniverseStationByIdAction extends RetrieveFromEsiBase implements Ha
         ])->touch();
 
         Location::updateOrCreate([
-            'location_id' => $location_id,
+            'location_id' => $this->location_id,
         ], [
-            'locatable_id' => $location_id,
+            'locatable_id' => $this->location_id,
             'locatable_type' => Station::class,
         ]);
     }
+
 }

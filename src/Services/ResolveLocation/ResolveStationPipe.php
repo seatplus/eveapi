@@ -27,7 +27,7 @@
 namespace Seatplus\Eveapi\Services\ResolveLocation;
 
 use Closure;
-use Seatplus\Eveapi\Actions\Location\ResolveUniverseStationByIdAction;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseStationByIdJob;
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\Structure;
 
@@ -61,6 +61,7 @@ class ResolveStationPipe
 
     private function getStation()
     {
-        (new ResolveUniverseStationByIdAction)->execute($this->location_id);
+        ResolveUniverseStationByIdJob::dispatch($this->location_id)->onQueue('high');
+        //(new ResolveUniverseStationByIdAction)->execute($this->location_id);
     }
 }

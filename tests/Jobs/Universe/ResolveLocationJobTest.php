@@ -5,12 +5,13 @@ namespace Seatplus\Eveapi\Tests\Jobs\Universe;
 
 
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Events\RefreshTokenCreated;
 use Seatplus\Eveapi\Events\UniverseStationCreated;
 use Seatplus\Eveapi\Events\UniverseStructureCreated;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseStationByIdJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
-use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\Structure;
@@ -77,9 +78,12 @@ class ResolveLocationJobTest extends TestCase
 
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
 
+        Queue::fake();
+        Queue::assertNothingPushed();
+
         $this->buildJob(60003760)->handle();
 
-        $this->assertNotNull(Location::find(60003760)->locatable);
+        Queue::assertPushedOn('high', fn(ResolveUniverseStationByIdJob $job) => $job->location_id === $mock_data->station_id);
     }
 
     /**
@@ -113,11 +117,17 @@ class ResolveLocationJobTest extends TestCase
 
         $this->assertTrue(carbon(Station::find($location_id)->updated_at)->isBefore(carbon()->subWeek()));
 
+        Queue::fake();
+        Queue::assertNothingPushed();
+
         $this->buildJob($location_id)->handle();
 
-        $this->assertNotNull(Location::find($location_id)->locatable);
+        Queue::assertPushedOn('high', fn(ResolveUniverseStationByIdJob $job) => $job->location_id === $location_id);
 
-        $this->assertTrue(carbon(Station::find($location_id)->updated_at)->isAfter(carbon()->subWeek()));
+
+        /*$this->assertNotNull(Location::find($location_id)->locatable);
+
+        $this->assertTrue(carbon(Station::find($location_id)->updated_at)->isAfter(carbon()->subWeek()));*/
     }
 
     /** @test */

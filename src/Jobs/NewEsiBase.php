@@ -179,7 +179,7 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
         $map = [
             'character' => UpdateCharacter::class,
             'corporation' => UpdateCorporation::class,
-            'public' =>UpdateCharacter::class
+            'public' => UpdateCharacter::class
         ];
 
         $scheduled_class = data_get($map, $type);

@@ -63,7 +63,6 @@ class AllianceInfoJob extends NewEsiBase implements HasPathValuesInterface
     public function middleware(): array
     {
         return [
-            new EsiRateLimitedMiddleware,
             new EsiAvailabilityMiddleware,
             (new ThrottlesExceptionsWithRedis(80,5))
                 ->by($this->uniqueId())
