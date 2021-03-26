@@ -6,7 +6,6 @@ namespace Seatplus\Eveapi\Tests\Unit\Actions\Seatplus;
 
 use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Actions\Location\CacheAllPublicStrucutresIdAction;
-use Seatplus\Eveapi\Events\UniverseStationCreated;
 use Seatplus\Eveapi\Events\UniverseStructureCreated;
 use Seatplus\Eveapi\Models\Universe\Structure;
 use Seatplus\Eveapi\Tests\TestCase;

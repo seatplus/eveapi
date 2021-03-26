@@ -26,20 +26,37 @@
 
 namespace Seatplus\Eveapi\Jobs\Character;
 
-use Seatplus\Eveapi\Actions\Jobs\Character\CharacterAffiliationAction;
-use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
-use Seatplus\Eveapi\Jobs\EsiBase;
+use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
+use Illuminate\Support\Collection;
+use Seatplus\Eveapi\Actions\HasRequestBodyInterface;
+use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
+use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
+use Seatplus\Eveapi\Traits\HasRequestBody;
 
-class CharacterAffiliationJob extends EsiBase
+class CharacterAffiliationJob extends NewEsiBase implements HasRequestBodyInterface
 {
+    use HasRequestBody;
 
-    /**
-     * @var array
-     */
-    protected $tags = ['character', 'affiliation'];
+    public function __construct(?JobContainer $job_container = null)
+    {
+        $this->setJobType('public');
+        parent::__construct($job_container);
+
+        $this->setMethod('post');
+        $this->setEndpoint('/characters/affiliation/');
+        $this->setVersion('v1');
+    }
+
+    public function tags(): array
+    {
+        return [
+            'character',
+            'affiliation',
+            'character_id:' . $this->character_id
+        ];
+    }
 
     /**
      * Get the middleware the job should pass through.
@@ -49,9 +66,11 @@ class CharacterAffiliationJob extends EsiBase
     public function middleware(): array
     {
         return [
-            new RedisFunnelMiddleware,
-            new EsiRateLimitedMiddleware,
             new EsiAvailabilityMiddleware,
+            (new ThrottlesExceptionsWithRedis(80,5))
+                ->by($this->uniqueId())
+                ->when(fn() => !$this->isEsiRateLimited())
+                ->backoff(5)
         ];
     }
 
@@ -63,11 +82,57 @@ class CharacterAffiliationJob extends EsiBase
      */
     public function handle(): void
     {
-        $this->getActionClass()->execute($this->character_id);
-    }
+        collect($this?->character_id)
+            ->pipe(fn (Collection $collection) => $collection->isEmpty() ? $collection : $collection->filter(function ($value) {
 
-    public function getActionClass(): RetrieveFromEsiInterface
-    {
-        return new CharacterAffiliationAction();
+            // Remove $character_id that is already in DB and younger then 60minutes
+            $db_entry = CharacterAffiliation::find($value);
+
+            return $db_entry
+                ? $db_entry->last_pulled->diffInMinutes(now()) > 60
+                : true;
+        }))->pipe(function (Collection $collection) {
+            //Check all other character affiliations present in DB that are younger then 60 minutes
+            $character_affiliations = CharacterAffiliation::cursor()->filter(function ($character_affiliation) {
+                return $character_affiliation->last_pulled->diffInMinutes(now()) > 60;
+            });
+
+            foreach ($character_affiliations as $character_affiliation) {
+                $collection->push($character_affiliation->character_id);
+            }
+
+            return $collection;
+        })->unique()
+            ->chunk(1000)
+            ->whenNotEmpty(function ($collection) {
+                $collection->each(function (Collection $chunk) {
+                    $this->setRequestBody($chunk->values()->all());
+
+                    $response = $this->retrieve();
+
+                    if ($response->isCachedLoad()) {
+                        return;
+                    }
+
+                    $timestamp = now();
+
+                    collect($response)->map(function ($result) use ($timestamp) {
+                        return CharacterAffiliation::updateOrCreate(
+                            [
+                                'character_id' => $result->character_id,
+                            ],
+                            [
+                                'corporation_id' => $result->corporation_id,
+                                'alliance_id' => optional($result)->alliance_id,
+                                'faction_id' => optional($result)->faction_id,
+                                'last_pulled' => $timestamp,
+                            ]
+                        );
+                    })->each(function (CharacterAffiliation $character_affiliation) use ($timestamp) {
+                        $character_affiliation->last_pulled = $timestamp;
+                        $character_affiliation->save();
+                    });
+                });
+            });
     }
 }
