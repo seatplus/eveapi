@@ -26,20 +26,42 @@
 
 namespace Seatplus\Eveapi\Jobs\Character;
 
-use Seatplus\Eveapi\Actions\Jobs\Character\CharacterInfoAction;
-use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
-use Seatplus\Eveapi\Jobs\EsiBase;
+use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
+use Seatplus\Eveapi\Actions\HasPathValuesInterface;
+use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
+use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Traits\HasPathValues;
 
-class CharacterInfoJob extends EsiBase
+class CharacterInfoJob extends NewEsiBase implements HasPathValuesInterface
 {
 
-    /**
-     * @var array
-     */
-    protected $tags = ['character', 'info'];
+    use HasPathValues;
+
+    public function __construct(?JobContainer $job_container = null)
+    {
+        $this->setJobType('character');
+        parent::__construct($job_container);
+
+        $this->setMethod('get');
+        $this->setEndpoint('/characters/{character_id}/');
+        $this->setVersion('v4');
+
+        $this->setPathValues([
+            'character_id' => $this->character_id,
+        ]);
+
+    }
+
+    public function tags(): array
+    {
+        return [
+            'character',
+            'info',
+            'character_id:' . $this->character_id
+        ];
+    }
 
     /**
      * Get the middleware the job should pass through.
@@ -49,9 +71,11 @@ class CharacterInfoJob extends EsiBase
     public function middleware(): array
     {
         return [
-            new RedisFunnelMiddleware,
-            new EsiRateLimitedMiddleware,
             new EsiAvailabilityMiddleware,
+            (new ThrottlesExceptionsWithRedis(80,5))
+                ->by($this->uniqueId())
+                ->when(fn() => !$this->isEsiRateLimited())
+                ->backoff(5)
         ];
     }
 
@@ -63,11 +87,26 @@ class CharacterInfoJob extends EsiBase
      */
     public function handle(): void
     {
-        $this->getActionClass()->execute($this->character_id);
-    }
 
-    public function getActionClass(): RetrieveFromEsiInterface
-    {
-        return new CharacterInfoAction();
+        $response = $this->retrieve();
+
+        if ($response->isCachedLoad()) {
+            return;
+        }
+
+        CharacterInfo::updateOrCreate([
+            'character_id' => $this->character_id,
+        ], [
+            'name'            => $response->name,
+            'description'     => $response->optional('description'),
+            'birthday'        => $response->birthday,
+            'gender'          => $response->gender,
+            'race_id'         => $response->race_id,
+            'bloodline_id'    => $response->bloodline_id,
+            'ancestry_id'    => $response->optional('ancestry_id'),
+            'security_status' => $response->optional('security_status'),
+            'faction_id'      => $response->optional('faction_id'),
+            'title' => $response->optional('title'),
+        ]);
     }
 }

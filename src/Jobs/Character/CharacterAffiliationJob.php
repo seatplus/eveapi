@@ -51,11 +51,14 @@ class CharacterAffiliationJob extends NewEsiBase implements HasRequestBodyInterf
 
     public function tags(): array
     {
-        return [
+
+       $tags = [
             'character',
             'affiliation',
-            'character_id:' . $this->character_id
         ];
+
+       return $this->character_id ? array_merge($tags, ['character_id:' . $this->character_id]) : $tags;
+
     }
 
     /**

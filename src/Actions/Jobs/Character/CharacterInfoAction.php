@@ -60,26 +60,7 @@ class CharacterInfoAction extends RetrieveFromEsiBase implements HasPathValuesIn
             'character_id' => $character_id,
         ]);
 
-        $response = $this->retrieve();
 
-        if ($response->isCachedLoad()) {
-            return;
-        }
-
-        CharacterInfo::updateOrCreate([
-            'character_id' => $character_id,
-        ], [
-            'name'            => $response->name,
-            'description'     => $response->optional('description'),
-            'birthday'        => $response->birthday,
-            'gender'          => $response->gender,
-            'race_id'         => $response->race_id,
-            'bloodline_id'    => $response->bloodline_id,
-            'ancestry_id'    => $response->optional('ancestry_id'),
-            'security_status' => $response->optional('security_status'),
-            'faction_id'      => $response->optional('faction_id'),
-            'title' => $response->optional('title'),
-        ]);
     }
 
     public function setPathValues(array $array): void
