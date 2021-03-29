@@ -24,11 +24,11 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Actions;
+namespace Seatplus\Eveapi\Esi;
 
-interface HasRequestBodyInterface
+interface HasPathValuesInterface
 {
-    public function getRequestBody(): array;
+    public function getPathValues(): array;
 
-    public function setRequestBody(array $array): void;
+    public function setPathValues(array $array): void;
 }

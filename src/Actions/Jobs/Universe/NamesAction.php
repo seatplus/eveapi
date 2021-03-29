@@ -27,8 +27,8 @@
 namespace Seatplus\Eveapi\Actions\Jobs\Universe;
 
 use Illuminate\Support\Collection;
-use Seatplus\Eveapi\Actions\HasRequestBodyInterface;
-use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
+use Seatplus\Eveapi\Esi\HasRequestBodyInterface;
+use Seatplus\Eveapi\Esi\RetrieveFromEsiBase;
 use Seatplus\Eveapi\Models\Universe\Name;
 
 class NamesAction extends RetrieveFromEsiBase implements HasRequestBodyInterface

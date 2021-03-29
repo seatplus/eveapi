@@ -33,8 +33,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
+use Seatplus\Eveapi\Esi\RetrieveFromEsiBase;
 use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Jobs\Seatplus\MaintenanceJob;
 use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
 use Seatplus\Eveapi\Jobs\Seatplus\UpdateCorporation;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
@@ -179,7 +180,7 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
         $map = [
             'character' => UpdateCharacter::class,
             'corporation' => UpdateCorporation::class,
-            'public' => UpdateCharacter::class
+            'public' => MaintenanceJob::class
         ];
 
         $scheduled_class = data_get($map, $type);

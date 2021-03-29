@@ -27,7 +27,7 @@
 namespace Seatplus\Eveapi\Jobs\Character;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Seatplus\Eveapi\Actions\HasPathValuesInterface;
+use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;

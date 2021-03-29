@@ -24,47 +24,13 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Actions\Jobs\Character;
+namespace Seatplus\Eveapi\Esi;
 
-use Seatplus\Eveapi\Actions\HasPathValuesInterface;
-use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
-
-class CharacterInfoAction extends RetrieveFromEsiBase implements HasPathValuesInterface
+interface RetrieveFromEsiInterface
 {
-    protected $path_values;
+    public function getMethod(): string;
 
-    public function getMethod(): string
-    {
-        return 'get';
-    }
+    public function getEndpoint(): string;
 
-    public function getEndpoint(): string
-    {
-        return '/characters/{character_id}/';
-    }
-
-    public function getVersion(): string
-    {
-        return 'v4';
-    }
-
-    public function getPathValues(): array
-    {
-        return $this->path_values;
-    }
-
-    public function execute(int $character_id)
-    {
-        $this->setPathValues([
-            'character_id' => $character_id,
-        ]);
-
-
-    }
-
-    public function setPathValues(array $array): void
-    {
-        $this->path_values = $array;
-    }
+    public function getVersion(): string;
 }

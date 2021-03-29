@@ -13,10 +13,7 @@ use Seatplus\Eveapi\Tests\TestCase;
 class CharacterAssetsLocationActionTest extends TestCase
 {
 
-    /**
-     * @var \Seatplus\Eveapi\Actions\Jobs\Assets\CharacterAssetsLocationAction
-     */
-    private $action;
+    private CharacterAssetsLocationAction $action;
 
     public function setUp(): void
     {

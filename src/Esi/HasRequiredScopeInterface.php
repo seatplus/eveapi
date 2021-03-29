@@ -24,11 +24,13 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Actions;
+namespace Seatplus\Eveapi\Esi;
 
-interface HasPathValuesInterface
+use Seatplus\Eveapi\Models\RefreshToken;
+
+interface HasRequiredScopeInterface
 {
-    public function getPathValues(): array;
+    public function getRequiredScope(): string;
 
-    public function setPathValues(array $array): void;
+    public function getRefreshToken(): RefreshToken;
 }

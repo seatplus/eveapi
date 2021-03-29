@@ -27,18 +27,40 @@
 namespace Seatplus\Eveapi\Jobs\Corporation;
 
 use Illuminate\Bus\Batchable;
-use Seatplus\Eveapi\Actions\Jobs\Corporation\CorporationMemberTrackingAction;
-use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
+use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
+use Seatplus\Eveapi\Esi\HasPathValuesInterface;
+use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
+use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
+use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
+use Seatplus\Eveapi\Traits\HasPathValues;
+use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CorporationMemberTrackingJob extends EsiBase
+class CorporationMemberTrackingJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
-    use Batchable;
+    use HasPathValues, HasRequiredScopes;
+
+    public function __construct(JobContainer $job_container)
+    {
+        $this->setJobType('corporation');
+        parent::__construct($job_container);
+
+        $this->setMethod('get');
+        $this->setEndpoint('/corporations/{corporation_id}/membertracking/');
+        $this->setVersion('v1');
+
+        $this->setRequiredScope('esi-corporations.track_members.v1');
+
+        $this->setPathValues([
+            'corporation_id' => $this->corporation_id,
+        ]);
+    }
 
     /**
      * Get the middleware the job should pass through.
@@ -49,10 +71,12 @@ class CorporationMemberTrackingJob extends EsiBase
     {
         return [
             new HasRefreshTokenMiddleware,
-            new HasRequiredScopeMiddleware,
-            new RedisFunnelMiddleware,
-            new EsiRateLimitedMiddleware,
             new EsiAvailabilityMiddleware,
+            new HasRequiredScopeMiddleware,
+            (new ThrottlesExceptionsWithRedis(80,5))
+                ->by($this->uniqueId())
+                ->when(fn() => !$this->isEsiRateLimited())
+                ->backoff(5)
         ];
     }
 
@@ -74,11 +98,27 @@ class CorporationMemberTrackingJob extends EsiBase
      */
     public function handle(): void
     {
-        $this->getActionClass()->execute($this->refresh_token);
-    }
+        $response = $this->retrieve();
 
-    public function getActionClass(): RetrieveFromEsiInterface
-    {
-        return new CorporationMemberTrackingAction;
+        if ($response->isCachedLoad()) {
+            return;
+        }
+
+        collect($response)
+            ->lazy()
+            ->each(fn ($member) => CorporationMemberTracking::updateOrCreate([
+                'corporation_id' => $this->corporation_id,
+                'character_id'   => $member->character_id,
+            ], [
+                'start_date'   => property_exists($member, 'start_date') ? carbon($member->start_date) : null,
+                'base_id'      => $member->base_id ?? null,
+                'logon_date'   => property_exists($member, 'logon_date') ? carbon($member->logon_date) : null,
+                'logoff_date'  => property_exists($member, 'logoff_date') ? carbon($member->logoff_date) : null,
+                'location_id'  => $member->location_id ?? null,
+                'ship_type_id' => $member->ship_type_id ?? null,
+            ])
+            )->pipe(fn ($members) => CorporationMemberTracking::where('corporation_id', $this->corporation_id)
+                ->whereNotIn('character_id', $members->pluck('character_id')->all())->delete()
+            );
     }
 }

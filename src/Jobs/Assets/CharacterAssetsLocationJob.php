@@ -31,7 +31,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Seatplus\Eveapi\Actions\Jobs\Assets\CharacterAssetsLocationAction;
+use Seatplus\Eveapi\Esi\Jobs\Assets\CharacterAssetsLocationAction;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;

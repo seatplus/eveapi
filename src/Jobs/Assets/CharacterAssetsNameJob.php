@@ -28,9 +28,9 @@ namespace Seatplus\Eveapi\Jobs\Assets;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Seatplus\Eveapi\Actions\HasPathValuesInterface;
-use Seatplus\Eveapi\Actions\HasRequestBodyInterface;
-use Seatplus\Eveapi\Actions\HasRequiredScopeInterface;
+use Seatplus\Eveapi\Esi\HasPathValuesInterface;
+use Seatplus\Eveapi\Esi\HasRequestBodyInterface;
+use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;

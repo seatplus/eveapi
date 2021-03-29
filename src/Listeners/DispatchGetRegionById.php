@@ -37,9 +37,6 @@ class DispatchGetRegionById
             return;
         }
 
-        $job = new ResolveUniverseRegionByRegionIdJob;
-        $job->setRegionId($universe_constellation_created->constellation->region_id);
-
-        dispatch($job)->onQueue('default');
+        ResolveUniverseRegionByRegionIdJob::dispatch($universe_constellation_created->constellation->region_id)->onQueue('default');
     }
 }

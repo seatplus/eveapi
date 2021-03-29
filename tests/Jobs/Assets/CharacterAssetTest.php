@@ -3,7 +3,6 @@
 namespace Seatplus\Eveapi\Tests\Jobs\Assets;
 
 use Illuminate\Support\Facades\Queue;
-use Seatplus\Eveapi\Actions\Jobs\Assets\CharacterAssetsAction;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
@@ -104,7 +103,6 @@ class CharacterAssetTest extends TestCase
                 ->where('item_id', $data->item_id)
                 ->get()
             );
-
 
     }
 

@@ -26,7 +26,7 @@
 
 namespace Seatplus\Eveapi\Actions\Location;
 
-use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
+use Seatplus\Eveapi\Esi\RetrieveFromEsiBase;
 use Seatplus\Eveapi\Actions\Seatplus\CreateOrUpdateMissingIdsCache;
 use Seatplus\Eveapi\Models\Universe\Structure;
 

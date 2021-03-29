@@ -24,13 +24,11 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Actions;
+namespace Seatplus\Eveapi\Esi;
 
-interface RetrieveFromEsiInterface
+interface HasRequestBodyInterface
 {
-    public function getMethod(): string;
+    public function getRequestBody(): array;
 
-    public function getEndpoint(): string;
-
-    public function getVersion(): string;
+    public function setRequestBody(array $array): void;
 }

@@ -73,8 +73,7 @@ class DispatchGetSystemJobSubscriber
             return;
         }
 
-        $job = new ResolveUniverseSystemBySystemIdJob;
-        $job->setSystemId($this->system_id);
+        $job = new ResolveUniverseSystemBySystemIdJob($this->system_id);
 
         dispatch($job)->onQueue('default');
     }

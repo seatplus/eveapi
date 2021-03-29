@@ -27,7 +27,7 @@
 namespace Seatplus\Eveapi\Jobs\Middleware;
 
 use Exception;
-use Seatplus\Eveapi\Actions\Esi\GetEsiStatusAction;
+use Seatplus\Eveapi\Esi\Esi\GetEsiStatusAction;
 
 class EsiAvailabilityMiddleware
 {

@@ -3,7 +3,7 @@
 namespace Seatplus\Eveapi\Tests\Unit\JobMiddleware;
 
 use Mockery;
-use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
+use Seatplus\Eveapi\Esi\RetrieveFromEsiInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;

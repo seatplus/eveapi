@@ -27,7 +27,7 @@
 namespace Seatplus\Eveapi\Actions\Esi;
 
 use Exception;
-use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
+use Seatplus\Eveapi\Esi\RetrieveFromEsiBase;
 use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 
 class GetEsiStatusAction extends RetrieveFromEsiBase

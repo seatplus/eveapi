@@ -28,7 +28,7 @@ namespace Seatplus\Eveapi\Jobs\Character;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Support\Collection;
-use Seatplus\Eveapi\Actions\HasRequestBodyInterface;
+use Seatplus\Eveapi\Esi\HasRequestBodyInterface;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;

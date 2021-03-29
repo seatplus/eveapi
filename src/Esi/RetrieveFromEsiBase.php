@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Actions;
+namespace Seatplus\Eveapi\Esi;
 
 use Seat\Eseye\Containers\EsiResponse;
 use Seatplus\Eveapi\Actions\Eseye\RetrieveEsiDataAction;

@@ -26,17 +26,50 @@
 
 namespace Seatplus\Eveapi\Jobs\Contacts;
 
-use Seatplus\Eveapi\Actions\Jobs\Contacts\CorporationContactLabelAction;
-use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
+use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
+use Illuminate\Support\Collection;
+use Seatplus\Eveapi\Esi\HasPathValuesInterface;
+use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
+use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\RateLimitedJobMiddleware;
+use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
+use Seatplus\Eveapi\Services\Contacts\ProcessContactLabelsResponse;
+use Seatplus\Eveapi\Traits\HasPathValues;
+use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CorporationContactLabelJob extends EsiBase
+class CorporationContactLabelJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
+
+    use HasRequiredScopes, HasPathValues;
+
+    private int $page = 1;
+
+    private Collection $known_ids;
+
+    public function __construct(?JobContainer $job_container = null)
+    {
+        $this->setJobType('character');
+        parent::__construct($job_container);
+
+        $this->setMethod('get');
+        $this->setEndpoint('/corporations/{corporation_id}/contacts/labels/');
+        $this->setVersion('v1');
+
+        $this->setRequiredScope('esi-corporations.read_contacts.v1');
+
+        $this->setPathValues([
+            'corporation_id' => $this->corporation_id,
+        ]);
+
+        $this->known_ids = collect();
+    }
+
     /**
      * Get the middleware the job should pass through.
      *
@@ -44,17 +77,14 @@ class CorporationContactLabelJob extends EsiBase
      */
     public function middleware(): array
     {
-        $rate_limited_middleware = (new RateLimitedJobMiddleware)
-            ->setKey(self::class)
-            ->setViaCharacterId($this->refresh_token->character_id)
-            ->setDuration(300);
-
         return [
             new HasRefreshTokenMiddleware,
-            new HasRequiredScopeMiddleware,
-            new EsiRateLimitedMiddleware,
             new EsiAvailabilityMiddleware,
-            $rate_limited_middleware,
+            new HasRequiredScopeMiddleware,
+            (new ThrottlesExceptionsWithRedis(80,5))
+                ->by($this->uniqueId())
+                ->when(fn() => !$this->isEsiRateLimited())
+                ->backoff(5)
         ];
     }
 
@@ -76,11 +106,27 @@ class CorporationContactLabelJob extends EsiBase
      */
     public function handle(): void
     {
-        $this->getActionClass()->execute($this->refresh_token);
-    }
+        $processor = new ProcessContactLabelsResponse($this->corporation_id, CorporationInfo::class);
 
-    public function getActionClass(): RetrieveFromEsiInterface
-    {
-        return new CorporationContactLabelAction;
+        while (true) {
+            $response = $this->retrieve($this->page);
+
+            if ($response->isCachedLoad()) {
+                return;
+            }
+
+            $processed_ids = $processor->execute($response);
+
+            $this->known_ids->push($processed_ids);
+
+            // Lastly if more pages are present load next page
+            if ($this->page >= $response->pages) {
+                break;
+            }
+
+            $this->page++;
+        }
+
+        $processor->remove_old_contacts($this->known_ids->flatten()->unique()->toArray());
     }
 }

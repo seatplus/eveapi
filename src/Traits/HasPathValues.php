@@ -4,7 +4,7 @@
 namespace Seatplus\Eveapi\Traits;
 
 
-use Seatplus\Eveapi\Actions\HasPathValuesInterface;
+use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 
 trait HasPathValues
 {
