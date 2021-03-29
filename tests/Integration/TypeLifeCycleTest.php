@@ -4,7 +4,7 @@
 namespace Seatplus\Eveapi\Tests\Integration;
 
 use Illuminate\Support\Facades\Queue;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseGroupsByGroupIdJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseGroupByIdJob;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Tests\TestCase;
@@ -19,7 +19,7 @@ class TypeLifeCycleTest extends TestCase
 
         $type = Type::factory()->create();
 
-        Queue::assertPushedOn('high', ResolveUniverseGroupsByGroupIdJob::class);
+        Queue::assertPushedOn('high', ResolveUniverseGroupByIdJob::class);
     }
 
     /** @test */
@@ -33,7 +33,7 @@ class TypeLifeCycleTest extends TestCase
             'group_id' => $group->group_id
         ]);
 
-        Queue::assertNotPushed(ResolveUniverseGroupsByGroupIdJob::class);
+        Queue::assertNotPushed(ResolveUniverseGroupByIdJob::class);
     }
 
 }

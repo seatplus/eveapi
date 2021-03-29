@@ -28,7 +28,7 @@ namespace Seatplus\Eveapi\Observers;
 
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Models\RefreshToken;
@@ -83,7 +83,7 @@ class CorporationMemberTrackingObserver
             return;
         }
 
-        ResolveUniverseTypesByTypeIdJob::dispatch($this->corporation_member_tracking->ship_type_id)->onQueue('high');
+        ResolveUniverseTypeByIdJob::dispatch($this->corporation_member_tracking->ship_type_id)->onQueue('high');
     }
 
     private function handleLocations()

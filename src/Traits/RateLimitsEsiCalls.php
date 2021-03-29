@@ -88,4 +88,12 @@ trait RateLimitsEsiCalls
     {
         return Redis::ttl('seat:' . $this->ratelimit_key);
     }
+
+    /**
+     * @return int
+     */
+    public function getRatelimit(): int
+    {
+        return $this->ratelimit;
+    }
 }

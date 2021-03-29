@@ -1,6 +1,6 @@
 <?php
 
-namespace Seatplus\Eveapi\Tests\Unit\Actions;
+namespace Seatplus\Eveapi\Tests\Unit\Services;
 
 use Illuminate\Support\Facades\Event;
 use Seat\Eseye\Eseye;

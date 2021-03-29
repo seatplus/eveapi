@@ -26,7 +26,7 @@
 
 namespace Seatplus\Eveapi\Observers;
 
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
@@ -52,7 +52,7 @@ class WalletTransactionObserver
             return;
         }
 
-        ResolveUniverseTypesByTypeIdJob::dispatch($this->wallet_transaction->type_id)->onQueue('high');
+        ResolveUniverseTypeByIdJob::dispatch($this->wallet_transaction->type_id)->onQueue('high');
     }
 
     private function handleLocations()

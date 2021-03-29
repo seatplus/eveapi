@@ -11,7 +11,7 @@ use Mockery;
 use Seat\Eseye\Containers\EsiResponse;
 use Seatplus\Eveapi\Services\Esi\RetrieveEsiData;
 use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
@@ -73,7 +73,7 @@ class CharacterWalletTransactionLifecycleTest extends TestCase
         ]);
 
         Queue::assertPushedOn('high', ResolveLocationJob::class);
-        Queue::assertPushedOn('high', ResolveUniverseTypesByTypeIdJob::class);
+        Queue::assertPushedOn('high', ResolveUniverseTypeByIdJob::class);
     }
 
     /** @test */
@@ -86,7 +86,7 @@ class CharacterWalletTransactionLifecycleTest extends TestCase
         ]);
 
         Queue::assertPushedOn('high', ResolveLocationJob::class);
-        Queue::assertPushedOn('high', ResolveUniverseTypesByTypeIdJob::class);
+        Queue::assertPushedOn('high', ResolveUniverseTypeByIdJob::class);
     }
 
     private function buildMockEsiData()

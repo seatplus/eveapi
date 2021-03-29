@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\Seatplus\MaintenanceJob;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseCategoriesByCategoryIdJob;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseGroupsByGroupIdJob;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseCategoryByIdJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseGroupByIdJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
@@ -27,9 +27,7 @@ use Seatplus\Eveapi\Tests\TestCase;
 
 class MaintenanceJobTest extends TestCase
 {
-    /**
-     * @var \Seatplus\Eveapi\Jobs\Seatplus\MaintenanceJob
-     */
+
     private MaintenanceJob $job;
 
     public function setUp(): void
@@ -50,9 +48,7 @@ class MaintenanceJobTest extends TestCase
 
         $this->job->handle();
 
-        Queue::assertPushedOn('high', ResolveUniverseTypesByTypeIdJob::class);
-
-        $this->assertTrue(in_array($asset->type_id,cache('type_ids_to_resolve')));
+        Queue::assertPushedOn('high', ResolveUniverseTypeByIdJob::class);
     }
 
     /** @test */
@@ -68,9 +64,7 @@ class MaintenanceJobTest extends TestCase
 
         $this->job->handle();
 
-        Queue::assertPushedOn('high', ResolveUniverseTypesByTypeIdJob::class);
-
-        $this->assertTrue(in_array($station->type_id, cache('type_ids_to_resolve')));
+        Queue::assertPushedOn('high', ResolveUniverseTypeByIdJob::class);
     }
 
     /** @test */
@@ -80,9 +74,7 @@ class MaintenanceJobTest extends TestCase
 
         $this->job->handle();
 
-        Queue::assertPushedOn('high', ResolveUniverseGroupsByGroupIdJob::class);
-
-        $this->assertTrue(in_array($type->group_id, cache('group_ids_to_resolve')));
+        Queue::assertPushedOn('high', ResolveUniverseGroupByIdJob::class);
     }
 
     /** @test */
@@ -92,9 +84,7 @@ class MaintenanceJobTest extends TestCase
 
         $this->job->handle();
 
-        Queue::assertPushedOn('high', ResolveUniverseCategoriesByCategoryIdJob::class);
-
-        $this->assertTrue(in_array($group->category_id, cache('category_ids_to_resolve')));
+        Queue::assertPushedOn('high', ResolveUniverseCategoryByIdJob::class);
     }
 
     /** @test */
@@ -177,9 +167,7 @@ class MaintenanceJobTest extends TestCase
 
         $this->job->handle();
 
-        Queue::assertPushedOn('high', ResolveUniverseTypesByTypeIdJob::class);
-
-        $this->assertTrue(in_array($corporation_member_tracking->ship_type_id, cache('type_ids_to_resolve')));
+        Queue::assertPushedOn('high', ResolveUniverseTypeByIdJob::class);
     }
 
     /** @test */
@@ -191,9 +179,7 @@ class MaintenanceJobTest extends TestCase
 
         $this->job->handle();
 
-        Queue::assertPushedOn('high', ResolveUniverseTypesByTypeIdJob::class);
-
-        $this->assertTrue(in_array($asset->type_id,cache('type_ids_to_resolve')));
+        Queue::assertPushedOn('high', ResolveUniverseTypeByIdJob::class);
     }
 
     /** @test */
@@ -267,9 +253,7 @@ class MaintenanceJobTest extends TestCase
 
         $this->job->handle();
 
-        Queue::assertPushedOn('high', ResolveUniverseTypesByTypeIdJob::class);
-
-        $this->assertTrue(in_array($contract_item->type_id, cache('type_ids_to_resolve')));
+        Queue::assertPushedOn('high', ResolveUniverseTypeByIdJob::class);
     }
 
     /** @test */

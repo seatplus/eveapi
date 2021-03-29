@@ -26,7 +26,7 @@
 
 namespace Seatplus\Eveapi\Observers;
 
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseGroupsByGroupIdJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseGroupByIdJob;
 use Seatplus\Eveapi\Models\Universe\Type;
 
 class TypeObserver
@@ -44,6 +44,6 @@ class TypeObserver
             return;
         }
 
-        ResolveUniverseGroupsByGroupIdJob::dispatch($type->group_id)->onQueue('high');
+        ResolveUniverseGroupByIdJob::dispatch($type->group_id)->onQueue('high');
     }
 }

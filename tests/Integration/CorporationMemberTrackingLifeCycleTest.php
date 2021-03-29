@@ -7,7 +7,7 @@ namespace Seatplus\Eveapi\Tests\Integration;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob as CharacterInfoJob;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
@@ -25,7 +25,7 @@ class CorporationMemberTrackingLifeCycleTest extends TestCase
             'ship_type_id' => Type::factory()->make()
         ]);
 
-        Queue::assertNotPushed('high', ResolveUniverseTypesByTypeIdJob::class);
+        Queue::assertNotPushed('high', ResolveUniverseTypeByIdJob::class);
 
         $this->assertDatabaseMissing('corporation_member_trackings', ['ship_type_id' => $tracking->ship_type_id]);
 
@@ -33,9 +33,9 @@ class CorporationMemberTrackingLifeCycleTest extends TestCase
 
         $this->assertDatabaseHas('corporation_member_trackings', ['ship_type_id' => $tracking->ship_type_id]);
 
-        Queue::assertPushedOn('high', ResolveUniverseTypesByTypeIdJob::class);
+        Queue::assertPushedOn('high', ResolveUniverseTypeByIdJob::class);
 
-        Queue::assertPushed(ResolveUniverseTypesByTypeIdJob::class, function ($job) use ($tracking){
+        Queue::assertPushed(ResolveUniverseTypeByIdJob::class, function ($job) use ($tracking){
             return in_array(sprintf('type_id:%s', $tracking->ship_type_id), $job->tags());
         });
     }
@@ -50,7 +50,7 @@ class CorporationMemberTrackingLifeCycleTest extends TestCase
             'ship_type_id' => $type->type_id
         ]);
 
-        Queue::assertNotPushed(ResolveUniverseTypesByTypeIdJob::class);
+        Queue::assertNotPushed(ResolveUniverseTypeByIdJob::class);
     }
 
     /** @test */
@@ -106,12 +106,12 @@ class CorporationMemberTrackingLifeCycleTest extends TestCase
             ]);
         });
 
-        Queue::assertNotPushed(ResolveUniverseTypesByTypeIdJob::class);
+        Queue::assertNotPushed(ResolveUniverseTypeByIdJob::class);
 
         $tracking->ship_type_id = 56789;
         $tracking->save();
 
-        Queue::assertPushedOn('high', ResolveUniverseTypesByTypeIdJob::class);
+        Queue::assertPushedOn('high', ResolveUniverseTypeByIdJob::class);
 
     }
 

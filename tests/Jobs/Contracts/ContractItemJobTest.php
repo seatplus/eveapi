@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Contracts\CharacterContractsJob;
 use Seatplus\Eveapi\Jobs\Contracts\ContractItemsJob;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\Contracts\ContractItem;
 use Seatplus\Eveapi\Tests\TestCase;
@@ -36,7 +36,7 @@ class ContractItemJobTest extends TestCase
         ContractItemsJob::dispatch($mock_data->first()->contract_id, $job_container, 'character');
 
         // Assert no
-        Queue::assertNotPushed(ResolveUniverseTypesByTypeIdJob::class);
+        Queue::assertNotPushed(ResolveUniverseTypeByIdJob::class);
     }
 
     /** @test */
@@ -59,7 +59,7 @@ class ContractItemJobTest extends TestCase
 
         $this->assertCount(5, ContractItem::all());
 
-        Queue::assertPushed(ResolveUniverseTypesByTypeIdJob::class);
+        Queue::assertPushed(ResolveUniverseTypeByIdJob::class);
 
     }
 

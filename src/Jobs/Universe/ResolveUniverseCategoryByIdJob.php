@@ -24,31 +24,40 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Jobs\Seatplus;
+namespace Seatplus\Eveapi\Jobs\Universe;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Seatplus\Eveapi\Esi\Jobs\Universe\ResolveUniverseTypesByTypeIdAction;
+use Seatplus\Eveapi\Esi\HasPathValuesInterface;
+use Seatplus\Eveapi\Esi\HasRequestBodyInterface;
+use Seatplus\Eveapi\Esi\Jobs\Universe\ResolveUniverseCategoriesByCategoryIdAction;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
+use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Models\Universe\Category;
+use Seatplus\Eveapi\Traits\HasPathValues;
+use Seatplus\Eveapi\Traits\HasRequestBody;
 
-class ResolveUniverseTypesByTypeIdJob implements ShouldQueue
+class ResolveUniverseCategoryByIdJob extends NewEsiBase implements HasPathValuesInterface, HasRequestBodyInterface
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use HasPathValues, HasRequestBody;
 
-    /**
-     * The number of times the job may be attempted.
-     *
-     * @var int
-     */
-    public $tries = 1;
-
-    public function __construct(public ?int $type_id = null)
+    public function __construct(private int $category_id)
     {
+        $this->setJobType('public');
+        parent::__construct();
+
+        $this->setMethod('get');
+        $this->setEndpoint('/universe/categories/{category_id}/');
+        $this->setVersion('v1');
+
+        $this->setPathValues([
+            'category_id' => $category_id,
+        ]);
     }
 
     /**
@@ -69,20 +78,26 @@ class ResolveUniverseTypesByTypeIdJob implements ShouldQueue
     {
         return [
             'type',
-            'information',
-            sprintf('type_id:%s', $this->type_id ?? ''),
+            'informations',
+            sprintf('category_id:%s', $this->category_id),
         ];
     }
 
-    /**
-     * Execute the job.
-     *
-     * @param int|null $type_id
-     *
-     * @return void
-     */
-    public function handle()
+
+    public function handle(): void
     {
-        (new ResolveUniverseTypesByTypeIdAction)->execute($this->type_id);
+        $response = $this->retrieve();
+
+        if ($response->isCachedLoad()) {
+            return;
+        }
+
+        Category::firstOrCreate(
+            ['category_id' => $response->category_id],
+            [
+                'name' => $response->name,
+                'published' => $response->published,
+            ]
+        );
     }
 }

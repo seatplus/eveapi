@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Seatplus\Eveapi\Tests\Unit\Actions\Location;
+namespace Seatplus\Eveapi\Tests\Unit\Services\Location;
 
 
 use Illuminate\Support\Facades\Event;

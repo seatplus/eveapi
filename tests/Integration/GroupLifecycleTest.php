@@ -6,8 +6,9 @@ namespace Seatplus\Eveapi\Tests\Integration;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseCategoriesByCategoryIdJob;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseGroupsByGroupIdJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseCategoriesByCategoryIdJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseCategoryByIdJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseGroupByIdJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Universe\Category;
 use Seatplus\Eveapi\Models\Universe\Group;
@@ -24,7 +25,7 @@ class GroupLifecycleTest extends TestCase
 
         $group = Group::factory()->create();
 
-        Queue::assertPushedOn('high', ResolveUniverseCategoriesByCategoryIdJob::class);
+        Queue::assertPushedOn('high', ResolveUniverseCategoryByIdJob::class);
     }
 
     /** @test */
@@ -38,7 +39,7 @@ class GroupLifecycleTest extends TestCase
             'category_id' => $category->category_id
         ]);
 
-        Queue::assertNotPushed(ResolveUniverseCategoriesByCategoryIdJob::class);
+        Queue::assertNotPushed(ResolveUniverseCategoryByIdJob::class);
     }
 
     /** @test */

@@ -27,8 +27,8 @@
 namespace Seatplus\Eveapi\Services\Maintenance;
 
 use Closure;
-use Seatplus\Eveapi\Services\CreateOrUpdateMissingIdsCache;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseGroupsByGroupIdJob;
+
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseGroupByIdJob;
 use Seatplus\Eveapi\Models\Universe\Type;
 
 class GetMissingGroupsPipe
@@ -37,11 +37,7 @@ class GetMissingGroupsPipe
     {
         $unknown_type_ids = Type::whereDoesntHave('group')->pluck('group_id')->unique()->values();
 
-        if ($unknown_type_ids->isNotEmpty()) {
-            (new CreateOrUpdateMissingIdsCache('group_ids_to_resolve', $unknown_type_ids))->handle();
-
-            ResolveUniverseGroupsByGroupIdJob::dispatch()->onQueue('high');
-        }
+        $unknown_type_ids->each(fn($id) => ResolveUniverseGroupByIdJob::dispatch($id)->onQueue('high'));
 
         return $next($payload);
     }

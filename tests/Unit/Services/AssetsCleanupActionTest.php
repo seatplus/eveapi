@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Seatplus\Eveapi\Tests\Unit\Actions\Character;
+namespace Seatplus\Eveapi\Tests\Unit\Services;
 
 
 use Seatplus\Eveapi\Services\Jobs\AssetCleanupAction;

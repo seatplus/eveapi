@@ -24,31 +24,41 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Jobs\Seatplus;
+namespace Seatplus\Eveapi\Jobs\Universe;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Queue\SerializesModels;
+use Seatplus\Eveapi\Esi\HasPathValuesInterface;
+use Seatplus\Eveapi\Esi\HasRequestBodyInterface;
 use Seatplus\Eveapi\Esi\Jobs\Universe\ResolveUniverseGroupsByGroupIdAction;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
+use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Models\Universe\Group;
+use Seatplus\Eveapi\Traits\HasPathValues;
+use Seatplus\Eveapi\Traits\HasRequestBody;
 
-class ResolveUniverseGroupsByGroupIdJob implements ShouldQueue
+class ResolveUniverseGroupByIdJob extends NewEsiBase implements HasPathValuesInterface, HasRequestBodyInterface
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use HasPathValues, HasRequestBody;
 
-    /**
-     * The number of times the job may be attempted.
-     *
-     * @var int
-     */
-    public $tries = 1;
-
-    public function __construct(private ?int $group_id = null)
+    public function __construct(private int $group_id)
     {
+        $this->setJobType('public');
+        parent::__construct();
+
+        $this->setMethod('get');
+        $this->setEndpoint('/universe/groups/{group_id}/');
+        $this->setVersion('v1');
+
+        $this->setPathValues([
+            'group_id' => $group_id,
+        ]);
     }
 
     /**
@@ -59,9 +69,11 @@ class ResolveUniverseGroupsByGroupIdJob implements ShouldQueue
     public function middleware(): array
     {
         return [
-            new EsiRateLimitedMiddleware,
             new EsiAvailabilityMiddleware,
-            new RedisFunnelMiddleware,
+            (new ThrottlesExceptionsWithRedis(80,5))
+                ->by($this->uniqueId())
+                ->when(fn() => !$this->isEsiRateLimited())
+                ->backoff(5)
         ];
     }
 
@@ -70,7 +82,7 @@ class ResolveUniverseGroupsByGroupIdJob implements ShouldQueue
         return [
             'group',
             'information',
-            sprintf('group_id:%s', $this->group_id ?? ''),
+            sprintf('group_id:%s', $this->group_id),
         ];
     }
 
@@ -79,8 +91,22 @@ class ResolveUniverseGroupsByGroupIdJob implements ShouldQueue
      *
      * @return void
      */
-    public function handle()
+    public function handle() : void
     {
-        (new ResolveUniverseGroupsByGroupIdAction)->execute($this->group_id);
+
+        $response = $this->retrieve();
+
+        if ($response->isCachedLoad()) {
+            return;
+        }
+
+        Group::firstOrCreate(
+            ['group_id' => $response->group_id],
+            [
+                'category_id' => $response->category_id,
+                'name' => $response->name,
+                'published' => $response->published,
+            ]
+        );
     }
 }
