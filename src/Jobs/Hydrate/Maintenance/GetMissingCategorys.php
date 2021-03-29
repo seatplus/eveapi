@@ -24,20 +24,24 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Services\Maintenance;
+namespace Seatplus\Eveapi\Jobs\Hydrate\Maintenance;
 
 use Closure;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseCategoryByIdJob;
 use Seatplus\Eveapi\Models\Universe\Group;
 
-class GetMissingCategorysPipe
+class GetMissingCategorys extends HydrateMaintenanceBase
 {
-    public function handle($payload, Closure $next)
+    public function handle()
     {
+        if ($this->batch()->cancelled()) {
+            // Determine if the batch has been cancelled...
+
+            return;
+        }
+
         $unknown_type_ids = Group::whereDoesntHave('category')->pluck('category_id')->unique()->values();
 
         $unknown_type_ids->each(fn($id) => ResolveUniverseCategoryByIdJob::dispatch($id)->onQueue('high'));
-
-        return $next($payload);
     }
 }

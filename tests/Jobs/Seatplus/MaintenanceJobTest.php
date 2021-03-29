@@ -4,10 +4,14 @@
 namespace Seatplus\Eveapi\Tests\Jobs\Seatplus;
 
 
+use Illuminate\Bus\BatchRepository;
+use Illuminate\Bus\PendingBatch;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingLocationFromContracts;
 use Seatplus\Eveapi\Jobs\Seatplus\MaintenanceJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseCategoryByIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseGroupByIdJob;
@@ -327,8 +331,17 @@ class MaintenanceJobTest extends TestCase
             'assignee_id' => $this->test_character->character_id
         ]));
 
+        $batches = resolve(BatchRepository::class);
+
+        $this->assertCount(0, $batches->get(0));
+
         $this->job->handle();
 
+        dd(data_get($batches->get(1), '*.pendingJobs'));
+
+
+
+        dd('stop');
         Queue::assertPushedOn('high', ResolveLocationJob::class);
     }
 
