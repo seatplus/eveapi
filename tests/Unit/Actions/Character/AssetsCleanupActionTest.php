@@ -4,7 +4,7 @@
 namespace Seatplus\Eveapi\Tests\Unit\Actions\Character;
 
 
-use Seatplus\Eveapi\Actions\Character\AssetCleanupAction;
+use Seatplus\Eveapi\Services\Jobs\AssetCleanupAction;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Tests\TestCase;
 

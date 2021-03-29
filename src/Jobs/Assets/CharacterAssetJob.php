@@ -28,7 +28,7 @@ namespace Seatplus\Eveapi\Jobs\Assets;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Support\Collection;
-use Seatplus\Eveapi\Actions\Character\AssetCleanupAction;
+use Seatplus\Eveapi\Services\Jobs\AssetCleanupAction;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Containers\JobContainer;

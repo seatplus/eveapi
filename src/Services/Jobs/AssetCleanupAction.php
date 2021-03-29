@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Actions\Character;
+namespace Seatplus\Eveapi\Services\Jobs;
 
 use Seatplus\Eveapi\Models\Assets\Asset;
 

@@ -28,6 +28,7 @@ namespace Seatplus\Eveapi\Actions\Eseye;
 
 use Illuminate\Support\Str;
 use Seat\Eseye\Containers\EsiResponse;
+use Seat\Eseye\Eseye;
 use Seat\Eseye\Exceptions\RequestFailedException;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
 use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
@@ -38,9 +39,9 @@ class RetrieveEsiDataAction
 
     protected $get_eseye_client_action;
 
-    protected $client = null;
+    protected Eseye $client;
 
-    protected $request;
+    protected EsiRequestContainer $request;
 
     public function __construct()
     {
@@ -48,15 +49,13 @@ class RetrieveEsiDataAction
     }
 
     /**
-     * @param \Seatplus\Eveapi\Containers\EsiRequestContainer $this ->request
-     *
+     * @param EsiRequestContainer $request
      * @return \Seat\Eseye\Containers\EsiResponse
+     * @throws RequestFailedException
      * @throws \Seat\Eseye\Exceptions\EsiScopeAccessDeniedException
      * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
      * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
-     * @throws \Seat\Eseye\Exceptions\RequestFailedException
      * @throws \Seat\Eseye\Exceptions\UriDataMissingException
-     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function execute(EsiRequestContainer $request): EsiResponse
     {
