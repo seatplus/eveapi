@@ -28,22 +28,21 @@ namespace Seatplus\Eveapi\Jobs\Assets;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Support\Collection;
-use Seatplus\Eveapi\Services\Jobs\AssetCleanupAction;
+use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Services\Jobs\AssetCleanupAction;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
 class CharacterAssetJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
-
     use HasPathValues, HasRequiredScopes;
 
     private Collection $known_assets;
@@ -56,7 +55,6 @@ class CharacterAssetJob extends NewEsiBase implements HasPathValuesInterface, Ha
         $this->setJobType('character');
         parent::__construct($job_container);
 
-
         $this->setMethod('get');
         $this->setEndpoint('/characters/{character_id}/assets/');
         $this->setVersion('v5');
@@ -67,7 +65,7 @@ class CharacterAssetJob extends NewEsiBase implements HasPathValuesInterface, Ha
 
         $this->setRequiredScope('esi-assets.read_assets.v1');
 
-        $this->known_assets =  collect();
+        $this->known_assets = collect();
     }
 
     /**
@@ -77,15 +75,14 @@ class CharacterAssetJob extends NewEsiBase implements HasPathValuesInterface, Ha
      */
     public function middleware(): array
     {
-
         return [
             new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
             new EsiAvailabilityMiddleware,
-            (new ThrottlesExceptionsWithRedis(80,5))
+            (new ThrottlesExceptionsWithRedis(80, 5))
                 ->by($this->uniqueId())
-                ->when(fn() => !$this->isEsiRateLimited())
-                ->backoff(5)
+                ->when(fn () => ! $this->isEsiRateLimited())
+                ->backoff(5),
         ];
     }
 
@@ -105,7 +102,6 @@ class CharacterAssetJob extends NewEsiBase implements HasPathValuesInterface, Ha
      */
     public function handle(): void
     {
-
         while (true) {
             $response = $this->retrieve($this->page);
 

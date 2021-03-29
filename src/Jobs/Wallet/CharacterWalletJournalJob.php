@@ -27,9 +27,9 @@
 namespace Seatplus\Eveapi\Jobs\Wallet;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
+use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
@@ -42,12 +42,10 @@ use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
 class CharacterWalletJournalJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
-
     use HasPathValues, HasRequiredScopes, HasPages;
 
     public function __construct(JobContainer $job_container)
     {
-
         $this->setJobType('character');
         parent::__construct($job_container);
 
@@ -69,15 +67,14 @@ class CharacterWalletJournalJob extends NewEsiBase implements HasPathValuesInter
      */
     public function middleware(): array
     {
-
         return [
             new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
             new EsiAvailabilityMiddleware,
-            (new ThrottlesExceptionsWithRedis(80,5))
+            (new ThrottlesExceptionsWithRedis(80, 5))
                 ->by($this->uniqueId())
-                ->when(fn() => !$this->isEsiRateLimited())
-                ->backoff(5)
+                ->when(fn () => ! $this->isEsiRateLimited())
+                ->backoff(5),
         ];
     }
 
@@ -118,5 +115,4 @@ class CharacterWalletJournalJob extends NewEsiBase implements HasPathValuesInter
             $this->incrementPage();
         }
     }
-
 }

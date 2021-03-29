@@ -27,7 +27,6 @@
 namespace Seatplus\Eveapi\Services\Maintenance;
 
 use Closure;
-
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
 
@@ -37,7 +36,7 @@ class GetMissingTypesFromCharacterAssetsPipe
     {
         $type_ids = Asset::doesntHave('type')->pluck('type_id')->unique()->values();
 
-        $type_ids->each(fn($id) => ResolveUniverseTypeByIdJob::dispatch($id)->onQueue('high'));
+        $type_ids->each(fn ($id) => ResolveUniverseTypeByIdJob::dispatch($id)->onQueue('high'));
 
         return $next($payload);
     }

@@ -27,8 +27,8 @@
 namespace Seatplus\Eveapi\Esi;
 
 use Seat\Eseye\Containers\EsiResponse;
-use Seatplus\Eveapi\Services\Esi\RetrieveEsiData;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
+use Seatplus\Eveapi\Services\Esi\RetrieveEsiData;
 use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 
 abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface

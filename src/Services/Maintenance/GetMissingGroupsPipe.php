@@ -27,7 +27,6 @@
 namespace Seatplus\Eveapi\Services\Maintenance;
 
 use Closure;
-
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseGroupByIdJob;
 use Seatplus\Eveapi\Models\Universe\Type;
 
@@ -37,7 +36,7 @@ class GetMissingGroupsPipe
     {
         $unknown_type_ids = Type::whereDoesntHave('group')->pluck('group_id')->unique()->values();
 
-        $unknown_type_ids->each(fn($id) => ResolveUniverseGroupByIdJob::dispatch($id)->onQueue('high'));
+        $unknown_type_ids->each(fn ($id) => ResolveUniverseGroupByIdJob::dispatch($id)->onQueue('high'));
 
         return $next($payload);
     }

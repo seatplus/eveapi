@@ -26,19 +26,10 @@
 
 namespace Seatplus\Eveapi\Jobs\Universe;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Illuminate\Queue\SerializesModels;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequestBodyInterface;
-use Seatplus\Eveapi\Esi\Jobs\Universe\ResolveUniverseTypesByTypeIdAction;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Traits\HasPathValues;
@@ -46,7 +37,6 @@ use Seatplus\Eveapi\Traits\HasRequestBody;
 
 class ResolveUniverseTypeByIdJob extends NewEsiBase implements HasPathValuesInterface, HasRequestBodyInterface
 {
-
     use HasPathValues, HasRequestBody;
 
     public function __construct(private int $type_id)
@@ -72,10 +62,10 @@ class ResolveUniverseTypeByIdJob extends NewEsiBase implements HasPathValuesInte
     {
         return [
             new EsiAvailabilityMiddleware,
-            (new ThrottlesExceptionsWithRedis(80,5))
+            (new ThrottlesExceptionsWithRedis(80, 5))
                 ->by($this->uniqueId())
-                ->when(fn() => !$this->isEsiRateLimited())
-                ->backoff(5)
+                ->when(fn () => ! $this->isEsiRateLimited())
+                ->backoff(5),
         ];
     }
 
@@ -88,7 +78,7 @@ class ResolveUniverseTypeByIdJob extends NewEsiBase implements HasPathValuesInte
         ];
     }
 
-    public function handle() :void
+    public function handle(): void
     {
         $response = $this->retrieve();
 

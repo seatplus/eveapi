@@ -36,7 +36,7 @@ class GetMissingCategorysPipe
     {
         $unknown_type_ids = Group::whereDoesntHave('category')->pluck('category_id')->unique()->values();
 
-        $unknown_type_ids->each(fn($id) => ResolveUniverseCategoryByIdJob::dispatch($id)->onQueue('high'));
+        $unknown_type_ids->each(fn ($id) => ResolveUniverseCategoryByIdJob::dispatch($id)->onQueue('high'));
 
         return $next($payload);
     }

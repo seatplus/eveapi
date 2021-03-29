@@ -33,8 +33,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Seatplus\Eveapi\Esi\RetrieveFromEsiBase;
 use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Esi\RetrieveFromEsiBase;
 use Seatplus\Eveapi\Jobs\Seatplus\MaintenanceJob;
 use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
 use Seatplus\Eveapi\Jobs\Seatplus\UpdateCorporation;
@@ -156,7 +156,7 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
         $this->uniqueFor = $this->getMinutesUntilTimeout() * 60;
     }
 
-    abstract  public function tags(): array;
+    abstract public function tags(): array;
 
     /**
      * Get the middleware the job should pass through.
@@ -172,7 +172,6 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
      */
     abstract public function handle(): void;
 
-
     final public function getMinutesUntilTimeout(): int
     {
         $type = $this->getJobType();
@@ -180,16 +179,16 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
         $map = [
             'character' => UpdateCharacter::class,
             'corporation' => UpdateCorporation::class,
-            'public' => MaintenanceJob::class
+            'public' => MaintenanceJob::class,
         ];
 
         $scheduled_class = data_get($map, $type);
 
-        if(is_null($scheduled_class))
+        if (is_null($scheduled_class)) {
             return 1;
+        }
 
         return MinutesUntilNextSchedule::get($scheduled_class);
-
     }
 
     /**
@@ -255,5 +254,4 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
     {
         $this->jobType = $jobType;
     }
-
 }

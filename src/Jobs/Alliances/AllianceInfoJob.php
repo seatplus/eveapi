@@ -27,8 +27,8 @@
 namespace Seatplus\Eveapi\Jobs\Alliances;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
@@ -41,7 +41,6 @@ class AllianceInfoJob extends NewEsiBase implements HasPathValuesInterface
     public function __construct(
         public JobContainer $job_container
     ) {
-
         $this->setJobType('public');
         parent::__construct($job_container);
 
@@ -63,10 +62,10 @@ class AllianceInfoJob extends NewEsiBase implements HasPathValuesInterface
     {
         return [
             new EsiAvailabilityMiddleware,
-            (new ThrottlesExceptionsWithRedis(80,5))
+            (new ThrottlesExceptionsWithRedis(80, 5))
                 ->by($this->uniqueId())
-                ->when(fn() => !$this->isEsiRateLimited())
-                ->backoff(5)
+                ->when(fn () => ! $this->isEsiRateLimited())
+                ->backoff(5),
         ];
     }
 

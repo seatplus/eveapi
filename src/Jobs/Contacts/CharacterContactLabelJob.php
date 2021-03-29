@@ -28,14 +28,12 @@ namespace Seatplus\Eveapi\Jobs\Contacts;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Support\Collection;
+use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\RateLimitedJobMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Services\Contacts\ProcessContactLabelsResponse;
@@ -44,7 +42,6 @@ use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
 class CharacterContactLabelJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
-
     use HasRequiredScopes, HasPathValues;
 
     private int $page = 1;
@@ -80,10 +77,10 @@ class CharacterContactLabelJob extends NewEsiBase implements HasPathValuesInterf
             new HasRefreshTokenMiddleware,
             new EsiAvailabilityMiddleware,
             new HasRequiredScopeMiddleware,
-            (new ThrottlesExceptionsWithRedis(80,5))
+            (new ThrottlesExceptionsWithRedis(80, 5))
                 ->by($this->uniqueId())
-                ->when(fn() => !$this->isEsiRateLimited())
-                ->backoff(5)
+                ->when(fn () => ! $this->isEsiRateLimited())
+                ->backoff(5),
         ];
     }
 

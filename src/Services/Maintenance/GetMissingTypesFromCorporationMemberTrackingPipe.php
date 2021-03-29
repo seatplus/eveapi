@@ -36,7 +36,7 @@ class GetMissingTypesFromCorporationMemberTrackingPipe
     {
         $type_ids = CorporationMemberTracking::doesntHave('ship')->pluck('ship_type_id')->unique()->values();
 
-        $type_ids->each(fn($id) => ResolveUniverseTypeByIdJob::dispatch($id)->onQueue('high'));
+        $type_ids->each(fn ($id) => ResolveUniverseTypeByIdJob::dispatch($id)->onQueue('high'));
 
         return $next($payload);
     }

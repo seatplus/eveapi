@@ -36,7 +36,7 @@ class GetMissingTypesFromWalletTransactionPipe
     {
         $type_ids = WalletTransaction::doesntHave('type')->pluck('type_id')->unique()->values();
 
-        $type_ids->each(fn($id) => ResolveUniverseTypeByIdJob::dispatch($id)->onQueue('high'));;
+        $type_ids->each(fn ($id) => ResolveUniverseTypeByIdJob::dispatch($id)->onQueue('high'));
 
         return $next($payload);
     }
