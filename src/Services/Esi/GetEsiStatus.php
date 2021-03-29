@@ -24,14 +24,16 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Actions\Location;
+namespace Seatplus\Eveapi\Services\Esi;
 
+use Exception;
 use Seatplus\Eveapi\Esi\RetrieveFromEsiBase;
-use Seatplus\Eveapi\Actions\Seatplus\CreateOrUpdateMissingIdsCache;
-use Seatplus\Eveapi\Models\Universe\Structure;
+use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 
-class CacheAllPublicStrucutresIdAction extends RetrieveFromEsiBase
+class GetEsiStatus extends RetrieveFromEsiBase
 {
+    use RateLimitsEsiCalls;
+
     /**
      * @var string
      */
@@ -40,12 +42,49 @@ class CacheAllPublicStrucutresIdAction extends RetrieveFromEsiBase
     /**
      * @var string
      */
-    protected $endpoint = '/universe/structures/';
+    protected $endpoint = '/ping';
 
     /**
      * @var string
      */
-    protected $version = 'v1';
+    protected $version = '';
+
+    /**
+     * Execute the job.
+     *
+     * @return void
+     * @throws \Exception
+     * @throws \Throwable
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    public function execute(): string
+    {
+        if ($this->isEsiRateLimited()) {
+            return 'rate limited';
+        }
+
+        // If recently a status request was made, return the cached result
+        if (! is_null($cache = cache('esi-status'))) {
+            return $cache['status'];
+        }
+
+        $start = microtime(true);
+
+        try {
+            $status = $this->retrieve()->raw;
+        } catch (Exception $exception) {
+            $status = 'Request failed with: ' . $exception->getMessage();
+        }
+
+        $end = microtime(true) - $start;
+
+        cache(['esi-status' => [
+            'status' => $status,
+            'request_time' => $end,
+        ]], now()->addSeconds(10));
+
+        return $status;
+    }
 
     public function getMethod(): string
     {
@@ -60,21 +99,5 @@ class CacheAllPublicStrucutresIdAction extends RetrieveFromEsiBase
     public function getVersion(): string
     {
         return $this->version;
-    }
-
-    public function execute()
-    {
-        $public_structure_ids = collect($this->retrieve());
-
-        // Get structure ids younger then a week
-        $structure_ids_younger_then_a_week = Structure::where('updated_at', '>', carbon('now')->subWeek())->pluck('structure_id')->values();
-
-        $ids_to_cache = $public_structure_ids->filter(function ($id) use ($structure_ids_younger_then_a_week) {
-
-            // Remove younger then a week structure from ids to cache
-            return ! in_array($id, $structure_ids_younger_then_a_week->toArray());
-        });
-
-        (new CreateOrUpdateMissingIdsCache('new_public_structure_ids', $ids_to_cache))->handle();
     }
 }

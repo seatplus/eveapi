@@ -24,36 +24,35 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Actions\Seatplus;
+namespace Seatplus\Eveapi\Services\Esi;
 
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
+use Seat\Eseye\Containers\EsiResponse;
+use Seat\Eseye\Eseye;
 
-class AddAndGetIdsFromCache
+class LogWarnings
 {
-    private $ids_to_return;
+    protected $eseye;
 
-    public function __construct(
-        private string $cache_key,
-        private ?int $id_to_add = null
-    ) {
-        $this->ids_to_return = collect();
+    public function setEseyeClient(Eseye $eseye)
+    {
+        $this->eseye = $eseye;
+
+        return $this;
     }
 
-    public function execute(): Collection
+    public function execute(EsiResponse $response, int $page = null): void
     {
-        if (! is_null($this->id_to_add)) {
-            $this->ids_to_return->push($this->id_to_add);
+        if (! is_null($response->pages) && $page === null) {
+            $this->eseye->getLogger()->warning('Response contained pages but none was expected');
         }
 
-        if (Cache::has($this->cache_key)) {
-            $cached_group_ids = Cache::pull($this->cache_key);
-
-            collect($cached_group_ids)->each(function ($cached_group_id) {
-                $this->ids_to_return->push($cached_group_id);
-            });
+        if (! is_null($page) && $response->pages === null) {
+            $this->eseye->getLogger()->warning('Expected a paged response but had none');
         }
 
-        return $this->ids_to_return;
+        if (array_key_exists('Warning', $response->headers)) {
+            $this->eseye->getLogger()->warning('A response contained a warning: ' .
+                $response->headers['Warning']);
+        }
     }
 }

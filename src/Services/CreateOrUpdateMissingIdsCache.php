@@ -24,35 +24,29 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Actions\Eseye;
+namespace Seatplus\Eveapi\Services;
 
-use Seat\Eseye\Containers\EsiResponse;
-use Seat\Eseye\Eseye;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
-class LogWarningsAction
+class CreateOrUpdateMissingIdsCache
 {
-    protected $eseye;
-
-    public function setEseyeClient(Eseye $eseye)
-    {
-        $this->eseye = $eseye;
-
-        return $this;
+    public function __construct(
+        private string $cache_string,
+        public Collection $ids
+    ) {
     }
 
-    public function execute(EsiResponse $response, int $page = null): void
+    public function handle()
     {
-        if (! is_null($response->pages) && $page === null) {
-            $this->eseye->getLogger()->warning('Response contained pages but none was expected');
+        if (Cache::has($this->cache_string)) {
+            $pending_ids = Cache::pull($this->cache_string);
+
+            $this->ids = $this->ids->merge($pending_ids)->flatten();
         }
 
-        if (! is_null($page) && $response->pages === null) {
-            $this->eseye->getLogger()->warning('Expected a paged response but had none');
-        }
-
-        if (array_key_exists('Warning', $response->headers)) {
-            $this->eseye->getLogger()->warning('A response contained a warning: ' .
-                $response->headers['Warning']);
-        }
+        Cache::put($this->cache_string, $this->ids->map(function ($id) {
+            return (int) $id;
+        })->values()->all());
     }
 }

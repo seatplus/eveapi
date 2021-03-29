@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Mockery;
 use Seat\Eseye\Containers\EsiResponse;
-use Seatplus\Eveapi\Actions\Eseye\RetrieveEsiDataAction;
+use Seatplus\Eveapi\Services\Esi\RetrieveEsiData;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
@@ -118,7 +118,7 @@ class CharacterWalletTransactionLifecycleTest extends TestCase
         $response2 = new EsiResponse(json_encode([]), [], 'now', 200);
 
         //$mock = Mockery::namedMock( CharacterWalletTransactionAction::class,  RetrieveFromEsiInterface::class)->makePartial();
-        $mock = Mockery::mock('overload:' . RetrieveEsiDataAction::class);
+        $mock = Mockery::mock('overload:' . RetrieveEsiData::class);
 
         $mock->shouldReceive('execute')
             ->once()

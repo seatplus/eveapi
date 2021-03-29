@@ -28,7 +28,7 @@ namespace Seatplus\Eveapi\Services\Maintenance;
 
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
-use Seatplus\Eveapi\Actions\Seatplus\CreateOrUpdateMissingIdsCache;
+use Seatplus\Eveapi\Services\CreateOrUpdateMissingIdsCache;
 use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;

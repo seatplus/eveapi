@@ -4,6 +4,7 @@ namespace Seatplus\Eveapi\Tests\Traits;
 
 use Mockery;
 use Seat\Eseye\Containers\EsiResponse;
+use Seatplus\Eveapi\Services\Esi\RetrieveEsiData;
 
 trait MockRetrieveEsiDataAction
 {
@@ -14,7 +15,7 @@ trait MockRetrieveEsiDataAction
 
         $response = new EsiResponse($data, [], 'now', 200);
 
-        $mock = Mockery::mock('overload:Seatplus\Eveapi\Actions\Eseye\RetrieveEsiDataAction');
+        $mock = Mockery::mock('overload:' . RetrieveEsiData::class);
         $mock->shouldReceive('execute')
             ->once()
             ->andReturn($response);

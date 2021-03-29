@@ -24,13 +24,13 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Actions\Eseye;
+namespace Seatplus\Eveapi\Services\Esi;
 
 use Seat\Eseye\Containers\EsiAuthentication;
 use Seat\Eseye\Eseye;
 use Seatplus\Eveapi\Models\RefreshToken;
 
-class GetEseyeClientAction
+class GetEseyeClient
 {
     private $client;
 

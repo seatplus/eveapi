@@ -5,7 +5,7 @@ namespace Seatplus\Eveapi\Tests\Unit\Actions\Seatplus;
 
 
 use Illuminate\Support\Facades\Cache;
-use Seatplus\Eveapi\Actions\Seatplus\CreateOrUpdateMissingIdsCache;
+use Seatplus\Eveapi\Services\CreateOrUpdateMissingIdsCache;
 use Seatplus\Eveapi\Tests\TestCase;
 
 class CreateOrUpdateMissingIdsCacheTest extends TestCase

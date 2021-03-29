@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Actions\Eseye;
+namespace Seatplus\Eveapi\Services\Esi;
 
 use Illuminate\Support\Str;
 use Seat\Eseye\Containers\EsiResponse;
@@ -33,7 +33,7 @@ use Seat\Eseye\Exceptions\RequestFailedException;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
 use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 
-class RetrieveEsiDataAction
+class RetrieveEsiData
 {
     use RateLimitsEsiCalls;
 
@@ -45,7 +45,7 @@ class RetrieveEsiDataAction
 
     public function __construct()
     {
-        $this->get_eseye_client_action = new GetEseyeClientAction();
+        $this->get_eseye_client_action = new GetEseyeClient();
     }
 
     /**
@@ -96,9 +96,9 @@ class RetrieveEsiDataAction
         return $result;
     }
 
-    private function getLogWarningAction(): LogWarningsAction
+    private function getLogWarningAction(): LogWarnings
     {
-        return new LogWarningsAction();
+        return new LogWarnings();
     }
 
     private function updateRefreshToken()

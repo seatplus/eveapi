@@ -4,7 +4,7 @@ namespace Seatplus\Eveapi\Tests\Unit\Actions;
 
 use Illuminate\Support\Facades\Event;
 use Seat\Eseye\Eseye;
-use Seatplus\Eveapi\Actions\Eseye\GetEseyeClientAction;
+use Seatplus\Eveapi\Services\Esi\GetEseyeClient;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Tests\TestCase;
 
@@ -30,7 +30,7 @@ class GetEseyeClientActionTest extends TestCase
     public function getClientForNullRefreshToken()
     {
 
-        $action = new GetEseyeClientAction;
+        $action = new GetEseyeClient;
 
         $this->assertInstanceOf(Eseye::class, $action->execute());
     }
@@ -39,7 +39,7 @@ class GetEseyeClientActionTest extends TestCase
     public function getClient()
     {
 
-        $action = new GetEseyeClientAction;
+        $action = new GetEseyeClient;
 
         $this->assertInstanceOf(Eseye::class, $action->execute());
     }

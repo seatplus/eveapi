@@ -27,7 +27,7 @@
 namespace Seatplus\Eveapi\Esi;
 
 use Seat\Eseye\Containers\EsiResponse;
-use Seatplus\Eveapi\Actions\Eseye\RetrieveEsiDataAction;
+use Seatplus\Eveapi\Services\Esi\RetrieveEsiData;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
 use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 
@@ -54,7 +54,7 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
     {
         $this->builldEsiRequestContainer($page);
 
-        return (new RetrieveEsiDataAction)->execute($this->esi_request_container);
+        return (new RetrieveEsiData)->execute($this->esi_request_container);
     }
 
     private function getBaseEsiReuestContainer(): EsiRequestContainer

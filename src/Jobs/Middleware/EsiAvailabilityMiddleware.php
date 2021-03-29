@@ -27,7 +27,7 @@
 namespace Seatplus\Eveapi\Jobs\Middleware;
 
 use Exception;
-use Seatplus\Eveapi\Esi\Esi\GetEsiStatusAction;
+use Seatplus\Eveapi\Services\Esi\GetEsiStatus;
 
 class EsiAvailabilityMiddleware
 {
@@ -35,7 +35,7 @@ class EsiAvailabilityMiddleware
 
     public function __construct()
     {
-        $this->status = (new GetEsiStatusAction)->execute();
+        $this->status = (new GetEsiStatus)->execute();
     }
 
     /**
