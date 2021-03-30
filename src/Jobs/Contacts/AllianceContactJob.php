@@ -28,9 +28,9 @@ namespace Seatplus\Eveapi\Jobs\Contacts;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Support\Collection;
+use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
@@ -77,10 +77,10 @@ class AllianceContactJob extends NewEsiBase implements HasPathValuesInterface, H
             new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
             new EsiAvailabilityMiddleware,
-            (new ThrottlesExceptionsWithRedis(80,5))
+            (new ThrottlesExceptionsWithRedis(80, 5))
                 ->by($this->uniqueId())
-                ->when(fn() => !$this->isEsiRateLimited())
-                ->backoff(5)
+                ->when(fn () => ! $this->isEsiRateLimited())
+                ->backoff(5),
         ];
     }
 

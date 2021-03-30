@@ -28,10 +28,10 @@ namespace Seatplus\Eveapi\Jobs\Assets;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
+use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequestBodyInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
@@ -72,10 +72,10 @@ class CharacterAssetsNameJob extends NewEsiBase implements HasPathValuesInterfac
             new HasRefreshTokenMiddleware,
             new EsiAvailabilityMiddleware,
             new HasRequiredScopeMiddleware,
-            (new ThrottlesExceptionsWithRedis(80,5))
+            (new ThrottlesExceptionsWithRedis(80, 5))
                 ->by($this->uniqueId())
-                ->when(fn() => !$this->isEsiRateLimited())
-                ->backoff(5)
+                ->when(fn () => ! $this->isEsiRateLimited())
+                ->backoff(5),
         ];
     }
 
@@ -109,7 +109,7 @@ class CharacterAssetsNameJob extends NewEsiBase implements HasPathValuesInterfac
 
                 $responses = $this->retrieve();
 
-                if($responses->isCachedLoad()) {
+                if ($responses->isCachedLoad()) {
                     return;
                 }
 

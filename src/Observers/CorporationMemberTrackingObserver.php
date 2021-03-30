@@ -28,8 +28,8 @@ namespace Seatplus\Eveapi\Observers;
 
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
-use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\FindCorporationRefreshToken;

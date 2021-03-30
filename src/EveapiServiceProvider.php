@@ -241,7 +241,6 @@ class EveapiServiceProvider extends ServiceProvider
 
             // Cleanup Batches Table
             $schedule->command('queue:prune-batches')->daily();
-
         });
     }
 

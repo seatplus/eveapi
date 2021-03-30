@@ -26,8 +26,8 @@
 
 namespace Seatplus\Eveapi\Observers;
 
-use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;

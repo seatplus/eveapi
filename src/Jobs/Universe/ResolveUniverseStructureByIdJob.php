@@ -40,21 +40,18 @@ use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
 class ResolveUniverseStructureByIdJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
-
     use HasPathValues, HasRequiredScopes;
-    
 
     public function __construct(
         RefreshToken $refresh_token,
         public int $location_id
-    )
-    {
+    ) {
         $this->setRefreshToken($refresh_token);
 
         $this->setMethod('get');
         $this->setEndpoint('/universe/structures/{structure_id}/');
         $this->setVersion('v2');
-        
+
         $this->setRequiredScope('esi-universe.read_structures.v1');
 
         $this->setPathValues([
@@ -68,7 +65,7 @@ class ResolveUniverseStructureByIdJob extends NewEsiBase implements HasPathValue
             'resolve',
             'universe',
             'structure',
-            'location_id:' . $this->location_id
+            'location_id:' . $this->location_id,
         ];
     }
 
@@ -78,19 +75,18 @@ class ResolveUniverseStructureByIdJob extends NewEsiBase implements HasPathValue
             new EsiAvailabilityMiddleware,
             new HasRequiredScopeMiddleware,
             // This is very likely throwing errors if user is not on acl. In order to not getting blocked by esi rate limit only use half of allowed errors
-            (new ThrottlesExceptionsWithRedis($this->getRatelimit()/2 ,5))
+            (new ThrottlesExceptionsWithRedis($this->getRatelimit() / 2, 5))
                 ->by($this->uniqueId())
-                ->when(fn() => !$this->isEsiRateLimited())
-                ->backoff(5)
+                ->when(fn () => ! $this->isEsiRateLimited())
+                ->backoff(5),
         ];
     }
 
     public function handle(): void
     {
-
         $result = $this->retrieve();
 
-        if($result->isCachedLoad()) {
+        if ($result->isCachedLoad()) {
             return;
         }
 

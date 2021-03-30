@@ -27,8 +27,8 @@
 namespace Seatplus\Eveapi\Jobs\Character;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
@@ -36,7 +36,6 @@ use Seatplus\Eveapi\Traits\HasPathValues;
 
 class CharacterInfoJob extends NewEsiBase implements HasPathValuesInterface
 {
-
     use HasPathValues;
 
     public function __construct(?JobContainer $job_container = null)
@@ -51,7 +50,6 @@ class CharacterInfoJob extends NewEsiBase implements HasPathValuesInterface
         $this->setPathValues([
             'character_id' => $this->character_id,
         ]);
-
     }
 
     public function tags(): array
@@ -59,7 +57,7 @@ class CharacterInfoJob extends NewEsiBase implements HasPathValuesInterface
         return [
             'character',
             'info',
-            'character_id:' . $this->character_id
+            'character_id:' . $this->character_id,
         ];
     }
 
@@ -72,10 +70,10 @@ class CharacterInfoJob extends NewEsiBase implements HasPathValuesInterface
     {
         return [
             new EsiAvailabilityMiddleware,
-            (new ThrottlesExceptionsWithRedis(80,5))
+            (new ThrottlesExceptionsWithRedis(80, 5))
                 ->by($this->uniqueId())
-                ->when(fn() => !$this->isEsiRateLimited())
-                ->backoff(5)
+                ->when(fn () => ! $this->isEsiRateLimited())
+                ->backoff(5),
         ];
     }
 
@@ -87,7 +85,6 @@ class CharacterInfoJob extends NewEsiBase implements HasPathValuesInterface
      */
     public function handle(): void
     {
-
         $response = $this->retrieve();
 
         if ($response->isCachedLoad()) {

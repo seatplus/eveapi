@@ -49,7 +49,6 @@ class GetEseyeClient
      */
     public function execute(RefreshToken $refresh_token = null): Eseye
     {
-
         $this->client = app('esi-client');
 
         $this->refresh_token = $refresh_token;

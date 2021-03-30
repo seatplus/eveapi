@@ -62,10 +62,10 @@ class ResolveUniverseConstellationByConstellationIdJob extends NewEsiBase implem
         return [
             new HasRefreshTokenMiddleware,
             new EsiAvailabilityMiddleware,
-            (new ThrottlesExceptionsWithRedis(80,5))
+            (new ThrottlesExceptionsWithRedis(80, 5))
                 ->by($this->uniqueId())
-                ->when(fn() => !$this->isEsiRateLimited())
-                ->backoff(5)
+                ->when(fn () => ! $this->isEsiRateLimited())
+                ->backoff(5),
         ];
     }
 
@@ -98,6 +98,4 @@ class ResolveUniverseConstellationByConstellationIdJob extends NewEsiBase implem
             ]
         );
     }
-
-
 }

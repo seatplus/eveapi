@@ -31,7 +31,6 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Redis as RedisHelper;
-use Illuminate\Support\Facades\Schema;
 
 class ClearCache extends Command
 {
