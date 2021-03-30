@@ -26,18 +26,10 @@
 
 namespace Seatplus\Eveapi\Jobs\Universe;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequestBodyInterface;
-use Seatplus\Eveapi\Esi\Jobs\Universe\ResolveUniverseGroupsByGroupIdAction;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Traits\HasPathValues;
@@ -70,10 +62,10 @@ class ResolveUniverseGroupByIdJob extends NewEsiBase implements HasPathValuesInt
     {
         return [
             new EsiAvailabilityMiddleware,
-            (new ThrottlesExceptionsWithRedis(80,5))
+            (new ThrottlesExceptionsWithRedis(80, 5))
                 ->by($this->uniqueId())
-                ->when(fn() => !$this->isEsiRateLimited())
-                ->backoff(5)
+                ->when(fn () => ! $this->isEsiRateLimited())
+                ->backoff(5),
         ];
     }
 
@@ -91,9 +83,8 @@ class ResolveUniverseGroupByIdJob extends NewEsiBase implements HasPathValuesInt
      *
      * @return void
      */
-    public function handle() : void
+    public function handle(): void
     {
-
         $response = $this->retrieve();
 
         if ($response->isCachedLoad()) {

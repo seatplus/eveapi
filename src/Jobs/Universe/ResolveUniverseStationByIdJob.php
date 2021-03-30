@@ -42,8 +42,7 @@ class ResolveUniverseStationByIdJob extends NewEsiBase implements HasPathValuesI
 
     public function __construct(
         public int $location_id
-    )
-    {
+    ) {
         $this->setJobType('public');
         parent::__construct();
 
@@ -56,14 +55,13 @@ class ResolveUniverseStationByIdJob extends NewEsiBase implements HasPathValuesI
         ]);
     }
 
-
     public function tags(): array
     {
         return [
             'resolve',
             'universe',
             'station',
-            'location_id:' . $this->location_id
+            'location_id:' . $this->location_id,
         ];
     }
 
@@ -71,10 +69,10 @@ class ResolveUniverseStationByIdJob extends NewEsiBase implements HasPathValuesI
     {
         return [
             new EsiAvailabilityMiddleware,
-            (new ThrottlesExceptionsWithRedis(80,5))
+            (new ThrottlesExceptionsWithRedis(80, 5))
                 ->by($this->uniqueId())
-                ->when(fn() => !$this->isEsiRateLimited())
-                ->backoff(5)
+                ->when(fn () => ! $this->isEsiRateLimited())
+                ->backoff(5),
         ];
     }
 
@@ -88,7 +86,7 @@ class ResolveUniverseStationByIdJob extends NewEsiBase implements HasPathValuesI
 
         $result = $this->retrieve();
 
-        if($result->isCachedLoad()) {
+        if ($result->isCachedLoad()) {
             return;
         }
 
@@ -113,5 +111,4 @@ class ResolveUniverseStationByIdJob extends NewEsiBase implements HasPathValuesI
             'locatable_type' => Station::class,
         ]);
     }
-
 }
