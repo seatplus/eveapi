@@ -29,9 +29,7 @@ namespace Seatplus\Eveapi\Jobs\Universe;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Universe\Region;
 use Seatplus\Eveapi\Traits\HasPathValues;
@@ -64,10 +62,10 @@ class ResolveUniverseRegionByRegionIdJob extends NewEsiBase implements HasPathVa
         return [
             new HasRefreshTokenMiddleware,
             new EsiAvailabilityMiddleware,
-            (new ThrottlesExceptionsWithRedis(80,5))
+            (new ThrottlesExceptionsWithRedis(80, 5))
                 ->by($this->uniqueId())
-                ->when(fn() => !$this->isEsiRateLimited())
-                ->backoff(5)
+                ->when(fn () => ! $this->isEsiRateLimited())
+                ->backoff(5),
         ];
     }
 

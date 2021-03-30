@@ -26,14 +26,8 @@
 
 namespace Seatplus\Eveapi\Jobs\Universe;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequestBodyInterface;
-use Seatplus\Eveapi\Esi\Jobs\Universe\ResolveUniverseCategoriesByCategoryIdAction;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
@@ -82,7 +76,6 @@ class ResolveUniverseCategoryByIdJob extends NewEsiBase implements HasPathValues
             sprintf('category_id:%s', $this->category_id),
         ];
     }
-
 
     public function handle(): void
     {

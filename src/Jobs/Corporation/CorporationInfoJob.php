@@ -27,8 +27,8 @@
 namespace Seatplus\Eveapi\Jobs\Corporation;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
@@ -63,10 +63,10 @@ class CorporationInfoJob extends NewEsiBase implements HasPathValuesInterface
         return [
             new HasRefreshTokenMiddleware,
             new EsiAvailabilityMiddleware,
-            (new ThrottlesExceptionsWithRedis(80,5))
+            (new ThrottlesExceptionsWithRedis(80, 5))
                 ->by($this->uniqueId())
-                ->when(fn() => !$this->isEsiRateLimited())
-                ->backoff(5)
+                ->when(fn () => ! $this->isEsiRateLimited())
+                ->backoff(5),
         ];
     }
 
@@ -75,7 +75,7 @@ class CorporationInfoJob extends NewEsiBase implements HasPathValuesInterface
         return [
             'corporation',
             'info',
-            'corporation_id:' . $this->corporation_id
+            'corporation_id:' . $this->corporation_id,
         ];
     }
 
@@ -108,6 +108,4 @@ class CorporationInfoJob extends NewEsiBase implements HasPathValuesInterface
             'war_eligible'    => $response->optional('war_eligible'),
         ])->save();
     }
-
-
 }

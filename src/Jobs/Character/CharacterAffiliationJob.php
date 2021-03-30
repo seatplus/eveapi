@@ -28,8 +28,8 @@ namespace Seatplus\Eveapi\Jobs\Character;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Support\Collection;
-use Seatplus\Eveapi\Esi\HasRequestBodyInterface;
 use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Esi\HasRequestBodyInterface;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
@@ -51,14 +51,12 @@ class CharacterAffiliationJob extends NewEsiBase implements HasRequestBodyInterf
 
     public function tags(): array
     {
-
-       $tags = [
+        $tags = [
             'character',
             'affiliation',
         ];
 
-       return $this->character_id ? array_merge($tags, ['character_id:' . $this->character_id]) : $tags;
-
+        return $this->character_id ? array_merge($tags, ['character_id:' . $this->character_id]) : $tags;
     }
 
     /**
@@ -70,10 +68,10 @@ class CharacterAffiliationJob extends NewEsiBase implements HasRequestBodyInterf
     {
         return [
             new EsiAvailabilityMiddleware,
-            (new ThrottlesExceptionsWithRedis(80,5))
+            (new ThrottlesExceptionsWithRedis(80, 5))
                 ->by($this->uniqueId())
-                ->when(fn() => !$this->isEsiRateLimited())
-                ->backoff(5)
+                ->when(fn () => ! $this->isEsiRateLimited())
+                ->backoff(5),
         ];
     }
 
@@ -89,23 +87,23 @@ class CharacterAffiliationJob extends NewEsiBase implements HasRequestBodyInterf
             ->pipe(fn (Collection $collection) => $collection->isEmpty() ? $collection : $collection->filter(function ($value) {
 
             // Remove $character_id that is already in DB and younger then 60minutes
-            $db_entry = CharacterAffiliation::find($value);
+                $db_entry = CharacterAffiliation::find($value);
 
-            return $db_entry
+                return $db_entry
                 ? $db_entry->last_pulled->diffInMinutes(now()) > 60
                 : true;
-        }))->pipe(function (Collection $collection) {
-            //Check all other character affiliations present in DB that are younger then 60 minutes
-            $character_affiliations = CharacterAffiliation::cursor()->filter(function ($character_affiliation) {
-                return $character_affiliation->last_pulled->diffInMinutes(now()) > 60;
-            });
+            }))->pipe(function (Collection $collection) {
+                //Check all other character affiliations present in DB that are younger then 60 minutes
+                $character_affiliations = CharacterAffiliation::cursor()->filter(function ($character_affiliation) {
+                    return $character_affiliation->last_pulled->diffInMinutes(now()) > 60;
+                });
 
-            foreach ($character_affiliations as $character_affiliation) {
-                $collection->push($character_affiliation->character_id);
-            }
+                foreach ($character_affiliations as $character_affiliation) {
+                    $collection->push($character_affiliation->character_id);
+                }
 
-            return $collection;
-        })->unique()
+                return $collection;
+            })->unique()
             ->chunk(1000)
             ->whenNotEmpty(function ($collection) {
                 $collection->each(function (Collection $chunk) {

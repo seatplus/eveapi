@@ -26,8 +26,8 @@
 
 namespace Seatplus\Eveapi\Esi;
 
-use Seat\Eseye\Containers\EsiResponse;
 use Facades\Seatplus\Eveapi\Services\Esi\RetrieveEsiData;
+use Seat\Eseye\Containers\EsiResponse;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
 use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 
