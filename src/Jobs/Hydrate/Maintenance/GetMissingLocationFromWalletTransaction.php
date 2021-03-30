@@ -42,7 +42,10 @@ class GetMissingLocationFromWalletTransaction extends HydrateMaintenanceBase
                 }
 
                 if ($refresh_token) {
-                    dispatch(new ResolveLocationJob($wallet_transaction->location_id, $refresh_token))->onQueue('high');
+                    $this->batch()->add([
+                        new ResolveLocationJob($wallet_transaction->location_id, $refresh_token)
+                    ]);
+
                 }
             });
     }

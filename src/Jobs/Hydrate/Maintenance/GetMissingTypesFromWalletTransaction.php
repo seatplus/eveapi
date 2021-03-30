@@ -20,6 +20,10 @@ class GetMissingTypesFromWalletTransaction extends HydrateMaintenanceBase
 
         $type_ids = WalletTransaction::doesntHave('type')->pluck('type_id')->unique()->values();
 
-        $type_ids->each(fn($id) => ResolveUniverseTypeByIdJob::dispatch($id)->onQueue('high'));
+        $jobs = $type_ids->map(fn($id) => new ResolveUniverseTypeByIdJob($id));
+
+        $this->batch()->add(
+            $jobs->toArray()
+        );
     }
 }

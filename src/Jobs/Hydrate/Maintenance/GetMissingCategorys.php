@@ -42,6 +42,10 @@ class GetMissingCategorys extends HydrateMaintenanceBase
 
         $unknown_type_ids = Group::whereDoesntHave('category')->pluck('category_id')->unique()->values();
 
-        $unknown_type_ids->each(fn($id) => ResolveUniverseCategoryByIdJob::dispatch($id)->onQueue('high'));
+        $jobs = $unknown_type_ids->map(fn($id) => new ResolveUniverseCategoryByIdJob($id));
+
+        $this->batch()->add(
+            $jobs->toArray()
+        );
     }
 }

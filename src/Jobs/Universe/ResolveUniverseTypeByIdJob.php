@@ -51,8 +51,8 @@ class ResolveUniverseTypeByIdJob extends NewEsiBase implements HasPathValuesInte
 
     public function __construct(private int $type_id)
     {
-        $this->setJobType('public');
-        parent::__construct();
+        //$this->setJobType('public');
+        parent::__construct(null, 'public');
 
         $this->setMethod('get');
         $this->setEndpoint('/universe/stations/{station_id}/');

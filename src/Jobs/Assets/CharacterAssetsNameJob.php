@@ -45,7 +45,7 @@ class CharacterAssetsNameJob extends NewEsiBase implements HasPathValuesInterfac
 {
     use HasRequiredScopes, HasPathValues, HasRequestBody;
 
-    public function __construct(?JobContainer $job_container = null)
+    public function __construct(JobContainer $job_container)
     {
         $this->setJobType('character');
         parent::__construct($job_container);

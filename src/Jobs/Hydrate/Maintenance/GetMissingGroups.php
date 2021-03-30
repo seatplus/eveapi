@@ -25,7 +25,11 @@ class GetMissingGroups extends HydrateMaintenanceBase
 
         $unknown_type_ids = Type::whereDoesntHave('group')->pluck('group_id')->unique()->values();
 
-        $unknown_type_ids->each(fn($id) => ResolveUniverseGroupByIdJob::dispatch($id)->onQueue('high'));
+        $jobs = $unknown_type_ids->map(fn($id) => new ResolveUniverseGroupByIdJob($id));
+
+        $this->batch()->add(
+            $jobs->toArray()
+        );
 
     }
 }

@@ -141,10 +141,8 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
 
     /**
      * EsiBase constructor.
-     *
-     * @param JobContainer|null $job_container
      */
-    public function __construct(?JobContainer $job_container = null)
+    public function __construct(?JobContainer $job_container = null, ?string $jobType = null)
     {
         $job_container = $job_container ?? new JobContainer();
 
@@ -152,6 +150,10 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
         $this->setCorporationId($job_container->getCorporationId());
         $this->setAllianceId($job_container->getAllianceId());
         $this->setRefreshToken($job_container->getRefreshToken());
+
+        if($jobType) {
+            $this->setJobType($jobType);
+        }
 
         $this->uniqueFor = $this->getMinutesUntilTimeout() * 60;
     }

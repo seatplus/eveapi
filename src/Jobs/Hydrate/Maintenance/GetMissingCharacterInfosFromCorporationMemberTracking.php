@@ -24,12 +24,16 @@ class GetMissingCharacterInfosFromCorporationMemberTracking extends HydrateMaint
 
         $character_ids = CorporationMemberTracking::doesntHave('character')->pluck('character_id')->unique()->values();
 
-        $character_ids->each(function ($character_id) {
-            $job = new JobContainer([
+        $jobs = $character_ids->map (function ($character_id) {
+            $jobContainer = new JobContainer([
                 'character_id' => $character_id,
             ]);
 
-            CharacterInfoJob::dispatch($job)->onQueue('high');
+            return new CharacterInfoJob($jobContainer);
         });
+
+        $this->batch()->add(
+            $jobs->toArray()
+        );
     }
 }

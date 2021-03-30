@@ -26,8 +26,8 @@ class GetMissingAssetsNames extends HydrateMaintenanceBase
         })
             ->pluck('assetable_id')
             ->unique()
-            ->whenNotEmpty(function ($collection) {
-                $collection->each(function ($assetable_id) {
+            ->whenNotEmpty(function ($collection)  {
+                return $collection->each(function ($assetable_id) {
                     $job_container = new JobContainer([
                         'refresh_token' => RefreshToken::find($assetable_id),
                     ]);
@@ -35,8 +35,6 @@ class GetMissingAssetsNames extends HydrateMaintenanceBase
                     $this->batch()->add([
                         new CharacterAssetsNameJob($job_container)
                     ]);
-
-                    //CharacterAssetsNameJob::dispatch($job_container)->onQueue('high');
                 });
             });
     }
