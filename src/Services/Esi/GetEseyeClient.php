@@ -50,7 +50,6 @@ class GetEseyeClient
     public function execute(RefreshToken $refresh_token = null): Eseye
     {
 
-        //TODO: Use cache to receive a cached client
         $this->client = app('esi-client');
 
         $this->refresh_token = $refresh_token;
