@@ -26,20 +26,30 @@
 
 namespace Seatplus\Eveapi\Jobs\Universe;
 
-use Seatplus\Eveapi\Actions\Jobs\Universe\ResolveUniverseRegionByRegionIdAction;
-use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
-use Seatplus\Eveapi\Jobs\EsiBase;
+use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
+use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
+use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
+use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Models\Universe\Region;
+use Seatplus\Eveapi\Traits\HasPathValues;
 
-class ResolveUniverseRegionByRegionIdJob extends EsiBase
+class ResolveUniverseRegionByRegionIdJob extends NewEsiBase implements HasPathValuesInterface
 {
-    private $region_id;
+    use HasPathValues;
 
-    public function getActionClass(): RetrieveFromEsiInterface
+    public function __construct(int $region_id)
     {
-        return new ResolveUniverseRegionByRegionIdAction;
+        $this->setJobType('public');
+        parent::__construct();
+
+        $this->setMethod('get');
+        $this->setEndpoint('/universe/regions/{region_id}/');
+        $this->setVersion('v1');
+
+        $this->setPathValues([
+            'region_id' => $region_id,
+        ]);
     }
 
     /**
@@ -50,9 +60,12 @@ class ResolveUniverseRegionByRegionIdJob extends EsiBase
     public function middleware(): array
     {
         return [
-            new RedisFunnelMiddleware,
-            new EsiRateLimitedMiddleware,
+            new HasRefreshTokenMiddleware,
             new EsiAvailabilityMiddleware,
+            (new ThrottlesExceptionsWithRedis(80, 5))
+                ->by($this->uniqueId())
+                ->when(fn () => ! $this->isEsiRateLimited())
+                ->backoff(5),
         ];
     }
 
@@ -60,7 +73,7 @@ class ResolveUniverseRegionByRegionIdJob extends EsiBase
     {
         return [
             'region_resolver',
-            'region_id:' . $this->region_id,
+            'region_id:' . data_get($this->getPathValues(), 'region_id'),
         ];
     }
 
@@ -71,18 +84,18 @@ class ResolveUniverseRegionByRegionIdJob extends EsiBase
      */
     public function handle(): void
     {
-        $this->getActionClass()->execute($this->region_id);
-    }
+        $response = $this->retrieve();
 
-    /**
-     * @param int $region_id
-     *
-     * @return \Seatplus\Eveapi\Jobs\Universe\ResolveUniverseRegionByRegionIdJob
-     */
-    public function setRegionId(int $region_id)
-    {
-        $this->region_id = $region_id;
+        if ($response->isCachedLoad()) {
+            return;
+        }
 
-        return $this;
+        Region::firstOrCreate(
+            ['region_id' => $response->region_id],
+            [
+                'name' => $response->name,
+                'description' => $response->optional('description'),
+            ]
+        );
     }
 }

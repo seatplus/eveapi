@@ -5,7 +5,7 @@ namespace Seatplus\Eveapi\Tests\Unit\Models;
 
 
 use Illuminate\Support\Facades\Queue;
-use Seatplus\Eveapi\Jobs\Alliances\AllianceInfo;
+use Seatplus\Eveapi\Jobs\Alliances\AllianceInfoJob;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationInfoJob;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Observers\CharacterAffiliationObserver;
@@ -35,7 +35,7 @@ class CharacterAffiliationTest extends TestCase
 
         Queue::assertPushedOn('high', CorporationInfoJob::class);
         if($character->character_affiliation->alliance)
-            Queue::assertPushedOn('high', AllianceInfo::class);
+            Queue::assertPushedOn('high', AllianceInfoJob::class);
 
     }
 
@@ -57,7 +57,7 @@ class CharacterAffiliationTest extends TestCase
         (new CharacterAffiliationObserver)->updating($character_affiliation);
 
         Queue::assertPushedOn('high', CorporationInfoJob::class);
-        Queue::assertPushedOn('high', AllianceInfo::class);
+        Queue::assertPushedOn('high', AllianceInfoJob::class);
 
     }
 

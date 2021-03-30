@@ -26,32 +26,31 @@
 
 namespace Seatplus\Eveapi\Jobs\Seatplus;
 
+use Illuminate\Bus\Batch;
+use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Pipeline\Pipeline;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
-use Seatplus\Eveapi\Services\Maintenance\GetMissingAssetsNamesPipe;
-use Seatplus\Eveapi\Services\Maintenance\GetMissingCategorysPipe;
-use Seatplus\Eveapi\Services\Maintenance\GetMissingCharacterInfosFromCorporationMemberTrackingPipe;
-use Seatplus\Eveapi\Services\Maintenance\GetMissingGroupsPipe;
-use Seatplus\Eveapi\Services\Maintenance\GetMissingLocationFromAssetsPipe;
-use Seatplus\Eveapi\Services\Maintenance\GetMissingLocationFromContractsPipe;
-use Seatplus\Eveapi\Services\Maintenance\GetMissingLocationFromCorporationMemberTrackingPipe;
-use Seatplus\Eveapi\Services\Maintenance\GetMissingLocationFromWalletTransactionPipe;
-use Seatplus\Eveapi\Services\Maintenance\GetMissingTypesFromCharacterAssetsPipe;
-use Seatplus\Eveapi\Services\Maintenance\GetMissingTypesFromContractItemPipe;
-use Seatplus\Eveapi\Services\Maintenance\GetMissingTypesFromCorporationMemberTrackingPipe;
-use Seatplus\Eveapi\Services\Maintenance\GetMissingTypesFromLocationsPipe;
-use Seatplus\Eveapi\Services\Maintenance\GetMissingTypesFromWalletTransactionPipe;
+use Illuminate\Support\Facades\Bus;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingAssetsNames;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCategorys;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCharacterInfosFromCorporationMemberTracking;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingGroups;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingLocationFromAssets;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingLocationFromContracts;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingLocationFromCorporationMemberTracking;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingLocationFromWalletTransaction;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromCharacterAssets;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromContractItem;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromCorporationMemberTracking;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromLocations;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromWalletTransaction;
 
 class MaintenanceJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * The number of times the job may be attempted.
@@ -59,39 +58,6 @@ class MaintenanceJob implements ShouldQueue
      * @var int
      */
     public $tries = 1;
-
-    private array $pipes = [
-        GetMissingTypesFromCharacterAssetsPipe::class,
-        GetMissingTypesFromLocationsPipe::class,
-        GetMissingGroupsPipe::class,
-        GetMissingCategorysPipe::class,
-        GetMissingLocationFromAssetsPipe::class,
-        GetMissingAssetsNamesPipe::class,
-        GetMissingTypesFromCorporationMemberTrackingPipe::class,
-        GetMissingLocationFromCorporationMemberTrackingPipe::class,
-        GetMissingTypesFromWalletTransactionPipe::class,
-        GetMissingLocationFromWalletTransactionPipe::class,
-        GetMissingCharacterInfosFromCorporationMemberTrackingPipe::class,
-        // TODO: Missing Affiliations from character_users, character_info and contacts
-
-        // Contracts
-        GetMissingTypesFromContractItemPipe::class,
-        GetMissingLocationFromContractsPipe::class,
-    ];
-
-    /**
-     * Get the middleware the job should pass through.
-     *
-     * @return array
-     */
-    public function middleware(): array
-    {
-        return [
-            new EsiRateLimitedMiddleware,
-            new EsiAvailabilityMiddleware,
-            new RedisFunnelMiddleware,
-        ];
-    }
 
     public function tags(): array
     {
@@ -107,9 +73,33 @@ class MaintenanceJob implements ShouldQueue
      */
     public function handle()
     {
-        app(Pipeline::class)
-            ->send(null)
-            ->through($this->pipes)
-            ->then(fn () => logger()->info('Maintenance job finished'));
+        Bus::batch([
+
+            new GetMissingGroups,
+            new GetMissingCategorys,
+            new GetMissingAssetsNames,
+            new GetMissingCharacterInfosFromCorporationMemberTracking,
+
+            // Locations
+            new GetMissingLocationFromWalletTransaction,
+            new GetMissingLocationFromCorporationMemberTracking,
+            new GetMissingLocationFromAssets,
+            new GetMissingLocationFromContracts,
+
+            // TODO: Missing Affiliations from character_users, character_info and contacts
+
+            // Types
+            new GetMissingTypesFromContractItem,
+            new GetMissingTypesFromCorporationMemberTracking,
+            new GetMissingTypesFromWalletTransaction,
+            new GetMissingTypesFromCharacterAssets,
+            new GetMissingTypesFromLocations,
+
+        ])
+            ->then(fn (Batch $batch) => logger()->info('Maintenance job finished'))
+            ->name('Maintenance Job')
+            ->onQueue('low')
+            ->allowFailures()
+            ->dispatch();
     }
 }

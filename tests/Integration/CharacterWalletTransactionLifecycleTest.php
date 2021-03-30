@@ -9,12 +9,11 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Mockery;
 use Seat\Eseye\Containers\EsiResponse;
-use Seatplus\Eveapi\Actions\Eseye\RetrieveEsiDataAction;
-use Seatplus\Eveapi\Actions\Jobs\Wallet\CharacterWalletTransactionAction;
+use Seatplus\Eveapi\Services\Esi\RetrieveEsiData;
 use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsLocationJob;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
+use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 use Seatplus\Eveapi\Tests\TestCase;
@@ -38,13 +37,20 @@ class CharacterWalletTransactionLifecycleTest extends TestCase
     public function runWalletTransactionAction()
     {
         Queue::assertNothingPushed();
-        $mock_data = $this->buildMockEsiData();
+        $mock_data = Event::fakeFor(fn() => WalletTransaction::factory()->count(5)->make());
         Queue::assertNothingPushed();
 
-        $response = new EsiResponse($mock_data, [], 'now', 200);
+        $response = new EsiResponse(json_encode($mock_data), [], 'now', 200);
         $response2 = new EsiResponse(json_encode([]), [], 'now', 200);
 
-        $mock = Mockery::mock(CharacterWalletTransactionAction::class)->makePartial();
+        \Facades\Seatplus\Eveapi\Services\Esi\RetrieveEsiData::shouldReceive('execute')
+            ->andReturns([$response, $response2]);
+
+        $job_container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]);
+        $mock = Mockery::mock(CharacterWalletTransactionJob::class)->makePartial();
+
+        $mock->shouldReceive('getCharacterId')
+            ->andReturn($this->test_character->character_id);
 
         $mock->shouldReceive('retrieve')
             ->once()
@@ -56,16 +62,9 @@ class CharacterWalletTransactionLifecycleTest extends TestCase
             ->ordered()
             ->andReturn($response2);
 
-        $mock->execute($this->test_character->refresh_token);
+        $mock->handle();
 
         $this->assertWalletTransaction($mock_data, $this->test_character->character_id);
-
-        $this->assertEquals(['character_id' => $this->test_character->character_id], $mock->getPathValues());
-        $this->assertEquals('esi-wallet.read_character_wallet.v1', $mock->getRequiredScope());
-        $this->assertEquals($this->test_character->refresh_token, $mock->getRefreshToken());
-        $this->assertEquals('get', $mock->getMethod());
-        $this->assertEquals('/characters/{character_id}/wallet/transactions/', $mock->getEndpoint());
-        $this->assertEquals('v1', $mock->getVersion());
     }
 
     /** @test */
@@ -77,7 +76,7 @@ class CharacterWalletTransactionLifecycleTest extends TestCase
         ]);
 
         Queue::assertPushedOn('high', ResolveLocationJob::class);
-        Queue::assertPushedOn('high', ResolveUniverseTypesByTypeIdJob::class);
+        Queue::assertPushedOn('high', ResolveUniverseTypeByIdJob::class);
     }
 
     /** @test */
@@ -90,7 +89,7 @@ class CharacterWalletTransactionLifecycleTest extends TestCase
         ]);
 
         Queue::assertPushedOn('high', ResolveLocationJob::class);
-        Queue::assertPushedOn('high', ResolveUniverseTypesByTypeIdJob::class);
+        Queue::assertPushedOn('high', ResolveUniverseTypeByIdJob::class);
     }
 
     private function buildMockEsiData()
@@ -122,7 +121,7 @@ class CharacterWalletTransactionLifecycleTest extends TestCase
         $response2 = new EsiResponse(json_encode([]), [], 'now', 200);
 
         //$mock = Mockery::namedMock( CharacterWalletTransactionAction::class,  RetrieveFromEsiInterface::class)->makePartial();
-        $mock = Mockery::mock('overload:' . RetrieveEsiDataAction::class);
+        $mock = Mockery::mock('overload:' . RetrieveEsiData::class);
 
         $mock->shouldReceive('execute')
             ->once()

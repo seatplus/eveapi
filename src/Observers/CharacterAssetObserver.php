@@ -28,7 +28,7 @@ namespace Seatplus\Eveapi\Observers;
 
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsLocationJob;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
@@ -77,7 +77,7 @@ class CharacterAssetObserver
             return;
         }
 
-        ResolveUniverseTypesByTypeIdJob::dispatch($this->asset->type_id)->onQueue('high');
+        ResolveUniverseTypeByIdJob::dispatch($this->asset->type_id)->onQueue('high');
     }
 
     private function handleLocations()
@@ -90,8 +90,14 @@ class CharacterAssetObserver
             return;
         }
 
+        $refresh_token = RefreshToken::find($this->asset->assetable_id);
+
+        if (is_null($refresh_token)) {
+            return;
+        }
+
         $job_container = new JobContainer([
-            'refresh_token' => RefreshToken::find($this->asset->assetable_id),
+            'refresh_token' => $refresh_token,
             'queue' => 'high',
         ]);
 

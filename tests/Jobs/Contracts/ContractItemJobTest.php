@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Contracts\CharacterContractsJob;
 use Seatplus\Eveapi\Jobs\Contracts\ContractItemsJob;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\Contracts\ContractItem;
 use Seatplus\Eveapi\Tests\TestCase;
@@ -27,16 +27,18 @@ class ContractItemJobTest extends TestCase
         // Assert that no jobs were pushed...
         Queue::assertNothingPushed();
 
-        $mock_data = $this->buildMockEsiData(1);
+        $mock_data = ContractItem::factory()->count(1)->make();
 
         $job_container = new JobContainer([
             'refresh_token' => $this->test_character->refresh_token
         ]);
 
+        $this->assertRetrieveEsiDataIsNotCalled();
+
         ContractItemsJob::dispatch($mock_data->first()->contract_id, $job_container, 'character');
 
         // Assert no
-        Queue::assertNotPushed(ResolveUniverseTypesByTypeIdJob::class);
+        Queue::assertNotPushed(ResolveUniverseTypeByIdJob::class);
     }
 
     /** @test */
@@ -59,7 +61,7 @@ class ContractItemJobTest extends TestCase
 
         $this->assertCount(5, ContractItem::all());
 
-        Queue::assertPushed(ResolveUniverseTypesByTypeIdJob::class);
+        Queue::assertPushed(ResolveUniverseTypeByIdJob::class);
 
     }
 

@@ -29,7 +29,7 @@ namespace Seatplus\Eveapi\Http\Controllers\Updates;
 use Illuminate\Http\Request;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Http\Controllers\Controller;
-use Seatplus\Eveapi\Jobs\Alliances\AllianceInfo;
+use Seatplus\Eveapi\Jobs\Alliances\AllianceInfoJob;
 
 class AllianceInfoController extends Controller
 {
@@ -43,7 +43,7 @@ class AllianceInfoController extends Controller
             'alliance_id' => $request->alliance_id,
         ]);
 
-        AllianceInfo::dispatch($job_container)->onQueue('default');
+        AllianceInfoJob::dispatch($job_container)->onQueue('default');
 
         return response('success', 200);
     }

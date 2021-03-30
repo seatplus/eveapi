@@ -7,8 +7,7 @@ namespace Seatplus\Eveapi\Tests\Integration;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsLocationJob;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseCategoriesByCategoryIdJob;
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Universe\Location;
@@ -17,13 +16,19 @@ use Seatplus\Eveapi\Tests\TestCase;
 
 class CharacterAssetLifeCycleTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Queue::fake();
+    }
 
     /** @test */
     public function it_dispatches_type_job()
     {
         $asset = Asset::factory()->make();
 
-        Queue::assertNotPushed('high', ResolveUniverseTypesByTypeIdJob::class);
+        Queue::assertNotPushed('high', ResolveUniverseTypeByIdJob::class);
 
         $this->assertDatabaseMissing('assets', ['item_id' => $asset->item_id]);
 
@@ -43,9 +48,9 @@ class CharacterAssetLifeCycleTest extends TestCase
 
         $this->assertDatabaseHas('assets', ['item_id' => $asset->item_id]);
 
-        Queue::assertPushedOn('high', ResolveUniverseTypesByTypeIdJob::class);
+        Queue::assertPushedOn('high', ResolveUniverseTypeByIdJob::class);
 
-        Queue::assertPushed(ResolveUniverseTypesByTypeIdJob::class, function ($job) use ($asset){
+        Queue::assertPushed(ResolveUniverseTypeByIdJob::class, function ($job) use ($asset){
             return in_array(sprintf('type_id:%s', $asset->type_id), $job->tags());
         });
     }
@@ -60,13 +65,15 @@ class CharacterAssetLifeCycleTest extends TestCase
             'type_id' => $type->type_id
         ]);
 
-        Queue::assertNotPushed(ResolveUniverseTypesByTypeIdJob::class);
+        Queue::assertNotPushed(ResolveUniverseTypeByIdJob::class);
     }
 
     /** @test */
     public function it_dispatches_location_job()
     {
-        $asset = Asset::factory()->create();
+        $asset = Asset::factory()->create([
+            'assetable_id' => $this->test_character->character_id
+        ]);
 
         Queue::assertPushedOn('high', CharacterAssetsLocationJob::class);
     }
@@ -90,7 +97,8 @@ class CharacterAssetLifeCycleTest extends TestCase
 
         $asset = Event::fakeFor( function () {
             return Asset::factory()->create([
-                'location_id' => 1234
+                'location_id' => 1234,
+                'assetable_id' => $this->test_character->character_id
             ]);
         });
 

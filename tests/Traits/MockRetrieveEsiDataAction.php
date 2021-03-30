@@ -2,7 +2,7 @@
 
 namespace Seatplus\Eveapi\Tests\Traits;
 
-use Mockery;
+use Facades\Seatplus\Eveapi\Services\Esi\RetrieveEsiData;
 use Seat\Eseye\Containers\EsiResponse;
 
 trait MockRetrieveEsiDataAction
@@ -14,10 +14,15 @@ trait MockRetrieveEsiDataAction
 
         $response = new EsiResponse($data, [], 'now', 200);
 
-        $mock = Mockery::mock('overload:Seatplus\Eveapi\Actions\Eseye\RetrieveEsiDataAction');
-        $mock->shouldReceive('execute')
+        RetrieveEsiData::shouldReceive('execute')
             ->once()
             ->andReturn($response);
+
+    }
+
+    public function assertRetrieveEsiDataIsNotCalled() : void
+    {
+        RetrieveEsiData::shouldReceive('execute')->never();
     }
 
 }

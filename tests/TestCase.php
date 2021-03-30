@@ -20,8 +20,9 @@ abstract class TestCase extends OrchestraTestCase
 
         parent::setUp();
 
+
         // Fake Queue by default so nothing gets queued during tests
-        Queue::fake();
+        //Queue::fake();
 
         // setup database
         $this->setupDatabase($this->app);

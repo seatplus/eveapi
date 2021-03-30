@@ -26,20 +26,30 @@
 
 namespace Seatplus\Eveapi\Jobs\Universe;
 
-use Seatplus\Eveapi\Actions\Jobs\Universe\ResolveUniverseSystemsBySystemIdAction;
-use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
-use Seatplus\Eveapi\Jobs\EsiBase;
+use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
+use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
+use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
+use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Models\Universe\System;
+use Seatplus\Eveapi\Traits\HasPathValues;
 
-class ResolveUniverseSystemBySystemIdJob extends EsiBase
+class ResolveUniverseSystemBySystemIdJob extends NewEsiBase implements HasPathValuesInterface
 {
-    private $system_id;
+    use HasPathValues;
 
-    public function getActionClass(): RetrieveFromEsiInterface
+    public function __construct(int $system_id)
     {
-        return new ResolveUniverseSystemsBySystemIdAction;
+        $this->setJobType('public');
+        parent::__construct();
+
+        $this->setMethod('get');
+        $this->setEndpoint('/universe/systems/{system_id}/');
+        $this->setVersion('v4');
+
+        $this->setPathValues([
+            'system_id' => $system_id,
+        ]);
     }
 
     /**
@@ -50,9 +60,12 @@ class ResolveUniverseSystemBySystemIdJob extends EsiBase
     public function middleware(): array
     {
         return [
-            new RedisFunnelMiddleware,
-            new EsiRateLimitedMiddleware,
+            new HasRefreshTokenMiddleware,
             new EsiAvailabilityMiddleware,
+            (new ThrottlesExceptionsWithRedis(80, 5))
+                ->by($this->uniqueId())
+                ->when(fn () => ! $this->isEsiRateLimited())
+                ->backoff(5),
         ];
     }
 
@@ -60,7 +73,7 @@ class ResolveUniverseSystemBySystemIdJob extends EsiBase
     {
         return [
             'system_resolve',
-            'system_id:' . $this->system_id,
+            'system_id:' . data_get($this->getPathValues(), 'system_id'),
         ];
     }
 
@@ -71,18 +84,21 @@ class ResolveUniverseSystemBySystemIdJob extends EsiBase
      */
     public function handle(): void
     {
-        $this->getActionClass()->execute($this->system_id);
-    }
+        $response = $this->retrieve();
 
-    /**
-     * @param int $system_id
-     *
-     * @return ResolveUniverseSystemBySystemIdJob
-     */
-    public function setSystemId(int $system_id)
-    {
-        $this->system_id = $system_id;
+        if ($response->isCachedLoad()) {
+            return;
+        }
 
-        return $this;
+        System::firstOrCreate(
+            ['system_id' => $response->system_id],
+            [
+                'constellation_id' => $response->constellation_id,
+                'name' => $response->name,
+                'security_status' => $response->security_status,
+
+                'security_class' => $response->optional('security_class'),
+            ]
+        );
     }
 }

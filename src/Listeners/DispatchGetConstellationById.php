@@ -37,9 +37,6 @@ class DispatchGetConstellationById
             return;
         }
 
-        $job = new ResolveUniverseConstellationByConstellationIdJob;
-        $job->setConstellationId($universe_system_created->system->constellation_id);
-
-        dispatch($job)->onQueue('default');
+        ResolveUniverseConstellationByConstellationIdJob::dispatch($universe_system_created->system->constellation_id)->onQueue('default');
     }
 }

@@ -27,9 +27,9 @@
 namespace Seatplus\Eveapi\Jobs\Contracts;
 
 use Illuminate\Contracts\Queue\ShouldBeUnique;
-use Seatplus\Eveapi\Actions\HasPathValuesInterface;
-use Seatplus\Eveapi\Actions\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Esi\HasPathValuesInterface;
+use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
@@ -85,7 +85,7 @@ class ContractItemsJob extends NewEsiBase implements HasPathValuesInterface, Has
     public function tags(): array
     {
         return [
-            'contract',
+            'contract:' . $this->contract_id,
             'items',
             'contract_items',
         ];
@@ -151,5 +151,10 @@ class ContractItemsJob extends NewEsiBase implements HasPathValuesInterface, Has
         $key = sprintf('eveapi.scopes.%s.contracts', $this->type);
 
         return head(config($key));
+    }
+
+    public function getJobType(): string
+    {
+        return $this->type;
     }
 }

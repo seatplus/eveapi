@@ -26,20 +26,30 @@
 
 namespace Seatplus\Eveapi\Jobs\Universe;
 
-use Seatplus\Eveapi\Actions\Jobs\Universe\ResolveUniverseConstellationByConstellationIdAction;
-use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
-use Seatplus\Eveapi\Jobs\EsiBase;
+use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
+use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
+use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
+use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Models\Universe\Constellation;
+use Seatplus\Eveapi\Traits\HasPathValues;
 
-class ResolveUniverseConstellationByConstellationIdJob extends EsiBase
+class ResolveUniverseConstellationByConstellationIdJob extends NewEsiBase implements HasPathValuesInterface
 {
-    private $constellation_id;
+    use HasPathValues;
 
-    public function getActionClass(): RetrieveFromEsiInterface
+    public function __construct(int $constellation_id)
     {
-        return new ResolveUniverseConstellationByConstellationIdAction;
+        $this->setJobType('public');
+        parent::__construct();
+
+        $this->setMethod('get');
+        $this->setEndpoint('/universe/constellations/{constellation_id}/');
+        $this->setVersion('v1');
+
+        $this->setPathValues([
+            'constellation_id' => $constellation_id,
+        ]);
     }
 
     /**
@@ -50,9 +60,12 @@ class ResolveUniverseConstellationByConstellationIdJob extends EsiBase
     public function middleware(): array
     {
         return [
-            new RedisFunnelMiddleware,
-            new EsiRateLimitedMiddleware,
+            new HasRefreshTokenMiddleware,
             new EsiAvailabilityMiddleware,
+            (new ThrottlesExceptionsWithRedis(80, 5))
+                ->by($this->uniqueId())
+                ->when(fn () => ! $this->isEsiRateLimited())
+                ->backoff(5),
         ];
     }
 
@@ -60,7 +73,7 @@ class ResolveUniverseConstellationByConstellationIdJob extends EsiBase
     {
         return [
             'constellation_resolver',
-            'constellation_id:' . $this->constellation_id,
+            'constellation_id:' . data_get($this->getPathValues(), 'constellation_id'),
         ];
     }
 
@@ -71,18 +84,18 @@ class ResolveUniverseConstellationByConstellationIdJob extends EsiBase
      */
     public function handle(): void
     {
-        $this->getActionClass()->execute($this->constellation_id);
-    }
+        $response = $this->retrieve();
 
-    /**
-     * @param int $constellation_id
-     *
-     * @return \Seatplus\Eveapi\Jobs\Universe\ResolveUniverseConstellationByConstellationIdJob
-     */
-    public function setConstellationId(int $constellation_id)
-    {
-        $this->constellation_id = $constellation_id;
+        if ($response->isCachedLoad()) {
+            return;
+        }
 
-        return $this;
+        Constellation::firstOrCreate(
+            ['constellation_id' => $response->constellation_id],
+            [
+                'region_id' => $response->region_id,
+                'name' => $response->name,
+            ]
+        );
     }
 }

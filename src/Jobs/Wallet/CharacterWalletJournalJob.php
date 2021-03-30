@@ -26,17 +26,40 @@
 
 namespace Seatplus\Eveapi\Jobs\Wallet;
 
-use Seatplus\Eveapi\Actions\Jobs\Wallet\CharacterWalletJournalAction;
-use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
-use Seatplus\Eveapi\Jobs\EsiBase;
+use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
+use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Esi\HasPathValuesInterface;
+use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\RateLimitedJobMiddleware;
+use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Services\Wallet\ProcessWalletJournalResponse;
+use Seatplus\Eveapi\Traits\HasPages;
+use Seatplus\Eveapi\Traits\HasPathValues;
+use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CharacterWalletJournalJob extends EsiBase
+class CharacterWalletJournalJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
+    use HasPathValues, HasRequiredScopes, HasPages;
+
+    public function __construct(JobContainer $job_container)
+    {
+        $this->setJobType('character');
+        parent::__construct($job_container);
+
+        $this->setMethod('get');
+        $this->setEndpoint('/characters/{character_id}/wallet/journal/');
+        $this->setVersion('v6');
+
+        $this->setRequiredScope('esi-wallet.read_character_wallet.v1');
+
+        $this->setPathValues([
+            'character_id' => $this->getCharacterId(),
+        ]);
+    }
+
     /**
      * Get the middleware the job should pass through.
      *
@@ -44,17 +67,14 @@ class CharacterWalletJournalJob extends EsiBase
      */
     public function middleware(): array
     {
-        $rate_limited_middleware = (new RateLimitedJobMiddleware)
-            ->setKey(self::class)
-            ->setViaCharacterId($this->refresh_token->character_id)
-            ->setDuration(300);
-
         return [
             new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
-            new EsiRateLimitedMiddleware,
             new EsiAvailabilityMiddleware,
-            $rate_limited_middleware,
+            (new ThrottlesExceptionsWithRedis(80, 5))
+                ->by($this->uniqueId())
+                ->when(fn () => ! $this->isEsiRateLimited())
+                ->backoff(5),
         ];
     }
 
@@ -62,7 +82,7 @@ class CharacterWalletJournalJob extends EsiBase
     {
         return [
             'character',
-            'character_id: ' . $this->character_id,
+            'character_id: ' . $this->getCharacterId(),
             'wallet',
             'journal',
         ];
@@ -76,11 +96,23 @@ class CharacterWalletJournalJob extends EsiBase
      */
     public function handle(): void
     {
-        $this->getActionClass()->execute($this->refresh_token);
-    }
+        $processor = new ProcessWalletJournalResponse($this->getCharacterId(), CharacterInfo::class);
 
-    public function getActionClass(): RetrieveFromEsiInterface
-    {
-        return new CharacterWalletJournalAction;
+        while (true) {
+            $response = $this->retrieve($this->getPage());
+
+            if ($response->isCachedLoad()) {
+                return;
+            }
+
+            $processor->execute($response);
+
+            // Lastly if more pages are present load next page
+            if ($this->getPage() >= $response->pages) {
+                break;
+            }
+
+            $this->incrementPage();
+        }
     }
 }

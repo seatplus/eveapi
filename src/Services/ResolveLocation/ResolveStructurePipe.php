@@ -27,7 +27,7 @@
 namespace Seatplus\Eveapi\Services\ResolveLocation;
 
 use Closure;
-use Seatplus\Eveapi\Actions\Location\ResolveUniverseStructureByIdAction;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseStructureByIdJob;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\Structure;
@@ -65,10 +65,6 @@ class ResolveStructurePipe
 
     private function getStructure()
     {
-        $action = new ResolveUniverseStructureByIdAction($this->refreshToken);
-
-        throw_unless(in_array($action->getRequiredScope(), $this->refreshToken->scopes), 'Trying to resolve a structure with a refresh token that is lacking the necessairy code');
-
-        $action->execute($this->location_id);
+        ResolveUniverseStructureByIdJob::dispatch($this->refreshToken, $this->location_id)->onQueue('high');
     }
 }

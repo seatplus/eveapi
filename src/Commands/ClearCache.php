@@ -67,6 +67,8 @@ class ClearCache extends Command
 
         $this->clearArtisanCache();
 
+        $this->truncateBatch();
+
         $this->info('success');
     }
 
@@ -105,5 +107,10 @@ class ClearCache extends Command
         $this->info('Clearing the Artisan Cache');
         Artisan::call('cache:clear');
         cache()->store('file')->flush();
+    }
+
+    private function truncateBatch()
+    {
+        \DB::table('job_batches')->truncate();
     }
 }

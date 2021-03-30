@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Universe;
 
+use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -45,7 +46,7 @@ use Seatplus\Eveapi\Services\ResolveLocation\ResolveStructurePipe;
 
 class ResolveLocationJob implements ShouldQueue, ShouldBeUnique
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * The number of times the job may be attempted.

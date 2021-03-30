@@ -28,20 +28,24 @@ namespace Seatplus\Eveapi\Jobs;
 
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Seatplus\Eveapi\Actions\RetrieveFromEsiBase;
 use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Esi\RetrieveFromEsiBase;
+use Seatplus\Eveapi\Jobs\Seatplus\MaintenanceJob;
+use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
+use Seatplus\Eveapi\Jobs\Seatplus\UpdateCorporation;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Services\MinutesUntilNextSchedule;
+use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 
-abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, NewBaseJobInterface
+abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, NewBaseJobInterface, ShouldBeUnique
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-    public int $tries = 1;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, RateLimitsEsiCalls;
 
     public ?RefreshToken $refresh_token;
 
@@ -50,6 +54,48 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
     public ?int $corporation_id;
 
     public ?int $alliance_id;
+
+    protected string $method;
+
+    protected string $version;
+
+    protected string $endpoint;
+
+    protected string $jobType;
+
+    /**
+     * The number of seconds to wait before retrying the job.
+     *
+     * @var int
+     */
+    public $backoff = 3;
+
+    /**
+     * Determine the time at which the job should timeout.
+     *
+     * @return \DateTime
+     */
+    public function retryUntil()
+    {
+        return now()->addMinutes($this->getMinutesUntilTimeout());
+    }
+
+    /**
+     * The number of seconds after which the job's unique lock will be released.
+     *
+     * @var int
+     */
+    public int $uniqueFor = 3600;
+
+    /**
+     * The unique ID of the job.
+     *
+     * @return string
+     */
+    public function uniqueId()
+    {
+        return implode($this->tags());
+    }
 
     public function getRefreshToken(): RefreshToken
     {
@@ -101,11 +147,17 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
     }
 
     /**
-     * EsiBase constructor.
-     *
-     * @param JobContainer|null $job_container
+     * @return int|null
      */
-    public function __construct(?JobContainer $job_container = null)
+    public function getAllianceId(): ?int
+    {
+        return $this->alliance_id;
+    }
+
+    /**
+     * EsiBase constructor.
+     */
+    public function __construct(?JobContainer $job_container = null, ?string $jobType = null)
     {
         $job_container = $job_container ?? new JobContainer();
 
@@ -113,30 +165,15 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
         $this->setCorporationId($job_container->getCorporationId());
         $this->setAllianceId($job_container->getAllianceId());
         $this->setRefreshToken($job_container->getRefreshToken());
+
+        if ($jobType) {
+            $this->setJobType($jobType);
+        }
+
+        $this->uniqueFor = $this->getMinutesUntilTimeout() * 60;
     }
 
-    public function tags(): array
-    {
-        $tags = collect(property_exists($this, 'tags') ? $this->tags : []);
-
-        if (is_null($this->refresh_token)) {
-            $tags->push('public');
-        }
-
-        if ($this->character_id) {
-            $tags->push('character_id:' . $this->character_id);
-        }
-
-        if ($this->corporation_id) {
-            $tags->push('corporation_id:' . $this->corporation_id);
-        }
-
-        if ($this->alliance_id) {
-            $tags->push('alliance_id:' . $this->alliance_id);
-        }
-
-        return $tags->toArray();
-    }
+    abstract public function tags(): array;
 
     /**
      * Get the middleware the job should pass through.
@@ -151,4 +188,87 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
      * @return void
      */
     abstract public function handle(): void;
+
+    final public function getMinutesUntilTimeout(): int
+    {
+        $type = isset($this->jobType) ? $this->getJobType() : '';
+
+        $map = [
+            'character' => UpdateCharacter::class,
+            'corporation' => UpdateCorporation::class,
+            'public' => MaintenanceJob::class,
+        ];
+
+        $scheduled_class = data_get($map, $type);
+
+        if (is_null($scheduled_class)) {
+            return 1;
+        }
+
+        return MinutesUntilNextSchedule::get($scheduled_class);
+    }
+
+    /**
+     * @return string
+     */
+    public function getMethod(): string
+    {
+        return $this->method;
+    }
+
+    /**
+     * @param string $method
+     */
+    public function setMethod(string $method): void
+    {
+        $this->method = $method;
+    }
+
+    /**
+     * @return string
+     */
+    public function getVersion(): string
+    {
+        return $this->version;
+    }
+
+    /**
+     * @param string $version
+     */
+    public function setVersion(string $version): void
+    {
+        $this->version = $version;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEndpoint(): string
+    {
+        return $this->endpoint;
+    }
+
+    /**
+     * @param string $endpoint
+     */
+    public function setEndpoint(string $endpoint): void
+    {
+        $this->endpoint = $endpoint;
+    }
+
+    /**
+     * @return string
+     */
+    public function getJobType(): string
+    {
+        return $this->jobType;
+    }
+
+    /**
+     * @param string $jobType
+     */
+    public function setJobType(string $jobType): void
+    {
+        $this->jobType = $jobType;
+    }
 }

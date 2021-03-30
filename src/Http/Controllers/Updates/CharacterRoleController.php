@@ -27,7 +27,6 @@
 namespace Seatplus\Eveapi\Http\Controllers\Updates;
 
 use Illuminate\Http\Request;
-use Seatplus\Eveapi\Actions\Jobs\Character\CharacterRoleAction;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Http\Controllers\Controller;
 use Seatplus\Eveapi\Jobs\Character\CharacterRoleJob;

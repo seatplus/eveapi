@@ -26,7 +26,7 @@
 
 namespace Seatplus\Eveapi\Observers;
 
-use Seatplus\Eveapi\Jobs\Seatplus\ResolveUniverseTypesByTypeIdJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Contracts\ContractItem;
 
 class ContractItemObserver
@@ -52,6 +52,6 @@ class ContractItemObserver
             return;
         }
 
-        ResolveUniverseTypesByTypeIdJob::dispatch($this->contract_item->type_id)->onQueue('high');
+        ResolveUniverseTypeByIdJob::dispatch($this->contract_item->type_id)->onQueue('high');
     }
 }

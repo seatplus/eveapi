@@ -26,47 +26,38 @@
 
 namespace Seatplus\Eveapi\Jobs\Contracts;
 
-use Illuminate\Contracts\Queue\ShouldBeUnique;
-use Seatplus\Eveapi\Actions\HasPathValuesInterface;
-use Seatplus\Eveapi\Actions\HasRequiredScopeInterface;
+use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Esi\HasPathValuesInterface;
+use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contracts\Contract;
+use Seatplus\Eveapi\Traits\HasPathValues;
+use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CharacterContractsJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, ShouldBeUnique
+class CharacterContractsJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
-    public array $path_values;
-
-    /**
-     * The number of seconds after which the job's unique lock will be released.
-     *
-     * @var int
-     */
-    public int $uniqueFor = 3600;
-
-    /**
-     * The unique ID of the job.
-     *
-     * @return string
-     */
-    public function uniqueId()
-    {
-        return sprintf('contract_job:%s', $this->getCharacterId());
-    }
+    use HasPathValues, HasRequiredScopes;
 
     public function __construct(
         public JobContainer $job_container
     ) {
+        $this->setJobType('character');
         parent::__construct($job_container);
+
+        $this->setMethod('get');
+        $this->setEndpoint('/characters/{character_id}/contracts/');
+        $this->setVersion('v1');
 
         $this->setPathValues([
             'character_id' => $job_container->getCharacterId(),
         ]);
+
+        $this->setRequiredScope(head(config('eveapi.scopes.character.contracts')));
     }
 
     public function middleware(): array
@@ -74,8 +65,11 @@ class CharacterContractsJob extends NewEsiBase implements HasPathValuesInterface
         return [
             new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
-            new EsiRateLimitedMiddleware,
             new EsiAvailabilityMiddleware,
+            (new ThrottlesExceptionsWithRedis(80, 5))
+                ->by($this->uniqueId())
+                ->when(fn () => ! $this->isEsiRateLimited())
+                ->backoff(5),
         ];
     }
 
@@ -161,35 +155,5 @@ class CharacterContractsJob extends NewEsiBase implements HasPathValuesInterface
 
             $page++;
         }
-    }
-
-    public function getMethod(): string
-    {
-        return 'get';
-    }
-
-    public function getEndpoint(): string
-    {
-        return '/characters/{character_id}/contracts/';
-    }
-
-    public function getVersion(): string
-    {
-        return 'v1';
-    }
-
-    public function getPathValues(): array
-    {
-        return $this->path_values;
-    }
-
-    public function setPathValues(array $array): void
-    {
-        $this->path_values = $array;
-    }
-
-    public function getRequiredScope(): string
-    {
-        return head(config('eveapi.scopes.character.contracts'));
     }
 }

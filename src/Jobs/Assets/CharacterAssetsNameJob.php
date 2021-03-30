@@ -26,16 +26,41 @@
 
 namespace Seatplus\Eveapi\Jobs\Assets;
 
-use Seatplus\Eveapi\Actions\Jobs\Assets\GetCharacterAssetsNamesAction;
-use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
-use Seatplus\Eveapi\Jobs\EsiBase;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
+use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Esi\HasPathValuesInterface;
+use Seatplus\Eveapi\Esi\HasRequestBodyInterface;
+use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
+use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Models\Assets\Asset;
+use Seatplus\Eveapi\Traits\HasPathValues;
+use Seatplus\Eveapi\Traits\HasRequestBody;
+use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CharacterAssetsNameJob extends EsiBase
+class CharacterAssetsNameJob extends NewEsiBase implements HasPathValuesInterface, HasRequestBodyInterface, HasRequiredScopeInterface
 {
+    use HasRequiredScopes, HasPathValues, HasRequestBody;
+
+    public function __construct(JobContainer $job_container)
+    {
+        $this->setJobType('character');
+        parent::__construct($job_container);
+
+        $this->setMethod('post');
+        $this->setEndpoint('/characters/{character_id}/assets/names/');
+        $this->setVersion('v1');
+
+        $this->setRequiredScope('esi-assets.read_assets.v1');
+
+        $this->setPathValues([
+            'character_id' => $this->refresh_token->character_id,
+        ]);
+    }
+
     /**
      * Get the middleware the job should pass through.
      *
@@ -45,9 +70,12 @@ class CharacterAssetsNameJob extends EsiBase
     {
         return [
             new HasRefreshTokenMiddleware,
-            new HasRequiredScopeMiddleware,
-            new EsiRateLimitedMiddleware,
             new EsiAvailabilityMiddleware,
+            new HasRequiredScopeMiddleware,
+            (new ThrottlesExceptionsWithRedis(80, 5))
+                ->by($this->uniqueId())
+                ->when(fn () => ! $this->isEsiRateLimited())
+                ->backoff(5),
         ];
     }
 
@@ -61,11 +89,6 @@ class CharacterAssetsNameJob extends EsiBase
         ];
     }
 
-    public function getActionClass(): RetrieveFromEsiInterface
-    {
-        return new GetCharacterAssetsNamesAction;
-    }
-
     /**
      * Execute the job.
      *
@@ -73,6 +96,37 @@ class CharacterAssetsNameJob extends EsiBase
      */
     public function handle(): void
     {
-        $this->getActionClass()->execute($this->refresh_token);
+        Asset::whereHas('type.group', function (Builder $query) {
+            // Only Celestials, Ships, Deployable, Starbases, Orbitals and Structures might be named
+            $query->whereIn('category_id', [2, 6, 22, 23, 46, 65]);
+        })->where('assetable_id', $this->refresh_token->character_id)
+            ->select('item_id')
+            ->where('is_singleton', true)
+            ->pluck('item_id')
+            ->filter(fn ($item_id) => is_null(cache()->store('file')->get($item_id)))
+            ->chunk(1000)->each(function ($item_ids) {
+                $this->setRequestBody($item_ids->flatten()->toArray());
+
+                $responses = $this->retrieve();
+
+                if ($responses->isCachedLoad()) {
+                    return;
+                }
+
+                collect($responses)->each(function ($response) {
+
+                    // "None" seems to indicate that no name is set.
+                    if ($response->name === 'None') {
+                        return;
+                    }
+
+                    //cache items for 1 hrs
+                    cache()->store('file')->put($response->item_id, $response->name, 3600);
+
+                    Asset::where('assetable_id', $this->refresh_token->character_id)
+                        ->where('item_id', $response->item_id)
+                        ->update(['name' => $response->name]);
+                });
+            });
     }
 }

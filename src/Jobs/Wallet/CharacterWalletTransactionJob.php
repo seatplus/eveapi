@@ -26,17 +26,44 @@
 
 namespace Seatplus\Eveapi\Jobs\Wallet;
 
-use Seatplus\Eveapi\Actions\Jobs\Wallet\CharacterWalletTransactionAction;
-use Seatplus\Eveapi\Actions\RetrieveFromEsiInterface;
-use Seatplus\Eveapi\Jobs\EsiBase;
+use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
+use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Esi\HasPathValuesInterface;
+use Seatplus\Eveapi\Esi\HasQueryStringInterface;
+use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\RateLimitedJobMiddleware;
+use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
+use Seatplus\Eveapi\Services\Wallet\ProcessWalletTransactionResponse;
+use Seatplus\Eveapi\Traits\HasPathValues;
+use Seatplus\Eveapi\Traits\HasQueryValues;
+use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CharacterWalletTransactionJob extends EsiBase
+class CharacterWalletTransactionJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, HasQueryStringInterface
 {
+    use HasPathValues, HasRequiredScopes, HasQueryValues;
+
+    private int $from_id = PHP_INT_MAX;
+
+    public function __construct(JobContainer $job_container)
+    {
+        $this->setJobType('character');
+        parent::__construct($job_container);
+
+        $this->setMethod('get');
+        $this->setEndpoint('/characters/{character_id}/wallet/transactions/');
+        $this->setVersion('v1');
+
+        $this->setRequiredScope('esi-wallet.read_character_wallet.v1');
+
+        $this->setPathValues([
+            'character_id' => $this->getCharacterId(),
+        ]);
+    }
+
     /**
      * Get the middleware the job should pass through.
      *
@@ -44,17 +71,14 @@ class CharacterWalletTransactionJob extends EsiBase
      */
     public function middleware(): array
     {
-        $rate_limited_middleware = (new RateLimitedJobMiddleware)
-            ->setKey(self::class)
-            ->setViaCharacterId($this->refresh_token->character_id)
-            ->setDuration(300);
-
         return [
             new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
-            new EsiRateLimitedMiddleware,
             new EsiAvailabilityMiddleware,
-            $rate_limited_middleware,
+            (new ThrottlesExceptionsWithRedis(80, 5))
+                ->by($this->uniqueId())
+                ->when(fn () => ! $this->isEsiRateLimited())
+                ->backoff(5),
         ];
     }
 
@@ -76,11 +100,37 @@ class CharacterWalletTransactionJob extends EsiBase
      */
     public function handle(): void
     {
-        $this->getActionClass()->execute($this->refresh_token);
-    }
+        $processor = new ProcessWalletTransactionResponse(
+            $this->getCharacterId(),
+            CharacterInfo::class
+        );
 
-    public function getActionClass(): RetrieveFromEsiInterface
-    {
-        return new CharacterWalletTransactionAction();
+        $latest_transaction = WalletTransaction::where('wallet_transactionable_id', $this->getCharacterId())
+            ->latest()->first();
+
+        if ($latest_transaction) {
+            $this->from_id = $latest_transaction->transaction_id - 1;
+        }
+
+        while (true) {
+            $this->setQueryString([
+                'from_id' => $this->from_id,
+            ]);
+
+            $response = $this->retrieve();
+
+            if ($response->isCachedLoad() && ! is_null($latest_transaction)) {
+                return;
+            }
+
+            // If no more transactions are present, break the loop.
+            if (collect($response)->isEmpty()) {
+                break;
+            }
+
+            $last_transaction_id = $processor->execute($response);
+
+            $this->from_id = $last_transaction_id - 1;
+        }
     }
 }

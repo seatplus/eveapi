@@ -7,6 +7,7 @@ namespace Seatplus\Eveapi\Tests\Unit\Models;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Events\AssetUpdating;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Assets\Asset;
@@ -19,6 +20,13 @@ use Seatplus\Eveapi\Tests\TestCase;
 
 class AssetModelTest extends TestCase
 {
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Queue::fake();
+    }
 
     /** @test */
     public function it_creates_an_event_upon_updating()
@@ -222,7 +230,7 @@ class AssetModelTest extends TestCase
     /** @test */
     public function it_has_scopeSearch_asset_content_content()
     {
-        $test_asset = Asset::factory()->create([
+        $test_asset = Asset::factory()->withName()->create([
             'location_flag' => 'Hangar'
         ]);
 
