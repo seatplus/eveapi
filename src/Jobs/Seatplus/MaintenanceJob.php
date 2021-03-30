@@ -78,23 +78,26 @@ class MaintenanceJob implements ShouldQueue
     public function handle()
     {
         Bus::batch([
-            new GetMissingTypesFromCharacterAssets,
-            new GetMissingTypesFromLocations,
+
             new GetMissingGroups,
             new GetMissingCategorys,
-            new GetMissingLocationFromAssets,
             new GetMissingAssetsNames,
-            new GetMissingTypesFromCorporationMemberTracking,
-            new GetMissingLocationFromCorporationMemberTracking,
-            new GetMissingTypesFromWalletTransaction,
-            new GetMissingLocationFromWalletTransaction,
             new GetMissingCharacterInfosFromCorporationMemberTracking,
+
+            // Locations
+            new GetMissingLocationFromWalletTransaction,
+            new GetMissingLocationFromCorporationMemberTracking,
+            new GetMissingLocationFromAssets,
+            new GetMissingLocationFromContracts,
 
             // TODO: Missing Affiliations from character_users, character_info and contacts
 
-            // Contracts
+            // Types
             new GetMissingTypesFromContractItem,
-            new GetMissingLocationFromContracts,
+            new GetMissingTypesFromCorporationMemberTracking,
+            new GetMissingTypesFromWalletTransaction,
+            new GetMissingTypesFromCharacterAssets,
+            new GetMissingTypesFromLocations,
 
         ])
             ->then(fn (Batch $batch) => logger()->info('Maintenance job finished'))

@@ -17,6 +17,12 @@ use Seatplus\Eveapi\Tests\TestCase;
 
 class GroupLifecycleTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Queue::fake();
+    }
 
     /** @test */
     public function new_group_id_dispatches_category_job_if_group_is_not_present()

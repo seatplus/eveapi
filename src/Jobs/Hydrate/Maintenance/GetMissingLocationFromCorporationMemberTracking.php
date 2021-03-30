@@ -27,7 +27,7 @@ class GetMissingLocationFromCorporationMemberTracking extends HydrateMaintenance
         CorporationMemberTracking::whereDoesntHave('location', fn ($query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]))
             ->inRandomOrder()
             ->get()
-            ->map(function (CorporationMemberTracking $corporation_member_tracking) use ($find_corporation_refresh_token) {
+            ->each(function (CorporationMemberTracking $corporation_member_tracking) use ($find_corporation_refresh_token) {
                 $refresh_token = $find_corporation_refresh_token($corporation_member_tracking->corporation_id, 'esi-corporations.track_members.v1', 'Director') ?? RefreshToken::find($corporation_member_tracking->character_id);
 
                 if ($refresh_token) {

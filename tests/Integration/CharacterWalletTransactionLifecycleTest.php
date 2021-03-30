@@ -37,11 +37,14 @@ class CharacterWalletTransactionLifecycleTest extends TestCase
     public function runWalletTransactionAction()
     {
         Queue::assertNothingPushed();
-        $mock_data = $this->buildMockEsiData();
+        $mock_data = Event::fakeFor(fn() => WalletTransaction::factory()->count(5)->make());
         Queue::assertNothingPushed();
 
-        $response = new EsiResponse($mock_data, [], 'now', 200);
+        $response = new EsiResponse(json_encode($mock_data), [], 'now', 200);
         $response2 = new EsiResponse(json_encode([]), [], 'now', 200);
+
+        \Facades\Seatplus\Eveapi\Services\Esi\RetrieveEsiData::shouldReceive('execute')
+            ->andReturns([$response, $response2]);
 
         $job_container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]);
         $mock = Mockery::mock(CharacterWalletTransactionJob::class)->makePartial();

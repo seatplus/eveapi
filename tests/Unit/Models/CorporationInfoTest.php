@@ -2,6 +2,7 @@
 
 namespace Seatplus\Eveapi\Tests\Unit\Models;
 
+use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Application;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
@@ -13,6 +14,13 @@ use Seatplus\Eveapi\Tests\TestCase;
 
 class CorporationInfoTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Queue::fake();
+    }
+
     /** @test */
     public function characterHasCorporationRelationTest()
     {

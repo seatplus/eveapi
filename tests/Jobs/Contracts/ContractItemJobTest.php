@@ -27,11 +27,13 @@ class ContractItemJobTest extends TestCase
         // Assert that no jobs were pushed...
         Queue::assertNothingPushed();
 
-        $mock_data = $this->buildMockEsiData(1);
+        $mock_data = ContractItem::factory()->count(1)->make();
 
         $job_container = new JobContainer([
             'refresh_token' => $this->test_character->refresh_token
         ]);
+
+        $this->assertRetrieveEsiDataIsNotCalled();
 
         ContractItemsJob::dispatch($mock_data->first()->contract_id, $job_container, 'character');
 

@@ -28,6 +28,8 @@ class ResolveLocationJobTest extends TestCase
 
         parent::setUp();
 
+        Queue::fake();
+
         Event::fake([
             UniverseStationCreated::class,
             UniverseStructureCreated::class,
@@ -77,8 +79,6 @@ class ResolveLocationJobTest extends TestCase
             'station_id' => 60003760,
         ]);
 
-        $this->mockRetrieveEsiDataAction($mock_data->toArray());
-
         Queue::fake();
         Queue::assertNothingPushed();
 
@@ -113,8 +113,6 @@ class ResolveLocationJobTest extends TestCase
             'locatable_id' => $location_id,
             'locatable_type' => Station::class
         ]);
-
-        $this->mockRetrieveEsiDataAction($mock_data->toArray());
 
         $this->assertTrue(carbon(Station::find($location_id)->updated_at)->isBefore(carbon()->subWeek()));
 
@@ -173,8 +171,6 @@ class ResolveLocationJobTest extends TestCase
             'station_id' => 1028832949394,
         ]);
 
-        $this->mockRetrieveEsiDataAction($mock_data->toArray());
-
         Queue::fake();
         Queue::assertNothingPushed();
 
@@ -208,8 +204,6 @@ class ResolveLocationJobTest extends TestCase
             'locatable_id' => $location_id,
             'locatable_type' => Structure::class
         ]);
-
-        $this->mockRetrieveEsiDataAction($mock_data->toArray());
 
         $this->assertTrue(carbon(Structure::find($location_id)->updated_at)->isBefore(carbon()->subWeek()));
 

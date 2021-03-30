@@ -4,6 +4,7 @@
 namespace Seatplus\Eveapi\Tests\Integration;
 
 
+use Facades\Seatplus\Eveapi\Services\Esi\RetrieveEsiData;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfoJob;
@@ -34,6 +35,7 @@ class CharacterAffiliationLifeCycleTest extends TestCase
     public function it_dispatches_alliance_job()
     {
 
+        Queue::fake();
         Queue::assertNothingPushed();
 
         $character = CharacterInfo::factory()->create();
@@ -50,6 +52,7 @@ class CharacterAffiliationLifeCycleTest extends TestCase
     /** @test */
     public function it_dispatches_no_alliance_job_if_alliance_id_is_null()
     {
+        Queue::fake();
         Queue::assertNothingPushed();
 
         $character = CharacterInfo::factory()->create();
@@ -112,7 +115,8 @@ class CharacterAffiliationLifeCycleTest extends TestCase
             'last_pulled' => $old_data->last_pulled
         ]);
 
-        $this->mockRetrieveEsiDataAction([$old_data->toArray()]);
+        //$this->mockRetrieveEsiDataAction([$old_data->toArray()]);
+        $this->assertRetrieveEsiDataIsNotCalled();
 
         //(new CharacterAffiliationAction)->execute($old_data->character_id);
 
@@ -199,15 +203,6 @@ class CharacterAffiliationLifeCycleTest extends TestCase
         $this->assertDatabaseMissing('character_affiliations', [
             'last_pulled' => $old_data->last_pulled
         ]);
-    }
-
-    private function buildMockEsiData()
-    {
-        $mock_data = CharacterAffiliation::factory()->make();
-
-        $this->mockRetrieveEsiDataAction([$mock_data->toArray()]);
-
-        return $mock_data;
     }
 
 }

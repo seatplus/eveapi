@@ -20,6 +20,8 @@ class CharacterAssetTest extends TestCase
     {
         parent::setUp();
 
+        Queue::fake();
+
         $this->job_container = new JobContainer([
             'refresh_token' => $this->test_character->refresh_token
         ]);

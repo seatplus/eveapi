@@ -22,21 +22,20 @@ class GetMissingLocationFromAssets extends HydrateMaintenanceBase
             return;
         }
 
-        $jobs = Asset::whereDoesntHave('location', fn ($query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]))
+        Asset::whereDoesntHave('location', fn ($query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]))
             ->AssetsLocationIds()
             ->inRandomOrder()
             ->addSelect('assetable_id', 'assetable_type')
             ->get()
-            ->map(function ($asset) {
+            ->each(function ($asset) {
                 if ($asset->assetable_type === CharacterInfo::class) {
                     $refresh_token = RefreshToken::find($asset->assetable_id);
                 }
 
-                return new ResolveLocationJob($asset->location_id, $refresh_token);
-            });
+                $this->batch()->add([
+                    new ResolveLocationJob($asset->location_id, $refresh_token)
+                ]);
 
-        $this->batch()->add(
-            $jobs->toArray()
-        );
+            });
     }
 }

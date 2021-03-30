@@ -18,6 +18,13 @@ use Seatplus\Eveapi\Tests\TestCase;
 class CorporationMemberTrackingLifeCycleTest extends TestCase
 {
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Queue::fake();
+    }
+
     /** @test */
     public function it_dispatches_type_job()
     {

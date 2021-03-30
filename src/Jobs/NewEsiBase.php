@@ -47,7 +47,6 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, RateLimitsEsiCalls;
 
-    public int $tries = 1;
 
     public ?RefreshToken $refresh_token;
 
@@ -64,6 +63,23 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
     protected string $endpoint;
 
     protected string $jobType;
+
+    /**
+     * The number of seconds to wait before retrying the job.
+     *
+     * @var int
+     */
+    public $backoff = 3;
+
+    /**
+     * Determine the time at which the job should timeout.
+     *
+     * @return \DateTime
+     */
+    public function retryUntil()
+    {
+        return now()->addMinutes($this->getMinutesUntilTimeout());
+    }
 
     /**
      * The number of seconds after which the job's unique lock will be released.
@@ -177,7 +193,7 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
 
     final public function getMinutesUntilTimeout(): int
     {
-        $type = $this->getJobType();
+        $type = isset($this->jobType) ? $this->getJobType() : '';
 
         $map = [
             'character' => UpdateCharacter::class,

@@ -2,6 +2,7 @@
 
 namespace Seatplus\Eveapi\Tests\Unit\Models;
 
+use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Application;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
@@ -22,6 +23,8 @@ class CorporationMemberTrackingTest extends TestCase
     {
 
         parent::setUp();
+
+        Queue::fake();
 
         $station = Station::factory()->create();
 

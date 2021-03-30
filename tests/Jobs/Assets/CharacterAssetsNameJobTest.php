@@ -27,6 +27,8 @@ class CharacterAssetsNameJobTest extends TestCase
     {
         parent::setUp();
 
+        Queue::fake();
+
         $job_container = $job_container = new JobContainer([
             'refresh_token' => $this->test_character->refresh_token
         ]);
@@ -125,12 +127,7 @@ class CharacterAssetsNameJobTest extends TestCase
             'name' => null
         ]);
 
-        $this->mockRetrieveEsiDataAction([
-            [
-                'item_id' => $asset->item_id,
-                'name' => $this->name_to_create
-            ]
-        ]);
+        $this->assertRetrieveEsiDataIsNotCalled();
 
         $this->job->handle();
 
@@ -169,12 +166,7 @@ class CharacterAssetsNameJobTest extends TestCase
             'name' => null
         ]);
 
-        $this->mockRetrieveEsiDataAction([
-            [
-                'item_id' => $asset->item_id,
-                'name' => $this->name_to_create
-            ]
-        ]);
+        $this->assertRetrieveEsiDataIsNotCalled();
 
         $this->job->handle();
 
@@ -213,12 +205,7 @@ class CharacterAssetsNameJobTest extends TestCase
         ]);*/
         $refresh_token = RefreshToken::factory()->make(['character_id' =>$asset->assetable_id]);
 
-        $this->mockRetrieveEsiDataAction([
-            [
-                'item_id' => $asset->item_id,
-                'name' => $this->name_to_create
-            ]
-        ]);
+        $this->assertRetrieveEsiDataIsNotCalled();
 
         $this->job->handle();
 

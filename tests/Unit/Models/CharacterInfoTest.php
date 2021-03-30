@@ -19,6 +19,13 @@ use Seatplus\Eveapi\Tests\TestCase;
 
 class CharacterInfoTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Queue::fake();
+    }
+
     /** @test */
     public function characterHasRefreshTokenRelationTest()
     {
