@@ -6,7 +6,7 @@ namespace Seatplus\Eveapi\Tests\Integration;
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsLocationJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
@@ -75,7 +75,7 @@ class CharacterAssetLifeCycleTest extends TestCase
             'assetable_id' => $this->test_character->character_id
         ]);
 
-        Queue::assertPushedOn('high', CharacterAssetsLocationJob::class);
+        Queue::assertPushedOn('high', ResolveLocationJob::class);
     }
 
     /** @test */
@@ -88,7 +88,7 @@ class CharacterAssetLifeCycleTest extends TestCase
             'location_id' => $location->location_id
         ]);
 
-        Queue::assertNotPushed(CharacterAssetsLocationJob::class);
+        Queue::assertNotPushed(ResolveLocationJob::class);
     }
 
     /** @test */
@@ -102,12 +102,12 @@ class CharacterAssetLifeCycleTest extends TestCase
             ]);
         });
 
-        Queue::assertNotPushed(CharacterAssetsLocationJob::class);
+        Queue::assertNotPushed(ResolveLocationJob::class);
 
         $asset->location_id = 56789;
         $asset->save();
 
-        Queue::assertPushedOn('high', CharacterAssetsLocationJob::class);
+        Queue::assertPushedOn('high', ResolveLocationJob::class);
 
 
     }
