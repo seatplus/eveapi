@@ -28,14 +28,14 @@ namespace Seatplus\Eveapi\Jobs\Assets;
 
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Builder;
-use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Models\Assets\Asset;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Models\Assets\Asset;
 
 class CharacterAssetsNameDispatchJob implements ShouldQueue, ShouldBeUnique
 {
@@ -89,14 +89,13 @@ class CharacterAssetsNameDispatchJob implements ShouldQueue, ShouldBeUnique
             ->pluck('item_id')
             ->filter(fn ($item_id) => is_null(cache()->store('file')->get($item_id)))
             ->chunk(1000)->each(function ($item_ids) {
-
                 $clean_item_ids = $item_ids->flatten()->toArray();
 
                 $this->batching() ? $this->handleBatching($clean_item_ids) : $this->handleNonBatching($clean_item_ids);
             });
     }
 
-    private function handleBatching(array $item_ids) : void
+    private function handleBatching(array $item_ids): void
     {
         if ($this->batch()->cancelled()) {
             // Determine if the batch has been cancelled...
@@ -105,7 +104,7 @@ class CharacterAssetsNameDispatchJob implements ShouldQueue, ShouldBeUnique
         }
 
         $this->batch()->add([
-            new CharacterAssetsNameJob($this->job_container, $item_ids)
+            new CharacterAssetsNameJob($this->job_container, $item_ids),
         ]);
     }
 

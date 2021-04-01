@@ -29,7 +29,6 @@ namespace Seatplus\Eveapi\Jobs\Hydrate\Character;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameDispatchJob;
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 
 class CharacterAssetsHydrateBatch extends HydrateCharacterBase
 {

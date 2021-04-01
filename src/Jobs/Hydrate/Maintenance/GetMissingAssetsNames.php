@@ -29,7 +29,6 @@ namespace Seatplus\Eveapi\Jobs\Hydrate\Maintenance;
 use Illuminate\Database\Eloquent\Builder;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameDispatchJob;
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\RefreshToken;
 
