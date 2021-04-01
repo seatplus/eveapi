@@ -26,9 +26,10 @@
 
 namespace Seatplus\Eveapi\Esi;
 
-use Facades\Seatplus\Eveapi\Services\Esi\RetrieveEsiData;
 use Seat\Eseye\Containers\EsiResponse;
+use Seat\Eseye\Exceptions\RequestFailedException;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
+use Seatplus\Eveapi\Services\Facade\RetrieveEsiData;
 use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 
 abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
@@ -54,7 +55,15 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
     {
         $this->builldEsiRequestContainer($page);
 
-        return RetrieveEsiData::execute($this->esi_request_container);
+        try {
+            return RetrieveEsiData::execute($this->esi_request_container);
+        } catch (RequestFailedException $exception) {
+            if ($exception->getMessage() === 'Forbidden') {
+                $this->fail($exception);
+            }
+
+            throw $exception;
+        }
 
         //return (new RetrieveEsiData)->execute($this->esi_request_container);
     }

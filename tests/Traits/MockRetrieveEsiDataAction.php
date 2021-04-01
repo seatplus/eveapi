@@ -2,7 +2,7 @@
 
 namespace Seatplus\Eveapi\Tests\Traits;
 
-use Facades\Seatplus\Eveapi\Services\Esi\RetrieveEsiData;
+use Seatplus\Eveapi\Services\Facade\RetrieveEsiData;
 use Seat\Eseye\Containers\EsiResponse;
 
 trait MockRetrieveEsiDataAction

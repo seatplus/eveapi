@@ -24,30 +24,20 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Jobs\Hydrate\Character;
+namespace Seatplus\Eveapi\Services\Facade;
 
-use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameDispatchJob;
+use Illuminate\Support\Facades\Facade;
+use Seatplus\Eveapi\Services\Esi\RetrieveEsiData as RetrieveEsiDataAlias;
 
-class CharacterAssetsHydrateBatch extends HydrateCharacterBase
+class RetrieveEsiData extends Facade
 {
-    public function __construct(JobContainer $job_container)
+    /**
+     * Get the registered name of the component.
+     *
+     * @return string
+     */
+    protected static function getFacadeAccessor()
     {
-        parent::__construct($job_container);
-
-        parent::setRequiredScope('esi-assets.read_assets.v1');
-    }
-
-    public function handle()
-    {
-        if ($this->hasRequiredScope()) {
-            $this->batch()->add([
-                [
-                    new CharacterAssetJob($this->job_container),
-                    new CharacterAssetsNameDispatchJob($this->job_container),
-                ],
-            ]);
-        }
+        return RetrieveEsiDataAlias::class;
     }
 }

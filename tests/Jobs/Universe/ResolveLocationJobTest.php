@@ -176,7 +176,7 @@ class ResolveLocationJobTest extends TestCase
 
         $this->buildJob(1028832949394)->handle();
 
-        Queue::assertPushedOn('high', fn(ResolveUniverseStructureByIdJob $job) => $job->location_id === $mock_data->station_id);
+        Queue::assertPushedOn('low', fn(ResolveUniverseStructureByIdJob $job) => $job->location_id === $mock_data->station_id);
     }
 
     /**
@@ -212,7 +212,7 @@ class ResolveLocationJobTest extends TestCase
 
         $this->buildJob($location_id)->handle();
 
-        Queue::assertPushedOn('high', fn(ResolveUniverseStructureByIdJob $job) => $job->location_id === $location_id);
+        Queue::assertPushedOn('low', fn(ResolveUniverseStructureByIdJob $job) => $job->location_id === $location_id);
 
         /*$this->assertNotNull(Location::find($location_id)->locatable);
 

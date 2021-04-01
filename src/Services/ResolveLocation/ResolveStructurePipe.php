@@ -65,6 +65,6 @@ class ResolveStructurePipe
 
     private function getStructure()
     {
-        ResolveUniverseStructureByIdJob::dispatch($this->refreshToken, $this->location_id)->onQueue('high');
+        ResolveUniverseStructureByIdJob::dispatch($this->refreshToken, $this->location_id)->onQueue('low');
     }
 }

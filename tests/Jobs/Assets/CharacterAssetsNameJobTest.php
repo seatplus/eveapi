@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
+use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameDispatchJob;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\RefreshToken;
@@ -19,9 +20,9 @@ class CharacterAssetsNameJobTest extends TestCase
 {
     use MockRetrieveEsiDataAction;
 
-    private CharacterAssetsNameJob $job;
-
     private string $name_to_create;
+
+    private JobContainer $job_container;
 
     protected function setUp(): void
     {
@@ -29,11 +30,11 @@ class CharacterAssetsNameJobTest extends TestCase
 
         Queue::fake();
 
-        $job_container = $job_container = new JobContainer([
+        $this->job_container = $job_container = new JobContainer([
             'refresh_token' => $this->test_character->refresh_token
         ]);
 
-        $this->job = new CharacterAssetsNameJob($job_container);
+        //$this->job = new CharacterAssetsNameJob($job_container);
         $this->name_to_create = 'TestName';
     }
 
@@ -48,7 +49,7 @@ class CharacterAssetsNameJobTest extends TestCase
         // Assert that no jobs were pushed...
         Queue::assertNothingPushed();
 
-        dispatch($this->job)->onQueue('default');
+        CharacterAssetsNameJob::dispatch($this->job_container, [1])->onQueue('default');
 
         // Assert a job was pushed to a given queue...
         Queue::assertPushedOn('default', CharacterAssetsNameJob::class);
@@ -88,7 +89,7 @@ class CharacterAssetsNameJobTest extends TestCase
             ]
         ]);
 
-        $this->job->handle();
+        CharacterAssetsNameJob::dispatchNow($this->job_container, [$asset->item_id]);
 
         //Assert that character asset created has no name
         $this->assertDatabaseHas('assets', [
@@ -129,7 +130,11 @@ class CharacterAssetsNameJobTest extends TestCase
 
         $this->assertRetrieveEsiDataIsNotCalled();
 
-        $this->job->handle();
+        Queue::fake();
+
+        CharacterAssetsNameDispatchJob::dispatchNow($this->job_container);
+
+        Queue::assertNotPushed(CharacterAssetsNameJob::class);
 
         //Assert that character asset created has no name
         $this->assertDatabaseMissing('assets', [
@@ -168,7 +173,11 @@ class CharacterAssetsNameJobTest extends TestCase
 
         $this->assertRetrieveEsiDataIsNotCalled();
 
-        $this->job->handle();
+        Queue::fake();
+
+        CharacterAssetsNameDispatchJob::dispatchNow($this->job_container);
+
+        Queue::assertNotPushed(CharacterAssetsNameJob::class);
 
         //Assert that character asset created has no name
         $this->assertDatabaseMissing('assets', [
@@ -207,7 +216,11 @@ class CharacterAssetsNameJobTest extends TestCase
 
         $this->assertRetrieveEsiDataIsNotCalled();
 
-        $this->job->handle();
+        Queue::fake();
+
+        CharacterAssetsNameDispatchJob::dispatchNow($this->job_container);
+
+        Queue::assertNotPushed(CharacterAssetsNameJob::class);
 
         //Assert that character asset created has no name
         $this->assertDatabaseMissing('assets', [
@@ -255,9 +268,7 @@ class CharacterAssetsNameJobTest extends TestCase
 
         $job_container = new JobContainer(['refresh_token' => $refresh_token]);
 
-        $job = new CharacterAssetsNameJob($job_container);
-        $job->handle();
-
+        CharacterAssetsNameJob::dispatchNow($job_container, [$asset->item_id]);
 
         //Assert that character asset created has name
         $this->assertCount(1, Asset::where('assetable_id', $asset->assetable_id)

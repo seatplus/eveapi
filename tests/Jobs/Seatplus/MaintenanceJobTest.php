@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Queue;
 use Mockery;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
+use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameDispatchJob;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\CharacterAssetsHydrateBatch;
@@ -279,7 +280,7 @@ class MaintenanceJobTest extends TestCase
         $mock->shouldReceive('batch->add')
             ->once()
             ->with([
-                new CharacterAssetsNameJob($job_container)
+                new CharacterAssetsNameDispatchJob($job_container)
             ]);
 
         $mock->handle();

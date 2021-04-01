@@ -27,7 +27,6 @@
 namespace Seatplus\Eveapi\Jobs\Universe;
 
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Esi\HasRequestBodyInterface;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
@@ -36,7 +35,7 @@ use Seatplus\Eveapi\Models\Universe\Category;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequestBody;
 
-class ResolveUniverseCategoryByIdJob extends NewEsiBase implements HasPathValuesInterface, HasRequestBodyInterface
+class ResolveUniverseCategoryByIdJob extends NewEsiBase implements HasPathValuesInterface
 {
     use HasPathValues, HasRequestBody;
 

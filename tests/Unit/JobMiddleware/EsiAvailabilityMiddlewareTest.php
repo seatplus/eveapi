@@ -42,6 +42,8 @@ class EsiAvailabilityMiddlewareTest extends TestCase
         $this->middleware = Mockery::mock(EsiAvailabilityMiddleware::class)
             ->makePartial();
 
+        $this->markTestSkipped('to be deleted middleware');
+
     }
 
     /**

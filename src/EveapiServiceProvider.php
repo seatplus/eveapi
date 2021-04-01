@@ -153,8 +153,8 @@ class EveapiServiceProvider extends ServiceProvider
                     'queue'      => ['high', 'medium', 'low', 'default'],
                     'balance'    => $balancing_mode,
                     'processes'  => (int) env(self::QUEUE_BALANCING_WORKERS, 4),
-                    'tries'      => 1,
-                    'timeout'    => 900, // 15 minutes
+                    'block_for' => 5,
+                    'timeout'    => 120, // 2 minutes
                 ],
             ],
             'production' => [

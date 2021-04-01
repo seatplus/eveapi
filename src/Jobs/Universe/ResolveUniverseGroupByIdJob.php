@@ -28,14 +28,13 @@ namespace Seatplus\Eveapi\Jobs\Universe;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Esi\HasRequestBodyInterface;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequestBody;
 
-class ResolveUniverseGroupByIdJob extends NewEsiBase implements HasPathValuesInterface, HasRequestBodyInterface
+class ResolveUniverseGroupByIdJob extends NewEsiBase implements HasPathValuesInterface
 {
     use HasPathValues, HasRequestBody;
 

@@ -28,14 +28,13 @@ namespace Seatplus\Eveapi\Jobs\Universe;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Esi\HasRequestBodyInterface;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequestBody;
 
-class ResolveUniverseTypeByIdJob extends NewEsiBase implements HasPathValuesInterface, HasRequestBodyInterface
+class ResolveUniverseTypeByIdJob extends NewEsiBase implements HasPathValuesInterface
 {
     use HasPathValues, HasRequestBody;
 
@@ -45,8 +44,8 @@ class ResolveUniverseTypeByIdJob extends NewEsiBase implements HasPathValuesInte
         parent::__construct(null, 'public');
 
         $this->setMethod('get');
-        $this->setEndpoint('/universe/stations/{station_id}/');
-        $this->setVersion('v2');
+        $this->setEndpoint('/universe/types/{type_id}/');
+        $this->setVersion('v3');
 
         $this->setPathValues([
             'type_id' => $type_id,
