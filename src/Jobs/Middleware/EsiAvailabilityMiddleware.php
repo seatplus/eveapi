@@ -51,10 +51,9 @@ class EsiAvailabilityMiddleware
         //TODO Delete this middleware
         return $next($job);
 
-
-       /* return $this->status === 'ok'
-            ? $next($job)
-            : $job->fail(new Exception($this->status === 'rate limited' ? 'Esi rate limited' : 'Esi appears to be down'));*/
+        /* return $this->status === 'ok'
+             ? $next($job)
+             : $job->fail(new Exception($this->status === 'rate limited' ? 'Esi rate limited' : 'Esi appears to be down'));*/
 
         //TODO: introduce release for 15min in case of DT
     }

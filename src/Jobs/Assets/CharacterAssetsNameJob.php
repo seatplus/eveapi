@@ -47,8 +47,7 @@ class CharacterAssetsNameJob extends NewEsiBase implements HasPathValuesInterfac
     public function __construct(
         JobContainer $job_container,
         private array $item_ids
-    )
-    {
+    ) {
         $this->setJobType('character');
         parent::__construct($job_container);
 
@@ -90,7 +89,7 @@ class CharacterAssetsNameJob extends NewEsiBase implements HasPathValuesInterfac
             'character_id: ' . $this->character_id,
             'assets',
             'name',
-            sprintf('item_ids: %s', collect($this->item_ids)->implode(', '))
+            sprintf('item_ids: %s', collect($this->item_ids)->implode(', ')),
         ];
     }
 
