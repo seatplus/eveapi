@@ -52,13 +52,6 @@ class MaintenanceJob implements ShouldQueue
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * The number of times the job may be attempted.
-     *
-     * @var int
-     */
-    public $tries = 1;
-
     public function tags(): array
     {
         return [
@@ -98,7 +91,6 @@ class MaintenanceJob implements ShouldQueue
         ])
             ->then(fn (Batch $batch) => logger()->info('Maintenance job finished'))
             ->name('Maintenance Job')
-            ->onQueue('low')
             ->allowFailures()
             ->dispatch();
     }

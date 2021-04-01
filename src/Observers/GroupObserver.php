@@ -28,6 +28,7 @@ namespace Seatplus\Eveapi\Observers;
 
 use Illuminate\Database\Eloquent\Builder;
 use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameDispatchJob;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseCategoryByIdJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
@@ -93,7 +94,7 @@ class GroupObserver
                         'refresh_token' => $refresh_token,
                     ]);
 
-                    CharacterAssetsNameJob::dispatch($job_container)->onQueue('high');
+                    CharacterAssetsNameDispatchJob::dispatch($job_container)->onQueue('high');
                 });
             });
     }

@@ -4,7 +4,7 @@
 namespace Seatplus\Eveapi\Tests\Integration;
 
 
-use Facades\Seatplus\Eveapi\Services\Esi\RetrieveEsiData;
+use Seatplus\Eveapi\Services\Facade\RetrieveEsiData;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfoJob;

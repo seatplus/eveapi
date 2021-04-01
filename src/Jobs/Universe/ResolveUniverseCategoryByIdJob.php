@@ -36,7 +36,7 @@ use Seatplus\Eveapi\Models\Universe\Category;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequestBody;
 
-class ResolveUniverseCategoryByIdJob extends NewEsiBase implements HasPathValuesInterface, HasRequestBodyInterface
+class ResolveUniverseCategoryByIdJob extends NewEsiBase implements HasPathValuesInterface
 {
     use HasPathValues, HasRequestBody;
 

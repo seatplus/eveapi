@@ -27,6 +27,7 @@
 namespace Seatplus\Eveapi\Jobs\Universe;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
+use Seat\Eseye\Exceptions\RequestFailedException;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
@@ -75,7 +76,7 @@ class ResolveUniverseStructureByIdJob extends NewEsiBase implements HasPathValue
             new EsiAvailabilityMiddleware,
             new HasRequiredScopeMiddleware,
             // This is very likely throwing errors if user is not on acl. In order to not getting blocked by esi rate limit only use half of allowed errors
-            (new ThrottlesExceptionsWithRedis($this->getRatelimit() / 2, 5))
+           (new ThrottlesExceptionsWithRedis($this->getRatelimit() / 2, 5))
                 ->by($this->uniqueId())
                 ->when(fn () => ! $this->isEsiRateLimited())
                 ->backoff(5),
@@ -84,6 +85,7 @@ class ResolveUniverseStructureByIdJob extends NewEsiBase implements HasPathValue
 
     public function handle(): void
     {
+
         $result = $this->retrieve();
 
         if ($result->isCachedLoad()) {

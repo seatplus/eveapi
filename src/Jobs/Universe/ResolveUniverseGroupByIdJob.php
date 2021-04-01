@@ -35,7 +35,7 @@ use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequestBody;
 
-class ResolveUniverseGroupByIdJob extends NewEsiBase implements HasPathValuesInterface, HasRequestBodyInterface
+class ResolveUniverseGroupByIdJob extends NewEsiBase implements HasPathValuesInterface
 {
     use HasPathValues, HasRequestBody;
 

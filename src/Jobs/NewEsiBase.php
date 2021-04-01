@@ -61,14 +61,7 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
 
     protected string $endpoint;
 
-    protected string $jobType;
-
-    /**
-     * The number of seconds to wait before retrying the job.
-     *
-     * @var int
-     */
-    public $backoff = 3;
+    protected string $jobType = '';
 
     /**
      * Determine the time at which the job should timeout.
@@ -95,63 +88,6 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
     public function uniqueId()
     {
         return implode($this->tags());
-    }
-
-    public function getRefreshToken(): RefreshToken
-    {
-        return $this->refresh_token;
-    }
-
-    public function setRefreshToken(?RefreshToken $refresh_token): void
-    {
-        $this->refresh_token = $refresh_token;
-    }
-
-    public function setCharacterId(?int $character_id): void
-    {
-        $this->character_id = $character_id;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getCharacterId(): ?int
-    {
-        return $this->character_id;
-    }
-
-    /**
-     * @param int $corporation_id
-     */
-    public function setCorporationId(?int $corporation_id): void
-    {
-        $this->corporation_id = $corporation_id;
-    }
-
-    /**
-     * @return int
-     */
-    public function getCorporationId(): int
-    {
-        return $this->corporation_id ?? optional(CharacterAffiliation::find($this->character_id))->corporation_id;
-    }
-
-    /**
-     * @param int $alliance_id
-     *
-     * @return void
-     */
-    public function setAllianceId(?int $alliance_id): void
-    {
-        $this->alliance_id = $alliance_id;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getAllianceId(): ?int
-    {
-        return $this->alliance_id;
     }
 
     /**
@@ -270,5 +206,62 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
     public function setJobType(string $jobType): void
     {
         $this->jobType = $jobType;
+    }
+
+    public function getRefreshToken(): RefreshToken
+    {
+        return $this->refresh_token;
+    }
+
+    public function setRefreshToken(?RefreshToken $refresh_token): void
+    {
+        $this->refresh_token = $refresh_token;
+    }
+
+    public function setCharacterId(?int $character_id): void
+    {
+        $this->character_id = $character_id;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getCharacterId(): ?int
+    {
+        return $this->character_id;
+    }
+
+    /**
+     * @param int $corporation_id
+     */
+    public function setCorporationId(?int $corporation_id): void
+    {
+        $this->corporation_id = $corporation_id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCorporationId(): int
+    {
+        return $this->corporation_id ?? optional(CharacterAffiliation::find($this->character_id))->corporation_id;
+    }
+
+    /**
+     * @param int $alliance_id
+     *
+     * @return void
+     */
+    public function setAllianceId(?int $alliance_id): void
+    {
+        $this->alliance_id = $alliance_id;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getAllianceId(): ?int
+    {
+        return $this->alliance_id;
     }
 }

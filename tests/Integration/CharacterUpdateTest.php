@@ -12,6 +12,7 @@ use Illuminate\Support\Testing\Fakes\PendingBatchFake;
 use Mockery;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
+use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameDispatchJob;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob as CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterRoleJob;
@@ -96,7 +97,7 @@ class CharacterUpdateTest extends TestCase
         $batch->shouldReceive('add')->once()->with([
             [
                 new CharacterAssetJob($job_container),
-                new CharacterAssetsNameJob($job_container)
+                new CharacterAssetsNameDispatchJob($job_container)
             ]
         ]);
 
