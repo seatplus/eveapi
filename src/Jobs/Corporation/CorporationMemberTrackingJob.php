@@ -101,7 +101,6 @@ class CorporationMemberTrackingJob extends NewEsiBase implements HasPathValuesIn
         }
 
         collect($response)
-            ->lazy()
             ->each(fn ($member) => CorporationMemberTracking::updateOrCreate([
                 'corporation_id' => $this->corporation_id,
                 'character_id'   => $member->character_id,
