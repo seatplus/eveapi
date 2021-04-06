@@ -101,9 +101,30 @@ class CorporationMemberTrackingJob extends NewEsiBase implements HasPathValuesIn
         }
 
         collect($response)
+            ->map(fn($member) => [
+                'corporation_id' => $this->corporation_id,
+                'character_id'   => $member->character_id,
+                'start_date'   => property_exists($member, 'start_date') ? carbon($member->start_date) : null,
+                'base_id'      => $member->base_id ?? null,
+                'logon_date'   => property_exists($member, 'logon_date') ? carbon($member->logon_date) : null,
+                'logoff_date'  => property_exists($member, 'logoff_date') ? carbon($member->logoff_date) : null,
+                'location_id'  => $member->location_id ?? null,
+                'ship_type_id' => $member->ship_type_id ?? null,
+
+            ])
+            ->pipe(function($members) {
+                CorporationMemberTracking::upsert($members->toArray(), ['corporation_id', 'character_id']);
+                return $members;
+            })
+            ->pipe(fn ($members) => CorporationMemberTracking::where('corporation_id', $this->corporation_id)
+                ->whereNotIn('character_id', $members->pluck('character_id')->all())->delete()
+            );
+            //->dd();
+
+       /* collect($response)
             ->lazy()
             ->each(fn ($member) => CorporationMemberTracking::updateOrCreate([
-                'corporation_id' => $this->corporation_id,
+                'corporation_id' => $member->corporation_id,
                 'character_id'   => $member->character_id,
             ], [
                 'start_date'   => property_exists($member, 'start_date') ? carbon($member->start_date) : null,
@@ -115,6 +136,6 @@ class CorporationMemberTrackingJob extends NewEsiBase implements HasPathValuesIn
             ])
             )->pipe(fn ($members) => CorporationMemberTracking::where('corporation_id', $this->corporation_id)
                 ->whereNotIn('character_id', $members->pluck('character_id')->all())->delete()
-            );
+            );*/
     }
 }
