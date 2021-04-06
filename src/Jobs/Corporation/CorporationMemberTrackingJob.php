@@ -101,7 +101,7 @@ class CorporationMemberTrackingJob extends NewEsiBase implements HasPathValuesIn
         }
 
         collect($response)
-            ->map(fn($member) => [
+            ->map(fn ($member) => [
                 'corporation_id' => $this->corporation_id,
                 'character_id'   => $member->character_id,
                 'start_date'   => property_exists($member, 'start_date') ? carbon($member->start_date) : null,
@@ -112,14 +112,15 @@ class CorporationMemberTrackingJob extends NewEsiBase implements HasPathValuesIn
                 'ship_type_id' => $member->ship_type_id ?? null,
 
             ])
-            ->pipe(function($members) {
+            ->pipe(function ($members) {
                 CorporationMemberTracking::upsert($members->toArray(), ['corporation_id', 'character_id']);
+
                 return $members;
             })
             ->pipe(fn ($members) => CorporationMemberTracking::where('corporation_id', $this->corporation_id)
                 ->whereNotIn('character_id', $members->pluck('character_id')->all())->delete()
             );
-            //->dd();
+        //->dd();
 
        /* collect($response)
             ->lazy()
