@@ -139,7 +139,7 @@ class Asset extends Model
     {
         $region_ids = is_array($regions) ? $regions : [$regions];
 
-        return $query->whereHas('location', fn (Builder $query) => $query
+        return $query->orWhereHas('location', fn (Builder $query) => $query
             ->whereHasMorph(
                 'locatable',
                 '*',
@@ -155,7 +155,7 @@ class Asset extends Model
     {
         $system_ids = is_array($systems) ? $systems : [$systems];
 
-        return $query->whereHas('location', fn (Builder $query) => $query
+        return $query->orWhereHas('location', fn (Builder $query) => $query
             ->whereHasMorph(
                 'locatable',
                 '*',

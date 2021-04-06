@@ -37,7 +37,7 @@ class WalletJournalFactory extends Factory
     public function definition()
     {
         return [
-            'id' => $this->faker->randomNumber,
+            'id' => $this->faker->unique()->randomNumber,
             'wallet_journable_id' => $this->faker->numberBetween(90_000_000, 98_000_000),
             'wallet_journable_type' => CharacterInfo::class,
             'date' => $this->faker->iso8601,
