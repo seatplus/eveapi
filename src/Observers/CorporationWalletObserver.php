@@ -34,7 +34,6 @@ use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 
 class CorporationWalletObserver
 {
-
     private CorporationWallet $corporationWallet;
 
     /**
@@ -50,17 +49,13 @@ class CorporationWalletObserver
 
         $find_corporation_refresh_token = new FindCorporationRefreshToken;
 
-        $refresh_token = $find_corporation_refresh_token($this->corporationWallet->corporation_id, head(config('eveapi.scopes.corporation.wallet')), [ 'Accountant', 'Junior_Accountant']);
+        $refresh_token = $find_corporation_refresh_token($this->corporationWallet->corporation_id, head(config('eveapi.scopes.corporation.wallet')), ['Accountant', 'Junior_Accountant']);
 
-        if($refresh_token) {
+        if ($refresh_token) {
             $job_container = new JobContainer(['refresh_token' => $refresh_token]);
 
             CorporationWalletJournalByDivisionJob::dispatch($job_container, $corporationWallet->division)->onQueue('high');
             CorporationWalletTransactionByDivisionJob::dispatch($job_container, $corporationWallet->division)->onQueue('high');
         }
-
     }
-
-
-
 }

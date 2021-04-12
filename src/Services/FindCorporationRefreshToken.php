@@ -47,11 +47,11 @@ class FindCorporationRefreshToken
             ->cursor()
             ->shuffle()
             ->filter(fn ($token) => collect($scopes)->diff($token->scopes)->isEmpty())
-            ->first(function($token) use ($roles) {
-
+            ->first(function ($token) use ($roles) {
                 foreach ($roles as $role) {
-                    if($token->character->roles->hasRole('roles', $role) ?? null)
+                    if ($token->character->roles->hasRole('roles', $role) ?? null) {
                         return true;
+                    }
                 }
 
                 return false;

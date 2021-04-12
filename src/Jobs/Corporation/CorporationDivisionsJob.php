@@ -27,19 +27,13 @@
 namespace Seatplus\Eveapi\Jobs\Corporation;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Illuminate\Support\Arr;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationDivision;
-use Seatplus\Eveapi\Models\Corporation\CorporationWallet;
-use Seatplus\Eveapi\Services\Wallet\ProcessWalletJournalResponse;
-use Seatplus\Eveapi\Traits\HasPages;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
@@ -97,23 +91,22 @@ class CorporationDivisionsJob extends NewEsiBase implements HasPathValuesInterfa
      */
     public function handle(): void
     {
-
         $response = $this->retrieve();
 
         /*if ($response->isCachedLoad()) {
             return;
         }*/
 
-        collect($response)->each(fn(array $entries, string $division_type) => collect($entries)
-            ->each(fn($entry) => CorporationDivision::updateOrCreate(
+        collect($response)->each(fn (array $entries, string $division_type) => collect($entries)
+            ->each(fn ($entry) => CorporationDivision::updateOrCreate(
                 [
                     'corporation_id' => $this->getCorporationId(),
                     'division_type' => $division_type,
-                    'division_id' => $entry->division
+                    'division_id' => $entry->division,
                 ],
                 [
-                    'name' => data_get($entry, 'name', "")
+                    'name' => data_get($entry, 'name', ''),
                 ]
-            )) );
+            )));
     }
 }

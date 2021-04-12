@@ -28,15 +28,7 @@ namespace Seatplus\Eveapi\Models\Corporation;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\CorporationInfoFactory;
 use Seatplus\Eveapi\database\factories\CorporationWalletFactory;
-use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
-use Seatplus\Eveapi\Models\Application;
-use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Seatplus\Eveapi\Models\Contacts\Contact;
-use Seatplus\Eveapi\Models\Contacts\Label;
-use Seatplus\Eveapi\Models\SsoScopes;
 
 class CorporationWallet extends Model
 {
@@ -68,5 +60,4 @@ class CorporationWallet extends Model
     {
         return $this->belongsTo(CorporationInfo::class, 'corporation_id', 'corporation_id');
     }
-
 }

@@ -30,13 +30,10 @@ use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationWallet;
-use Seatplus\Eveapi\Services\Wallet\ProcessWalletJournalResponse;
 use Seatplus\Eveapi\Traits\HasPages;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
@@ -95,20 +92,19 @@ class CorporationWalletsJob extends NewEsiBase implements HasPathValuesInterface
      */
     public function handle(): void
     {
-
         $response = $this->retrieve();
 
         if ($response->isCachedLoad()) {
             return;
         }
 
-        collect($response)->each(fn($wallet) => CorporationWallet::updateOrCreate(
+        collect($response)->each(fn ($wallet) => CorporationWallet::updateOrCreate(
             [
                 'corporation_id' => $this->getCorporationId(),
-                'division' => data_get($wallet, 'division')
+                'division' => data_get($wallet, 'division'),
             ],
             [
-                'balance' => data_get($wallet, 'balance')
+                'balance' => data_get($wallet, 'balance'),
             ]
         ));
     }
