@@ -29,6 +29,7 @@ namespace Seatplus\Eveapi\Models\Corporation;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Seatplus\Eveapi\database\factories\CorporationInfoFactory;
+use Seatplus\Eveapi\database\factories\CorporationWalletFactory;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Application;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
@@ -36,16 +37,14 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contacts\Contact;
 use Seatplus\Eveapi\Models\Contacts\Label;
 use Seatplus\Eveapi\Models\SsoScopes;
-use Seatplus\Eveapi\Models\Wallet\WalletJournal;
-use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 
-class CorporationInfo extends Model
+class CorporationWallet extends Model
 {
     use HasFactory;
 
     protected static function newFactory()
     {
-        return CorporationInfoFactory::new();
+        return CorporationWalletFactory::new();
     }
 
     /**
@@ -56,74 +55,18 @@ class CorporationInfo extends Model
     protected $guarded = [];
 
     /**
-     * @var string
-     */
-    protected $primaryKey = 'corporation_id';
-
-    /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
     protected $casts = [
         'corporation_id' => 'integer',
-        'alliance_id' => 'integer',
+        'division' => 'integer',
     ];
 
-    public function characters()
+    public function corporation()
     {
-        return $this->hasManyThrough(
-            CharacterInfo::class,
-            CharacterAffiliation::class,
-            'corporation_id',
-            'character_id',
-            'corporation_id',
-            'character_id'
-            );
+        return $this->belongsTo(CorporationInfo::class, 'corporation_id', 'corporation_id');
     }
 
-    public function ssoScopes()
-    {
-        return $this->morphOne(SsoScopes::class, 'morphable');
-    }
-
-    public function alliance()
-    {
-        return $this->belongsTo(AllianceInfo::class, 'alliance_id', 'alliance_id');
-    }
-
-    public function candidates()
-    {
-        return $this->hasMany(Application::class, 'corporation_id', 'corporation_id');
-    }
-
-    public function contacts()
-    {
-        return $this->morphMany(Contact::class, 'contactable');
-    }
-
-    public function labels()
-    {
-        return $this->morphMany(Label::class, 'labelable');
-    }
-
-    public function members()
-    {
-        return $this->hasMany(CorporationMemberTracking::class, 'corporation_id', 'corporation_id');
-    }
-
-    public function wallets()
-    {
-        return $this->hasMany(CorporationWallet::class, 'corporation_id', 'corporation_id');
-    }
-
-    public function wallet_journals()
-    {
-        return $this->morphMany(WalletJournal::class, 'wallet_journable');
-    }
-
-    public function wallet_transactions()
-    {
-        return $this->morphMany(WalletTransaction::class, 'wallet_transactionable');
-    }
 }

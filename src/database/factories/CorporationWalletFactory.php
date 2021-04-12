@@ -24,27 +24,23 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Jobs\Middleware;
+namespace Seatplus\Eveapi\database\factories;
 
-use Exception;
-use Seatplus\Eveapi\Jobs\EsiBase;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
+use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
+use Seatplus\Eveapi\Models\Corporation\CorporationWallet;
 
-class HasRequiredScopeMiddleware
+class CorporationWalletFactory extends Factory
 {
-    /**
-     * Process the queued job.
-     *
-     * @param  mixed  $job
-     * @param  callable  $next
-     * @return mixed
-     */
-    public function handle($job, $next)
+    protected $model = CorporationWallet::class;
+
+    public function definition()
     {
-
-        if (in_array($job->getRequiredScope(), $job->refresh_token->scopes)) {
-            return $next($job);
-        }
-
-        return $job->fail(new Exception('refresh_token misses required scope: ' . $job->getRequiredScope()));
+        return [
+            'corporation_id'  => $this->faker->unique()->numberBetween(98000000, 99000000),
+            'division' => $this->faker->unique()->randomDigitNotNull,
+            'balance' => $this->faker->randomFloat(2, 0, 1),
+        ];
     }
 }

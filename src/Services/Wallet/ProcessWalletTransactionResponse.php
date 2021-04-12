@@ -33,7 +33,8 @@ class ProcessWalletTransactionResponse
 {
     public function __construct(
         private int $wallet_transactionable_id,
-        private string $wallet_transactionable_type
+        private string $wallet_transactionable_type,
+        private ?int $division=null
     ) {
     }
 
@@ -46,6 +47,7 @@ class ProcessWalletTransactionResponse
                 [
                     'wallet_transactionable_id' => $this->wallet_transactionable_id,
                     'wallet_transactionable_type' => $this->wallet_transactionable_type,
+                    'division' => $this->division,
 
                     // required props
                     'client_id' => $entry->client_id,

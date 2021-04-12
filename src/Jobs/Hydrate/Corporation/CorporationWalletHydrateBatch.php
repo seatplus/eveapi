@@ -24,27 +24,35 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Jobs\Middleware;
+namespace Seatplus\Eveapi\Jobs\Hydrate\Corporation;
 
-use Exception;
-use Seatplus\Eveapi\Jobs\EsiBase;
+use Seatplus\Eveapi\Jobs\Corporation\CorporationDivisionsJob;
+use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
+use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletJournalJob;
+use Seatplus\Eveapi\Jobs\Corporation\CorporationWalletsJob;
 
-class HasRequiredScopeMiddleware
+class CorporationWalletHydrateBatch extends HydrateCorporationBase
 {
-    /**
-     * Process the queued job.
-     *
-     * @param  mixed  $job
-     * @param  callable  $next
-     * @return mixed
-     */
-    public function handle($job, $next)
+    public function getRequiredScope(): string
     {
+        return head(config('eveapi.scopes.corporation.wallet'));
+    }
 
-        if (in_array($job->getRequiredScope(), $job->refresh_token->scopes)) {
-            return $next($job);
+    public function getRequiredRoles(): string | array
+    {
+        return ['Accountant', 'Junior_Accountant'];
+    }
+
+    public function handle()
+    {
+        if ($this->job_container->getRefreshToken()) {
+            $this->batch()->add([
+                new CorporationDivisionsJob($this->job_container),
+                [
+                    new CorporationWalletsJob($this->job_container),
+                    new CorporationWalletJournalJob($this->job_container)
+                ]
+            ]);
         }
-
-        return $job->fail(new Exception('refresh_token misses required scope: ' . $job->getRequiredScope()));
     }
 }

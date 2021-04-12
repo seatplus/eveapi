@@ -24,47 +24,43 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Jobs\Hydrate\Corporation;
+namespace Seatplus\Eveapi\Observers;
 
-use Illuminate\Bus\Batchable;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletJournalByDivisionJob;
+use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletTransactionByDivisionJob;
+use Seatplus\Eveapi\Models\Corporation\CorporationWallet;
 use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 
-abstract class HydrateCorporationBase implements ShouldQueue
+class CorporationWalletObserver
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    private CorporationWallet $corporationWallet;
 
     /**
-     * @var JobContainer
+     * Handle the User "created" event.
+     *
+     * @param CorporationWallet $corporationWallet
+     * @return void
+     * @throws \Seatplus\Eveapi\Exceptions\InvalidContainerDataException
      */
-    public JobContainer $job_container;
-
-    public function __construct(JobContainer $job_container)
+    public function created(CorporationWallet $corporationWallet)
     {
-        $this->job_container = $this->enrichJobContainerWithRefreshToken($job_container);
-    }
+        $this->corporationWallet = $corporationWallet;
 
-    abstract public function getRequiredScope(): string;
-
-    abstract public function getRequiredRoles(): string | array;
-
-    abstract public function handle();
-
-    final public function enrichJobContainerWithRefreshToken(JobContainer $job_container): JobContainer
-    {
         $find_corporation_refresh_token = new FindCorporationRefreshToken;
 
-        $job_container->refresh_token = $find_corporation_refresh_token(
-            $job_container->getCorporationId(),
-            $this->getRequiredScope(),
-            $this->getRequiredRoles()
-        );
+        $refresh_token = $find_corporation_refresh_token($this->corporationWallet->corporation_id, head(config('eveapi.scopes.corporation.wallet')), [ 'Accountant', 'Junior_Accountant']);
 
-        return $job_container;
+        if($refresh_token) {
+            $job_container = new JobContainer(['refresh_token' => $refresh_token]);
+
+            CorporationWalletJournalByDivisionJob::dispatch($job_container, $corporationWallet->division)->onQueue('high');
+            CorporationWalletTransactionByDivisionJob::dispatch($job_container, $corporationWallet->division)->onQueue('high');
+        }
+
     }
+
+
+
 }

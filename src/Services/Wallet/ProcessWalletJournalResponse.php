@@ -29,6 +29,7 @@ namespace Seatplus\Eveapi\Services\Wallet;
 use Seat\Eseye\Containers\EsiResponse;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\Structure;
@@ -40,7 +41,8 @@ class ProcessWalletJournalResponse
 {
     public function __construct(
         private int $wallet_journable_id,
-        private string $wallet_journable_type
+        private string $wallet_journable_type,
+        private ?int $division = null
     ) {
     }
 
@@ -53,6 +55,8 @@ class ProcessWalletJournalResponse
                 [
                     'wallet_journable_id' => $this->wallet_journable_id,
                     'wallet_journable_type' => $this->wallet_journable_type,
+                    'division' => $this->division,
+
                     // required props
                     'date' => carbon($entry->date),
                     'description' => $entry->description,
@@ -86,7 +90,7 @@ class ProcessWalletJournalResponse
             'alliance_id' => AllianceInfo::class,
             'eve_system' => 'eve_system',
             'industry_job_id' => 'industry_job_id',
-            'contract_id' => 'contract_id',
+            'contract_id' => Contract::class,
             'planet_id' => 'planet_id',
             'system_id' => System::class,
             'type_id' => Type::class,

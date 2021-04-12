@@ -60,8 +60,6 @@ class ResolveLocationJob implements ShouldQueue, ShouldBeUnique
         return [
             new RedisFunnelMiddleware,
             new HasRefreshTokenMiddleware,
-            new EsiRateLimitedMiddleware,
-            new EsiAvailabilityMiddleware,
         ];
     }
 

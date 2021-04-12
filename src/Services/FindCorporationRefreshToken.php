@@ -37,15 +37,24 @@ class FindCorporationRefreshToken
      *
      * @return \Seatplus\Eveapi\Models\RefreshToken|null
      */
-    public function __invoke(int $corporation_id, string | array $scope, string $role): ?RefreshToken
+    public function __invoke(int $corporation_id, string | array $scope, string | array $role): ?RefreshToken
     {
         $scopes = is_string($scope) ? [$scope] : (is_array($scope) ? $scope : []);
+        $roles = is_string($role) ? [$role] : (is_array($role) ? $role : []);
 
         return RefreshToken::with('corporation', 'character.roles')
             ->whereHas('corporation', fn ($query) => $query->where('corporation_infos.corporation_id', $corporation_id))
             ->cursor()
             ->shuffle()
             ->filter(fn ($token) => collect($scopes)->diff($token->scopes)->isEmpty())
-            ->first(fn ($token) => $token->character->roles->hasRole('roles', $role) ?? null);
+            ->first(function($token) use ($roles) {
+
+                foreach ($roles as $role) {
+                    if($token->character->roles->hasRole('roles', $role) ?? null)
+                        return true;
+                }
+
+                return false;
+            });
     }
 }
