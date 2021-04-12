@@ -32,11 +32,11 @@ use Seatplus\Eveapi\Models\Wallet\WalletJournal;
 
 return [
     Asset::class => 'assets',
-    CorporationMemberTracking::class => 'corporation.member_tracking',
+    CorporationMemberTracking::class => 'members',
     'queue.manager',
     'can open or close corporations for recruitment',
     'can accept or deny applications',
     Contact::class => 'contacts',
-    WalletJournal::class => 'wallets',
+    WalletJournal::class => 'wallet_journals',
     Contract::class => 'contracts',
-];
+]; // [Model::class => 'relationship'] *relationship must exist for character or corporation
