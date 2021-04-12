@@ -24,37 +24,39 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Services;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-use Seatplus\Eveapi\Models\RefreshToken;
-
-class FindCorporationRefreshToken
+class CreateCorporationWalletsTable extends Migration
 {
     /**
-     * @param int    $corporation_id
-     * @param string|array  $scope
-     * @param string $role
+     * Run the migrations.
      *
-     * @return \Seatplus\Eveapi\Models\RefreshToken|null
+     * @return void
      */
-    public function __invoke(int $corporation_id, string | array $scope, string | array $role): ?RefreshToken
+    public function up()
     {
-        $scopes = is_string($scope) ? [$scope] : (is_array($scope) ? $scope : []);
-        $roles = is_string($role) ? [$role] : (is_array($role) ? $role : []);
+        Schema::create('corporation_wallets', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('corporation_id')->constrained('corporation_infos', 'corporation_id');
+            $table->integer('division');
+            $table->double('balance');
+            $table->timestamps();
 
-        return RefreshToken::with('corporation', 'character.roles')
-            ->whereHas('corporation', fn ($query) => $query->where('corporation_infos.corporation_id', $corporation_id))
-            ->cursor()
-            ->shuffle()
-            ->filter(fn ($token) => collect($scopes)->diff($token->scopes)->isEmpty())
-            ->first(function ($token) use ($roles) {
-                foreach ($roles as $role) {
-                    if ($token->character->roles->hasRole('roles', $role) ?? null) {
-                        return true;
-                    }
-                }
+            $table->unique(['corporation_id', 'division']);
+        });
 
-                return false;
+        Schema::table('wallet_journals', function (Blueprint $table) {
+            $table->after('wallet_journable_id', function ($table) {
+                $table->integer('division')->nullable();
             });
+        });
+
+        Schema::table('wallet_transactions', function (Blueprint $table) {
+            $table->after('wallet_transactionable_id', function ($table) {
+                $table->integer('division')->nullable();
+            });
+        });
     }
 }

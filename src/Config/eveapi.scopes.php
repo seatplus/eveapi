@@ -36,8 +36,9 @@ return [
         'contracts' => ['esi-contracts.read_character_contracts.v1'],
     ],
     'corporation' => [
-        'assets' => ['esi-assets.read_corporation_assets.v1'],
+        'assets' => ['esi-assets.read_corporation_assets.v1', 'esi-corporations.read_divisions.v1'],
         'membertracking' => ['esi-corporations.track_members.v1'],
         'contracts' => ['esi-contracts.read_corporation_contracts.v1'],
+        'wallet' => ['esi-wallet.read_corporation_wallets.v1', 'esi-corporations.read_divisions.v1'],
     ],
 ];

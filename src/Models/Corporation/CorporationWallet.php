@@ -24,37 +24,40 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Services;
+namespace Seatplus\Eveapi\Models\Corporation;
 
-use Seatplus\Eveapi\Models\RefreshToken;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Seatplus\Eveapi\database\factories\CorporationWalletFactory;
 
-class FindCorporationRefreshToken
+class CorporationWallet extends Model
 {
-    /**
-     * @param int    $corporation_id
-     * @param string|array  $scope
-     * @param string $role
-     *
-     * @return \Seatplus\Eveapi\Models\RefreshToken|null
-     */
-    public function __invoke(int $corporation_id, string | array $scope, string | array $role): ?RefreshToken
+    use HasFactory;
+
+    protected static function newFactory()
     {
-        $scopes = is_string($scope) ? [$scope] : (is_array($scope) ? $scope : []);
-        $roles = is_string($role) ? [$role] : (is_array($role) ? $role : []);
+        return CorporationWalletFactory::new();
+    }
 
-        return RefreshToken::with('corporation', 'character.roles')
-            ->whereHas('corporation', fn ($query) => $query->where('corporation_infos.corporation_id', $corporation_id))
-            ->cursor()
-            ->shuffle()
-            ->filter(fn ($token) => collect($scopes)->diff($token->scopes)->isEmpty())
-            ->first(function ($token) use ($roles) {
-                foreach ($roles as $role) {
-                    if ($token->character->roles->hasRole('roles', $role) ?? null) {
-                        return true;
-                    }
-                }
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [];
 
-                return false;
-            });
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'corporation_id' => 'integer',
+        'division' => 'integer',
+    ];
+
+    public function corporation()
+    {
+        return $this->belongsTo(CorporationInfo::class, 'corporation_id', 'corporation_id');
     }
 }

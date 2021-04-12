@@ -24,41 +24,28 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Jobs\Universe;
+namespace Seatplus\Eveapi\Jobs\Wallet;
 
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Pipeline\Pipeline;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
-use Seatplus\Eveapi\Models\RefreshToken;
-use Seatplus\Eveapi\Models\Universe\Location;
-use Seatplus\Eveapi\Services\ResolveLocation\ResolveLocationDTO;
-use Seatplus\Eveapi\Services\ResolveLocation\ResolveStationPipe;
-use Seatplus\Eveapi\Services\ResolveLocation\ResolveStructurePipe;
+use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Models\Corporation\CorporationWallet;
 
-class ResolveLocationJob implements ShouldQueue, ShouldBeUnique
+class CorporationWalletJournalJob implements ShouldQueue, ShouldBeUnique
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * The number of times the job may be attempted.
-     *
-     * @var int
-     */
-    public $tries = 1;
+    private int $corporation_id;
 
-    public function middleware(): array
+    public function __construct(
+        private JobContainer $job_container)
     {
-        return [
-            new RedisFunnelMiddleware,
-            new HasRefreshTokenMiddleware,
-        ];
+        $this->corporation_id = $this->job_container->getCorporationId();
     }
 
     /**
@@ -66,7 +53,7 @@ class ResolveLocationJob implements ShouldQueue, ShouldBeUnique
      *
      * @var int
      */
-    public $uniqueFor = 7200;
+    public $uniqueFor = 3600;
 
     /**
      * The unique ID of the job.
@@ -75,41 +62,52 @@ class ResolveLocationJob implements ShouldQueue, ShouldBeUnique
      */
     public function uniqueId()
     {
-        return sprintf('Location %s via %s (%s)',
-            $this->location_id,
-            $this->refresh_token->character->name,
-            $this->refresh_token->character_id
+        return sprintf('Corporation wallet journal dispatcher for corpoation %s via %s (%s)',
+            $this->job_container->getRefreshToken()->corporation->name,
+            $this->job_container->getRefreshToken()->character->name,
+            $this->job_container->getRefreshToken()->character_id
         );
     }
 
-    public function __construct(
-        public int $location_id,
-        public RefreshToken $refresh_token
-    ) {
-    }
-
-    public function tags()
+    public function tags(): array
     {
         return [
-            'location_resolve',
-            'location_id:' . $this->location_id,
-            'via character: ' . $this->refresh_token->character_id,
+            'corporation',
+            'corporation_id: ' . $this->corporation_id,
+            'wallet',
+            'journals',
         ];
     }
 
+    /**
+     * Execute the job.
+     *
+     * @return void
+     * @throws \Exception
+     */
     public function handle(): void
     {
-        $payload = new ResolveLocationDTO([
-            'location' => Location::with('locatable')->findOrNew($this->location_id),
-            'log_message' => '',
-        ]);
+        CorporationWallet::query()
+            ->where('corporation_id', $this->corporation_id)
+            ->cursor()
+            ->each(fn ($wallet) => $this->batching() ? $this->handleBatching($wallet->division) : $this->handleNonBatching($wallet->division));
+    }
 
-        app(Pipeline::class)
-            ->send($payload)
-            ->through([
-                new ResolveStationPipe($this->location_id),
-                new ResolveStructurePipe($this->location_id, $this->refresh_token),
-            ])
-            ->then(fn ($payload) => logger()->info($payload->log_message));
+    private function handleBatching(int $division): void
+    {
+        if ($this->batch()->cancelled()) {
+            // Determine if the batch has been cancelled...
+
+            return;
+        }
+
+        $this->batch()->add([
+            new CorporationWalletJournalByDivisionJob($this->job_container, $division),
+        ]);
+    }
+
+    private function handleNonBatching(int $division): void
+    {
+        CorporationWalletJournalByDivisionJob::dispatch($this->job_container, $division)->onQueue($this->queue);
     }
 }

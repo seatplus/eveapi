@@ -10,6 +10,7 @@ use Laravel\Horizon\HorizonServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use Seatplus\Eveapi\EveapiServiceProvider;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Spatie\LaravelRay\RayServiceProvider;
 
 abstract class TestCase extends OrchestraTestCase
 {
@@ -55,7 +56,8 @@ abstract class TestCase extends OrchestraTestCase
         return [
             EveapiServiceProvider::class,
             HorizonServiceProvider::class,
-            ClockworkServiceProvider::class
+            ClockworkServiceProvider::class,
+            RayServiceProvider::class,
         ];
     }
 

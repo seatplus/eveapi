@@ -29,7 +29,6 @@ use Seatplus\Eveapi\Models\Contacts\Contact;
 use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Models\Wallet\WalletJournal;
-use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 
 return [
     Asset::class => 'assets',
@@ -38,7 +37,6 @@ return [
     'can open or close corporations for recruitment',
     'can accept or deny applications',
     Contact::class => 'contacts',
-    WalletJournal::class => 'wallet_journals',
+    WalletJournal::class => 'wallets',
     Contract::class => 'contracts',
-    /*WalletTransaction::class => 'wallet_transaction',*/
 ];

@@ -35,7 +35,7 @@ class CorporationMemberTrackingHydrateBatch extends HydrateCorporationBase
         return 'esi-corporations.track_members.v1';
     }
 
-    public function getRequiredRole(): string
+    public function getRequiredRoles(): string | array
     {
         return 'Director';
     }

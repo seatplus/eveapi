@@ -35,6 +35,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Hydrate\Corporation\CorporationMemberTrackingHydrateBatch;
+use Seatplus\Eveapi\Jobs\Hydrate\Corporation\CorporationWalletHydrateBatch;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 
@@ -67,9 +68,16 @@ class UpdateCorporation implements ShouldQueue
         $batch_name = sprintf('%s (corporation) update batch', $corporation);
 
         $batch = Bus::batch([
+
             new CorporationMemberTrackingHydrateBatch($job_container),
-        ])->then(fn (Batch $batch) => logger()->info($success_message)
-        )->name($batch_name)->onQueue($job_container->queue)->allowFailures()->dispatch();
+            new CorporationWalletHydrateBatch($job_container),
+
+        ])
+            ->then(fn (Batch $batch) => logger()->info($success_message))
+            ->name($batch_name)
+            ->onQueue($job_container->queue)
+            ->allowFailures()
+            ->dispatch();
     }
 
     private function dispatchUpdate(int $corporation_id, string $queue = 'default')
