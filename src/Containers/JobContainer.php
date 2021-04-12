@@ -75,7 +75,7 @@ class JobContainer
         return $this->character_id ?? optional($this->refresh_token)->character_id;
     }
 
-    public function getCorporationId() : ?int
+    public function getCorporationId(): ?int
     {
         return $this->corporation_id ?? optional(CharacterInfo::find($this->getCharacterId()))->corporation_id;
     }

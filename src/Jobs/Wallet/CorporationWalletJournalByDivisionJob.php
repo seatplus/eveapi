@@ -56,7 +56,7 @@ class CorporationWalletJournalByDivisionJob extends NewEsiBase implements HasPat
 
         $this->setPathValues([
             'corporation_id' => $this->getCorporationId(),
-            'division' => $this->division
+            'division' => $this->division,
         ]);
     }
 
@@ -84,7 +84,7 @@ class CorporationWalletJournalByDivisionJob extends NewEsiBase implements HasPat
             'corporation_id: ' . $this->getCorporationId(),
             'wallet',
             'journal',
-            'division: ' . $this->division
+            'division: ' . $this->division,
         ];
     }
 

@@ -27,9 +27,8 @@
 namespace Seatplus\Eveapi\Jobs\Hydrate\Corporation;
 
 use Seatplus\Eveapi\Jobs\Corporation\CorporationDivisionsJob;
-use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
-use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletJournalJob;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationWalletsJob;
+use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletJournalJob;
 
 class CorporationWalletHydrateBatch extends HydrateCorporationBase
 {
@@ -50,8 +49,8 @@ class CorporationWalletHydrateBatch extends HydrateCorporationBase
                 new CorporationDivisionsJob($this->job_container),
                 [
                     new CorporationWalletsJob($this->job_container),
-                    new CorporationWalletJournalJob($this->job_container)
-                ]
+                    new CorporationWalletJournalJob($this->job_container),
+                ],
             ]);
         }
     }

@@ -70,7 +70,7 @@ class UpdateCorporation implements ShouldQueue
         $batch = Bus::batch([
 
             new CorporationMemberTrackingHydrateBatch($job_container),
-            new CorporationWalletHydrateBatch($job_container)
+            new CorporationWalletHydrateBatch($job_container),
 
         ])
             ->then(fn (Batch $batch) => logger()->info($success_message))

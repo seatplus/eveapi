@@ -34,7 +34,6 @@ use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
-use Seatplus\Eveapi\Services\Wallet\ProcessWalletJournalResponse;
 use Seatplus\Eveapi\Services\Wallet\ProcessWalletTransactionResponse;
 use Seatplus\Eveapi\Traits\HasPages;
 use Seatplus\Eveapi\Traits\HasPathValues;
@@ -57,7 +56,7 @@ class CorporationWalletTransactionByDivisionJob extends NewEsiBase implements Ha
 
         $this->setPathValues([
             'corporation_id' => $this->getCorporationId(),
-            'division' => $this->division
+            'division' => $this->division,
         ]);
     }
 
@@ -85,7 +84,7 @@ class CorporationWalletTransactionByDivisionJob extends NewEsiBase implements Ha
             'corporation_id: ' . $this->getCorporationId(),
             'wallet',
             'transaction',
-            'division: ' . $this->division
+            'division: ' . $this->division,
         ];
     }
 

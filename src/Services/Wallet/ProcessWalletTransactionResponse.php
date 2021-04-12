@@ -34,7 +34,7 @@ class ProcessWalletTransactionResponse
     public function __construct(
         private int $wallet_transactionable_id,
         private string $wallet_transactionable_type,
-        private ?int $division=null
+        private ?int $division = null
     ) {
     }
 
