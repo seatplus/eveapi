@@ -29,7 +29,6 @@ namespace Seatplus\Eveapi\Jobs\Character;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Traits\HasPathValues;
@@ -69,7 +68,6 @@ class CharacterInfoJob extends NewEsiBase implements HasPathValuesInterface
     public function middleware(): array
     {
         return [
-            new EsiAvailabilityMiddleware,
             (new ThrottlesExceptionsWithRedis(80, 5))
                 ->by($this->uniqueId())
                 ->when(fn () => ! $this->isEsiRateLimited())

@@ -30,7 +30,6 @@ use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasRequestBodyInterface;
-use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Traits\HasRequestBody;
@@ -67,7 +66,6 @@ class CharacterAffiliationJob extends NewEsiBase implements HasRequestBodyInterf
     public function middleware(): array
     {
         return [
-            new EsiAvailabilityMiddleware,
             (new ThrottlesExceptionsWithRedis(80, 5))
                 ->by($this->uniqueId())
                 ->when(fn () => ! $this->isEsiRateLimited())

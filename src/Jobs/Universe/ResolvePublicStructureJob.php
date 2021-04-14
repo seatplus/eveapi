@@ -27,18 +27,16 @@
 namespace Seatplus\Eveapi\Jobs\Universe;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Esi\Location\CacheAllPublicStrucutresIdAction;
-use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
 
-class ResolvePublicStructureJob implements ShouldQueue
+class ResolvePublicStructureJob implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -61,6 +59,16 @@ class ResolvePublicStructureJob implements ShouldQueue
      */
     private $cache_string;
 
+    /**
+     * The unique ID of the job.
+     *
+     * @return string
+     */
+    public function uniqueId()
+    {
+        return implode(', ', $this->tags());
+    }
+
     public function __construct(JobContainer $job_container)
     {
         $this->refresh_token = $job_container->getRefreshToken();
@@ -70,10 +78,11 @@ class ResolvePublicStructureJob implements ShouldQueue
     public function middleware(): array
     {
         return [
-            new RedisFunnelMiddleware,
             new HasRefreshTokenMiddleware,
-            new EsiRateLimitedMiddleware,
-            new EsiAvailabilityMiddleware,
+            (new ThrottlesExceptionsWithRedis(80, 5))
+                ->by($this->uniqueId())
+                ->when(fn () => ! $this->isEsiRateLimited())
+                ->backoff(5),
         ];
     }
 
@@ -86,14 +95,8 @@ class ResolvePublicStructureJob implements ShouldQueue
 
     public function handle(): void
     {
-        if (! cache()->has($this->cache_string)) {
-            (new CacheAllPublicStrucutresIdAction)->execute();
-        }
-
         $this->location_ids = collect(cache()->pull($this->cache_string));
 
-        $this->location_ids->unique()->each(function ($location_id) {
-            dispatch(new ResolveLocationJob($location_id, $this->refresh_token))->onQueue('default');
-        });
+        $this->location_ids->unique()->each(fn ($location_id) => dispatch(new ResolveLocationJob($location_id, $this->refresh_token))->onQueue('default'));
     }
 }

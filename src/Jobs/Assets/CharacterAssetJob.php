@@ -31,7 +31,6 @@ use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
@@ -78,7 +77,6 @@ class CharacterAssetJob extends NewEsiBase implements HasPathValuesInterface, Ha
         return [
             new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
-            new EsiAvailabilityMiddleware,
             (new ThrottlesExceptionsWithRedis(80, 5))
                 ->by($this->uniqueId())
                 ->when(fn () => ! $this->isEsiRateLimited())
