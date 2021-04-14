@@ -26,10 +26,8 @@
 
 namespace Seatplus\Eveapi\Jobs\Universe;
 
+use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Universe\Category;
 use Seatplus\Eveapi\Traits\HasPathValues;
@@ -61,17 +59,18 @@ class ResolveUniverseCategoryByIdJob extends NewEsiBase implements HasPathValues
     public function middleware(): array
     {
         return [
-            new EsiRateLimitedMiddleware,
-            new EsiAvailabilityMiddleware,
-            new RedisFunnelMiddleware,
+            (new ThrottlesExceptionsWithRedis(80, 5))
+                ->by($this->uniqueId())
+                ->when(fn () => ! $this->isEsiRateLimited())
+                ->backoff(5),
         ];
     }
 
     public function tags(): array
     {
         return [
-            'type',
-            'informations',
+            'universe',
+            'category',
             sprintf('category_id:%s', $this->category_id),
         ];
     }
@@ -85,8 +84,9 @@ class ResolveUniverseCategoryByIdJob extends NewEsiBase implements HasPathValues
         }
 
         Category::firstOrCreate(
-            ['category_id' => $response->category_id],
             [
+                'category_id' => $response->category_id
+            ], [
                 'name' => $response->name,
                 'published' => $response->published,
             ]

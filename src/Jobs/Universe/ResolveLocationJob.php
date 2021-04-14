@@ -35,7 +35,6 @@ use Illuminate\Pipeline\Pipeline;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\RedisFunnelMiddleware;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Services\ResolveLocation\ResolveLocationDTO;
@@ -56,7 +55,6 @@ class ResolveLocationJob implements ShouldQueue, ShouldBeUnique
     public function middleware(): array
     {
         return [
-            new RedisFunnelMiddleware,
             new HasRefreshTokenMiddleware,
         ];
     }

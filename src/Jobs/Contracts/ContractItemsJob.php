@@ -27,11 +27,10 @@
 namespace Seatplus\Eveapi\Jobs\Contracts;
 
 use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\Middleware\EsiAvailabilityMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\EsiRateLimitedMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
@@ -77,8 +76,10 @@ class ContractItemsJob extends NewEsiBase implements HasPathValuesInterface, Has
         return [
             new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
-            new EsiRateLimitedMiddleware,
-            new EsiAvailabilityMiddleware,
+            (new ThrottlesExceptionsWithRedis(80, 5))
+                ->by($this->uniqueId())
+                ->when(fn () => ! $this->isEsiRateLimited())
+                ->backoff(5),
         ];
     }
 

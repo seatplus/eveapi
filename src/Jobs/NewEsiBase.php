@@ -87,7 +87,7 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
      */
     public function uniqueId()
     {
-        return implode($this->tags());
+        return implode(', ', $this->tags());
     }
 
     /**
