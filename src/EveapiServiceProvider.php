@@ -93,9 +93,6 @@ class EveapiServiceProvider extends ServiceProvider
         // Add other schedules
         $this->addSchedules();
 
-        // Add routes
-        $this->loadRoutesFrom(__DIR__ . '/Http/routes.php');
-
         // Add event listeners
         $this->addEventListeners();
 
