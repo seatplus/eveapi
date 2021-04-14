@@ -85,7 +85,7 @@ class ResolveUniverseCategoryByIdJob extends NewEsiBase implements HasPathValues
 
         Category::firstOrCreate(
             [
-                'category_id' => $response->category_id
+                'category_id' => $response->category_id,
             ], [
                 'name' => $response->name,
                 'published' => $response->published,
