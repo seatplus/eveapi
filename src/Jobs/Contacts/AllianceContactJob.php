@@ -30,7 +30,7 @@ use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;;
+use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;

@@ -66,7 +66,7 @@ class ResolvePublicStructureJob implements ShouldQueue, ShouldBeUnique
      */
     public function uniqueId()
     {
-        return implode(', ',$this->tags());
+        return implode(', ', $this->tags());
     }
 
     public function __construct(JobContainer $job_container)
@@ -95,9 +95,8 @@ class ResolvePublicStructureJob implements ShouldQueue, ShouldBeUnique
 
     public function handle(): void
     {
-
         $this->location_ids = collect(cache()->pull($this->cache_string));
 
-        $this->location_ids->unique()->each(fn($location_id) => dispatch(new ResolveLocationJob($location_id, $this->refresh_token))->onQueue('default'));
+        $this->location_ids->unique()->each(fn ($location_id) => dispatch(new ResolveLocationJob($location_id, $this->refresh_token))->onQueue('default'));
     }
 }
