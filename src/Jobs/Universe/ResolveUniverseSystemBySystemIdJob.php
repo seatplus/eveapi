@@ -28,7 +28,6 @@ namespace Seatplus\Eveapi\Jobs\Universe;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Universe\System;
 use Seatplus\Eveapi\Traits\HasPathValues;
@@ -59,7 +58,6 @@ class ResolveUniverseSystemBySystemIdJob extends NewEsiBase implements HasPathVa
     public function middleware(): array
     {
         return [
-            new HasRefreshTokenMiddleware,
             (new ThrottlesExceptionsWithRedis(80, 5))
                 ->by($this->uniqueId())
                 ->when(fn () => ! $this->isEsiRateLimited())
