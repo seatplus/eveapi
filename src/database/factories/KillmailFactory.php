@@ -39,7 +39,6 @@ class KillmailFactory extends Factory
 
     public function definition()
     {
-
         return [
             'killmail_id' => $this->faker->numberBetween(0, 10000),
             'killmail_hash'  => $this->faker->sha256,
