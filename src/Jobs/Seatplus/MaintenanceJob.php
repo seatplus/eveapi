@@ -37,7 +37,9 @@ use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingAssetsNames;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCategorys;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCharacterInfosFromCorporationMemberTracking;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingConstellations;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingGroups;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingRegions;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingLocationFromAssets;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingLocationFromContracts;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingLocationFromCorporationMemberTracking;
@@ -73,6 +75,12 @@ class MaintenanceJob implements ShouldQueue
             new GetMissingAssetsNames,
             new GetMissingCharacterInfosFromCorporationMemberTracking,
 
+            // Region
+            [
+                new GetMissingConstellations,
+                new GetMissingRegions,
+            ],
+
             // Locations
             new GetMissingLocationFromWalletTransaction,
             new GetMissingLocationFromCorporationMemberTracking,
@@ -87,6 +95,8 @@ class MaintenanceJob implements ShouldQueue
             new GetMissingTypesFromWalletTransaction,
             new GetMissingTypesFromCharacterAssets,
             new GetMissingTypesFromLocations,
+
+
 
         ])
             ->then(fn (Batch $batch) => logger()->info('Maintenance job finished'))

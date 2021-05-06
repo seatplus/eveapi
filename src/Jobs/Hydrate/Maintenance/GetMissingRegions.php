@@ -24,38 +24,29 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\database\factories;
+namespace Seatplus\Eveapi\Jobs\Hydrate\Maintenance;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Seatplus\Eveapi\Models\Universe\Station;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseConstellationByConstellationIdJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseRegionByRegionIdJob;
+use Seatplus\Eveapi\Models\Universe\Constellation;
 use Seatplus\Eveapi\Models\Universe\System;
 
-class StationFactory extends Factory
+class GetMissingRegions extends HydrateMaintenanceBase
 {
-    protected $model = Station::class;
-
-    public function definition()
+    public function handle()
     {
+        if ($this->batch()->cancelled()) {
+            // Determine if the batch has been cancelled...
 
-        return [
-            'station_id' => $this->faker->numberBetween(60000000, 64000000),
-            'name' => $this->faker->name,
-            'owner_id'  => $this->faker->optional()->numberBetween(98000000, 99000000),
-            'system_id'  => System::factory(),
-            'type_id' => $this->faker->numberBetween(0, 10000),
-            'race_id'  => $this->faker->optional()->numberBetween(98000000, 99000000),
-            'reprocessing_efficiency' => $this->faker->randomNumber(),
-            'reprocessing_stations_take' => $this->faker->randomNumber(),
-            'max_dockable_ship_volume' => $this->faker->randomNumber(),
-            'office_rental_cost' => $this->faker->randomDigit,
+            return;
+        }
 
-        ];
-    }
+        $unknown_region_ids = Constellation::whereDoesntHave('region')->pluck('region_id')->unique()->values();
 
-    public function noSystem()
-    {
-        return $this->state(fn () => [
-            'system_id'  => $this->faker->numberBetween(30000000, 31000000),
-        ]);
+        $jobs = $unknown_region_ids->map(fn ($id) => new ResolveUniverseRegionByRegionIdJob($id));
+
+        $this->batch()->add(
+            $jobs->toArray()
+        );
     }
 }

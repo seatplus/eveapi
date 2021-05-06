@@ -47,10 +47,14 @@ class System extends Model
      */
     protected $guarded = [];
 
+    protected $with = ['region'];
+
     /**
      * @var string
      */
     protected $primaryKey = 'system_id';
+
+    public $incrementing = false;
 
     /**
      * The table associated with the model.

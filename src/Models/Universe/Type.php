@@ -46,6 +46,8 @@ class Type extends Model
      */
     protected $primaryKey = 'type_id';
 
+    public $incrementing = false;
+
     /**
      * The table associated with the model.
      *

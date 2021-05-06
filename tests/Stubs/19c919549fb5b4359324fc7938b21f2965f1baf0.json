@@ -1,0 +1,5029 @@
+{
+  "attackers": [
+    {
+      "alliance_id": 99004901,
+      "character_id": 1835359865,
+      "corporation_id": 302750157,
+      "damage_done": 5592,
+      "final_blow": false,
+      "security_status": -1.5,
+      "ship_type_id": 4310,
+      "weapon_type_id": 4310
+    },
+    {
+      "alliance_id": 1727758877,
+      "character_id": 566167022,
+      "corporation_id": 1402464745,
+      "damage_done": 5465,
+      "final_blow": false,
+      "security_status": 0.0,
+      "ship_type_id": 4310,
+      "weapon_type_id": 4310
+    },
+    {
+      "alliance_id": 99004901,
+      "character_id": 92751333,
+      "corporation_id": 302750157,
+      "damage_done": 4853,
+      "final_blow": false,
+      "security_status": -0.2,
+      "ship_type_id": 4310,
+      "weapon_type_id": 4310
+    },
+    {
+      "alliance_id": 1727758877,
+      "character_id": 2113730620,
+      "corporation_id": 98375902,
+      "damage_done": 4830,
+      "final_blow": false,
+      "security_status": 0.8,
+      "ship_type_id": 4310,
+      "weapon_type_id": 4310
+    },
+    {
+      "character_id": 2113223007,
+      "corporation_id": 98668936,
+      "damage_done": 4827,
+      "final_blow": false,
+      "security_status": 4.1,
+      "ship_type_id": 4310,
+      "weapon_type_id": 4310
+    },
+    {
+      "alliance_id": 99004901,
+      "character_id": 781753591,
+      "corporation_id": 302750157,
+      "damage_done": 4648,
+      "final_blow": false,
+      "security_status": -2.0,
+      "ship_type_id": 4310,
+      "weapon_type_id": 4310
+    },
+    {
+      "alliance_id": 1727758877,
+      "character_id": 96582280,
+      "corporation_id": 98583428,
+      "damage_done": 4605,
+      "final_blow": false,
+      "security_status": 0.2,
+      "ship_type_id": 4310,
+      "weapon_type_id": 4310
+    },
+    {
+      "alliance_id": 99004901,
+      "character_id": 92474511,
+      "corporation_id": 302750157,
+      "damage_done": 4350,
+      "final_blow": false,
+      "security_status": -1.2,
+      "ship_type_id": 4310,
+      "weapon_type_id": 4310
+    },
+    {
+      "alliance_id": 1727758877,
+      "character_id": 829694454,
+      "corporation_id": 98569969,
+      "damage_done": 4269,
+      "final_blow": false,
+      "security_status": 0.5,
+      "ship_type_id": 4310,
+      "weapon_type_id": 4310
+    },
+    {
+      "character_id": 2117648451,
+      "corporation_id": 1000171,
+      "damage_done": 4106,
+      "final_blow": false,
+      "security_status": -1.9,
+      "ship_type_id": 4310,
+      "weapon_type_id": 4310
+    },
+    {
+      "alliance_id": 99005338,
+      "character_id": 2113233546,
+      "corporation_id": 98558506,
+      "damage_done": 4062,
+      "final_blow": false,
+      "security_status": 0.4,
+      "ship_type_id": 4310,
+      "weapon_type_id": 4310
+    },
+    {
+      "alliance_id": 1727758877,
+      "character_id": 96199403,
+      "corporation_id": 1282059165,
+      "damage_done": 3866,
+      "final_blow": false,
+      "security_status": -1.2,
+      "ship_type_id": 4310,
+      "weapon_type_id": 4310
+    },
+    {
+      "alliance_id": 386292982,
+      "character_id": 2116062460,
+      "corporation_id": 828800677,
+      "damage_done": 3859,
+      "final_blow": false,
+      "security_status": -2.1,
+      "ship_type_id": 4310,
+      "weapon_type_id": 4310
+    },
+    {
+      "alliance_id": 1727758877,
+      "character_id": 96852178,
+      "corporation_id": 544199803,
+      "damage_done": 3748,
+      "final_blow": false,
+      "security_status": 0.4,
+      "ship_type_id": 4310,
+      "weapon_type_id": 4310
+    },
+    {
+      "alliance_id": 99004901,
+      "character_id": 96366492,
+      "corporation_id": 302750157,
+      "damage_done": 3594,
+      "final_blow": false,
+      "security_status": -0.1,
+      "ship_type_id": 4310,
+      "weapon_type_id": 4310
+    },
+    {
+      "alliance_id": 99004901,
+      "character_id": 951577122,
+      "corporation_id": 302750157,
+      "damage_done": 3549,
+      "final_blow": false,
+      "security_status": -0.4,
+      "ship_type_id": 4310,
+      "weapon_type_id": 4310
+    },
+    {
+      "alliance_id": 99004901,
+      "character_id": 94208824,
+      "corporation_id": 302750157,
+      "damage_done": 2940,
+      "final_blow": true,
+      "security_status": -0.4,
+      "ship_type_id": 4310,
+      "weapon_type_id": 2961
+    },
+    {
+      "alliance_id": 1727758877,
+      "character_id": 95088733,
+      "corporation_id": 544199803,
+      "damage_done": 2673,
+      "final_blow": false,
+      "security_status": 4.1,
+      "ship_type_id": 4310,
+      "weapon_type_id": 4310
+    },
+    {
+      "character_id": 523686387,
+      "corporation_id": 98668936,
+      "damage_done": 1137,
+      "final_blow": false,
+      "security_status": 3.8,
+      "ship_type_id": 4302,
+      "weapon_type_id": 4302
+    },
+    {
+      "character_id": 2112443799,
+      "corporation_id": 98667676,
+      "damage_done": 265,
+      "final_blow": false,
+      "security_status": -0.6,
+      "weapon_type_id": 27381
+    },
+    {
+      "alliance_id": 677188138,
+      "character_id": 2115668775,
+      "corporation_id": 1158733525,
+      "damage_done": 0,
+      "final_blow": false,
+      "security_status": 0.0,
+      "ship_type_id": 670,
+      "weapon_type_id": 19806
+    }
+  ],
+  "killmail_id": 92281357,
+  "killmail_time": "2021-04-19T05:03:14Z",
+  "solar_system_id": 30002187,
+  "victim": {
+    "character_id": 96811141,
+    "corporation_id": 98481182,
+    "damage_taken": 77238,
+    "items": [
+      {
+        "flag": 23,
+        "item_type_id": 41191,
+        "quantity_dropped": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 13,
+        "item_type_id": 31900,
+        "quantity_dropped": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 20,
+        "item_type_id": 15282,
+        "quantity_destroyed": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 87,
+        "item_type_id": 31872,
+        "quantity_destroyed": 2,
+        "singleton": 0
+      },
+      {
+        "flag": 87,
+        "item_type_id": 31872,
+        "quantity_dropped": 3,
+        "singleton": 0
+      },
+      {
+        "flag": 5,
+        "item_type_id": 33522,
+        "quantity_destroyed": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 30,
+        "item_type_id": 32933,
+        "quantity_dropped": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 23,
+        "item_type_id": 29009,
+        "quantity_destroyed": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 92,
+        "item_type_id": 26302,
+        "quantity_destroyed": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 87,
+        "item_type_id": 23711,
+        "quantity_destroyed": 4,
+        "singleton": 0
+      },
+      {
+        "flag": 87,
+        "item_type_id": 23711,
+        "quantity_dropped": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 87,
+        "item_type_id": 48744,
+        "quantity_destroyed": 2,
+        "singleton": 0
+      },
+      {
+        "flag": 87,
+        "item_type_id": 48744,
+        "quantity_dropped": 3,
+        "singleton": 0
+      },
+      {
+        "flag": 15,
+        "item_type_id": 18883,
+        "quantity_dropped": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 87,
+        "item_type_id": 33681,
+        "quantity_destroyed": 3,
+        "singleton": 0
+      },
+      {
+        "flag": 87,
+        "item_type_id": 33681,
+        "quantity_dropped": 4,
+        "singleton": 0
+      },
+      {
+        "flag": 31,
+        "item_type_id": 32933,
+        "quantity_dropped": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 5,
+        "item_type_id": 33702,
+        "quantity_dropped": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 11,
+        "item_type_id": 14855,
+        "quantity_destroyed": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 12,
+        "item_type_id": 41202,
+        "quantity_destroyed": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 22,
+        "item_type_id": 29011,
+        "quantity_dropped": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 29,
+        "item_type_id": 32933,
+        "quantity_dropped": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 16,
+        "item_type_id": 18883,
+        "quantity_destroyed": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 93,
+        "item_type_id": 26302,
+        "quantity_destroyed": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 94,
+        "item_type_id": 26302,
+        "quantity_destroyed": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 179,
+        "item_type_id": 33468,
+        "quantity_dropped": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 24,
+        "item_type_id": 14242,
+        "quantity_destroyed": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 19,
+        "item_type_id": 18676,
+        "quantity_dropped": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 28,
+        "item_type_id": 32933,
+        "quantity_destroyed": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 20,
+        "item_type_id": 29011,
+        "quantity_dropped": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 21,
+        "item_type_id": 15282,
+        "quantity_destroyed": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 22,
+        "item_type_id": 15282,
+        "quantity_destroyed": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 33,
+        "item_type_id": 24348,
+        "quantity_dropped": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 14,
+        "item_type_id": 31900,
+        "quantity_destroyed": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 32,
+        "item_type_id": 25861,
+        "quantity_destroyed": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 21,
+        "item_type_id": 29009,
+        "quantity_destroyed": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 27,
+        "item_type_id": 3634,
+        "quantity_dropped": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 5,
+        "item_type_id": 17365,
+        "items": [
+          {
+            "flag": 63,
+            "item_type_id": 9842,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 56733,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 30248,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33739,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 48602,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 34418,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 32982,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 23087,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 43749,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 41627,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 10839,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2455,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 23722,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 992,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 48925,
+            "quantity_dropped": 1,
+            "singleton": 2
+          },
+          {
+            "flag": 63,
+            "item_type_id": 37874,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 32860,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 24594,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 47265,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 20420,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 45744,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 47396,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 34402,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 41221,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 955,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 32881,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11540,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 48586,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 12067,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2354,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1178,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3645,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 57075,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 54166,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3567,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 10040,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 45585,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33219,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11455,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 54226,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 42702,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 32865,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 34436,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 17850,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 20425,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 41155,
+            "quantity_dropped": 4,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1162,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 941,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 25862,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3737,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 26463,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 12530,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 48144,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 27059,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3689,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11621,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 16120,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 48923,
+            "quantity_dropped": 1,
+            "singleton": 2
+          },
+          {
+            "flag": 63,
+            "item_type_id": 17643,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 31118,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33569,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 17988,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 25575,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 21808,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 42707,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 17910,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 4409,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 52298,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11462,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3673,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 32287,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 946,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 22577,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 47056,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 29206,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2345,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 54309,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 34430,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1169,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 34356,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 23511,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 42730,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3703,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 17894,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 34204,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 53384,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11887,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 28750,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1154,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11446,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 56847,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 43751,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 53336,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 37816,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 44992,
+            "quantity_dropped": 100,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11467,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 54820,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 42640,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 40751,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2021,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2366,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 45482,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11612,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 44270,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 12302,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 19500,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 35789,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11451,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 990,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 28788,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 26132,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 21815,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 34432,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2083,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 55932,
+            "quantity_dropped": 21,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 34161,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 14293,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 28974,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11613,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 48135,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3664,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 48115,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 937,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33720,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 26459,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33022,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2739,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 21079,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33215,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 34421,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 30251,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 24595,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 24355,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 4239,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 25304,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 17990,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 985,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 34362,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1404,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 19954,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 939,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 20423,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 25267,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 48140,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1218,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11877,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 37880,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 54811,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 26464,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 17795,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 48143,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 9850,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 54227,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3830,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 47183,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11746,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 29002,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 23706,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 56095,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 23730,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 32267,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 28999,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 32868,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 20103,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 30746,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 18640,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33061,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 27025,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 21634,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 37866,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 42726,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 29001,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 22573,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 44125,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 57782,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 9836,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 23714,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 53332,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 4106,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 53382,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 20412,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 53983,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 55755,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 56849,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 54160,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 24278,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 26089,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 21504,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 44109,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 20171,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 45740,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 54802,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 949,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 32875,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33018,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 24349,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 54308,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 31062,
+            "quantity_dropped": 1,
+            "singleton": 2
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11288,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11889,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 26073,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 34207,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3709,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 4235,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 48113,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 47058,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11433,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 32258,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 32859,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 24593,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 24736,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 47043,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1032,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11873,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 954,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 4150,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3529,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 24354,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 47064,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2477,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1177,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 30268,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 57074,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11944,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 4171,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11442,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1129,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 30988,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 45743,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 49749,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1214,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 23703,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3715,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33778,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 26123,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 4316,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 4242,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 2333,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 24462,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11130,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33181,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33058,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 37878,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1161,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 26462,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 47395,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11880,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 23726,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11620,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 43911,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 16243,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 14358,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 37820,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 44266,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2445,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 17987,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 56639,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 53330,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 20104,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 47188,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 1436,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 25615,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11461,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 48924,
+            "quantity_dropped": 1,
+            "singleton": 2
+          },
+          {
+            "flag": 63,
+            "item_type_id": 37883,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 32286,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 945,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 45486,
+            "quantity_dropped": 1,
+            "singleton": 2
+          },
+          {
+            "flag": 63,
+            "item_type_id": 45,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 12057,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33064,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11300,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 49991,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 55981,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2290,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 20413,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2868,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 17893,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 34422,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 23121,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 53984,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2307,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 44213,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 40462,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 20164,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 32871,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 49791,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2604,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 47055,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2328,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 43750,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11284,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11466,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 9945,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 54943,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 30952,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 5319,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 29249,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 55815,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 42906,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 17647,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3838,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 47191,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11881,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 34208,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 28867,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 20415,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1067,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 55758,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 31108,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33575,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11450,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 989,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 17939,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1334,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2595,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 55931,
+            "quantity_dropped": 143,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 24734,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 47060,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 27309,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33177,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 48114,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 15509,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 936,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3822,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 28758,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 54948,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 26458,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33021,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 12467,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 21077,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 12994,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33214,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 34420,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1318,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 45487,
+            "quantity_dropped": 1,
+            "singleton": 2
+          },
+          {
+            "flag": 63,
+            "item_type_id": 4238,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 689,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 32352,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1072,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 45523,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 1978,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 23724,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1186,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 46009,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3840,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 47267,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 690,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 52309,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1217,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 28260,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 54810,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3005,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 42704,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 57459,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 16239,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 17794,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 24357,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 46008,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 24465,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11296,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 34425,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 23708,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3647,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11602,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 47182,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3553,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 24580,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3898,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 21085,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 23660,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33221,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 22925,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11441,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 34167,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 26122,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 32867,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 30745,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 30486,
+            "quantity_dropped": 8,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2346,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33060,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 52295,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11133,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 31120,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2292,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 17815,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 4064,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 44124,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 21789,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 53331,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 20411,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 25619,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 54327,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 37881,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 17849,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3654,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 23513,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 23932,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 24277,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 31056,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1100,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 44269,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1026,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 26129,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11607,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 22176,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33017,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 15353,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 691,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 22881,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1245,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 969,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3820,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 54562,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 32870,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 34206,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 4234,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 34393,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 53987,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33030,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 52284,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 23720,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 54815,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 32858,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3581,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 24592,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 23474,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 26131,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 57076,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 20418,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11872,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 37817,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 20114,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 24353,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 55745,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2352,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 56069,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3643,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 57073,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 54164,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3767,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 16237,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 24576,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 17827,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 23129,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 20476,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11890,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1128,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 45742,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33217,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 55933,
+            "quantity_dropped": 32,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 27015,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 45741,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11798,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 20172,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 32879,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 17848,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 4315,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 41598,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 47063,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33065,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 52291,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 41033,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 37877,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 17323,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 42721,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 1855,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11294,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 49790,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 34349,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 2341,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 24597,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 44208,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1010,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 30014,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 983,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3735,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 12109,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 52296,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 48142,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2465,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11460,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3687,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 944,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3411,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11529,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 26466,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 34428,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 19944,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 10247,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33519,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33026,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 48117,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 54328,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 785,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 23732,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2184,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 26125,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 4198,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3577,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2076,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 17855,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 47054,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 23234,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11465,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 19814,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 32869,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 41639,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 56788,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 48601,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2019,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1945,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33707,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 17646,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 23716,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 967,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11270,
+            "quantity_dropped": 1,
+            "singleton": 2
+          },
+          {
+            "flag": 63,
+            "item_type_id": 47190,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 44214,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 20414,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 52200,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 55757,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 41058,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11449,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 988,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 54162,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 47053,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 50131,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 32235,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 26127,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 55930,
+            "quantity_dropped": 232,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 24733,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 47059,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 684,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11870,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 23537,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 32877,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33020,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 10837,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 41607,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11290,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33213,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11891,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2838,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 54968,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 48603,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 32375,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 23507,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 527,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 23673,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 41628,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 19952,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3243,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 28238,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 23597,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1540,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 20416,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 32861,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 20115,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 31900,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 20421,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 45745,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 21588,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 48138,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3683,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 54809,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 956,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2162,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 48587,
+            "quantity_dropped": 6,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 17793,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 4383,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 49641,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 31791,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 44261,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 34424,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1179,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 30270,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 24308,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1446,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 21084,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 20479,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 19923,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 29000,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33899,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 270,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33220,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 21664,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 23728,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11859,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3446,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 20419,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11564,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 32866,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3717,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 30744,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 21527,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3707,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33517,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33059,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2463,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 23528,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 54830,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3812,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 685,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 22933,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1075,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 44123,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2487,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 23712,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11885,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 20410,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 984,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1099,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11463,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 56848,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 32873,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 28742,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2296,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 22167,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 4394,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 48585,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3711,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1170,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 19745,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 17895,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 34205,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 16595,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 4233,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33029,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11444,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 44215,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1196,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 20417,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 41242,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11286,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33577,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 2038,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 19586,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 952,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2174,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1096,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 47481,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 49653,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33195,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 56068,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 22074,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 41230,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3824,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 54163,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 54966,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 22543,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 17826,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 20621,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 22119,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 29012,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 44216,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 31789,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 991,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 34162,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3368,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 42699,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 4314,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 54161,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 47062,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 43753,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33179,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 48116,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 15511,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 938,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 30029,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 26460,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33023,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 23236,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33895,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 9846,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11280,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 24030,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 16241,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 24596,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 47651,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 53977,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 23676,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1074,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 49621,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11496,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 17985,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 40464,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 56637,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 47184,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 17907,
+            "quantity_dropped": 4,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11689,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 26126,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2047,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 48141,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11459,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11878,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 48121,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 54812,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 43,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 26465,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 56708,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 30906,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2358,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 49644,
+            "quantity_dropped": 3,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11298,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 37887,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 25616,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 15316,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 42743,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 23864,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3555,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 34201,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 21087,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 47016,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33025,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 44211,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 26124,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 50133,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 30747,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 17854,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 29226,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 30488,
+            "quantity_dropped": 80,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33066,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33062,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 52202,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11135,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 29011,
+            "quantity_dropped": 2,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11464,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 32289,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 4144,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3539,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2294,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 29009,
+            "quantity_dropped": 2,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 26305,
+            "quantity_dropped": 1,
+            "singleton": 2
+          },
+          {
+            "flag": 63,
+            "item_type_id": 3693,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 25887,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 53383,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 44209,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2194,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 37875,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 55756,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 31106,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1208,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 987,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 64,
+            "item_type_id": 28756,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 20424,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 17898,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2204,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 29010,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 683,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 1102,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11268,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11447,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 49978,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 11458,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 950,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 22178,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33019,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 2349,
+            "quantity_dropped": 1,
+            "singleton": 0
+          },
+          {
+            "flag": 63,
+            "item_type_id": 33891,
+            "quantity_dropped": 1,
+            "singleton": 0
+          }
+        ],
+        "quantity_dropped": 1,
+        "singleton": 0
+      },
+      {
+        "flag": 90,
+        "item_type_id": 30842,
+        "items": [
+          {
+            "flag": 5,
+            "item_type_id": 20799,
+            "quantity_dropped": 800,
+            "singleton": 0
+          }
+        ],
+        "quantity_dropped": 1,
+        "singleton": 0
+      }
+    ],
+    "position": {
+      "x": -518583951866.6041,
+      "y": 30256616075.482944,
+      "z": 1042895705375.3542
+    },
+    "ship_type_id": 33472
+  }
+}

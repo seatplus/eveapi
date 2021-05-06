@@ -60,7 +60,6 @@ class CorporationInfoJob extends NewEsiBase implements HasPathValuesInterface
     public function middleware(): array
     {
         return [
-            new HasRefreshTokenMiddleware,
             (new ThrottlesExceptionsWithRedis(80, 5))
                 ->by($this->uniqueId())
                 ->when(fn () => ! $this->isEsiRateLimited())
