@@ -7,12 +7,13 @@ namespace Seatplus\Eveapi\Tests\Integration;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Contracts\Contract;
+use Seatplus\Eveapi\Models\Universe\System;
 use Seatplus\Eveapi\Tests\TestCase;
 
 class ContractLifeCycleTest extends TestCase
 {
     /** @test */
-    public function ObserDispatchesNothingByDefaultUponCreationWithFactory()
+    public function ObserverDispatchesNothingByDefaultUponCreationWithFactory()
     {
         $fake  = Queue::fake();
 

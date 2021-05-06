@@ -24,15 +24,13 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Models\Universe;
+namespace Seatplus\Eveapi\Models\Killmails;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\TypeFactory;
+use Seatplus\Eveapi\Models\Universe\Type;
 
-class Type extends Model
+class KillmailAttacker extends Model
 {
-    use HasFactory;
 
     /**
      * The attributes that aren't mass assignable.
@@ -41,54 +39,18 @@ class Type extends Model
      */
     protected $guarded = [];
 
-    /**
-     * @var string
-     */
-    protected $primaryKey = 'type_id';
-
-    public $incrementing = false;
-
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'universe_types';
-
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'type_id' => 'integer',
-        'group_id' => 'integer',
-        'name' => 'string',
-        'description' => 'string',
-        'published' => 'boolean',
-    ];
-
-    protected $with = ['group', 'category'];
-
-    protected static function newFactory()
+    public function ship()
     {
-        return TypeFactory::new();
+        return $this->hasOne(Type::class, 'type_id', 'ship_type_id');
     }
 
-    public function group()
+    public function weapon()
     {
-        return $this->hasOne(Group::class, 'group_id', 'group_id');
+        return $this->hasOne(Type::class, 'type_id', 'weapon_type_id');
     }
 
-    public function category()
+    public function killmail()
     {
-        return $this->hasOneThrough(
-            Category::class,
-            Group::class,
-            'group_id',
-            'category_id',
-            'group_id',
-            'category_id'
-        );
+        return $this->belongsTo(Killmail::class, 'killmail_id', 'killmail_id');
     }
 }

@@ -21,7 +21,9 @@ use Seatplus\Eveapi\Jobs\Hydrate\Character\CharacterAssetsHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingAssetsNames;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCategorys;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCharacterInfosFromCorporationMemberTracking;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingConstellations;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingGroups;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingRegions;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingLocationFromAssets;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingLocationFromContracts;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingLocationFromCorporationMemberTracking;
@@ -35,7 +37,9 @@ use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Jobs\Seatplus\MaintenanceJob;
 use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseCategoryByIdJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseConstellationByConstellationIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseGroupByIdJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseRegionByRegionIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
@@ -44,10 +48,12 @@ use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\Contracts\ContractItem;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Models\Universe\Constellation;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\Structure;
+use Seatplus\Eveapi\Models\Universe\System;
 use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 use Seatplus\Eveapi\Tests\TestCase;
@@ -594,6 +600,55 @@ class MaintenanceJobTest extends TestCase
             ]);
 
         $mock->handle();
+    }
+
+    /** @test */
+    public function it_dispatch_GetMissingConstellations_and_GetMissingRegions_asChained_job()
+    {
+        Bus::fake();
+
+        (new MaintenanceJob)->handle();
+
+        Bus::assertBatched(fn($batch) => $batch->jobs->first(fn($job) => [
+            new GetMissingConstellations,
+            new GetMissingRegions,
+        ])); //$batch->jobs->first(fn($job) => $job instanceof GetMissingConstellations));
+    }
+
+    /** @test */
+    public function it_dispatches_ResolveUniverseConstellationByConstellationIdJob_for_missing_constellations()
+    {
+        $system = Event::fakeFor(fn() => System::factory()->noConstellation()->create());
+
+        $mock = Mockery::mock(GetMissingConstellations::class)->makePartial();
+
+        $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
+        $mock->shouldReceive('batch->add')
+            ->once()
+            ->with([
+                new ResolveUniverseConstellationByConstellationIdJob($system->constellation_id)
+            ]);
+
+        $mock->handle();
+
+    }
+
+    /** @test */
+    public function it_dispatches_ResolveUniverseRegionByRegionIdJob_for_missing_constellations()
+    {
+        $constellation = Event::fakeFor(fn() => Constellation::factory()->noRegion()->create());
+
+        $mock = Mockery::mock(GetMissingRegions::class)->makePartial();
+
+        $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
+        $mock->shouldReceive('batch->add')
+            ->once()
+            ->with([
+                new ResolveUniverseRegionByRegionIdJob($constellation->region_id)
+            ]);
+
+        $mock->handle();
+
     }
 
 }

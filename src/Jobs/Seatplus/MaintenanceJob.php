@@ -37,11 +37,13 @@ use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingAssetsNames;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCategorys;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCharacterInfosFromCorporationMemberTracking;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingConstellations;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingGroups;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingLocationFromAssets;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingLocationFromContracts;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingLocationFromCorporationMemberTracking;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingLocationFromWalletTransaction;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingRegions;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromCharacterAssets;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromContractItem;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromCorporationMemberTracking;
@@ -72,6 +74,12 @@ class MaintenanceJob implements ShouldQueue
             new GetMissingCategorys,
             new GetMissingAssetsNames,
             new GetMissingCharacterInfosFromCorporationMemberTracking,
+
+            // Region
+            [
+                new GetMissingConstellations,
+                new GetMissingRegions,
+            ],
 
             // Locations
             new GetMissingLocationFromWalletTransaction,

@@ -57,6 +57,8 @@ class AllianceInfo extends Model
      */
     protected $primaryKey = 'alliance_id';
 
+    public $incrementing = false;
+
     /**
      * The attributes that should be cast to native types.
      *
