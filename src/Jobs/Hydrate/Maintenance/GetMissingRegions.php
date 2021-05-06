@@ -26,10 +26,8 @@
 
 namespace Seatplus\Eveapi\Jobs\Hydrate\Maintenance;
 
-use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseConstellationByConstellationIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseRegionByRegionIdJob;
 use Seatplus\Eveapi\Models\Universe\Constellation;
-use Seatplus\Eveapi\Models\Universe\System;
 
 class GetMissingRegions extends HydrateMaintenanceBase
 {

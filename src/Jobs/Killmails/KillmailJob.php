@@ -1,8 +1,30 @@
 <?php
 
+/*
+ * MIT License
+ *
+ * Copyright (c) 2019, 2020, 2021 Felix Huber
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 
 namespace Seatplus\Eveapi\Jobs\Killmails;
-
 
 use Exception;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
@@ -19,7 +41,6 @@ use Seatplus\Eveapi\Traits\HasPathValues;
 
 class KillmailJob extends NewEsiBase implements HasPathValuesInterface
 {
-
     use HasPathValues;
 
     public function __construct(int $killmail_id, string $killmail_hash)
@@ -33,16 +54,15 @@ class KillmailJob extends NewEsiBase implements HasPathValuesInterface
 
         $this->setPathValues([
             'killmail_id' => $killmail_id,
-            'killmail_hash' => $killmail_hash
+            'killmail_hash' => $killmail_hash,
         ]);
-
     }
 
     public function tags(): array
     {
         return [
             'killmails',
-            sprintf('killmail_id:%s', data_get($this->getPathValues(), 'killmail_id'))
+            sprintf('killmail_id:%s', data_get($this->getPathValues(), 'killmail_id')),
         ];
     }
 
@@ -58,18 +78,16 @@ class KillmailJob extends NewEsiBase implements HasPathValuesInterface
 
     public function handle(): void
     {
-
         $response = $this->retrieve();
 
         if ($response->isCachedLoad()) {
             return;
         }
 
-
         try {
             $killmail = Killmail::firstOrCreate([
-                'killmail_id' => data_get($this->getPathValues(), 'killmail_id')
-            ] , [
+                'killmail_id' => data_get($this->getPathValues(), 'killmail_id'),
+            ], [
                 'killmail_hash'  => data_get($this->getPathValues(), 'killmail_hash'),
                 'solar_system_id' => data_get($response, 'solar_system_id'),
                 'victim_character_id' => data_get($response, 'victim.character_id'),
@@ -77,8 +95,9 @@ class KillmailJob extends NewEsiBase implements HasPathValuesInterface
                 'ship_type_id' => data_get($response, 'victim.ship_type_id'),
             ]);
 
-            if($killmail->complete)
+            if ($killmail->complete) {
                 return;
+            }
 
             $this->cleanUp($killmail);
 
@@ -86,8 +105,9 @@ class KillmailJob extends NewEsiBase implements HasPathValuesInterface
                 ? $this->batch()->add([new ResolveUniverseSystemBySystemIdJob(data_get($response, 'solar_system_id'))])
                 : ResolveUniverseSystemBySystemIdJob::dispatch(data_get($response, 'solar_system_id'))->onQueue($this->queue);
 
-            if(is_null($killmail->ship))
+            if (is_null($killmail->ship)) {
                 $this->getMissingTypeIds(collect(data_get($response, 'victim.ship_type_id')));
+            }
 
             $this->createKillmailItems(data_get($response, 'victim.items'));
 
@@ -98,17 +118,13 @@ class KillmailJob extends NewEsiBase implements HasPathValuesInterface
         } catch (Exception $e) {
             $this->fail($e);
         }
-
-
     }
 
     private function createKillmailItems(array $items, int $location_id = null)
     {
-
         collect($items)->each(function ($item) use ($location_id) {
-
             $killmail_item = KillmailItem::create([
-                'location_id' => $location_id ??  data_get($this->getPathValues(), 'killmail_id'),
+                'location_id' => $location_id ?? data_get($this->getPathValues(), 'killmail_id'),
                 'location_flag' => GetLocationFlagNameService::make()->get(data_get($item, 'flag')),
                 'quantity' => data_get($item, 'quantity_dropped') ?? data_get($item, 'quantity_destroyed'),
                 'type_id' => data_get($item, 'item_type_id'),
@@ -117,22 +133,19 @@ class KillmailJob extends NewEsiBase implements HasPathValuesInterface
                 'destroyed' => (bool) data_get($item, 'quantity_destroyed'),
             ]);
 
-            if($contents =  data_get($item, 'items')) {
+            if ($contents = data_get($item, 'items')) {
                 $this->createKillmailItems($contents, $killmail_item->id);
             }
-
-
         });
 
         $unknown_type_ids = KillmailItem::doesntHave('type')->pluck('type_id')->unique();
 
         $this->getMissingTypeIds($unknown_type_ids);
-
     }
 
     private function createKillmailAttackers(array $attackers)
     {
-        collect($attackers)->each(fn($attacker) => KillmailAttacker::create([
+        collect($attackers)->each(fn ($attacker) => KillmailAttacker::create([
             'killmail_id' => data_get($this->getPathValues(), 'killmail_id'),
             'character_id' => data_get($attacker, 'character_id'),
             'corporation_id' => data_get($attacker, 'corporation_id'),
@@ -155,8 +168,8 @@ class KillmailJob extends NewEsiBase implements HasPathValuesInterface
     private function getMissingTypeIds(Collection $type_ids)
     {
         $this->batching()
-            ? $this->batch()->add($type_ids->map(fn($type_id) => new ResolveUniverseTypeByIdJob($type_id))->toArray())
-            : $type_ids->each(fn($type_id) => ResolveUniverseTypeByIdJob::dispatch($type_id)->onQueue($this->queue));
+            ? $this->batch()->add($type_ids->map(fn ($type_id) => new ResolveUniverseTypeByIdJob($type_id))->toArray())
+            : $type_ids->each(fn ($type_id) => ResolveUniverseTypeByIdJob::dispatch($type_id)->onQueue($this->queue));
     }
 
     private function cleanUp(Killmail $killmail)
