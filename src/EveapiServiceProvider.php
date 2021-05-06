@@ -64,7 +64,6 @@ use Seatplus\Eveapi\Observers\ContractObserver;
 use Seatplus\Eveapi\Observers\CorporationMemberTrackingObserver;
 use Seatplus\Eveapi\Observers\CorporationWalletObserver;
 use Seatplus\Eveapi\Observers\GroupObserver;
-use Seatplus\Eveapi\Observers\ConstellationObserver;
 use Seatplus\Eveapi\Observers\TypeObserver;
 use Seatplus\Eveapi\Observers\WalletTransactionObserver;
 

@@ -36,7 +36,6 @@ class StationFactory extends Factory
 
     public function definition()
     {
-
         return [
             'station_id' => $this->faker->numberBetween(60000000, 64000000),
             'name' => $this->faker->name,
