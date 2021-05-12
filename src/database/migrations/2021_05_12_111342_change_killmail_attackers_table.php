@@ -24,24 +24,23 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Services\Facade;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-use Illuminate\Support\Facades\Facade;
-use Seat\Eseye\Containers\EsiResponse;
-use Seatplus\Eveapi\Containers\EsiRequestContainer;
-use Seatplus\Eveapi\Services\Esi\RetrieveEsiData as RetrieveEsiDataAlias;
-
-class RetrieveEsiData extends Facade
+class ChangeKillmailAttackersTable extends Migration
 {
     /**
-     * Get the registered name of the component.
+     * Run the migrations.
      *
-     * @method static EsiResponse execute(EsiRequestContainer $container)
-     *
-     * @see RetrieveEsiDataAlias
+     * @return void
      */
-    protected static function getFacadeAccessor()
+    public function up()
     {
-        return RetrieveEsiDataAlias::class;
+        Schema::table('killmail_attackers', function (Blueprint $table) {
+            $table->foreignId('character_id')->nullable()->change();
+            $table->foreignId('corporation_id')->nullable()->change();
+            $table->foreignId('weapon_type_id')->nullable()->change();
+        });
     }
 }
