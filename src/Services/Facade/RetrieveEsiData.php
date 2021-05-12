@@ -27,14 +27,19 @@
 namespace Seatplus\Eveapi\Services\Facade;
 
 use Illuminate\Support\Facades\Facade;
+use Seat\Eseye\Containers\EsiResponse;
+use Seatplus\Eveapi\Containers\EsiRequestContainer;
 use Seatplus\Eveapi\Services\Esi\RetrieveEsiData as RetrieveEsiDataAlias;
 
 class RetrieveEsiData extends Facade
 {
+
     /**
      * Get the registered name of the component.
      *
-     * @return string
+     * @method static EsiResponse execute(EsiRequestContainer $container)
+     *
+     * @see RetrieveEsiDataAlias
      */
     protected static function getFacadeAccessor()
     {
