@@ -24,21 +24,53 @@
  * SOFTWARE.
  */
 
-use Seatplus\Eveapi\Models\Assets\Asset;
-use Seatplus\Eveapi\Models\Character\CorporationHistory;
-use Seatplus\Eveapi\Models\Contacts\Contact;
-use Seatplus\Eveapi\Models\Contracts\Contract;
-use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
-use Seatplus\Eveapi\Models\Wallet\WalletJournal;
+namespace Seatplus\Eveapi\Models\Character;
 
-return [
-    Asset::class => 'assets',
-    CorporationMemberTracking::class => 'members',
-    'queue.manager',
-    'can open or close corporations for recruitment',
-    'can accept or deny applications',
-    Contact::class => 'contacts',
-    WalletJournal::class => 'wallet_journals',
-    Contract::class => 'contracts',
-    CorporationHistory::class => 'corporation_history'
-]; // [Model::class => 'relationship'] *relationship must exist for character or corporation
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Seatplus\Eveapi\database\factories\CorporationHistoryFactory;
+use Seatplus\Eveapi\database\factories\CharacterInfoFactory;
+use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
+use Seatplus\Eveapi\Models\Application;
+use Seatplus\Eveapi\Models\Assets\Asset;
+use Seatplus\Eveapi\Models\Contacts\Contact;
+use Seatplus\Eveapi\Models\Contacts\Label;
+use Seatplus\Eveapi\Models\Contracts\Contract;
+use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
+use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Models\Wallet\WalletJournal;
+use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
+
+class CorporationHistory extends Model
+{
+    use HasFactory;
+
+    protected static function newFactory()
+    {
+        return CorporationHistoryFactory::new();
+    }
+
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [];
+
+    public $incrementing = false;
+
+    /**
+     * @var string
+     */
+    protected $primaryKey = 'record_id';
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'character_id' => 'integer',
+        'corporation_id' => 'integer',
+    ];
+}
