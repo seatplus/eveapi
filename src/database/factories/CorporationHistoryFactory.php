@@ -33,7 +33,6 @@ class CorporationHistoryFactory extends Factory
 {
     protected $model = CorporationHistory::class;
 
-
     public function definition()
     {
         return [

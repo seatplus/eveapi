@@ -57,7 +57,7 @@ class CorporationHistoryJob extends NewEsiBase implements HasPathValuesInterface
             'character',
             'info',
             'character_id:' . $this->character_id,
-            'corporationhistory'
+            'corporationhistory',
         ];
     }
 
@@ -90,8 +90,8 @@ class CorporationHistoryJob extends NewEsiBase implements HasPathValuesInterface
             return;
         }
 
-        collect($response)->each( fn($record) => CorporationHistory::updateOrCreate([
-            'record_id' => data_get($record, 'record_id')
+        collect($response)->each(fn ($record) => CorporationHistory::updateOrCreate([
+            'record_id' => data_get($record, 'record_id'),
         ], [
             'character_id' => $this->character_id,
             'corporation_id' => data_get($record, 'corporation_id'),
