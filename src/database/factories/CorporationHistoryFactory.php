@@ -24,21 +24,23 @@
  * SOFTWARE.
  */
 
-use Seatplus\Eveapi\Models\Assets\Asset;
-use Seatplus\Eveapi\Models\Character\CorporationHistory;
-use Seatplus\Eveapi\Models\Contacts\Contact;
-use Seatplus\Eveapi\Models\Contracts\Contract;
-use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
-use Seatplus\Eveapi\Models\Wallet\WalletJournal;
+namespace Seatplus\Eveapi\database\factories;
 
-return [
-    Asset::class => 'assets',
-    CorporationMemberTracking::class => 'members',
-    'queue.manager',
-    'can open or close corporations for recruitment',
-    'can accept or deny applications',
-    Contact::class => 'contacts',
-    WalletJournal::class => 'wallet_journals',
-    Contract::class => 'contracts',
-    CorporationHistory::class => 'corporation_history',
-]; // [Model::class => 'relationship'] *relationship must exist for character or corporation
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Seatplus\Eveapi\Models\Character\CorporationHistory;
+
+class CorporationHistoryFactory extends Factory
+{
+    protected $model = CorporationHistory::class;
+
+    public function definition()
+    {
+        return [
+            'record_id'    => $this->faker->numberBetween(100, 200),
+            'character_id'    => $this->faker->numberBetween(9000000, 98000000),
+            'corporation_id'    => $this->faker->numberBetween(98000000, 99000000),
+            'is_deleted'            => $this->faker->boolean,
+            'start_date'        => $this->faker->iso8601($max = 'now'),
+        ];
+    }
+}

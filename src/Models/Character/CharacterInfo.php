@@ -162,4 +162,9 @@ class CharacterInfo extends Model
             'contract_id'
         );
     }
+
+    public function corporation_history()
+    {
+        return $this->hasMany(CorporationHistory::class, 'character_id');
+    }
 }

@@ -36,6 +36,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
+use Seatplus\Eveapi\Jobs\Character\CorporationHistoryJob;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\CharacterAssetsHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\CharacterRolesHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\ContactHydrateBatch;
@@ -76,7 +77,10 @@ class UpdateCharacter implements ShouldQueue
 
         return Bus::batch([
 
-            new CharacterInfoJob($job_container), // Public endpoint hence no hydration or added logic required
+            // Public endpoint hence no hydration or added logic required
+            new CharacterInfoJob($job_container),
+            new CorporationHistoryJob($job_container),
+
             new CharacterAssetsHydrateBatch($job_container),
             new CharacterRolesHydrateBatch($job_container),
             new ContactHydrateBatch($job_container),

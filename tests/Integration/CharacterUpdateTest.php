@@ -13,9 +13,9 @@ use Mockery;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameDispatchJob;
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob as CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterRoleJob;
+use Seatplus\Eveapi\Jobs\Character\CorporationHistoryJob;
 use Seatplus\Eveapi\Jobs\Contacts\AllianceContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\AllianceContactLabelJob;
 use Seatplus\Eveapi\Jobs\Contacts\CharacterContactJob;
@@ -353,6 +353,16 @@ class CharacterUpdateTest extends TestCase
         Bus::fake();
 
         $job->handle();
+    }
+
+    /** @test */
+    public function it_dispatches_corporation_history_job()
+    {
+        Bus::fake();
+
+        (new UpdateCharacter)->handle();
+
+        Bus::assertBatched(fn($batch) => $batch->jobs->first(fn($job) => $job instanceof CorporationHistoryJob));
     }
 
 }
