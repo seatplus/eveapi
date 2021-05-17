@@ -40,5 +40,5 @@ return [
     Contact::class => 'contacts',
     WalletJournal::class => 'wallet_journals',
     Contract::class => 'contracts',
-    CorporationHistory::class => 'corporation_history'
+    CorporationHistory::class => 'corporation_history',
 ]; // [Model::class => 'relationship'] *relationship must exist for character or corporation
