@@ -21,7 +21,7 @@ class UpdateKillmailsTable extends Migration
                 $table->foreignId('victim_alliance_id')->nullable();
                 $table->foreignId('victim_faction_id')->nullable();
 
-                $table->unsignedBigInteger('damage_taken');
+                $table->unsignedBigInteger('damage_taken')->default(0);
             });
         });
     }
