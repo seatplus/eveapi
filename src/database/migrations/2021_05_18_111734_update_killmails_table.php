@@ -57,6 +57,5 @@ class UpdateKillmailsTable extends Migration
      */
     public function down()
     {
-
     }
 }
