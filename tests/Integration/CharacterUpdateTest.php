@@ -23,14 +23,14 @@ use Seatplus\Eveapi\Jobs\Contacts\CharacterContactLabelJob;
 use Seatplus\Eveapi\Jobs\Contacts\CorporationContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\CorporationContactLabelJob;
 use Seatplus\Eveapi\Jobs\Contracts\CharacterContractsJob;
-use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\CharacterAssetsHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\CharacterRolesHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\ContactHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\ContractHydrateBatch;
+use Seatplus\Eveapi\Jobs\Hydrate\Character\SkillsHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\WalletHydrateBatch;
-use Seatplus\Eveapi\Jobs\Hydrate\Corporation\CorporationMemberTrackingHydrateBatch;
 use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
+use Seatplus\Eveapi\Jobs\Skills\SkillsJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletJournalJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
 use Seatplus\Eveapi\Models\RefreshToken;
@@ -363,6 +363,43 @@ class CharacterUpdateTest extends TestCase
         (new UpdateCharacter)->handle();
 
         Bus::assertBatched(fn($batch) => $batch->jobs->first(fn($job) => $job instanceof CorporationHistoryJob));
+    }
+
+    /** @test */
+    public function it_dispatches_skills_job()
+    {
+        Bus::fake();
+
+        (new UpdateCharacter)->handle();
+
+        Bus::assertBatched(fn($batch) => $batch->jobs->first(fn($job) => $job instanceof SkillsHydrateBatch));
+    }
+
+    /** @test */
+    public function skillsHydrationAddsJobsToBatch()
+    {
+        $refresh_token = Event::fakeFor( function () {
+            return RefreshToken::factory()->create([
+                'scopes' => ['esi-skills.read_skills.v1']
+            ]);
+        });
+
+        $job_container = new JobContainer(['refresh_token' => $refresh_token]);
+
+        $job = Mockery::mock(SkillsHydrateBatch::class . '[batch]', [$job_container]);
+
+        $batch = Mockery::mock(Batch::class)->makePartial();
+
+        $batch->shouldReceive('add')->once()->with([
+            new SkillsJob($job_container)
+        ]);
+
+        $job->shouldReceive('batch')
+            ->once()->andReturn($batch);
+
+        Bus::fake();
+
+        $job->handle();
     }
 
 }

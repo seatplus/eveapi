@@ -41,6 +41,7 @@ use Seatplus\Eveapi\Jobs\Hydrate\Character\CharacterAssetsHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\CharacterRolesHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\ContactHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\ContractHydrateBatch;
+use Seatplus\Eveapi\Jobs\Hydrate\Character\SkillsHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\WalletHydrateBatch;
 use Seatplus\Eveapi\Models\RefreshToken;
 
@@ -86,6 +87,7 @@ class UpdateCharacter implements ShouldQueue
             new ContactHydrateBatch($job_container),
             new WalletHydrateBatch($job_container),
             new ContractHydrateBatch($job_container),
+            new SkillsHydrateBatch($job_container),
 
         ])->then(fn (Batch $batch) => logger()->info($success_message)
         )->name($batch_name)->onQueue($queue)->allowFailures()->dispatch();
