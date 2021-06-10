@@ -98,7 +98,7 @@ class MaintenanceJob implements ShouldQueue
             new GetMissingTypesFromCharacterAssets,
             new GetMissingTypesFromLocations,
             new GetMissingTypesFromSkills,
-            new GetMissingTypesFromSkillQueue
+            new GetMissingTypesFromSkillQueue,
 
         ])
             ->then(fn (Batch $batch) => logger()->info('Maintenance job finished'))
