@@ -32,6 +32,8 @@ use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromCharacterAssets;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromContractItem;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromCorporationMemberTracking;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromLocations;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromSkillQueue;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromSkills;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromWalletTransaction;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Jobs\Seatplus\MaintenanceJob;
@@ -48,6 +50,8 @@ use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\Contracts\ContractItem;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Models\Skills\Skill;
+use Seatplus\Eveapi\Models\Skills\SkillQueue;
 use Seatplus\Eveapi\Models\Universe\Constellation;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Location;
@@ -634,7 +638,7 @@ class MaintenanceJobTest extends TestCase
     }
 
     /** @test */
-    public function it_dispatches_ResolveUniverseRegionByRegionIdJob_for_missing_constellations()
+    public function it_dispatches_ResolveUniverseRegionByRegionIdJob_for_missing_regionss()
     {
         $constellation = Event::fakeFor(fn() => Constellation::factory()->noRegion()->create());
 
@@ -645,6 +649,62 @@ class MaintenanceJobTest extends TestCase
             ->once()
             ->with([
                 new ResolveUniverseRegionByRegionIdJob($constellation->region_id)
+            ]);
+
+        $mock->handle();
+
+    }
+
+    /** @test */
+    public function it_dispatch_GetMissingTypesFromSkills_asChained_job()
+    {
+        Bus::fake();
+
+        (new MaintenanceJob)->handle();
+
+        Bus::assertBatched(fn($batch) => $batch->jobs->first(fn($job) => $job instanceof GetMissingTypesFromSkills));
+    }
+
+    /** @test */
+    public function it_dispatches_ResolveUniverseTypeByIdJob_for_missing_types_of_skills()
+    {
+        $skill = Event::fakeFor(fn() => Skill::factory(['skill_id' => 1234])->create());
+
+        $mock = Mockery::mock(GetMissingTypesFromSkills::class)->makePartial();
+
+        $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
+        $mock->shouldReceive('batch->add')
+            ->once()
+            ->with([
+                new ResolveUniverseTypeByIdJob($skill->skill_id)
+            ]);
+
+        $mock->handle();
+
+    }
+
+    /** @test */
+    public function it_dispatch_GetMissingTypesFromSkillQueue_asChained_job()
+    {
+        Bus::fake();
+
+        (new MaintenanceJob)->handle();
+
+        Bus::assertBatched(fn($batch) => $batch->jobs->first(fn($job) => $job instanceof GetMissingTypesFromSkillQueue));
+    }
+
+    /** @test */
+    public function it_dispatches_ResolveUniverseTypeByIdJob_for_missing_types_of_skillqueue()
+    {
+        $skill = Event::fakeFor(fn() => SkillQueue::factory(['skill_id' => 1234])->create());
+
+        $mock = Mockery::mock(GetMissingTypesFromSkillQueue::class)->makePartial();
+
+        $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
+        $mock->shouldReceive('batch->add')
+            ->once()
+            ->with([
+                new ResolveUniverseTypeByIdJob($skill->skill_id)
             ]);
 
         $mock->handle();
