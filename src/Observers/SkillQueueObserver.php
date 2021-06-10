@@ -26,11 +26,8 @@
 
 namespace Seatplus\Eveapi\Observers;
 
-use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Contacts\Contact;
-use Seatplus\Eveapi\Models\Skills\Skill;
 use Seatplus\Eveapi\Models\Skills\SkillQueue;
 
 class SkillQueueObserver
