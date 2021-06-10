@@ -48,6 +48,8 @@ use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromCharacterAssets;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromContractItem;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromCorporationMemberTracking;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromLocations;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromSkillQueue;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromSkills;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromWalletTransaction;
 
 class MaintenanceJob implements ShouldQueue
@@ -95,6 +97,8 @@ class MaintenanceJob implements ShouldQueue
             new GetMissingTypesFromWalletTransaction,
             new GetMissingTypesFromCharacterAssets,
             new GetMissingTypesFromLocations,
+            new GetMissingTypesFromSkills,
+            new GetMissingTypesFromSkillQueue,
 
         ])
             ->then(fn (Batch $batch) => logger()->info('Maintenance job finished'))
