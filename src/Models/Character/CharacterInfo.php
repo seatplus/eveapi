@@ -38,6 +38,7 @@ use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Skills\Skill;
+use Seatplus\Eveapi\Models\Skills\SkillQueue;
 use Seatplus\Eveapi\Models\Wallet\WalletJournal;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 
@@ -172,5 +173,10 @@ class CharacterInfo extends Model
     public function skills()
     {
         return $this->hasMany(Skill::class, 'character_id');
+    }
+
+    public function skill_queues()
+    {
+        return $this->hasMany(SkillQueue::class, 'character_id');
     }
 }

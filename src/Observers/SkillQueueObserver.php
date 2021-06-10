@@ -24,41 +24,29 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Jobs\Hydrate\Character;
+namespace Seatplus\Eveapi\Observers;
 
-use Seatplus\Eveapi\Jobs\Skills\SkillQueueJob;
-use Seatplus\Eveapi\Jobs\Skills\SkillsJob;
+use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
+use Seatplus\Eveapi\Models\Contacts\Contact;
+use Seatplus\Eveapi\Models\Skills\Skill;
+use Seatplus\Eveapi\Models\Skills\SkillQueue;
 
-class SkillsHydrateBatch extends HydrateCharacterBase
+class SkillQueueObserver
 {
-    public function handle()
+    /**
+     * Handle the Contact "created" event.
+     *
+     * @param SkillQueue $skill
+     * @return void
+     */
+    public function created(SkillQueue $skill)
     {
-        $this->hydrateSkill();
-        $this->hydrateSkillQueue();
-    }
-
-    private function hydrateSkill()
-    {
-        $job = new SkillsJob($this->job_container);
-
-        parent::setRequiredScope($job->getRequiredScope());
-
-        $this->hydrate([$job]);
-    }
-
-    private function hydrateSkillQueue()
-    {
-        $job = new SkillQueueJob($this->job_container);
-
-        parent::setRequiredScope($job->getRequiredScope());
-
-        $this->hydrate([$job]);
-    }
-
-    private function hydrate(array $array)
-    {
-        if ($this->hasRequiredScope()) {
-            $this->batch()->add($array);
+        if ($skill->type) {
+            return;
         }
+
+        ResolveUniverseTypeByIdJob::dispatch($skill->skill_id)->onQueue('high');
     }
 }

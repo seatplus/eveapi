@@ -30,6 +30,7 @@ use Seatplus\Eveapi\Jobs\Hydrate\Character\ContractHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\SkillsHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\WalletHydrateBatch;
 use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
+use Seatplus\Eveapi\Jobs\Skills\SkillQueueJob;
 use Seatplus\Eveapi\Jobs\Skills\SkillsJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletJournalJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
@@ -376,7 +377,7 @@ class CharacterUpdateTest extends TestCase
     }
 
     /** @test */
-    public function skillsHydrationAddsJobsToBatch()
+    public function skillsHydrationAddsSkillJobsToBatch()
     {
         $refresh_token = Event::fakeFor( function () {
             return RefreshToken::factory()->create([
@@ -392,6 +393,33 @@ class CharacterUpdateTest extends TestCase
 
         $batch->shouldReceive('add')->once()->with([
             new SkillsJob($job_container)
+        ]);
+
+        $job->shouldReceive('batch')
+            ->once()->andReturn($batch);
+
+        Bus::fake();
+
+        $job->handle();
+    }
+
+    /** @test */
+    public function skillsHydrationAddsSkillQueueJobsToBatch()
+    {
+        $refresh_token = Event::fakeFor( function () {
+            return RefreshToken::factory()->create([
+                'scopes' => ['esi-skills.read_skillqueue.v1']
+            ]);
+        });
+
+        $job_container = new JobContainer(['refresh_token' => $refresh_token]);
+
+        $job = Mockery::mock(SkillsHydrateBatch::class . '[batch]', [$job_container]);
+
+        $batch = Mockery::mock(Batch::class)->makePartial();
+
+        $batch->shouldReceive('add')->once()->with([
+            new SkillQueueJob($job_container)
         ]);
 
         $job->shouldReceive('batch')
