@@ -31,7 +31,6 @@ use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
-use Seatplus\Eveapi\Models\Skills\Skill;
 use Seatplus\Eveapi\Models\Skills\SkillQueue;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
@@ -90,7 +89,7 @@ class SkillQueueJob extends NewEsiBase implements HasPathValuesInterface, HasReq
                 'finished_level' => data_get($queue_item, 'finished_level'),
             ], [
                 'start_date' => data_get($queue_item, 'start_date') ? carbon(data_get($queue_item, 'start_date')) : null,
-                'finish_date' => data_get($queue_item, 'finish_date') ? carbon(data_get($queue_item, 'finish_date')) :null,
+                'finish_date' => data_get($queue_item, 'finish_date') ? carbon(data_get($queue_item, 'finish_date')) : null,
                 'training_start_sp' => data_get($queue_item, 'training_start_sp'),
                 'level_start_sp' => data_get($queue_item, 'level_start_sp'),
                 'level_end_sp' => data_get($queue_item, 'level_end_sp'),
@@ -103,6 +102,5 @@ class SkillQueueJob extends NewEsiBase implements HasPathValuesInterface, HasReq
             ->where('character_id', $this->getCharacterId())
             ->whereNotIn('id', $skill_queue_ids->toArray())
             ->delete();
-
     }
 }
