@@ -50,6 +50,5 @@ class UpdateCharacterInfosTable extends Migration
      */
     public function down()
     {
-
     }
 }
