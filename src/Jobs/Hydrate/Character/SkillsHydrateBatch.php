@@ -24,23 +24,41 @@
  * SOFTWARE.
  */
 
-use Seatplus\Eveapi\Models\Assets\Asset;
-use Seatplus\Eveapi\Models\Character\CorporationHistory;
-use Seatplus\Eveapi\Models\Contacts\Contact;
-use Seatplus\Eveapi\Models\Contracts\Contract;
-use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
-use Seatplus\Eveapi\Models\Skills\Skill;
-use Seatplus\Eveapi\Models\Wallet\WalletJournal;
+namespace Seatplus\Eveapi\Jobs\Hydrate\Character;
 
-return [
-    Asset::class => 'assets',
-    CorporationMemberTracking::class => 'members',
-    'queue.manager',
-    'can open or close corporations for recruitment',
-    'can accept or deny applications',
-    Contact::class => 'contacts',
-    WalletJournal::class => 'wallet_journals',
-    Contract::class => 'contracts',
-    CorporationHistory::class => 'corporation_history',
-    Skill::class => 'skills',
-]; // [Model::class => 'relationship'] *relationship must exist for character or corporation
+use Seatplus\Eveapi\Jobs\Skills\SkillQueueJob;
+use Seatplus\Eveapi\Jobs\Skills\SkillsJob;
+
+class SkillsHydrateBatch extends HydrateCharacterBase
+{
+    public function handle()
+    {
+        $this->hydrateSkill();
+        $this->hydrateSkillQueue();
+    }
+
+    private function hydrateSkill()
+    {
+        $job = new SkillsJob($this->job_container);
+
+        parent::setRequiredScope($job->getRequiredScope());
+
+        $this->hydrate([$job]);
+    }
+
+    private function hydrateSkillQueue()
+    {
+        $job = new SkillQueueJob($this->job_container);
+
+        parent::setRequiredScope($job->getRequiredScope());
+
+        $this->hydrate([$job]);
+    }
+
+    private function hydrate(array $array)
+    {
+        if ($this->hasRequiredScope()) {
+            $this->batch()->add($array);
+        }
+    }
+}
