@@ -4,20 +4,12 @@
 namespace Seatplus\Eveapi\Tests\Jobs\Seatplus;
 
 
-use Illuminate\Bus\Batch;
-use Illuminate\Bus\BatchRepository;
-use Illuminate\Bus\PendingBatch;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Queue;
 use Mockery;
 use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameDispatchJob;
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
-use Seatplus\Eveapi\Jobs\Hydrate\Character\CharacterAssetsHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingAssetsNames;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCategorys;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCharacterInfosFromCorporationMemberTracking;
@@ -35,9 +27,7 @@ use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromLocations;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromSkillQueue;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromSkills;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromWalletTransaction;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Jobs\Seatplus\MaintenanceJob;
-use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseCategoryByIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseConstellationByConstellationIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseGroupByIdJob;
@@ -56,7 +46,6 @@ use Seatplus\Eveapi\Models\Universe\Constellation;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
-use Seatplus\Eveapi\Models\Universe\Structure;
 use Seatplus\Eveapi\Models\Universe\System;
 use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
