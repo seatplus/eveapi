@@ -35,6 +35,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingAssetsNames;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingBodysFromMails;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCategorys;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCharacterInfosFromCorporationMemberTracking;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingConstellations;
@@ -99,6 +100,9 @@ class MaintenanceJob implements ShouldQueue
             new GetMissingTypesFromLocations,
             new GetMissingTypesFromSkills,
             new GetMissingTypesFromSkillQueue,
+
+            // Mails
+            new GetMissingBodysFromMails,
 
         ])
             ->then(fn (Batch $batch) => logger()->info('Maintenance job finished'))

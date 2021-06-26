@@ -36,6 +36,8 @@ use Seatplus\Eveapi\Models\Contacts\Contact;
 use Seatplus\Eveapi\Models\Contacts\Label;
 use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
+use Seatplus\Eveapi\Models\Mail\Mail;
+use Seatplus\Eveapi\Models\Mail\MailRecipients;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Skills\Skill;
 use Seatplus\Eveapi\Models\Skills\SkillQueue;
@@ -178,5 +180,17 @@ class CharacterInfo extends Model
     public function skill_queues()
     {
         return $this->hasMany(SkillQueue::class, 'character_id');
+    }
+
+    public function mails()
+    {
+        return $this->hasManyThrough(
+            Mail::class,
+            MailRecipients::class,
+            'receivable_id',
+            'id',
+            'character_id',
+            'mail_id'
+        );
     }
 }

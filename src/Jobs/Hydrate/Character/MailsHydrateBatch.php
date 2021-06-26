@@ -24,25 +24,29 @@
  * SOFTWARE.
  */
 
-use Seatplus\Eveapi\Models\Assets\Asset;
-use Seatplus\Eveapi\Models\Character\CorporationHistory;
-use Seatplus\Eveapi\Models\Contacts\Contact;
-use Seatplus\Eveapi\Models\Contracts\Contract;
-use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
-use Seatplus\Eveapi\Models\Mail\Mail;
-use Seatplus\Eveapi\Models\Skills\Skill;
-use Seatplus\Eveapi\Models\Wallet\WalletJournal;
+namespace Seatplus\Eveapi\Jobs\Hydrate\Character;
 
-return [
-    Asset::class => 'assets',
-    CorporationMemberTracking::class => 'members',
-    'queue.manager',
-    'can open or close corporations for recruitment',
-    'can accept or deny applications',
-    Contact::class => 'contacts',
-    WalletJournal::class => 'wallet_journals',
-    Contract::class => 'contracts',
-    CorporationHistory::class => 'corporation_history',
-    Skill::class => 'skills',
-    Mail::class => 'mails'
-]; // [Model::class => 'relationship'] *relationship must exist for character or corporation
+use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Jobs\Character\CharacterRoleJob;
+use Seatplus\Eveapi\Jobs\Mail\MailHeaderJob;
+use Seatplus\Eveapi\Jobs\Mail\MailLabelJob;
+
+class MailsHydrateBatch extends HydrateCharacterBase
+{
+    public function __construct(JobContainer $job_container)
+    {
+        parent::__construct($job_container);
+
+        parent::setRequiredScope('esi-mail.read_mail.v1');
+    }
+
+    public function handle()
+    {
+        if ($this->hasRequiredScope()) {
+            $this->batch()->add([
+                new MailHeaderJob($this->job_container),
+                new MailLabelJob($this->job_container),
+            ]);
+        }
+    }
+}
