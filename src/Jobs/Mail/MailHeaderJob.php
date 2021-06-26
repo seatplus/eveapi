@@ -36,10 +36,10 @@ use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Mail\Mail;
+use Seatplus\Eveapi\Models\Mail\MailMailLabel;
 use Seatplus\Eveapi\Models\Mail\MailRecipients;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
-use Seatplus\Eveapi\Models\Mail\MailMailLabel;
 
 class MailHeaderJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
@@ -89,7 +89,7 @@ class MailHeaderJob extends NewEsiBase implements HasPathValuesInterface, HasReq
         }
 
         collect($response)
-            ->map(fn($mail) => [
+            ->map(fn ($mail) => [
                 'id' => data_get($mail, 'mail_id'),
                 'subject' => data_get($mail, 'subject'),
                 'from' => data_get($mail, 'from'),
@@ -97,24 +97,24 @@ class MailHeaderJob extends NewEsiBase implements HasPathValuesInterface, HasReq
                 'is_read' => data_get($mail, 'is_read'),
             ])
             ->chunk(1000)
-            ->each(fn(Collection $chunk) => Mail::upsert($chunk->toArray(), 'id'));
+            ->each(fn (Collection $chunk) => Mail::upsert($chunk->toArray(), 'id'));
 
         collect($response)
-            ->each(function($mail) {
+            ->each(function ($mail) {
 
                 // create Labels
                 collect(data_get($mail, 'labels', []))
-                    ->map(fn($label_id) => [
+                    ->map(fn ($label_id) => [
                         'mail_id' => data_get($mail, 'mail_id'),
                         'label_id' => $label_id,
                         'character_id' => data_get($this->getPathValues(), 'character_id'),
                     ])
                     ->chunk(1000)
-                    ->each(fn(Collection $chunk) => MailMailLabel::upsert($chunk->toArray(), ['mail_id', 'label_id', 'character_id']));
+                    ->each(fn (Collection $chunk) => MailMailLabel::upsert($chunk->toArray(), ['mail_id', 'label_id', 'character_id']));
 
                 // create recipients
                 $recipients = collect(data_get($mail, 'recipients'))
-                    ->map(fn($recipient) => [
+                    ->map(fn ($recipient) => [
                         'mail_id' => data_get($mail, 'mail_id'),
                         'receivable_id' => data_get($recipient, 'recipient_id'),
                         'receivable_type' => $this->getReceivableType(data_get($recipient, 'recipient_type')),
@@ -134,7 +134,6 @@ class MailHeaderJob extends NewEsiBase implements HasPathValuesInterface, HasReq
                     ? $this->batch()->add([new MailBodyJob($this->job_container, data_get($mail, 'mail_id'))])
                     : MailBodyJob::dispatch($this->job_container, data_get($mail, 'mail_id'))->onQueue($this->queue);
             });
-
     }
 
     private function getReceivableType(string $recipient_type)

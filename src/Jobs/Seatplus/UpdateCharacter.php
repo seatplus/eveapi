@@ -89,7 +89,7 @@ class UpdateCharacter implements ShouldQueue
             new WalletHydrateBatch($job_container),
             new ContractHydrateBatch($job_container),
             new SkillsHydrateBatch($job_container),
-            new MailsHydrateBatch($job_container)
+            new MailsHydrateBatch($job_container),
 
         ])->then(fn (Batch $batch) => logger()->info($success_message)
         )->name($batch_name)->onQueue($queue)->allowFailures()->dispatch();

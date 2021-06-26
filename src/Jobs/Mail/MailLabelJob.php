@@ -32,12 +32,7 @@ use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
-use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
-use Seatplus\Eveapi\Models\Mail\Mail;
 use Seatplus\Eveapi\Models\Mail\MailLabel;
-use Seatplus\Eveapi\Models\Skills\Skill;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
@@ -66,7 +61,7 @@ class MailLabelJob extends NewEsiBase implements HasPathValuesInterface, HasRequ
         return [
             'mail',
             'labels',
-            sprintf('character_id:%s', data_get($this->getPathValues(), 'character_id'))
+            sprintf('character_id:%s', data_get($this->getPathValues(), 'character_id')),
         ];
     }
 
@@ -89,7 +84,7 @@ class MailLabelJob extends NewEsiBase implements HasPathValuesInterface, HasRequ
         }
 
         collect(data_get($response, 'labels'))
-            ->map(fn($label) => [
+            ->map(fn ($label) => [
                 'label_id' => data_get($label, 'label_id'),
                 'character_id' => data_get($this->getPathValues(), 'character_id'),
                 'color' => data_get($label, 'color'),
@@ -97,8 +92,6 @@ class MailLabelJob extends NewEsiBase implements HasPathValuesInterface, HasRequ
                 'unread_count' => data_get($label, 'unread_count'),
             ])
             ->chunk(1000)
-            ->each(fn(Collection $chunk) => MailLabel::upsert($chunk->toArray(), ['label_id', 'character_id']));
-
-
+            ->each(fn (Collection $chunk) => MailLabel::upsert($chunk->toArray(), ['label_id', 'character_id']));
     }
 }
