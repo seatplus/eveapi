@@ -44,5 +44,5 @@ return [
     Contract::class => 'contracts',
     CorporationHistory::class => 'corporation_history',
     Skill::class => 'skills',
-    Mail::class => 'mails'
+    Mail::class => 'mails',
 ]; // [Model::class => 'relationship'] *relationship must exist for character or corporation

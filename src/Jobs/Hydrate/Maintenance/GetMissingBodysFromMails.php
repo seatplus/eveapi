@@ -26,15 +26,10 @@
 
 namespace Seatplus\Eveapi\Jobs\Hydrate\Maintenance;
 
-use Illuminate\Database\Eloquent\Builder;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Mail\MailBodyJob;
-use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Mail\Mail;
 use Seatplus\Eveapi\Models\RefreshToken;
-use Seatplus\Eveapi\Models\Universe\Location;
-use Seatplus\Eveapi\Models\Universe\Station;
-use Seatplus\Eveapi\Models\Universe\Structure;
 
 class GetMissingBodysFromMails extends HydrateMaintenanceBase
 {
@@ -49,9 +44,9 @@ class GetMissingBodysFromMails extends HydrateMaintenanceBase
         $jobs = Mail::where('body', null)
             ->pluck('id')
             ->map(function ($mail_id) {
-                $refresh_token = RefreshToken::whereHas('character.mails', fn($query) => $query->where('mails.id', $mail_id))
+                $refresh_token = RefreshToken::whereHas('character.mails', fn ($query) => $query->where('mails.id', $mail_id))
                     ->get()
-                    ->filter(fn(RefreshToken $token) => $token->hasScope('esi-mail.read_mail.v1'))
+                    ->filter(fn (RefreshToken $token) => $token->hasScope('esi-mail.read_mail.v1'))
                     ->random();
 
                 $job_container = new JobContainer(['refresh_token' => $refresh_token]);

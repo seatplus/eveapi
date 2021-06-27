@@ -27,7 +27,6 @@
 namespace Seatplus\Eveapi\Jobs\Hydrate\Character;
 
 use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Jobs\Character\CharacterRoleJob;
 use Seatplus\Eveapi\Jobs\Mail\MailHeaderJob;
 use Seatplus\Eveapi\Jobs\Mail\MailLabelJob;
 

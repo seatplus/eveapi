@@ -27,16 +27,11 @@
 namespace Seatplus\Eveapi\Jobs\Mail;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
-use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Mail\Mail;
-use Seatplus\Eveapi\Models\Skills\Skill;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
@@ -57,7 +52,7 @@ class MailBodyJob extends NewEsiBase implements HasPathValuesInterface, HasRequi
 
         $this->setPathValues([
             'character_id' => $this->getCharacterId(),
-            'mail_id' => $mail_id
+            'mail_id' => $mail_id,
         ]);
     }
 
@@ -91,6 +86,5 @@ class MailBodyJob extends NewEsiBase implements HasPathValuesInterface, HasRequi
 
         Mail::where('id', data_get($this->getPathValues(), 'mail_id'))
             ->update(['body' => data_get($response, 'body')]);
-
     }
 }
