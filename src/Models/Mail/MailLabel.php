@@ -53,7 +53,6 @@ class MailLabel extends Model
 
     public function mails()
     {
-
         return $this->hasManyThrough(
             Mail::class,
             MailMailLabel::class,
