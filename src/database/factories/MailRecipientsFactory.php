@@ -24,25 +24,33 @@
  * SOFTWARE.
  */
 
-use Seatplus\Eveapi\Models\Assets\Asset;
-use Seatplus\Eveapi\Models\Character\CorporationHistory;
-use Seatplus\Eveapi\Models\Contacts\Contact;
-use Seatplus\Eveapi\Models\Contracts\Contract;
-use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
-use Seatplus\Eveapi\Models\Mail\Mail;
-use Seatplus\Eveapi\Models\Skills\Skill;
-use Seatplus\Eveapi\Models\Wallet\WalletJournal;
+namespace Seatplus\Eveapi\database\factories;
 
-return [
-    Asset::class => 'assets',
-    CorporationMemberTracking::class => 'members',
-    'queue.manager',
-    'can open or close corporations for recruitment',
-    'can accept or deny applications',
-    Contact::class => 'contacts',
-    WalletJournal::class => 'wallet_journals',
-    Contract::class => 'contracts',
-    CorporationHistory::class => 'corporation_history',
-    Skill::class => 'skills',
-    Mail::class => 'mails',
-]; // [Model::class => 'relationship'] *relationship must exist for character or corporation
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\Mail\Mail;
+use Seatplus\Eveapi\Models\Mail\MailRecipients;
+
+class MailRecipientsFactory extends Factory
+{
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = MailRecipients::class;
+
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        return [
+            'mail_id' => Mail::factory(),
+            'receivable_id' => CharacterInfo::factory(),
+            'receivable_type' => CharacterInfo::class,
+        ];
+    }
+}

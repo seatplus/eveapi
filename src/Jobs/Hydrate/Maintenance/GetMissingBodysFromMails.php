@@ -24,25 +24,38 @@
  * SOFTWARE.
  */
 
-use Seatplus\Eveapi\Models\Assets\Asset;
-use Seatplus\Eveapi\Models\Character\CorporationHistory;
-use Seatplus\Eveapi\Models\Contacts\Contact;
-use Seatplus\Eveapi\Models\Contracts\Contract;
-use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
-use Seatplus\Eveapi\Models\Mail\Mail;
-use Seatplus\Eveapi\Models\Skills\Skill;
-use Seatplus\Eveapi\Models\Wallet\WalletJournal;
+namespace Seatplus\Eveapi\Jobs\Hydrate\Maintenance;
 
-return [
-    Asset::class => 'assets',
-    CorporationMemberTracking::class => 'members',
-    'queue.manager',
-    'can open or close corporations for recruitment',
-    'can accept or deny applications',
-    Contact::class => 'contacts',
-    WalletJournal::class => 'wallet_journals',
-    Contract::class => 'contracts',
-    CorporationHistory::class => 'corporation_history',
-    Skill::class => 'skills',
-    Mail::class => 'mails',
-]; // [Model::class => 'relationship'] *relationship must exist for character or corporation
+use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Jobs\Mail\MailBodyJob;
+use Seatplus\Eveapi\Models\Mail\Mail;
+use Seatplus\Eveapi\Models\RefreshToken;
+
+class GetMissingBodysFromMails extends HydrateMaintenanceBase
+{
+    public function handle()
+    {
+        if ($this->batch()->cancelled()) {
+            // Determine if the batch has been cancelled...
+
+            return;
+        }
+
+        $jobs = Mail::where('body', null)
+            ->pluck('id')
+            ->map(function ($mail_id) {
+                $refresh_token = RefreshToken::whereHas('character.mails', fn ($query) => $query->where('mails.id', $mail_id))
+                    ->get()
+                    ->filter(fn (RefreshToken $token) => $token->hasScope('esi-mail.read_mail.v1'))
+                    ->random();
+
+                $job_container = new JobContainer(['refresh_token' => $refresh_token]);
+
+                return new MailBodyJob($job_container, $mail_id);
+            });
+
+        $this->batch()->add(
+            $jobs->toArray()
+        );
+    }
+}

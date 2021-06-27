@@ -24,25 +24,19 @@
  * SOFTWARE.
  */
 
-use Seatplus\Eveapi\Models\Assets\Asset;
-use Seatplus\Eveapi\Models\Character\CorporationHistory;
-use Seatplus\Eveapi\Models\Contacts\Contact;
-use Seatplus\Eveapi\Models\Contracts\Contract;
-use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
-use Seatplus\Eveapi\Models\Mail\Mail;
-use Seatplus\Eveapi\Models\Skills\Skill;
-use Seatplus\Eveapi\Models\Wallet\WalletJournal;
+namespace Seatplus\Eveapi\Models\Mail;
 
-return [
-    Asset::class => 'assets',
-    CorporationMemberTracking::class => 'members',
-    'queue.manager',
-    'can open or close corporations for recruitment',
-    'can accept or deny applications',
-    Contact::class => 'contacts',
-    WalletJournal::class => 'wallet_journals',
-    Contract::class => 'contracts',
-    CorporationHistory::class => 'corporation_history',
-    Skill::class => 'skills',
-    Mail::class => 'mails',
-]; // [Model::class => 'relationship'] *relationship must exist for character or corporation
+use Illuminate\Database\Eloquent\Relations\Pivot;
+
+class MailMailLabel extends Pivot
+{
+    public function mail()
+    {
+        return $this->belongsTo(Mail::class);
+    }
+
+    public function label()
+    {
+        return $this->belongsTo(MailLabel::class, 'label_id', 'label_id');
+    }
+}

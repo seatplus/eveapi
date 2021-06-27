@@ -24,25 +24,47 @@
  * SOFTWARE.
  */
 
-use Seatplus\Eveapi\Models\Assets\Asset;
-use Seatplus\Eveapi\Models\Character\CorporationHistory;
-use Seatplus\Eveapi\Models\Contacts\Contact;
-use Seatplus\Eveapi\Models\Contracts\Contract;
-use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
-use Seatplus\Eveapi\Models\Mail\Mail;
-use Seatplus\Eveapi\Models\Skills\Skill;
-use Seatplus\Eveapi\Models\Wallet\WalletJournal;
+namespace Seatplus\Eveapi\Models\Mail;
 
-return [
-    Asset::class => 'assets',
-    CorporationMemberTracking::class => 'members',
-    'queue.manager',
-    'can open or close corporations for recruitment',
-    'can accept or deny applications',
-    Contact::class => 'contacts',
-    WalletJournal::class => 'wallet_journals',
-    Contract::class => 'contracts',
-    CorporationHistory::class => 'corporation_history',
-    Skill::class => 'skills',
-    Mail::class => 'mails',
-]; // [Model::class => 'relationship'] *relationship must exist for character or corporation
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Seatplus\Eveapi\database\factories\MailFactory;
+
+class Mail extends Model
+{
+    use HasFactory;
+
+    protected static function newFactory()
+    {
+        return MailFactory::new();
+    }
+
+    /**
+     * @var bool
+     */
+    public $incrementing = false;
+
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [];
+
+    public function labels()
+    {
+        return $this->hasManyThrough(
+            MailLabel::class,
+            MailMailLabel::class,
+            'mail_id',
+            'label_id',
+            'id',
+            'label_id'
+        );
+    }
+
+    public function recipients()
+    {
+        return $this->hasMany(MailRecipients::class, 'mail_id');
+    }
+}

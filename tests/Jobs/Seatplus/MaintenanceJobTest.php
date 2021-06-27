@@ -11,6 +11,7 @@ use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameDispatchJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingAssetsNames;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingBodysFromMails;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCategorys;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCharacterInfosFromCorporationMemberTracking;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingConstellations;
@@ -27,6 +28,7 @@ use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromLocations;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromSkillQueue;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromSkills;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromWalletTransaction;
+use Seatplus\Eveapi\Jobs\Mail\MailBodyJob;
 use Seatplus\Eveapi\Jobs\Seatplus\MaintenanceJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseCategoryByIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseConstellationByConstellationIdJob;
@@ -39,6 +41,8 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\Contracts\ContractItem;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
+use Seatplus\Eveapi\Models\Mail\Mail;
+use Seatplus\Eveapi\Models\Mail\MailRecipients;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Skills\Skill;
 use Seatplus\Eveapi\Models\Skills\SkillQueue;
@@ -694,6 +698,42 @@ class MaintenanceJobTest extends TestCase
             ->once()
             ->with([
                 new ResolveUniverseTypeByIdJob($skill->skill_id)
+            ]);
+
+        $mock->handle();
+
+    }
+
+    /** @test */
+    public function it_dispatch_GetMissingBodysFromMails_asChained_job()
+    {
+        Bus::fake();
+
+        (new MaintenanceJob)->handle();
+
+        Bus::assertBatched(fn($batch) => $batch->jobs->first(fn($job) => $job instanceof GetMissingBodysFromMails));
+    }
+
+    /** @test */
+    public function it_dispatches_MailBodyJob_for_missing_mail_bodies()
+    {
+        $this->test_character->refresh_token()->update(['scopes' => ['esi-mail.read_mail.v1']]);
+
+        $mail = Event::fakeFor(fn() => Mail::factory(['body' => null])->create());
+
+        MailRecipients::create([
+            'mail_id' => $mail->id,
+            'receivable_id' => $this->test_character->character_id,
+            'receivable_type' => CharacterInfo::class,
+        ]);
+
+        $mock = Mockery::mock(GetMissingBodysFromMails::class)->makePartial();
+
+        $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
+        $mock->shouldReceive('batch->add')
+            ->once()
+            ->with([
+                new MailBodyJob($container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]), $mail->id)
             ]);
 
         $mock->handle();
