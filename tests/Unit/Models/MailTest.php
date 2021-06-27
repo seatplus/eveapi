@@ -34,6 +34,7 @@ class MailTest extends TestCase
         ]));
 
         $this->assertInstanceOf(Mail::class, $mail_receipient->mail);
+        $this->assertInstanceOf(CharacterInfo::class, $mail_receipient->receivable);
 
         $character = $this->test_character->refresh();
 
