@@ -53,6 +53,14 @@ class MailLabel extends Model
 
     public function mails()
     {
-        return $this->belongsToMany(Mail::class, );
+
+        return $this->hasManyThrough(
+            Mail::class,
+            MailMailLabel::class,
+            'label_id',
+            'id',
+            'label_id',
+            'mail_id'
+        );
     }
 }
