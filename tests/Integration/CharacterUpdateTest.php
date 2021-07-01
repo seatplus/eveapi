@@ -450,7 +450,6 @@ class CharacterUpdateTest extends TestCase
 
         $batch->shouldReceive('add')->once()->with([
             new MailHeaderJob($job_container),
-            new MailLabelJob($job_container),
         ]);
 
         $job->shouldReceive('batch')

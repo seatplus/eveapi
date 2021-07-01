@@ -46,11 +46,6 @@ class MailIntegrationTest extends TestCase
 
         (new MailHeaderJob($this->job_container))->handle();
 
-        // Assert Labels
-        $this->assertDatabaseCount('mail_mail_label',15);
-        $this->assertCount(15, MailMailLabel::all());
-        $this->assertTrue(MailMailLabel::first()->mail instanceof Mail);
-
 
         $this->assertCount(5, Mail::all());
         $this->assertCount(15, MailRecipients::all());
@@ -70,46 +65,6 @@ class MailIntegrationTest extends TestCase
         (new MailBodyJob($this->job_container, $mail->id))->handle();
 
         $this->assertNotNull($mail->refresh()->body);
-    }
-
-    /** @test */
-    public function itRunsMailLabelJob()
-    {
-
-        $this->buildLabelMockEsiData();
-
-        (new MailLabelJob($this->job_container))->handle();
-
-        $this->assertCount(5, MailLabel::all());
-
-        $mail = Mail::first();
-
-        $this->assertCount(1, Mail::all());
-
-        $mail_label = MailLabel::first();
-
-        $this->assertCount(0, Mail::first()->labels);
-
-        MailMailLabel::create([
-            'mail_id' => $mail->id,
-            'label_id' => $mail_label->label_id,
-            'character_id' => $this->test_character->character_id
-        ]);
-
-        $this->assertDatabaseCount('mail_mail_label',1);
-        $this->assertDatabaseHas('mail_mail_label', [
-            'mail_id' => $mail->id,
-            'label_id' => $mail_label->label_id
-        ]);
-
-        $this->assertTrue(MailMailLabel::first()->mail instanceof Mail);
-        $this->assertTrue(MailMailLabel::first()->label instanceof MailLabel);
-
-        $this->assertCount(1, MailLabel::first()->mails);
-        $this->assertEquals(Mail::first()->id, MailLabel::first()->mails->first()->id);
-
-        $this->assertCount(1, Mail::first()->labels);
-
     }
 
 
