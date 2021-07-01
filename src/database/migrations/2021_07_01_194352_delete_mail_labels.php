@@ -47,6 +47,5 @@ class DeleteMailLabels extends Migration
      */
     public function down()
     {
-
     }
 }
