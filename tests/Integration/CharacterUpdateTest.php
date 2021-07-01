@@ -31,7 +31,6 @@ use Seatplus\Eveapi\Jobs\Hydrate\Character\MailsHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\SkillsHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\WalletHydrateBatch;
 use Seatplus\Eveapi\Jobs\Mail\MailHeaderJob;
-use Seatplus\Eveapi\Jobs\Mail\MailLabelJob;
 use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
 use Seatplus\Eveapi\Jobs\Skills\SkillQueueJob;
 use Seatplus\Eveapi\Jobs\Skills\SkillsJob;
