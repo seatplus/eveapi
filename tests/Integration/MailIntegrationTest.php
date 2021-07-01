@@ -46,9 +46,9 @@ class MailIntegrationTest extends TestCase
 
         (new MailHeaderJob($this->job_container))->handle();
 
-
         $this->assertCount(5, Mail::all());
         $this->assertCount(15, MailRecipients::all());
+        $this->assertInstanceOf(MailRecipients::class, Mail::first()->recipients->first());
 
         Queue::assertPushed(MailBodyJob::class);
     }
@@ -109,25 +109,6 @@ class MailIntegrationTest extends TestCase
         $this->mockRetrieveEsiDataAction([
             'body' => 'some elaborate long text body'
         ]);
-    }
-
-    private function buildLabelMockEsiData()
-    {
-
-        $mail = Event::fakeFor(fn() => Mail::factory()->create());
-        $mocked_labels = Event::fakeFor(fn() => MailLabel::factory()->count(5)->make([
-            'mail_id' => $mail->id,
-            'character_id' => $this->test_character->character_id
-        ]));
-
-        $mock_data = [
-            'labels' => $mocked_labels->toArray(),
-            'total_unread_count' => 4
-        ];
-
-        $this->mockRetrieveEsiDataAction($mock_data);
-
-        return $mock_data;
     }
 
 }

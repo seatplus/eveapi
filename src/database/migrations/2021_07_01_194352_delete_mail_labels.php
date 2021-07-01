@@ -16,14 +16,4 @@ class DeleteMailLabels extends Migration
         Schema::dropIfExists('mail_mail_label');
         Schema::dropIfExists('mail_labels');
     }
-
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        //
-    }
 }
