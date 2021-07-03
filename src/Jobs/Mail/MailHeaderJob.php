@@ -36,7 +36,6 @@ use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Mail\Mail;
-use Seatplus\Eveapi\Models\Mail\MailMailLabel;
 use Seatplus\Eveapi\Models\Mail\MailRecipients;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
@@ -101,16 +100,6 @@ class MailHeaderJob extends NewEsiBase implements HasPathValuesInterface, HasReq
 
         collect($response)
             ->each(function ($mail) {
-
-                // create Labels
-                collect(data_get($mail, 'labels', []))
-                    ->map(fn ($label_id) => [
-                        'mail_id' => data_get($mail, 'mail_id'),
-                        'label_id' => $label_id,
-                        'character_id' => data_get($this->getPathValues(), 'character_id'),
-                    ])
-                    ->chunk(1000)
-                    ->each(fn (Collection $chunk) => MailMailLabel::upsert($chunk->toArray(), ['mail_id', 'label_id', 'character_id']));
 
                 // create recipients
                 $recipients = collect(data_get($mail, 'recipients'))

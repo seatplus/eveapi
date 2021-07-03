@@ -24,42 +24,19 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Models\Mail;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\MailLabelFactory;
-
-class MailLabel extends Model
+class DeleteMailLabels extends Migration
 {
-    use HasFactory;
-
-    protected static function newFactory()
-    {
-        return MailLabelFactory::new();
-    }
-
     /**
-     * @var bool
-     */
-    public $incrementing = false;
-
-    /**
-     * The attributes that aren't mass assignable.
+     * Run the migrations.
      *
-     * @var array
+     * @return void
      */
-    protected $guarded = [];
-
-    public function mails()
+    public function up()
     {
-        return $this->hasManyThrough(
-            Mail::class,
-            MailMailLabel::class,
-            'label_id',
-            'id',
-            'label_id',
-            'mail_id'
-        );
+        Schema::dropIfExists('mail_mail_label');
+        Schema::dropIfExists('mail_labels');
     }
 }

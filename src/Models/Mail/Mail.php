@@ -51,18 +51,6 @@ class Mail extends Model
      */
     protected $guarded = [];
 
-    public function labels()
-    {
-        return $this->hasManyThrough(
-            MailLabel::class,
-            MailMailLabel::class,
-            'mail_id',
-            'label_id',
-            'id',
-            'label_id'
-        );
-    }
-
     public function recipients()
     {
         return $this->hasMany(MailRecipients::class, 'mail_id');

@@ -28,7 +28,6 @@ namespace Seatplus\Eveapi\Jobs\Hydrate\Character;
 
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Mail\MailHeaderJob;
-use Seatplus\Eveapi\Jobs\Mail\MailLabelJob;
 
 class MailsHydrateBatch extends HydrateCharacterBase
 {
@@ -44,7 +43,6 @@ class MailsHydrateBatch extends HydrateCharacterBase
         if ($this->hasRequiredScope()) {
             $this->batch()->add([
                 new MailHeaderJob($this->job_container),
-                new MailLabelJob($this->job_container),
             ]);
         }
     }
