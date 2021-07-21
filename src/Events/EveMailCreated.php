@@ -24,40 +24,16 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Models\Mail;
+namespace Seatplus\Eveapi\Events;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\MailRecipientsFactory;
+use Illuminate\Queue\SerializesModels;
 
-class MailRecipients extends Model
+class EveMailCreated
 {
-    use HasFactory;
+    use SerializesModels;
 
-    protected static function newFactory()
-    {
-        return MailRecipientsFactory::new();
-    }
-
-    /**
-     * @var bool
-     */
-    public $incrementing = false;
-
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
-    protected $guarded = [];
-
-    public function mail()
-    {
-        return $this->belongsTo(Mail::class, 'mail_id', 'id');
-    }
-
-    public function receivable()
-    {
-        return $this->morphTo();
+    public function __construct(
+        public int $mail_id
+    ) {
     }
 }

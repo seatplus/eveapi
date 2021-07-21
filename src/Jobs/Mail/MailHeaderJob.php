@@ -31,6 +31,7 @@ use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
+use Seatplus\Eveapi\Events\EveMailCreated;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
@@ -122,6 +123,8 @@ class MailHeaderJob extends NewEsiBase implements HasPathValuesInterface, HasReq
                 $this->batching()
                     ? $this->batch()->add([new MailBodyJob($this->job_container, data_get($mail, 'mail_id'))])
                     : MailBodyJob::dispatch($this->job_container, data_get($mail, 'mail_id'))->onQueue($this->queue);
+
+                event(new EveMailCreated(data_get($mail, 'mail_id')));
             });
     }
 
