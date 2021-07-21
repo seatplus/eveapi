@@ -53,7 +53,7 @@ class MailRecipients extends Model
 
     public function mail()
     {
-        return $this->belongsTo(Mail::class,  'mail_id', 'id');
+        return $this->belongsTo(Mail::class, 'mail_id', 'id');
     }
 
     public function receivable()
