@@ -37,7 +37,6 @@ use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Mail\Mail;
-use Seatplus\Eveapi\Models\Mail\MailMailLabel;
 use Seatplus\Eveapi\Models\Mail\MailRecipients;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
