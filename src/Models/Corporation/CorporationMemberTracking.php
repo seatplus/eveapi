@@ -50,15 +50,6 @@ class CorporationMemberTracking extends Model
      */
     protected $guarded = [];
 
-    protected $primaryKey = null;
-
-    /**
-     * Indicates if the IDs are auto-incrementing.
-     *
-     * @var bool
-     */
-    public $incrementing = false;
-
     /**
      * The attributes that should be cast to native types.
      *
