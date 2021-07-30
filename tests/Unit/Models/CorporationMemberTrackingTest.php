@@ -2,6 +2,7 @@
 
 namespace Seatplus\Eveapi\Tests\Unit\Models;
 
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Application;
@@ -56,6 +57,17 @@ class CorporationMemberTrackingTest extends TestCase
     public function it_has_character_relation()
     {
         $this->assertInstanceOf(CharacterInfo::class, $this->tracking->character);
+    }
+
+    public function it_uses_model_events_on_deletion()
+    {
+        Event::fake();
+
+        Event::assertNotDispatched('eloquent.deleted: ' . CorporationMemberTracking::class);
+
+        $this->tracking->delete();
+
+        Event::assertDispatched('eloquent.deleted: ' . CorporationMemberTracking::class);
     }
 
 

@@ -38,6 +38,7 @@ class CreateCorporationMemberTrackingsTable extends Migration
     public function up()
     {
         Schema::create('corporation_member_trackings', function (Blueprint $table) {
+            $table->id();
             $table->bigInteger('corporation_id');
             $table->bigInteger('character_id');
             $table->dateTime('start_date')->nullable();

@@ -116,7 +116,10 @@ class CorporationMemberTrackingJob extends NewEsiBase implements HasPathValuesIn
                 return $members;
             })
             ->pipe(fn ($members) => CorporationMemberTracking::where('corporation_id', $this->corporation_id)
-                ->whereNotIn('character_id', $members->pluck('character_id')->all())->delete()
+                ->whereNotIn('character_id', $members->pluck('character_id')->all())
+                // in order to use model events we must actually receive the models and delete them individually
+                ->get()
+                ->each(fn($ex_member) => $ex_member->delete())
             );
     }
 }
