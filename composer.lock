@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a499020c9ac0b8e1dbe30c5018d8725c",
+    "content-hash": "94e8c9f4f3b990962f9c58c8eec516d2",
     "packages": [
         {
             "name": "brick/math",
@@ -2474,22 +2474,25 @@
         },
         {
             "name": "spatie/data-transfer-object",
-            "version": "2.8.3",
+            "version": "3.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/data-transfer-object.git",
-                "reference": "2625a59566804ec63f01947d85947336237cbda6"
+                "reference": "2dd4e4d5e758b5892e6219bc444a9f38ad77c5af"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/data-transfer-object/zipball/2625a59566804ec63f01947d85947336237cbda6",
-                "reference": "2625a59566804ec63f01947d85947336237cbda6",
+                "url": "https://api.github.com/repos/spatie/data-transfer-object/zipball/2dd4e4d5e758b5892e6219bc444a9f38ad77c5af",
+                "reference": "2dd4e4d5e758b5892e6219bc444a9f38ad77c5af",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.4|^8.0"
+                "php": "^8.0"
             },
             "require-dev": {
+                "illuminate/collections": "^8.36",
+                "jetbrains/phpstorm-attributes": "^1.0",
+                "larapack/dd": "^1.1",
                 "phpunit/phpunit": "^9.0"
             },
             "suggest": {
@@ -2521,15 +2524,19 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/data-transfer-object/issues",
-                "source": "https://github.com/spatie/data-transfer-object/tree/2.8.3"
+                "source": "https://github.com/spatie/data-transfer-object/tree/3.6.1"
             },
             "funding": [
                 {
-                    "url": "https://www.patreon.com/spatie",
-                    "type": "patreon"
+                    "url": "https://spatie.be/open-source/support-us",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/spatie",
+                    "type": "github"
                 }
             ],
-            "time": "2021-02-12T08:46:52+00:00"
+            "time": "2021-08-17T03:36:52+00:00"
         },
         {
             "name": "spatie/laravel-activitylog",
@@ -9870,5 +9877,5 @@
         "ext-redis": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.1.0"
 }
