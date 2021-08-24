@@ -24,40 +24,35 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Models\Corporation;
+namespace Seatplus\Eveapi\database\factories;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\CorporationWalletFactory;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\Wallet\Balance;
+use Seatplus\Eveapi\Models\Wallet\WalletJournal;
 
-class CorporationWallet extends Model
+class BalanceFactory extends Factory
 {
-    use HasFactory;
+    protected $model = Balance::class;
 
-    protected static function newFactory()
+    public function definition()
     {
-        return CorporationWalletFactory::new();
+        return [
+            'id' => $this->faker->unique()->randomNumber,
+            'balanceable_id' => $this->faker->numberBetween(90_000_000, 98_000_000),
+            'balanceable_type' => CharacterInfo::class,
+            'balance' => $this->faker->randomFloat(2),
+        ];
     }
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
-    protected $guarded = [];
-
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'corporation_id' => 'integer',
-        'division' => 'integer',
-    ];
-
-    public function corporation()
+    public function withDivision()
     {
-        return $this->belongsTo(CorporationInfo::class, 'corporation_id', 'corporation_id');
+        return $this->state(function () {
+            return [
+                'division' => $this->faker->unique()->numberBetween(1, 7),
+            ];
+        });
     }
+
+
 }

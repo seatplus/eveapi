@@ -30,11 +30,14 @@ use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationWallet;
+use Seatplus\Eveapi\Models\Wallet\Balance;
 
 class CorporationWalletJournalJob implements ShouldQueue, ShouldBeUnique
 {
@@ -87,10 +90,17 @@ class CorporationWalletJournalJob implements ShouldQueue, ShouldBeUnique
      */
     public function handle(): void
     {
-        CorporationWallet::query()
-            ->where('corporation_id', $this->corporation_id)
+        Balance::query()
+            ->whereHasMorph(
+                'balanceable',
+                CorporationInfo::class,
+                fn(Builder $query) => $query->where('corporation_id', $this->corporation_id)
+            )
             ->cursor()
-            ->each(fn ($wallet) => $this->batching() ? $this->handleBatching($wallet->division) : $this->handleNonBatching($wallet->division));
+            ->each(fn ($wallet) => $this->batching()
+                ? $this->handleBatching($wallet->division)
+                : $this->handleNonBatching($wallet->division)
+            );
     }
 
     private function handleBatching(int $division): void

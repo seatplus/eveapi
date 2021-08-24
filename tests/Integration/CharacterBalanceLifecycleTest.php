@@ -7,12 +7,14 @@ namespace Seatplus\Eveapi\Tests\Integration;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Jobs\Wallet\CharacterBalanceJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletJournalJob;
+use Seatplus\Eveapi\Models\Wallet\Balance;
 use Seatplus\Eveapi\Models\Wallet\WalletJournal;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
-class CharacterWalletJournalLifecycleTest extends TestCase
+class CharacterBalanceLifecycleTest extends TestCase
 {
     use MockRetrieveEsiDataAction;
 
@@ -33,30 +35,23 @@ class CharacterWalletJournalLifecycleTest extends TestCase
     {
         $mock_data = $this->buildMockEsiData();
 
-        $job = new CharacterWalletJournalJob($this->job_container);
+        $this->assertCount(0, Balance::all());
 
-        dispatch_now($job);
+        $job = new CharacterBalanceJob($this->job_container);
 
-        $this->assertWalletJournal($mock_data, $this->test_character->character_id);
+        $job->handle();
+
+        $this->assertCount(1, Balance::all());
+
     }
 
     private function buildMockEsiData()
     {
 
-        $mock_data = WalletJournal::factory()->count(5)->make();
+        $mock_data = Balance::factory()->make();
 
-        $this->mockRetrieveEsiDataAction($mock_data->toArray());
+        $this->mockRetrieveEsiDataAction(['scalar' => $mock_data->balance]);
 
         return $mock_data;
-    }
-
-    private function assertWalletJournal(Collection $mock_data, int $wallet_journable_id)
-    {
-        foreach ($mock_data as $data)
-            //Assert that character asset created
-            $this->assertDatabaseHas('wallet_journals', [
-                'wallet_journable_id' => $wallet_journable_id,
-                'id' => $data->id
-            ]);
     }
 }

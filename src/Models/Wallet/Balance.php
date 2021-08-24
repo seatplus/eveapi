@@ -24,21 +24,27 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\database\factories;
+namespace Seatplus\Eveapi\Models\Wallet;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Seatplus\Eveapi\Models\Corporation\CorporationWallet;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Seatplus\Eveapi\database\factories\BalanceFactory;
+use Seatplus\Eveapi\database\factories\WalletJournalFactory;
 
-class CorporationWalletFactory extends Factory
+class Balance extends Model
 {
-    protected $model = CorporationWallet::class;
+    use HasFactory;
 
-    public function definition()
+    protected $guarded = false;
+
+
+    protected static function newFactory()
     {
-        return [
-            'corporation_id'  => $this->faker->unique()->numberBetween(98000000, 99000000),
-            'division' => $this->faker->unique()->randomDigitNotNull,
-            'balance' => $this->faker->randomFloat(2, 0, 1),
-        ];
+        return BalanceFactory::new();
+    }
+
+    public function balanceable()
+    {
+        return $this->morphTo();
     }
 }

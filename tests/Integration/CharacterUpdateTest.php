@@ -34,6 +34,7 @@ use Seatplus\Eveapi\Jobs\Mail\MailHeaderJob;
 use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
 use Seatplus\Eveapi\Jobs\Skills\SkillQueueJob;
 use Seatplus\Eveapi\Jobs\Skills\SkillsJob;
+use Seatplus\Eveapi\Jobs\Wallet\CharacterBalanceJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletJournalJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
 use Seatplus\Eveapi\Models\RefreshToken;
@@ -320,7 +321,8 @@ class CharacterUpdateTest extends TestCase
 
         $batch->shouldReceive('add')->once()->with([
             new CharacterWalletJournalJob($job_container),
-            new CharacterWalletTransactionJob($job_container)
+            new CharacterWalletTransactionJob($job_container),
+            new CharacterBalanceJob($job_container)
         ]);
 
         $job->shouldReceive('batch')

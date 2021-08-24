@@ -15,6 +15,7 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Models\Wallet\Balance;
 use Seatplus\Eveapi\Tests\TestCase;
 
 class CharacterInfoTest extends TestCase
@@ -103,6 +104,17 @@ class CharacterInfoTest extends TestCase
 
         // Test reverse too
         $this->assertInstanceOf(CharacterInfo::class, $contract->characters->first());
+    }
+
+    /** @test */
+    public function character_has_balance_relationship() 
+    {
+        $balance = Balance::factory()->withDivision()->create([
+            'balanceable_id' => $this->test_character->character_id,
+            'balanceable_type' => CharacterInfo::class
+        ]);
+
+        $this->assertInstanceOf(Balance::class, $this->test_character->refresh()->balance);
     }
 
 }

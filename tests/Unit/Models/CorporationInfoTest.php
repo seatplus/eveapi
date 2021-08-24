@@ -10,6 +10,7 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Models\SsoScopes;
+use Seatplus\Eveapi\Models\Wallet\Balance;
 use Seatplus\Eveapi\Tests\TestCase;
 
 class CorporationInfoTest extends TestCase
@@ -119,6 +120,17 @@ class CorporationInfoTest extends TestCase
         ]);
 
         $this->assertInstanceOf(CorporationMemberTracking::class, $this->test_character->refresh()->corporation->members->first());
+    }
+
+    /** @test */
+    public function it_has_wallets_relationship()
+    {
+        $balance = Balance::factory()->withDivision()->create([
+            'balanceable_id' => $this->test_character->corporation->corporation_id,
+            'balanceable_type' => CorporationInfo::class
+        ]);
+
+        $this->assertInstanceOf(Balance::class, $this->test_character->corporation->refresh()->wallets->first());
     }
 
 

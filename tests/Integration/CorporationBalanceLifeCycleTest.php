@@ -7,18 +7,19 @@ namespace Seatplus\Eveapi\Tests\Integration;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Jobs\Wallet\CorporationBalanceJob;
 use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletJournalByDivisionJob;
-use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletJournalJob;
-use Seatplus\Eveapi\Jobs\Corporation\CorporationWalletsJob;
 use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletTransactionByDivisionJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
+use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletJournalJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationWallet;
+use Seatplus\Eveapi\Models\Wallet\Balance;
 use Seatplus\Eveapi\Models\Wallet\WalletJournal;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
-class CorporationWalletLifeCycleTest extends TestCase
+class CorporationBalanceLifeCycleTest extends TestCase
 {
 
     use MockRetrieveEsiDataAction;
@@ -45,14 +46,14 @@ class CorporationWalletLifeCycleTest extends TestCase
     {
         $this->buildCorpWalletEsiMockData();
 
-        $this->assertCount(0, CorporationWallet::all());
+        $this->assertCount(0, Balance::all());
 
         // Prevent Observer from picking up the jobs
         Event::fake();
 
-        CorporationWalletsJob::dispatchSync($this->job_container);
+        (new CorporationBalanceJob($this->job_container))->handle();
 
-        $this->assertCount(7, CorporationWallet::all());
+        $this->assertCount(7, Balance::all());
     }
 
     /** @test */
@@ -64,9 +65,13 @@ class CorporationWalletLifeCycleTest extends TestCase
 
         Queue::fake();
 
-        CorporationWallet::factory()->count(1)->create([
-            'corporation_id' => $this->test_character->corporation->corporation_id
-        ]);
+        $balances = Balance::factory()
+            ->withDivision()
+            ->count(7)
+            ->create([
+                'balanceable_id' => $this->test_character->corporation->corporation_id,
+                'balanceable_type' => CorporationInfo::class
+            ]);
 
         Queue::assertPushed(CorporationWalletJournalByDivisionJob::class);
         Queue::assertPushed(CorporationWalletTransactionByDivisionJob::class);
@@ -82,13 +87,14 @@ class CorporationWalletLifeCycleTest extends TestCase
 
         Queue::fake();
 
-        Event::fakeFor( fn () => CorporationWallet::factory()->count(7)->create([
-            'corporation_id' => $this->test_character->corporation->corporation_id
+        Event::fakeFor( fn () => Balance::factory()->withDivision()->count(7)->create([
+            'balanceable_id' => $this->test_character->corporation->corporation_id,
+            'balanceable_type' => CorporationInfo::class
         ]));
 
         (new CorporationWalletJournalJob($this->job_container))->handle();
 
-        $this->assertCount(7, CorporationWallet::all());
+        $this->assertCount(7, Balance::all());
 
         Queue::assertPushed(CorporationWalletJournalByDivisionJob::class);
     }
@@ -137,8 +143,9 @@ class CorporationWalletLifeCycleTest extends TestCase
     private function buildCorpWalletEsiMockData()
     {
 
-        $mock_data = CorporationWallet::factory()->count(7)->make([
-            'corporation_id' => $this->test_character->corporation->corporation_id
+        $mock_data = Balance::factory()->withDivision()->count(7)->make([
+            'balanceable_id' => $this->test_character->corporation->corporation_id,
+            'balanceable_type' => CorporationInfo::class
         ]);
 
         $this->mockRetrieveEsiDataAction($mock_data->toArray());

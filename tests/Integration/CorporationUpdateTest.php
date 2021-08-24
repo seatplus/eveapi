@@ -8,13 +8,13 @@ use Illuminate\Bus\Batch;
 use Illuminate\Support\Facades\Bus;
 use Mockery;
 use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Jobs\Wallet\CorporationBalanceJob;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationDivisionsJob;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
 use Seatplus\Eveapi\Jobs\Hydrate\Corporation\CorporationMemberTrackingHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Corporation\CorporationWalletHydrateBatch;
 use Seatplus\Eveapi\Jobs\Seatplus\UpdateCorporation;
 use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletJournalJob;
-use Seatplus\Eveapi\Jobs\Corporation\CorporationWalletsJob;
 use Seatplus\Eveapi\Tests\TestCase;
 
 class CorporationUpdateTest extends TestCase
@@ -103,7 +103,7 @@ class CorporationUpdateTest extends TestCase
         $batch->shouldReceive('add')->once()->with([
             new CorporationDivisionsJob($job_container),
             [
-                new CorporationWalletsJob($job_container),
+                new CorporationBalanceJob($job_container),
                 new CorporationWalletJournalJob($job_container)
             ]
         ]);
