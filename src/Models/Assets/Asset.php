@@ -139,15 +139,19 @@ class Asset extends Model
     {
         $region_ids = is_array($regions) ? $regions : [$regions];
 
-        return $query->orWhereHas('location', fn (Builder $query) => $query
+        return $query->orWhereHas(
+            'location',
+            fn (Builder $query) => $query
             ->whereHasMorph(
                 'locatable',
                 '*',
                 fn (Builder $query) => $query
-                    ->whereHas('system.region', fn (Builder $query) => $query
+                    ->whereHas(
+                        'system.region',
+                        fn (Builder $query) => $query
                         ->whereIn('universe_regions.region_id', $region_ids)
                     )
-                )
+            )
         );
     }
 
@@ -155,12 +159,16 @@ class Asset extends Model
     {
         $system_ids = is_array($systems) ? $systems : [$systems];
 
-        return $query->orWhereHas('location', fn (Builder $query) => $query
+        return $query->orWhereHas(
+            'location',
+            fn (Builder $query) => $query
             ->whereHasMorph(
                 'locatable',
                 '*',
                 fn (Builder $query) => $query
-                    ->whereHas('system', fn (Builder $query) => $query
+                    ->whereHas(
+                        'system',
+                        fn (Builder $query) => $query
                         ->whereIn('universe_systems.system_id', $system_ids)
                     )
             )

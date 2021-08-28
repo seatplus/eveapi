@@ -18,7 +18,6 @@ abstract class TestCase extends OrchestraTestCase
 
     protected function setUp(): void
     {
-
         parent::setUp();
 
 
@@ -82,14 +81,13 @@ abstract class TestCase extends OrchestraTestCase
         // Use memory SQLite, cleans it self up
         $app['config']->set('database.default', 'testbench');
         $app['config']->set('database.connections.testbench', [
-            'driver'   => 'sqlite',
+            'driver' => 'sqlite',
             'database' => ':memory:',
-            'prefix'   => '',
+            'prefix' => '',
         ]);
 
         config(['app.debug' => true]);
 
         //$app['router']->aliasMiddleware('auth', Authenticate::class);
     }
-
 }

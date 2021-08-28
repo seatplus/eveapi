@@ -3,12 +3,10 @@
 
 namespace Seatplus\Eveapi\Tests\Unit\Models;
 
-
 use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Type;
-use Seatplus\Eveapi\Models\Wallet\WalletJournal;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 use Seatplus\Eveapi\Tests\TestCase;
 
@@ -17,12 +15,11 @@ class WalletTransactionTest extends TestCase
     /** @test */
     public function characterHasWalletJournalTest()
     {
-
         $this->assertCount(0, $this->test_character->wallet_transactions);
 
-        $wallet_transaction = Event::fakeFor( fn() =>  WalletTransaction::factory()->create([
+        $wallet_transaction = Event::fakeFor(fn () => WalletTransaction::factory()->create([
             'wallet_transactionable_id' => $this->test_character->character_id,
-            'wallet_transactionable_type' => CharacterInfo::class
+            'wallet_transactionable_type' => CharacterInfo::class,
         ]));
 
         $this->assertInstanceOf(CharacterInfo::class, $wallet_transaction->wallet_transactionable);
@@ -30,20 +27,18 @@ class WalletTransactionTest extends TestCase
         $character = $this->test_character->refresh();
         $this->assertCount(1, $character->wallet_transactions);
         $this->assertInstanceOf(WalletTransaction::class, $character->wallet_transactions->first());
-
     }
 
     /** @test */
     public function corporation_has_relationships_test()
     {
-
         $this->assertCount(0, $this->test_character->wallet_transactions);
 
-        $wallet_transaction = Event::fakeFor( fn() => WalletTransaction::factory()->create([
+        $wallet_transaction = Event::fakeFor(fn () => WalletTransaction::factory()->create([
             'wallet_transactionable_id' => $this->test_character->character_id,
             'wallet_transactionable_type' => CharacterInfo::class,
             'type_id' => Type::factory()->create(),
-            'location_id' => Location::factory()->create()
+            'location_id' => Location::factory()->create(),
         ]));
 
         $this->assertInstanceOf(Type::class, $wallet_transaction->type);
@@ -91,5 +86,4 @@ class WalletTransactionTest extends TestCase
 
         $this->assertNotNull(ContactLabel::first()->label_name);
     }*/
-
 }

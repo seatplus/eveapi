@@ -3,7 +3,6 @@
 
 namespace Seatplus\Eveapi\Tests\Integration;
 
-
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Containers\JobContainer;
@@ -93,22 +92,19 @@ class ContactLifecycleTest extends TestCase
     /** @test */
     public function contact_of_type_character_dispatches_affiliation_job()
     {
-
         Queue::assertNothingPushed();
 
         $contact = Contact::factory()->create([
             'contactable_id' => $this->test_character->character_id,
             'contactable_type' => CharacterInfo::class,
-            'contact_type' => 'character'
+            'contact_type' => 'character',
         ]);
 
         Queue::assertPushedOn('high', CharacterAffiliationJob::class);
-
     }
 
     private function buildMockEsiData()
     {
-
         $mock_data = Contact::factory()->count(5)->make();
 
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
@@ -118,11 +114,12 @@ class ContactLifecycleTest extends TestCase
 
     private function assertContact(Collection $mock_data, int $contactable_id)
     {
-        foreach ($mock_data as $data)
+        foreach ($mock_data as $data) {
             //Assert that character asset created
             $this->assertDatabaseHas('contacts', [
                 'contactable_id' => $contactable_id,
-                'contact_id' => $data->contact_id
+                'contact_id' => $data->contact_id,
             ]);
+        }
     }
 }

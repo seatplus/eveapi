@@ -35,5 +35,9 @@ use Seatplus\Eveapi\Jobs\Hydrate\Hydrate;
 
 abstract class HydrateMaintenanceBase implements Hydrate
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Batchable;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 }

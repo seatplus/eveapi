@@ -3,7 +3,6 @@
 
 namespace Seatplus\Eveapi\Tests\Integration;
 
-
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Containers\JobContainer;
@@ -33,8 +32,6 @@ class SkillQueueLifeCycleTest extends TestCase
         Queue::fake();
 
         $this->job_container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]);
-
-
     }
 
     /** @test */
@@ -52,7 +49,6 @@ class SkillQueueLifeCycleTest extends TestCase
         $this->assertInstanceOf(Type::class, SkillQueue::first()->type);
 
         $this->assertCount(5, $this->test_character->refresh()->skill_queues);
-
     }
 
     /** @test */
@@ -63,14 +59,13 @@ class SkillQueueLifeCycleTest extends TestCase
         SkillQueue::factory(['skill_id' => 123])->create();
 
         Queue::assertPushed(ResolveUniverseTypeByIdJob::class);
-
     }
 
     /** @test */
     public function itDeletesOldQueueItems()
     {
         // create old Dataa
-        $old_data = Event::fakeFor( fn() => SkillQueue::factory(['character_id' => $this->test_character->character_id])->create());
+        $old_data = Event::fakeFor(fn () => SkillQueue::factory(['character_id' => $this->test_character->character_id])->create());
 
         $this->assertCount(1, SkillQueue::all());
 
@@ -82,17 +77,14 @@ class SkillQueueLifeCycleTest extends TestCase
 
         $this->assertCount(5, SkillQueue::all());
         $this->assertNotCount(6, SkillQueue::all());
-
-
     }
-
 
     private function buildMockEsiData()
     {
-
         Queue::assertNothingPushed();
 
-        $mock_data = Event::fakeFor(fn() => SkillQueue::factory(['character_id' => $this->test_character->character_id])
+        $mock_data = Event::fakeFor(
+            fn () => SkillQueue::factory(['character_id' => $this->test_character->character_id])
             ->count(5)
             ->make()
         );
@@ -101,6 +93,4 @@ class SkillQueueLifeCycleTest extends TestCase
 
         return $mock_data;
     }
-
-
 }

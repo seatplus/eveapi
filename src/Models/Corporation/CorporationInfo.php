@@ -80,7 +80,7 @@ class CorporationInfo extends Model
             'character_id',
             'corporation_id',
             'character_id'
-            );
+        );
     }
 
     public function ssoScopes()

@@ -99,7 +99,7 @@ class System extends Model
             'region_id',
             'constellation_id',
             'region_id'
-            );
+        );
     }
 
     public function stations()

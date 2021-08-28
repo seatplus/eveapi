@@ -41,7 +41,10 @@ use Seatplus\Eveapi\Models\RefreshToken;
 
 class UpdateCorporation implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     public function __construct(private ?int $corporation_id = null)
     {

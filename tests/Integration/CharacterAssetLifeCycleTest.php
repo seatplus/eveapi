@@ -3,7 +3,6 @@
 
 namespace Seatplus\Eveapi\Tests\Integration;
 
-
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
@@ -38,11 +37,11 @@ class CharacterAssetLifeCycleTest extends TestCase
             'assetable_id' => $asset->assetable_id,
             'assetable_type' => CharacterInfo::class,
             'is_blueprint_copy' => optional($asset)->is_blueprint_copy ?? false,
-            'is_singleton'  => $asset->is_singleton,
-            'location_flag'     => $asset->location_flag,
-            'location_id'        => $asset->location_id,
-            'location_type'          => $asset->location_type,
-            'quantity'   => $asset->quantity,
+            'is_singleton' => $asset->is_singleton,
+            'location_flag' => $asset->location_flag,
+            'location_id' => $asset->location_id,
+            'location_type' => $asset->location_type,
+            'quantity' => $asset->quantity,
             'type_id' => $asset->type_id,
         ]);
 
@@ -50,7 +49,7 @@ class CharacterAssetLifeCycleTest extends TestCase
 
         Queue::assertPushedOn('high', ResolveUniverseTypeByIdJob::class);
 
-        Queue::assertPushed(ResolveUniverseTypeByIdJob::class, function ($job) use ($asset){
+        Queue::assertPushed(ResolveUniverseTypeByIdJob::class, function ($job) use ($asset) {
             return in_array(sprintf('type_id:%s', $asset->type_id), $job->tags());
         });
     }
@@ -58,11 +57,10 @@ class CharacterAssetLifeCycleTest extends TestCase
     /** @test */
     public function it_does_not_dispatch_type_job_if_type_is_known()
     {
-
         $type = Type::factory()->create();
 
         $asset = Asset::factory()->create([
-            'type_id' => $type->type_id
+            'type_id' => $type->type_id,
         ]);
 
         Queue::assertNotPushed(ResolveUniverseTypeByIdJob::class);
@@ -72,7 +70,7 @@ class CharacterAssetLifeCycleTest extends TestCase
     public function it_dispatches_location_job()
     {
         $asset = Asset::factory()->create([
-            'assetable_id' => $this->test_character->character_id
+            'assetable_id' => $this->test_character->character_id,
         ]);
 
         Queue::assertPushedOn('high', ResolveLocationJob::class);
@@ -81,11 +79,10 @@ class CharacterAssetLifeCycleTest extends TestCase
     /** @test */
     public function it_does_not_dispatch_location_job_if_location_is_known()
     {
-
         $location = Location::factory()->create();
 
         $asset = Asset::factory()->create([
-            'location_id' => $location->location_id
+            'location_id' => $location->location_id,
         ]);
 
         Queue::assertNotPushed(ResolveLocationJob::class);
@@ -94,11 +91,10 @@ class CharacterAssetLifeCycleTest extends TestCase
     /** @test */
     public function it_dispatches_location_job_if_location_is_updating()
     {
-
-        $asset = Event::fakeFor( function () {
+        $asset = Event::fakeFor(function () {
             return Asset::factory()->create([
                 'location_id' => 1234,
-                'assetable_id' => $this->test_character->character_id
+                'assetable_id' => $this->test_character->character_id,
             ]);
         });
 
@@ -108,9 +104,5 @@ class CharacterAssetLifeCycleTest extends TestCase
         $asset->save();
 
         Queue::assertPushedOn('high', ResolveLocationJob::class);
-
-
     }
-
-
 }

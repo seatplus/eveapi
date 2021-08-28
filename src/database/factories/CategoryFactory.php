@@ -37,7 +37,7 @@ class CategoryFactory extends Factory
     {
         return [
             'category_id' => $this->faker->numberBetween(0, 10000),
-            'name'  => $this->faker->name,
+            'name' => $this->faker->name,
             'published' => $this->faker->boolean,
         ];
     }

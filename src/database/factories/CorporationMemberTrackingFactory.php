@@ -38,9 +38,9 @@ class CorporationMemberTrackingFactory extends Factory
     public function definition()
     {
         return [
-            'corporation_id'  => CorporationInfo::factory(),
+            'corporation_id' => CorporationInfo::factory(),
             'character_id' => CharacterInfo::factory(),
-            'location_id'  => $this->faker->numberBetween(0, 10000),
+            'location_id' => $this->faker->numberBetween(0, 10000),
             'ship_type_id' => $this->faker->numberBetween(0, 10000),
         ];
     }

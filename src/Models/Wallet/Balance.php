@@ -29,14 +29,12 @@ namespace Seatplus\Eveapi\Models\Wallet;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Seatplus\Eveapi\database\factories\BalanceFactory;
-use Seatplus\Eveapi\database\factories\WalletJournalFactory;
 
 class Balance extends Model
 {
     use HasFactory;
 
     protected $guarded = false;
-
 
     protected static function newFactory()
     {

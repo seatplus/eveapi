@@ -11,7 +11,6 @@ use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 class CharacterAssetTest extends TestCase
 {
-
     use MockRetrieveEsiDataAction;
 
     protected JobContainer $job_container;
@@ -23,7 +22,7 @@ class CharacterAssetTest extends TestCase
         Queue::fake();
 
         $this->job_container = new JobContainer([
-            'refresh_token' => $this->test_character->refresh_token
+            'refresh_token' => $this->test_character->refresh_token,
         ]);
     }
 
@@ -50,7 +49,6 @@ class CharacterAssetTest extends TestCase
      */
     public function retrieveTest()
     {
-
         $mock_data = $this->buildMockEsiData();
 
 
@@ -58,12 +56,13 @@ class CharacterAssetTest extends TestCase
         (new CharacterAssetJob($this->job_container))->handle();
 
 
-        foreach ($mock_data as $data)
+        foreach ($mock_data as $data) {
             //Assert that character asset created
             $this->assertDatabaseHas('assets', [
                 'assetable_id' => $this->test_character->character_id,
-                'item_id' => $data->item_id
+                'item_id' => $data->item_id,
             ]);
+        }
     }
 
     /**
@@ -72,18 +71,18 @@ class CharacterAssetTest extends TestCase
      */
     public function it_cleans_up_assets()
     {
-
         $old_data = Asset::factory()->count(5)->create([
-            'assetable_id' => $this->test_character->character_id
+            'assetable_id' => $this->test_character->character_id,
         ]);
 
         // assert that old data is present before CharacterAssetsCleanUpAction
-        foreach ($old_data as $data)
+        foreach ($old_data as $data) {
             //Assert that character asset created
             $this->assertDatabaseHas('assets', [
                 'assetable_id' => $this->test_character->character_id,
-                'item_id' => $data->item_id
+                'item_id' => $data->item_id,
             ]);
+        }
 
 
         $mock_data = $this->buildMockEsiData();
@@ -92,32 +91,33 @@ class CharacterAssetTest extends TestCase
         (new CharacterAssetJob($this->job_container))->handle();
 
 
-        foreach ($mock_data as $data)
+        foreach ($mock_data as $data) {
             //Assert that character asset created
             $this->assertDatabaseHas('assets', [
                 'assetable_id' => $this->test_character->character_id,
-                'item_id' => $data->item_id
+                'item_id' => $data->item_id,
             ]);
+        }
 
         // assert if old data has been removed thanks to CharacterAssetsCleanupAction
-        foreach ($old_data as $data)
-            $this->assertCount(0, Asset::where('assetable_id', $this->test_character->character_id)
+        foreach ($old_data as $data) {
+            $this->assertCount(
+                0,
+                Asset::where('assetable_id', $this->test_character->character_id)
                 ->where('item_id', $data->item_id)
                 ->get()
             );
-
+        }
     }
 
     private function buildMockEsiData()
     {
-
         $mock_data = Asset::factory()->count(5)->make([
-            'assetable_id' => $this->test_character->character_id
+            'assetable_id' => $this->test_character->character_id,
         ]);
 
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
 
         return $mock_data;
     }
-
 }

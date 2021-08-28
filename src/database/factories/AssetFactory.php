@@ -43,7 +43,7 @@ class AssetFactory extends Factory
             'item_id' => $this->faker->unique()->randomNumber(),
             'is_blueprint_copy' => false,
             'is_singleton' => $this->faker->boolean,
-            'location_flag'  => $this->faker->randomElement($this->getLocationFlagArray()),
+            'location_flag' => $this->faker->randomElement($this->getLocationFlagArray()),
             'location_id' => $this->faker->randomNumber(),
             'location_type' => $this->faker->randomElement(['station', 'solar_system', 'other']),
             'quantity' => $this->faker->randomDigit,
@@ -55,7 +55,7 @@ class AssetFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'name'  => $this->faker->unique()->name,
+                'name' => $this->faker->unique()->name,
             ];
         });
     }

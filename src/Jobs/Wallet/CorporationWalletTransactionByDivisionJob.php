@@ -41,7 +41,9 @@ use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
 class CorporationWalletTransactionByDivisionJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
-    use HasPathValues, HasRequiredScopes, HasPages;
+    use HasPathValues;
+    use HasRequiredScopes;
+    use HasPages;
 
     public function __construct(JobContainer $job_container, private int $division)
     {

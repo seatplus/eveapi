@@ -39,7 +39,7 @@ class ConstellationFactory extends Factory
         return [
             'region_id' => Region::factory(),
             'name' => $this->faker->name,
-            'constellation_id'  => $this->faker->numberBetween(20000000, 22000000),
+            'constellation_id' => $this->faker->numberBetween(20000000, 22000000),
         ];
     }
 

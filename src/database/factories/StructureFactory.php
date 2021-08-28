@@ -39,8 +39,8 @@ class StructureFactory extends Factory
         return [
             'structure_id' => $this->faker->numberBetween(0, 10000),
             'name' => $this->faker->name,
-            'owner_id'  => $this->faker->numberBetween(98000000, 99000000),
-            'solar_system_id'  => System::factory(),
+            'owner_id' => $this->faker->numberBetween(98000000, 99000000),
+            'solar_system_id' => System::factory(),
             'type_id' => $this->faker->optional()->numberBetween(0, 10000),
         ];
     }

@@ -41,7 +41,7 @@ class KillmailFactory extends Factory
     {
         return [
             'killmail_id' => $this->faker->numberBetween(0, 10000),
-            'killmail_hash'  => $this->faker->sha256,
+            'killmail_hash' => $this->faker->sha256,
             'solar_system_id' => System::factory(),
             'victim_character_id' => CharacterInfo::factory(),
             'victim_corporation_id' => CorporationInfo::factory(),

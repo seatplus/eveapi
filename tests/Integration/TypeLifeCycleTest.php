@@ -11,7 +11,6 @@ use Seatplus\Eveapi\Tests\TestCase;
 
 class TypeLifeCycleTest extends TestCase
 {
-
     /** @test */
     public function new_type_id_dispatches_group_job_if_group_is_not_present()
     {
@@ -30,10 +29,9 @@ class TypeLifeCycleTest extends TestCase
         $group = Group::factory()->create();
 
         $type = Type::factory()->create([
-            'group_id' => $group->group_id
+            'group_id' => $group->group_id,
         ]);
 
         Queue::assertNotPushed(ResolveUniverseGroupByIdJob::class);
     }
-
 }

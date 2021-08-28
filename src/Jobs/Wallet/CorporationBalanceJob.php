@@ -34,7 +34,6 @@ use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
-use Seatplus\Eveapi\Models\Corporation\CorporationWallet;
 use Seatplus\Eveapi\Models\Wallet\Balance;
 use Seatplus\Eveapi\Traits\HasPages;
 use Seatplus\Eveapi\Traits\HasPathValues;
@@ -42,7 +41,9 @@ use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
 class CorporationBalanceJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
-    use HasPathValues, HasRequiredScopes, HasPages;
+    use HasPathValues;
+    use HasRequiredScopes;
+    use HasPages;
 
     public function __construct(JobContainer $job_container)
     {

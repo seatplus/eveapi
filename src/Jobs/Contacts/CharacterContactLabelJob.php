@@ -41,7 +41,8 @@ use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
 class CharacterContactLabelJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
-    use HasRequiredScopes, HasPathValues;
+    use HasRequiredScopes;
+    use HasPathValues;
 
     private int $page = 1;
 

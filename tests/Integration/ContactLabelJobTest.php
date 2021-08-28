@@ -3,21 +3,12 @@
 
 namespace Seatplus\Eveapi\Tests\Integration;
 
-
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Jobs\Contacts\AllianceContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\AllianceContactLabelJob;
-use Seatplus\Eveapi\Jobs\Contacts\CharacterContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\CharacterContactLabelJob;
-use Seatplus\Eveapi\Jobs\Contacts\CorporationContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\CorporationContactLabelJob;
-use Seatplus\Eveapi\Models\Contacts\Contact;
-use Seatplus\Eveapi\Models\Contacts\ContactLabel;
 use Seatplus\Eveapi\Models\Contacts\Label;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
@@ -53,7 +44,6 @@ class ContactLabelJobTest extends TestCase
     /** @test */
     public function run_corporation_contact_label()
     {
-
         $mock_data = $this->buildMockEsiData();
 
         $job = new CorporationContactLabelJob($this->job_container);
@@ -66,7 +56,6 @@ class ContactLabelJobTest extends TestCase
     /** @test */
     public function run_alliance_contact_label()
     {
-
         $mock_data = $this->buildMockEsiData();
 
         $job = new AllianceContactLabelJob($this->job_container);
@@ -78,7 +67,6 @@ class ContactLabelJobTest extends TestCase
 
     private function buildMockEsiData()
     {
-
         $mock_data = Label::factory()->count(5)->make();
 
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
@@ -88,11 +76,12 @@ class ContactLabelJobTest extends TestCase
 
     private function assertContactLabel(Collection $mock_data, int $labelable_id)
     {
-        foreach ($mock_data as $data)
+        foreach ($mock_data as $data) {
             //Assert that character asset created
             $this->assertDatabaseHas('labels', [
                 'labelable_id' => (string) $labelable_id,
-                'label_id' => $data->label_id
+                'label_id' => $data->label_id,
             ]);
+        }
     }
 }

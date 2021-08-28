@@ -39,7 +39,7 @@ class WalletHydrateBatch extends HydrateCharacterBase
         $this->hydrate([
             new CharacterWalletJournalJob($this->job_container),
             new CharacterWalletTransactionJob($this->job_container),
-            new CharacterBalanceJob($this->job_container)
+            new CharacterBalanceJob($this->job_container),
         ]);
     }
 

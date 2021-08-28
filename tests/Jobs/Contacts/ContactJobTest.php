@@ -3,7 +3,6 @@
 
 namespace Seatplus\Eveapi\Tests\Jobs\Contacts;
 
-
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Contacts\AllianceContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\AllianceContactLabelJob;
@@ -18,7 +17,6 @@ class ContactJobTest extends TestCase
     /** @test */
     public function AllianceContactJob()
     {
-
         Queue::fake();
 
         // Assert that no jobs were pushed...

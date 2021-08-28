@@ -3,7 +3,6 @@
 
 namespace Seatplus\Eveapi\Tests\Unit\Models;
 
-
 use Seatplus\Eveapi\Models\Universe\Constellation;
 use Seatplus\Eveapi\Models\Universe\Region;
 use Seatplus\Eveapi\Models\Universe\Structure;
@@ -14,15 +13,12 @@ class UniverseSystemModelTest extends TestCase
 {
     public function setUp(): void
     {
-
         parent::setUp();
-
     }
 
     /** @test */
     public function it_has_constellation()
     {
-
         $system = System::factory()->create();
 
         $this->assertInstanceOf(Constellation::class, $system->constellation);
@@ -31,7 +27,6 @@ class UniverseSystemModelTest extends TestCase
     /** @test */
     public function it_has_stations()
     {
-
         $system = System::factory()
             ->hasStations(1)
             ->hasStructures(1)
@@ -43,12 +38,10 @@ class UniverseSystemModelTest extends TestCase
     /** @test */
     public function it_has_region()
     {
-
         $system = System::factory()->create();
 
         $this->assertInstanceOf(Region::class, $system->constellation->region);
 
         $this->assertInstanceOf(Region::class, $system->region);
     }
-
 }

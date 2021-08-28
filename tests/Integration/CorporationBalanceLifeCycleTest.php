@@ -3,16 +3,14 @@
 
 namespace Seatplus\Eveapi\Tests\Integration;
 
-
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Wallet\CorporationBalanceJob;
 use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletJournalByDivisionJob;
+use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletJournalJob;
 use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletTransactionByDivisionJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
-use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletJournalJob;
-use Seatplus\Eveapi\Models\Corporation\CorporationWallet;
 use Seatplus\Eveapi\Models\Wallet\Balance;
 use Seatplus\Eveapi\Models\Wallet\WalletJournal;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
@@ -21,7 +19,6 @@ use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 class CorporationBalanceLifeCycleTest extends TestCase
 {
-
     use MockRetrieveEsiDataAction;
 
     private JobContainer $job_container;
@@ -70,7 +67,7 @@ class CorporationBalanceLifeCycleTest extends TestCase
             ->count(7)
             ->create([
                 'balanceable_id' => $this->test_character->corporation->corporation_id,
-                'balanceable_type' => CorporationInfo::class
+                'balanceable_type' => CorporationInfo::class,
             ]);
 
         Queue::assertPushed(CorporationWalletJournalByDivisionJob::class);
@@ -80,16 +77,15 @@ class CorporationBalanceLifeCycleTest extends TestCase
     /** @test */
     public function itSpawnsAJobForEveryWalletDivision()
     {
-
         $character_roles = $this->test_character->roles;
         $character_roles->roles = ['Accountant'];
         $character_roles->save();
 
         Queue::fake();
 
-        Event::fakeFor( fn () => Balance::factory()->withDivision()->count(7)->create([
+        Event::fakeFor(fn () => Balance::factory()->withDivision()->count(7)->create([
             'balanceable_id' => $this->test_character->corporation->corporation_id,
-            'balanceable_type' => CorporationInfo::class
+            'balanceable_type' => CorporationInfo::class,
         ]));
 
         (new CorporationWalletJournalJob($this->job_container))->handle();
@@ -142,10 +138,9 @@ class CorporationBalanceLifeCycleTest extends TestCase
 
     private function buildCorpWalletEsiMockData()
     {
-
         $mock_data = Balance::factory()->withDivision()->count(7)->make([
             'balanceable_id' => $this->test_character->corporation->corporation_id,
-            'balanceable_type' => CorporationInfo::class
+            'balanceable_type' => CorporationInfo::class,
         ]);
 
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
@@ -155,11 +150,10 @@ class CorporationBalanceLifeCycleTest extends TestCase
 
     private function buildCorporationWalletJournaltEsiMockData()
     {
-
         $mock_data = WalletJournal::factory()->count(7)->make([
             'wallet_journable_id' => $this->test_character->corporation->corporation_id,
             'wallet_journable_type' => CorporationInfo::class,
-            'division' => 3
+            'division' => 3,
         ]);
 
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
@@ -169,17 +163,14 @@ class CorporationBalanceLifeCycleTest extends TestCase
 
     private function buildCorporationWalletTransactionEsiMockData()
     {
-
         $mock_data = WalletTransaction::factory()->count(7)->make([
             'wallet_transactionable_id' => $this->test_character->corporation->corporation_id,
             'wallet_transactionable_type' => CorporationInfo::class,
-            'division' => 3
+            'division' => 3,
         ]);
 
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
 
         return $mock_data;
     }
-
-
 }

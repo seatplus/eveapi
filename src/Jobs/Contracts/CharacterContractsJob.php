@@ -40,7 +40,8 @@ use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
 class CharacterContractsJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
-    use HasPathValues, HasRequiredScopes;
+    use HasPathValues;
+    use HasRequiredScopes;
 
     public function __construct(
         public JobContainer $job_container
