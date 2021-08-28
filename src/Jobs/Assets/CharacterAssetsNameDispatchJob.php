@@ -47,8 +47,7 @@ class CharacterAssetsNameDispatchJob implements ShouldQueue, ShouldBeUnique
 
     public function __construct(
         private JobContainer $job_container
-    )
-    {
+    ) {
     }
 
     /**

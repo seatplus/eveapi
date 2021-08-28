@@ -50,8 +50,7 @@ class CorporationWalletJournalJob implements ShouldQueue, ShouldBeUnique
 
     public function __construct(
         private JobContainer $job_container
-    )
-    {
+    ) {
         $this->corporation_id = $this->job_container->getCorporationId();
     }
 
