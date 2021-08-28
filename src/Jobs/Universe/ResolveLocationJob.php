@@ -43,7 +43,11 @@ use Seatplus\Eveapi\Services\ResolveLocation\ResolveStructurePipe;
 
 class ResolveLocationJob implements ShouldQueue, ShouldBeUnique
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Batchable;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * The number of times the job may be attempted.
@@ -73,7 +77,8 @@ class ResolveLocationJob implements ShouldQueue, ShouldBeUnique
      */
     public function uniqueId()
     {
-        return sprintf('Location %s via %s (%s)',
+        return sprintf(
+            'Location %s via %s (%s)',
             $this->location_id,
             $this->refresh_token->character->name,
             $this->refresh_token->character_id

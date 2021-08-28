@@ -34,7 +34,6 @@ class CharacterInfoTest extends TestCase
      */
     public function retrieveTest()
     {
-
         $mock_data = $this->buildMockEsiData();
 
         // Stop CharacterInfoAction dispatching a new job
@@ -42,7 +41,7 @@ class CharacterInfoTest extends TestCase
 
         // Run InfoAction
         $job_container = new JobContainer([
-            'character_id' => $mock_data['character_id']
+            'character_id' => $mock_data['character_id'],
         ]);
 
         $job = new CharacterInfoJob($job_container);
@@ -53,24 +52,22 @@ class CharacterInfoTest extends TestCase
 
         //Assert that test character is now created
         $this->assertDatabaseHas('character_infos', [
-            'name' => $mock_data['name']
+            'name' => $mock_data['name'],
         ]);
     }
 
     private function buildMockEsiData()
     {
-
         $mock_data = CharacterInfo::factory()->make();
 
-       /* $faker = Factory::create();
-        $alliance_id = $faker->optional()->numberBetween(99000000,100000000);
+        /* $faker = Factory::create();
+         $alliance_id = $faker->optional()->numberBetween(99000000,100000000);
 
-        $mock_data = $mock_data->toArray();
-        $mock_data['alliance_id'] = $alliance_id;*/
+         $mock_data = $mock_data->toArray();
+         $mock_data['alliance_id'] = $alliance_id;*/
 
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
 
         return $mock_data;
     }
-
 }

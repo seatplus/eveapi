@@ -37,10 +37,10 @@ class CharacterAffiliationFactory extends Factory
     public function definition()
     {
         return [
-            'character_id'    => $this->faker->numberBetween(9000000, 98000000),
-            'corporation_id'  => $this->faker->numberBetween(98000000, 99000000),
-            'alliance_id'     => $this->faker->optional()->numberBetween(99000000, 100000000),
-            'faction_id'     => $this->faker->optional()->numberBetween(500000, 1000000),
+            'character_id' => $this->faker->numberBetween(9000000, 98000000),
+            'corporation_id' => $this->faker->numberBetween(98000000, 99000000),
+            'alliance_id' => $this->faker->optional()->numberBetween(99000000, 100000000),
+            'faction_id' => $this->faker->optional()->numberBetween(500000, 1000000),
             'last_pulled' => $this->faker->dateTime(),
         ];
     }

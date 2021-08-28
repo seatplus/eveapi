@@ -36,11 +36,11 @@ class CorporationHistoryFactory extends Factory
     public function definition()
     {
         return [
-            'record_id'    => $this->faker->numberBetween(100, 200),
-            'character_id'    => $this->faker->numberBetween(9000000, 98000000),
-            'corporation_id'    => $this->faker->numberBetween(98000000, 99000000),
-            'is_deleted'            => $this->faker->boolean,
-            'start_date'        => $this->faker->iso8601($max = 'now'),
+            'record_id' => $this->faker->numberBetween(100, 200),
+            'character_id' => $this->faker->numberBetween(9000000, 98000000),
+            'corporation_id' => $this->faker->numberBetween(98000000, 99000000),
+            'is_deleted' => $this->faker->boolean,
+            'start_date' => $this->faker->iso8601($max = 'now'),
         ];
     }
 }

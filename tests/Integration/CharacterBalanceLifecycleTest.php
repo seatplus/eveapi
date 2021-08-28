@@ -3,14 +3,10 @@
 
 namespace Seatplus\Eveapi\Tests\Integration;
 
-
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterBalanceJob;
-use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletJournalJob;
 use Seatplus\Eveapi\Models\Wallet\Balance;
-use Seatplus\Eveapi\Models\Wallet\WalletJournal;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
@@ -42,12 +38,10 @@ class CharacterBalanceLifecycleTest extends TestCase
         $job->handle();
 
         $this->assertCount(1, Balance::all());
-
     }
 
     private function buildMockEsiData()
     {
-
         $mock_data = Balance::factory()->make();
 
         $this->mockRetrieveEsiDataAction(['scalar' => $mock_data->balance]);

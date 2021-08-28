@@ -3,7 +3,6 @@
 
 namespace Seatplus\Eveapi\Tests\Unit\Models;
 
-
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfoJob;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationInfoJob;
@@ -13,7 +12,6 @@ use Seatplus\Eveapi\Tests\TestCase;
 
 class CharacterAffiliationTest extends TestCase
 {
-
     /** @test */
     public function upon_creation_dispatch_corp_job()
     {
@@ -25,8 +23,9 @@ class CharacterAffiliationTest extends TestCase
 
         // remove corporation and alliance
         $character->character_affiliation->corporation->delete();
-        if($character->character_affiliation->alliance)
+        if ($character->character_affiliation->alliance) {
             $character->character_affiliation->alliance->delete();
+        }
 
         // It needs an existing character on record else we don't bother
         //factory(CharacterInfoJob::class)->create(['character_id' => $character_affiliation->character_id]);
@@ -34,9 +33,9 @@ class CharacterAffiliationTest extends TestCase
         (new CharacterAffiliationObserver)->created($character->character_affiliation->refresh());
 
         Queue::assertPushedOn('high', CorporationInfoJob::class);
-        if($character->character_affiliation->alliance)
+        if ($character->character_affiliation->alliance) {
             Queue::assertPushedOn('high', AllianceInfoJob::class);
-
+        }
     }
 
     /** @test */
@@ -58,9 +57,5 @@ class CharacterAffiliationTest extends TestCase
 
         Queue::assertPushedOn('high', CorporationInfoJob::class);
         Queue::assertPushedOn('high', AllianceInfoJob::class);
-
     }
-
-
-
 }

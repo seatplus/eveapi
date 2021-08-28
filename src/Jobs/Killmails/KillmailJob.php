@@ -88,7 +88,7 @@ class KillmailJob extends NewEsiBase implements HasPathValuesInterface
             $killmail = Killmail::firstOrCreate([
                 'killmail_id' => data_get($this->getPathValues(), 'killmail_id'),
             ], [
-                'killmail_hash'  => data_get($this->getPathValues(), 'killmail_hash'),
+                'killmail_hash' => data_get($this->getPathValues(), 'killmail_hash'),
                 'solar_system_id' => data_get($response, 'solar_system_id'),
                 'victim_character_id' => data_get($response, 'victim.character_id'),
                 'victim_corporation_id' => data_get($response, 'victim.corporation_id'),

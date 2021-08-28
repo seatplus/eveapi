@@ -60,7 +60,8 @@ class ContractItemsJob extends NewEsiBase implements HasPathValuesInterface, Has
     public function __construct(
         public int $contract_id,
         public JobContainer $job_container,
-        public string $type = 'character')
+        public string $type = 'character'
+    )
     {
         parent::__construct($job_container);
 
@@ -111,7 +112,7 @@ class ContractItemsJob extends NewEsiBase implements HasPathValuesInterface, Has
         ], [
             'contract_id' => $this->contract_id,
             'is_included' => $item->is_included,
-            'is_singleton' =>$item->is_singleton,
+            'is_singleton' => $item->is_singleton,
             'quantity' => $item->quantity,
             'type_id' => $item->type_id,
 

@@ -35,14 +35,15 @@ use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Wallet\Balance;
-use Seatplus\Eveapi\Services\Wallet\ProcessWalletJournalResponse;
 use Seatplus\Eveapi\Traits\HasPages;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
 class CharacterBalanceJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
-    use HasPathValues, HasRequiredScopes, HasPages;
+    use HasPathValues;
+    use HasRequiredScopes;
+    use HasPages;
 
     public function __construct(JobContainer $job_container)
     {
@@ -95,15 +96,13 @@ class CharacterBalanceJob extends NewEsiBase implements HasPathValuesInterface, 
      */
     public function handle(): void
     {
-
         $response = $this->retrieve($this->getPage());
 
         Balance::updateOrCreate([
             'balanceable_id' => $this->getCharacterId(),
-            'balanceable_type' => CharacterInfo::class
+            'balanceable_type' => CharacterInfo::class,
         ], [
-           'balance' => $response->scalar
+           'balance' => $response->scalar,
         ]);
-
     }
 }

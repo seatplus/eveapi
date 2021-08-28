@@ -39,7 +39,8 @@ use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
 class RefreshToken extends Model
 {
-    use SoftDeletes, HasFactory;
+    use SoftDeletes;
+    use HasFactory;
 
     protected static function newFactory()
     {

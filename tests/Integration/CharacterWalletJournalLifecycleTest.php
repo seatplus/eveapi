@@ -3,7 +3,6 @@
 
 namespace Seatplus\Eveapi\Tests\Integration;
 
-
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Containers\JobContainer;
@@ -42,7 +41,6 @@ class CharacterWalletJournalLifecycleTest extends TestCase
 
     private function buildMockEsiData()
     {
-
         $mock_data = WalletJournal::factory()->count(5)->make();
 
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
@@ -52,11 +50,12 @@ class CharacterWalletJournalLifecycleTest extends TestCase
 
     private function assertWalletJournal(Collection $mock_data, int $wallet_journable_id)
     {
-        foreach ($mock_data as $data)
+        foreach ($mock_data as $data) {
             //Assert that character asset created
             $this->assertDatabaseHas('wallet_journals', [
                 'wallet_journable_id' => $wallet_journable_id,
-                'id' => $data->id
+                'id' => $data->id,
             ]);
+        }
     }
 }

@@ -3,8 +3,6 @@
 
 namespace Seatplus\Eveapi\Tests\Integration;
 
-
-use Seatplus\Eveapi\Services\Facade\RetrieveEsiData;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfoJob;
@@ -34,7 +32,6 @@ class CharacterAffiliationLifeCycleTest extends TestCase
     /** @test */
     public function it_dispatches_alliance_job()
     {
-
         Queue::fake();
         Queue::assertNothingPushed();
 
@@ -43,7 +40,7 @@ class CharacterAffiliationLifeCycleTest extends TestCase
 
         $character_affiliation = CharacterAffiliation::factory()->create([
             'character_id' => $character->character_id,
-            'alliance_id' => 123456
+            'alliance_id' => 123456,
         ]);
 
         Queue::assertPushedOn('high', AllianceInfoJob::class);
@@ -60,7 +57,7 @@ class CharacterAffiliationLifeCycleTest extends TestCase
 
         $character_affiliation = CharacterAffiliation::factory()->create([
             'character_id' => $character->character_id,
-            'alliance_id' => null
+            'alliance_id' => null,
         ]);
 
         Queue::assertNotPushed(AllianceInfoJob::class);
@@ -72,20 +69,19 @@ class CharacterAffiliationLifeCycleTest extends TestCase
      */
     public function it_updates_affiliation_older_then_an_hours()
     {
-
         $old_data = CharacterAffiliation::factory()->create([
-            'last_pulled' => now()->subMinutes(61)
+            'last_pulled' => now()->subMinutes(61),
         ]);
 
         $this->assertDatabaseHas('character_affiliations', [
             'last_pulled' => $old_data->last_pulled,
-            'character_id' => $old_data->character_id
+            'character_id' => $old_data->character_id,
         ]);
 
         $this->mockRetrieveEsiDataAction([$old_data->toArray()]);
 
         $job_container = new JobContainer([
-            'character_id' => $old_data->character_id
+            'character_id' => $old_data->character_id,
         ]);
 
         (new CharacterAffiliationJob($job_container))->handle();
@@ -93,7 +89,7 @@ class CharacterAffiliationLifeCycleTest extends TestCase
         /*(new CharacterAffiliationAction)->execute($old_data->character_id);*/
 
         $this->assertDatabaseMissing('character_affiliations', [
-            'last_pulled' => $old_data->last_pulled
+            'last_pulled' => $old_data->last_pulled,
         ]);
     }
 
@@ -108,11 +104,11 @@ class CharacterAffiliationLifeCycleTest extends TestCase
         });
 
         $old_data = CharacterAffiliation::factory()->create([
-            'last_pulled' => now()->subMinutes(42)
+            'last_pulled' => now()->subMinutes(42),
         ]);
 
         $this->assertDatabaseHas('character_affiliations', [
-            'last_pulled' => $old_data->last_pulled
+            'last_pulled' => $old_data->last_pulled,
         ]);
 
         //$this->mockRetrieveEsiDataAction([$old_data->toArray()]);
@@ -121,14 +117,14 @@ class CharacterAffiliationLifeCycleTest extends TestCase
         //(new CharacterAffiliationAction)->execute($old_data->character_id);
 
         $job_container = new JobContainer([
-            'character_id' => $old_data->character_id
+            'character_id' => $old_data->character_id,
         ]);
 
         (new CharacterAffiliationJob($job_container))->handle();
 
         $this->assertDatabaseHas('character_affiliations', [
             'last_pulled' => $old_data->last_pulled,
-            'character_id' => $old_data->character_id
+            'character_id' => $old_data->character_id,
         ]);
     }
 
@@ -143,15 +139,16 @@ class CharacterAffiliationLifeCycleTest extends TestCase
         });
 
         $old_datas = CharacterAffiliation::factory()->count(3)->create([
-            'last_pulled' => now()->subMinutes(90)
+            'last_pulled' => now()->subMinutes(90),
         ]);
 
         //$old_datas = CharacterAffiliation::all();
 
-        foreach ($old_datas as $old_data)
+        foreach ($old_datas as $old_data) {
             $this->assertDatabaseHas('character_affiliations', [
-                'last_pulled' => $old_data->last_pulled
+                'last_pulled' => $old_data->last_pulled,
             ]);
+        }
 
         $this->mockRetrieveEsiDataAction(
             $old_datas->toArray()
@@ -161,16 +158,17 @@ class CharacterAffiliationLifeCycleTest extends TestCase
         //(new CharacterAffiliationAction)->execute($old_datas->first()->character_id);
 
         $job_container = new JobContainer([
-            'character_id' => $old_data->first()->character_id
+            'character_id' => $old_data->first()->character_id,
         ]);
 
         (new CharacterAffiliationJob($job_container))->handle();
 
-        foreach ($old_datas as $old_data)
+        foreach ($old_datas as $old_data) {
             $this->assertDatabaseMissing('character_affiliations', [
                 'character_id' => $old_data->character_id,
-                'last_pulled' => $old_data->last_pulled
+                'last_pulled' => $old_data->last_pulled,
             ]);
+        }
     }
 
     /**
@@ -184,15 +182,15 @@ class CharacterAffiliationLifeCycleTest extends TestCase
         });
 
         $old_data = CharacterAffiliation::factory()->create([
-            'last_pulled' => now()->subMinutes(61)
+            'last_pulled' => now()->subMinutes(61),
         ]);
 
         $this->mockRetrieveEsiDataAction([
-            $old_data->toArray()
+            $old_data->toArray(),
         ]);
 
         $this->assertDatabaseHas('character_affiliations', [
-            'last_pulled' => $old_data->last_pulled
+            'last_pulled' => $old_data->last_pulled,
         ]);
 
         //$return_value = (new CharacterAffiliationAction)->execute();
@@ -201,8 +199,7 @@ class CharacterAffiliationLifeCycleTest extends TestCase
         //$this->assertNull($return_value);
 
         $this->assertDatabaseMissing('character_affiliations', [
-            'last_pulled' => $old_data->last_pulled
+            'last_pulled' => $old_data->last_pulled,
         ]);
     }
-
 }

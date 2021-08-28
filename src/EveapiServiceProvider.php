@@ -153,11 +153,11 @@ class EveapiServiceProvider extends ServiceProvider
             'local' => [
                 'seatplus-workers' => [
                     'connection' => 'redis',
-                    'queue'      => ['high', 'medium', 'low', 'default'],
-                    'balance'    => $balancing_mode,
-                    'processes'  => (int) env(self::QUEUE_BALANCING_WORKERS, 4),
+                    'queue' => ['high', 'medium', 'low', 'default'],
+                    'balance' => $balancing_mode,
+                    'processes' => (int) env(self::QUEUE_BALANCING_WORKERS, 4),
                     'block_for' => 5,
-                    'timeout'    => 120, // 2 minutes
+                    'timeout' => 120, // 2 minutes
                 ],
             ],
             'production' => [
@@ -168,7 +168,7 @@ class EveapiServiceProvider extends ServiceProvider
                     'minProcesses' => 1,
                     'maxProcesses' => (int) env(self::QUEUE_BALANCING_WORKERS, 4),
                     'tries' => 1,
-                    'timeout'    => 900, // 15 minutes
+                    'timeout' => 900, // 15 minutes
                 ],
             ],
         ];

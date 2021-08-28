@@ -3,12 +3,11 @@
 
 namespace Seatplus\Eveapi\Tests\Integration;
 
-
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob as CharacterInfoJob;
-use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Models\Universe\Location;
@@ -17,7 +16,6 @@ use Seatplus\Eveapi\Tests\TestCase;
 
 class CorporationMemberTrackingLifeCycleTest extends TestCase
 {
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -29,7 +27,7 @@ class CorporationMemberTrackingLifeCycleTest extends TestCase
     public function it_dispatches_type_job()
     {
         $tracking = CorporationMemberTracking::factory()->make([
-            'ship_type_id' => Type::factory()->make()
+            'ship_type_id' => Type::factory()->make(),
         ]);
 
         Queue::assertNotPushed('high', ResolveUniverseTypeByIdJob::class);
@@ -42,7 +40,7 @@ class CorporationMemberTrackingLifeCycleTest extends TestCase
 
         Queue::assertPushedOn('high', ResolveUniverseTypeByIdJob::class);
 
-        Queue::assertPushed(ResolveUniverseTypeByIdJob::class, function ($job) use ($tracking){
+        Queue::assertPushed(ResolveUniverseTypeByIdJob::class, function ($job) use ($tracking) {
             return in_array(sprintf('type_id:%s', $tracking->ship_type_id), $job->tags());
         });
     }
@@ -50,11 +48,10 @@ class CorporationMemberTrackingLifeCycleTest extends TestCase
     /** @test */
     public function it_does_not_dispatch_type_job_if_type_is_known()
     {
-
         $type = Type::factory()->create();
 
         $tracking = CorporationMemberTracking::factory()->create([
-            'ship_type_id' => $type->type_id
+            'ship_type_id' => $type->type_id,
         ]);
 
         Queue::assertNotPushed(ResolveUniverseTypeByIdJob::class);
@@ -63,9 +60,8 @@ class CorporationMemberTrackingLifeCycleTest extends TestCase
     /** @test */
     public function it_dispatches_location_job()
     {
-
         $tracking = CorporationMemberTracking::factory()->create([
-            'character_id' => $this->test_character->character_id
+            'character_id' => $this->test_character->character_id,
         ]);
 
         Queue::assertPushedOn('high', ResolveLocationJob::class);
@@ -74,11 +70,10 @@ class CorporationMemberTrackingLifeCycleTest extends TestCase
     /** @test */
     public function it_does_not_dispatch_location_job_if_location_is_known()
     {
-
         $location = Location::factory()->create();
 
         $tracking = CorporationMemberTracking::factory()->create([
-            'location_id' => $location->location_id
+            'location_id' => $location->location_id,
         ]);
 
         Queue::assertNotPushed(ResolveLocationJob::class);
@@ -87,10 +82,9 @@ class CorporationMemberTrackingLifeCycleTest extends TestCase
     /** @test */
     public function it_dispatches_location_job_if_location_is_updating()
     {
-
-        $tracking = Event::fakeFor( function () {
+        $tracking = Event::fakeFor(function () {
             return CorporationMemberTracking::factory()->create([
-                'location_id' => 1234
+                'location_id' => 1234,
             ]);
         });
 
@@ -100,16 +94,14 @@ class CorporationMemberTrackingLifeCycleTest extends TestCase
         $tracking->save();
 
         Queue::assertPushedOn('high', ResolveLocationJob::class);
-
     }
 
     /** @test */
     public function it_dispatches_type_job_if_ship_is_updating()
     {
-
-        $tracking = Event::fakeFor( function () {
+        $tracking = Event::fakeFor(function () {
             return CorporationMemberTracking::factory()->create([
-                'ship_type_id' => 1234
+                'ship_type_id' => 1234,
             ]);
         });
 
@@ -119,21 +111,17 @@ class CorporationMemberTrackingLifeCycleTest extends TestCase
         $tracking->save();
 
         Queue::assertPushedOn('high', ResolveUniverseTypeByIdJob::class);
-
     }
 
     /** @test */
     public function it_does_not_dispatch_character_job_if_character_is_known()
     {
-
         $character = CharacterInfo::factory()->create();
 
         $tracking = CorporationMemberTracking::factory()->create([
-            'character_id' => $character->character_id
+            'character_id' => $character->character_id,
         ]);
 
         Queue::assertNotPushed(CharacterInfoJob::class);
     }
-
-
 }

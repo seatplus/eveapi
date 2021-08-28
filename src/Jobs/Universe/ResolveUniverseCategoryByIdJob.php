@@ -35,7 +35,8 @@ use Seatplus\Eveapi\Traits\HasRequestBody;
 
 class ResolveUniverseCategoryByIdJob extends NewEsiBase implements HasPathValuesInterface
 {
-    use HasPathValues, HasRequestBody;
+    use HasPathValues;
+    use HasRequestBody;
 
     public function __construct(private int $category_id)
     {
@@ -86,7 +87,8 @@ class ResolveUniverseCategoryByIdJob extends NewEsiBase implements HasPathValues
         Category::firstOrCreate(
             [
                 'category_id' => $response->category_id,
-            ], [
+            ],
+            [
                 'name' => $response->name,
                 'published' => $response->published,
             ]

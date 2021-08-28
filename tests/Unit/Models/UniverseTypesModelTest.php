@@ -18,7 +18,6 @@ class UniverseTypesModelTest extends TestCase
 
     public function setUp(): void
     {
-
         parent::setUp();
 
         $this->type = Event::fakeFor(fn () => Type::factory()->create());
@@ -37,19 +36,16 @@ class UniverseTypesModelTest extends TestCase
     /** @test */
     public function it_has_no_group()
     {
-
         $this->assertNull($this->type->group);
     }
 
     /** @test */
     public function it_has_no_category()
     {
-
         $group = Event::fakeFor(fn () => Group::factory()->create());
 
         $this->type->group()->save($group);
 
         $this->assertNull($this->type->category);
     }
-
 }

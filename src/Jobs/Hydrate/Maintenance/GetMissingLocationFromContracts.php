@@ -76,7 +76,8 @@ class GetMissingLocationFromContracts extends HydrateMaintenanceBase
                 $unknown_location_ids
                     ->filter()
                     ->unique()
-                    ->each(fn ($location_id) => $this
+                    ->each(
+                        fn ($location_id) => $this
                         ->batch()
                         ->add([
                             new ResolveLocationJob($location_id, $refresh_token),

@@ -39,7 +39,7 @@ class ProcessContactLabelsResponse
     {
         return collect($response)->each(fn ($contact_label) => Label::updateOrCreate([
             'label_id' => $contact_label->label_id,
-            'labelable_id' =>$this->labelable_id,
+            'labelable_id' => $this->labelable_id,
             'labelable_type' => $this->labelable_type,
         ], [
             'label_name' => $contact_label->label_name,

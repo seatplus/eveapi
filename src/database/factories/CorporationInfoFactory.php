@@ -37,9 +37,9 @@ class CorporationInfoFactory extends Factory
     public function definition()
     {
         return [
-            'corporation_id'  => $this->faker->numberBetween(98000000, 99000000),
+            'corporation_id' => $this->faker->numberBetween(98000000, 99000000),
             'ticker' => $this->faker->bothify('[##??]'),
-            'name'            => $this->faker->name,
+            'name' => $this->faker->name,
             'member_count' => $this->faker->randomDigitNotNull,
             'ceo_id' => $this->faker->numberBetween(90000000, 98000000),
             'creator_id' => $this->faker->numberBetween(90000000, 98000000),

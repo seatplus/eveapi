@@ -38,7 +38,7 @@ class RegionFactory extends Factory
         return [
             'region_id' => $this->faker->numberBetween(10000000, 12000000),
             'name' => $this->faker->name,
-            'description'  => $this->faker->optional()->text(),
+            'description' => $this->faker->optional()->text(),
         ];
     }
 }

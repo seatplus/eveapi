@@ -39,10 +39,15 @@ use Seatplus\Eveapi\Models\Assets\Asset;
 
 class CharacterAssetsNameDispatchJob implements ShouldQueue, ShouldBeUnique
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Batchable;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     public function __construct(
-        private JobContainer $job_container)
+        private JobContainer $job_container
+    )
     {
     }
 

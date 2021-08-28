@@ -2,22 +2,16 @@
 
 namespace Seatplus\Eveapi\Tests\Jobs\Corporation;
 
-use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Queue;
-use Seatplus\Eveapi\Esi\Jobs\Corporation\CorporationMemberTrackingAction;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationDivisionsJob;
-use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationDivision;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
-use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 class CorporationDivisionsJobTest extends TestCase
 {
-
     use MockRetrieveEsiDataAction;
 
     private JobContainer $job_container;
@@ -37,8 +31,8 @@ class CorporationDivisionsJobTest extends TestCase
     }
 
     /** @test */
-    public function itRunsTheJob() {
-
+    public function itRunsTheJob()
+    {
         $this->buildEsiResponseMockData();
 
         $this->assertCount(0, CorporationDivision::all());
@@ -48,7 +42,6 @@ class CorporationDivisionsJobTest extends TestCase
         $this->assertCount(14, CorporationDivision::all());
 
         $this->assertTrue(CorporationDivision::first()->corporation instanceof CorporationInfo);
-
     }
 
     private function buildEsiResponseMockData(): void
@@ -71,11 +64,9 @@ class CorporationDivisionsJobTest extends TestCase
                 (object) ["division" => 5, "name" => "Wallet 5"],
                 (object) ["division" => 6, "name" => "Wallet 6"],
                 (object) ["division" => 7, "name" => "Wallet 7"],
-            ]
+            ],
         ];
 
         $this->mockRetrieveEsiDataAction($mock_data);
     }
-
-
 }

@@ -37,8 +37,8 @@ class NameFactory extends Factory
     {
         return [
             'id' => $this->faker->numberBetween(0, 10000),
-            'category'  => $this->faker->company,
-            'name'  => $this->faker->name,
+            'category' => $this->faker->company,
+            'name' => $this->faker->name,
         ];
     }
 }

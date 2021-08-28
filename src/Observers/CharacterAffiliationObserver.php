@@ -57,7 +57,7 @@ class CharacterAffiliationObserver
         $job = new JobContainer([
             'character_id' => $character_affiliation->character_id,
             'corporation_id' => $character_affiliation->corporation_id,
-            'alliance_id'=> $character_affiliation->alliance_id,
+            'alliance_id' => $character_affiliation->alliance_id,
         ]);
 
         // if character is not present in db don't even bother about corporation or alliance

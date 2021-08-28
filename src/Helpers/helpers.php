@@ -55,7 +55,8 @@ if (! function_exists('setting')) {
 
             $setting = GlobalSettings::updateOrCreate(
                 ['name' => $name[0]],
-                ['value' => $name[1]])
+                ['value' => $name[1]]
+            )
                 ->value;
 
             return is_countable($setting) ? (count($setting) > 1 ? $setting : $setting[0]) : $setting;

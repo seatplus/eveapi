@@ -36,17 +36,21 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
-use Seatplus\Eveapi\Models\Corporation\CorporationWallet;
 use Seatplus\Eveapi\Models\Wallet\Balance;
 
 class CorporationWalletJournalJob implements ShouldQueue, ShouldBeUnique
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Batchable;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     private int $corporation_id;
 
     public function __construct(
-        private JobContainer $job_container)
+        private JobContainer $job_container
+    )
     {
         $this->corporation_id = $this->job_container->getCorporationId();
     }
@@ -65,7 +69,8 @@ class CorporationWalletJournalJob implements ShouldQueue, ShouldBeUnique
      */
     public function uniqueId()
     {
-        return sprintf('Corporation wallet journal dispatcher for corpoation %s via %s (%s)',
+        return sprintf(
+            'Corporation wallet journal dispatcher for corpoation %s via %s (%s)',
             $this->job_container->getRefreshToken()->corporation->name,
             $this->job_container->getRefreshToken()->character->name,
             $this->job_container->getRefreshToken()->character_id
@@ -94,10 +99,11 @@ class CorporationWalletJournalJob implements ShouldQueue, ShouldBeUnique
             ->whereHasMorph(
                 'balanceable',
                 CorporationInfo::class,
-                fn(Builder $query) => $query->where('corporation_id', $this->corporation_id)
+                fn (Builder $query) => $query->where('corporation_id', $this->corporation_id)
             )
             ->cursor()
-            ->each(fn ($wallet) => $this->batching()
+            ->each(
+                fn ($wallet) => $this->batching()
                 ? $this->handleBatching($wallet->division)
                 : $this->handleNonBatching($wallet->division)
             );

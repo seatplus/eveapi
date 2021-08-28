@@ -39,8 +39,8 @@ class SystemFactory extends Factory
         return [
             'system_id' => $this->faker->numberBetween(30000000, 32000000),
             'name' => $this->faker->name,
-            'constellation_id'  => Constellation::factory(),
-            'security_class'  => $this->faker->optional()->word,
+            'constellation_id' => Constellation::factory(),
+            'security_class' => $this->faker->optional()->word,
             'security_status' => $this->faker->randomFloat($nbMaxDecimals = 1, $min = -1, $max = 1),
         ];
     }
@@ -48,7 +48,7 @@ class SystemFactory extends Factory
     public function noConstellation()
     {
         return $this->state(fn () => [
-            'constellation_id'  => $this->faker->numberBetween(20000000, 22000000),
+            'constellation_id' => $this->faker->numberBetween(20000000, 22000000),
         ]);
     }
 }

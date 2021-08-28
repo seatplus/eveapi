@@ -29,7 +29,6 @@ namespace Seatplus\Eveapi\database\factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Wallet\Balance;
-use Seatplus\Eveapi\Models\Wallet\WalletJournal;
 
 class BalanceFactory extends Factory
 {
@@ -53,6 +52,4 @@ class BalanceFactory extends Factory
             ];
         });
     }
-
-
 }

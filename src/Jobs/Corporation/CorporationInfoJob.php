@@ -87,21 +87,21 @@ class CorporationInfoJob extends NewEsiBase implements HasPathValuesInterface
         }
 
         CorporationInfo::firstOrNew(['corporation_id' => $this->corporation_id])->fill([
-            'ticker'          => $response->ticker,
-            'name'            => $response->name,
-            'member_count'    => $response->member_count,
-            'ceo_id'          => $response->ceo_id,
-            'creator_id'      => $response->creator_id,
-            'tax_rate'        => $response->tax_rate,
-            'alliance_id'     => $response->optional('alliance_id'),
-            'date_founded'    => property_exists($response, 'date_founded') ?
+            'ticker' => $response->ticker,
+            'name' => $response->name,
+            'member_count' => $response->member_count,
+            'ceo_id' => $response->ceo_id,
+            'creator_id' => $response->creator_id,
+            'tax_rate' => $response->tax_rate,
+            'alliance_id' => $response->optional('alliance_id'),
+            'date_founded' => property_exists($response, 'date_founded') ?
                 carbon($response->date_founded) : null,
-            'description'     => $response->optional('description'),
-            'faction_id'      => $response->optional('faction_id'),
+            'description' => $response->optional('description'),
+            'faction_id' => $response->optional('faction_id'),
             'home_station_id' => $response->optional('home_station_id'),
-            'shares'          => $response->optional('shares'),
-            'url'             => $response->optional('url'),
-            'war_eligible'    => $response->optional('war_eligible'),
+            'shares' => $response->optional('shares'),
+            'url' => $response->optional('url'),
+            'war_eligible' => $response->optional('war_eligible'),
         ])->save();
     }
 }

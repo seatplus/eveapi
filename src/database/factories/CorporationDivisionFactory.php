@@ -36,7 +36,7 @@ class CorporationDivisionFactory extends Factory
     public function definition()
     {
         return [
-            'corporation_id'  => $this->faker->unique()->numberBetween(98000000, 99000000),
+            'corporation_id' => $this->faker->unique()->numberBetween(98000000, 99000000),
             'division_id' => $this->faker->unique()->randomDigitNotNull,
             'division_typ' => $this->faker->randomElement(['hangar', 'wallet']),
         ];

@@ -3,24 +3,22 @@
 
 namespace Seatplus\Eveapi\Tests\Integration;
 
-
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Mockery;
 use Seat\Eseye\Containers\EsiResponse;
-use Seatplus\Eveapi\Services\Esi\RetrieveEsiData;
 use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
+use Seatplus\Eveapi\Services\Esi\RetrieveEsiData;
 use Seatplus\Eveapi\Tests\TestCase;
 
 class CharacterWalletTransactionLifecycleTest extends TestCase
 {
-
     public JobContainer $job_container;
 
     public function setUp(): void
@@ -37,7 +35,7 @@ class CharacterWalletTransactionLifecycleTest extends TestCase
     public function runWalletTransactionAction()
     {
         Queue::assertNothingPushed();
-        $mock_data = Event::fakeFor(fn() => WalletTransaction::factory()->count(5)->make());
+        $mock_data = Event::fakeFor(fn () => WalletTransaction::factory()->count(5)->make());
         Queue::assertNothingPushed();
 
         $response = new EsiResponse(json_encode($mock_data), [], 'now', 200);
@@ -70,9 +68,8 @@ class CharacterWalletTransactionLifecycleTest extends TestCase
     /** @test */
     public function creationOfCharacterWalletTransactionDispatchesJobs()
     {
-
         $wallet_transaction = WalletTransaction::factory()->create([
-            'wallet_transactionable_id' => $this->test_character->character_id
+            'wallet_transactionable_id' => $this->test_character->character_id,
         ]);
 
         Queue::assertPushedOn('high', ResolveLocationJob::class);
@@ -82,10 +79,9 @@ class CharacterWalletTransactionLifecycleTest extends TestCase
     /** @test */
     public function creationOfCorporationWalletTransactionDispatchesJobs()
     {
-
         $wallet_transaction = WalletTransaction::factory()->create([
             'wallet_transactionable_id' => $this->test_character->corporation->corporation_id,
-            'wallet_transactionable_type' => CorporationInfo::class
+            'wallet_transactionable_type' => CorporationInfo::class,
         ]);
 
         Queue::assertPushedOn('high', ResolveLocationJob::class);
@@ -94,8 +90,7 @@ class CharacterWalletTransactionLifecycleTest extends TestCase
 
     private function buildMockEsiData()
     {
-
-        $mock_data = Event::fakeFor(fn() => WalletTransaction::factory()->count(5)->make());
+        $mock_data = Event::fakeFor(fn () => WalletTransaction::factory()->count(5)->make());
 
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
 
@@ -104,17 +99,17 @@ class CharacterWalletTransactionLifecycleTest extends TestCase
 
     private function assertWalletTransaction(Collection $mock_data, int $wallet_transactionable_id)
     {
-        foreach ($mock_data as $data)
+        foreach ($mock_data as $data) {
             //Assert that character asset created
             $this->assertDatabaseHas('wallet_transactions', [
                 'wallet_transactionable_id' => $wallet_transactionable_id,
-                'transaction_id' => $data->transaction_id
+                'transaction_id' => $data->transaction_id,
             ]);
+        }
     }
 
     private function mockRetrieveEsiDataAction(array $body) : void
     {
-
         $data = json_encode($body);
 
         $response = new EsiResponse($data, [], 'now', 200);

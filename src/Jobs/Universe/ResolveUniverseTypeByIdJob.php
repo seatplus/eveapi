@@ -35,7 +35,8 @@ use Seatplus\Eveapi\Traits\HasRequestBody;
 
 class ResolveUniverseTypeByIdJob extends NewEsiBase implements HasPathValuesInterface
 {
-    use HasPathValues, HasRequestBody;
+    use HasPathValues;
+    use HasRequestBody;
 
     public function __construct(private int $type_id)
     {

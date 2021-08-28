@@ -42,7 +42,8 @@ use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
 class CharacterAssetJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
-    use HasPathValues, HasRequiredScopes;
+    use HasPathValues;
+    use HasRequiredScopes;
 
     private Collection $known_assets;
 
@@ -114,11 +115,11 @@ class CharacterAssetJob extends NewEsiBase implements HasPathValuesInterface, Ha
                 'assetable_id' => $this->refresh_token->character_id,
                 'assetable_type' => CharacterInfo::class,
                 'is_blueprint_copy' => optional($asset)->is_blueprint_copy ?? false,
-                'is_singleton'  => $asset->is_singleton,
-                'location_flag'     => $asset->location_flag,
-                'location_id'        => $asset->location_id,
-                'location_type'          => $asset->location_type,
-                'quantity'   => $asset->quantity,
+                'is_singleton' => $asset->is_singleton,
+                'location_flag' => $asset->location_flag,
+                'location_id' => $asset->location_id,
+                'location_type' => $asset->location_type,
+                'quantity' => $asset->quantity,
                 'type_id' => $asset->type_id,
             ]))->pipe(fn (Collection $response) => $response->pluck('item_id')->each(fn ($id) => $this->known_assets->push($id)));
 

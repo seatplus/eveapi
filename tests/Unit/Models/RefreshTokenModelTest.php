@@ -9,7 +9,6 @@ use Seatplus\Eveapi\Tests\TestCase;
 
 class RefreshTokenModelTest extends TestCase
 {
-
     /** @test */
     public function it_has_character_relationship()
     {
@@ -21,5 +20,4 @@ class RefreshTokenModelTest extends TestCase
     {
         $this->assertInstanceOf(CorporationInfo::class, $this->test_character->refresh_token->corporation);
     }
-
 }

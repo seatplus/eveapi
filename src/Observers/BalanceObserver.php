@@ -35,7 +35,6 @@ use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 
 class BalanceObserver
 {
-
     /**
      * Handle the User "created" event.
      *
@@ -45,9 +44,9 @@ class BalanceObserver
      */
     public function created(Balance $balance)
     {
-
-        if($balance->balanceable_type instanceof CharacterInfo)
+        if ($balance->balanceable_type instanceof CharacterInfo) {
             return;
+        }
 
         $find_corporation_refresh_token = new FindCorporationRefreshToken;
 

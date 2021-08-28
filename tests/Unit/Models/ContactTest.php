@@ -3,10 +3,7 @@
 
 namespace Seatplus\Eveapi\Tests\Unit\Models;
 
-
 use Illuminate\Support\Facades\Event;
-use Mockery;
-use Seatplus\Auth\Models\User;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
@@ -21,12 +18,11 @@ class ContactTest extends TestCase
     /** @test */
     public function character_has_contact_test()
     {
-
         $this->assertCount(0, $this->test_character->contacts);
 
-        $contact = Event::fakeFor( fn() =>  Contact::factory()->create([
+        $contact = Event::fakeFor(fn () => Contact::factory()->create([
             'contactable_id' => $this->test_character->character_id,
-            'contactable_type' => CharacterInfo::class
+            'contactable_type' => CharacterInfo::class,
         ]));
 
         $this->assertInstanceOf(CharacterInfo::class, $contact->contactable);
@@ -34,18 +30,16 @@ class ContactTest extends TestCase
         $character = $this->test_character->refresh();
         $this->assertCount(1, $character->contacts);
         $this->assertInstanceOf(Contact::class, $character->contacts->first());
-
     }
 
     /** @test */
     public function corporation_has_contact_test()
     {
-
         $this->assertCount(0, $this->test_character->corporation->contacts);
 
-        $contact = Event::fakeFor( fn() => Contact::factory()->create([
+        $contact = Event::fakeFor(fn () => Contact::factory()->create([
             'contactable_id' => $this->test_character->corporation->corporation_id,
-            'contactable_type' => CorporationInfo::class
+            'contactable_type' => CorporationInfo::class,
         ]));
 
         $this->assertInstanceOf(CorporationInfo::class, $contact->contactable);
@@ -58,12 +52,11 @@ class ContactTest extends TestCase
     /** @test */
     public function alliance_has_contact_test()
     {
-
         $this->assertCount(0, $this->test_character->alliance->contacts);
 
-        $contact = Event::fakeFor( fn() => Contact::factory()->create([
+        $contact = Event::fakeFor(fn () => Contact::factory()->create([
             'contactable_id' => $this->test_character->alliance->alliance_id,
-            'contactable_type' => AllianceInfo::class
+            'contactable_type' => AllianceInfo::class,
         ]));
 
         $this->assertInstanceOf(AllianceInfo::class, $contact->contactable);
@@ -76,9 +69,9 @@ class ContactTest extends TestCase
     /** @test */
     public function contact_has_label()
     {
-        $contact = Event::fakeFor( fn() => Contact::factory()->create([
+        $contact = Event::fakeFor(fn () => Contact::factory()->create([
             'contactable_id' => $this->test_character->character_id,
-            'contactable_type' => CharacterInfo::class
+            'contactable_type' => CharacterInfo::class,
         ]));
 
 
@@ -91,7 +84,7 @@ class ContactTest extends TestCase
         $label = Label::factory()->create([
             'labelable_id' => $this->test_character->character_id,
             'labelable_type' => CharacterInfo::class,
-            'label_id' => 1
+            'label_id' => 1,
         ]);
 
         $this->assertNotNull(ContactLabel::first()->label_name);
@@ -100,11 +93,11 @@ class ContactTest extends TestCase
     /** @test */
     public function contact_has_character_affiliation()
     {
-        $contact = Event::fakeFor( fn() => Contact::factory()->create([
+        $contact = Event::fakeFor(fn () => Contact::factory()->create([
             'contact_id' => $this->test_character->character_id,
             'contact_type' => 'character',
             'contactable_id' => $this->test_character->character_id,
-            'contactable_type' => CharacterInfo::class
+            'contactable_type' => CharacterInfo::class,
         ]));
 
         $this->assertTrue($contact->affiliations instanceof CharacterAffiliation);
@@ -114,31 +107,28 @@ class ContactTest extends TestCase
     /** @test */
     public function contact_has_corporation_affiliation()
     {
-        $contact = Event::fakeFor( fn() => Contact::factory()->create([
+        $contact = Event::fakeFor(fn () => Contact::factory()->create([
             'contact_id' => $this->test_character->corporation->corporation_id,
             'contact_type' => 'corporation',
             'contactable_id' => $this->test_character->character_id,
-            'contactable_type' => CharacterInfo::class
+            'contactable_type' => CharacterInfo::class,
         ]));
 
         $this->assertTrue($contact->affiliations instanceof CharacterAffiliation);
         $this->assertEquals($this->test_character->corporation->corporation_id, $contact->affiliations->corporation_id);
-
     }
 
     /** @test */
     public function contact_has_alliance_affiliation()
     {
-        $contact = Event::fakeFor( fn() => Contact::factory()->create([
+        $contact = Event::fakeFor(fn () => Contact::factory()->create([
             'contact_id' => $this->test_character->corporation->alliance_id,
             'contact_type' => 'alliance',
             'contactable_id' => $this->test_character->character_id,
-            'contactable_type' => CharacterInfo::class
+            'contactable_type' => CharacterInfo::class,
         ]));
 
         $this->assertTrue($contact->affiliations instanceof CharacterAffiliation);
         $this->assertEquals($this->test_character->corporation->alliance_id, $contact->affiliations->alliance_id);
-
     }
-
 }

@@ -39,7 +39,8 @@ use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
 class CorporationMemberTrackingJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
-    use HasPathValues, HasRequiredScopes;
+    use HasPathValues;
+    use HasRequiredScopes;
 
     public function __construct(JobContainer $job_container)
     {
@@ -101,12 +102,12 @@ class CorporationMemberTrackingJob extends NewEsiBase implements HasPathValuesIn
         collect($response)
             ->map(fn ($member) => [
                 'corporation_id' => $this->corporation_id,
-                'character_id'   => $member->character_id,
-                'start_date'   => property_exists($member, 'start_date') ? carbon($member->start_date) : null,
-                'base_id'      => $member->base_id ?? null,
-                'logon_date'   => property_exists($member, 'logon_date') ? carbon($member->logon_date) : null,
-                'logoff_date'  => property_exists($member, 'logoff_date') ? carbon($member->logoff_date) : null,
-                'location_id'  => $member->location_id ?? null,
+                'character_id' => $member->character_id,
+                'start_date' => property_exists($member, 'start_date') ? carbon($member->start_date) : null,
+                'base_id' => $member->base_id ?? null,
+                'logon_date' => property_exists($member, 'logon_date') ? carbon($member->logon_date) : null,
+                'logoff_date' => property_exists($member, 'logoff_date') ? carbon($member->logoff_date) : null,
+                'location_id' => $member->location_id ?? null,
                 'ship_type_id' => $member->ship_type_id ?? null,
 
             ])
@@ -115,7 +116,8 @@ class CorporationMemberTrackingJob extends NewEsiBase implements HasPathValuesIn
 
                 return $members;
             })
-            ->pipe(fn ($members) => CorporationMemberTracking::where('corporation_id', $this->corporation_id)
+            ->pipe(
+                fn ($members) => CorporationMemberTracking::where('corporation_id', $this->corporation_id)
                 ->whereNotIn('character_id', $members->pluck('character_id')->all())
                 // in order to use model events we must actually receive the models and delete them individually
                 ->get()

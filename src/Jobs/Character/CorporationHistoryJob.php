@@ -96,7 +96,7 @@ class CorporationHistoryJob extends NewEsiBase implements HasPathValuesInterface
             'character_id' => $this->character_id,
             'corporation_id' => data_get($record, 'corporation_id'),
             'is_deleted' => data_get($record, 'is_deleted'),
-            'start_date'  => carbon(data_get($record, 'start_date')),
+            'start_date' => carbon(data_get($record, 'start_date')),
         ]));
     }
 }

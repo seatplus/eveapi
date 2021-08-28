@@ -26,9 +26,8 @@
 
 namespace Seatplus\Eveapi\Jobs\Hydrate\Corporation;
 
-use Seatplus\Eveapi\Jobs\Wallet\CorporationBalanceJob;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationDivisionsJob;
-use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletsJob;
+use Seatplus\Eveapi\Jobs\Wallet\CorporationBalanceJob;
 use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletJournalJob;
 
 class CorporationWalletHydrateBatch extends HydrateCorporationBase

@@ -3,7 +3,6 @@
 
 namespace Seatplus\Eveapi\Tests\Integration;
 
-
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Events\RefreshTokenCreated;
@@ -39,9 +38,9 @@ class RefreshTokenLifeCycleTest extends TestCase
     /** @test */
     public function it_queues_update_Character_job_after_scope_change()
     {
-        $refresh_token = Event::fakeFor( function () {
+        $refresh_token = Event::fakeFor(function () {
             return RefreshToken::factory()->create([
-                'scopes' => ['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1']
+                'scopes' => ['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1'],
             ]);
         });
 
