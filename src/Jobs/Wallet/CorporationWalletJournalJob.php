@@ -36,7 +36,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
-use Seatplus\Eveapi\Models\Corporation\CorporationWallet;
 use Seatplus\Eveapi\Models\Wallet\Balance;
 
 class CorporationWalletJournalJob implements ShouldQueue, ShouldBeUnique
@@ -94,7 +93,7 @@ class CorporationWalletJournalJob implements ShouldQueue, ShouldBeUnique
             ->whereHasMorph(
                 'balanceable',
                 CorporationInfo::class,
-                fn(Builder $query) => $query->where('corporation_id', $this->corporation_id)
+                fn (Builder $query) => $query->where('corporation_id', $this->corporation_id)
             )
             ->cursor()
             ->each(fn ($wallet) => $this->batching()
