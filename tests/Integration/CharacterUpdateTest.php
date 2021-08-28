@@ -3,11 +3,9 @@
 
 namespace Seatplus\Eveapi\Tests\Integration;
 
-
 use Illuminate\Bus\Batch;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Testing\Fakes\PendingBatchFake;
 use Mockery;
 use Seatplus\Eveapi\Containers\JobContainer;
@@ -34,6 +32,7 @@ use Seatplus\Eveapi\Jobs\Mail\MailHeaderJob;
 use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
 use Seatplus\Eveapi\Jobs\Skills\SkillQueueJob;
 use Seatplus\Eveapi\Jobs\Skills\SkillsJob;
+use Seatplus\Eveapi\Jobs\Wallet\CharacterBalanceJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletJournalJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
 use Seatplus\Eveapi\Models\RefreshToken;
@@ -41,7 +40,6 @@ use Seatplus\Eveapi\Tests\TestCase;
 
 class CharacterUpdateTest extends TestCase
 {
-
     /** @test */
     public function it_dispatches_character_info()
     {
@@ -49,7 +47,7 @@ class CharacterUpdateTest extends TestCase
 
         (new UpdateCharacter)->handle();
 
-        Bus::assertBatched(fn($batch) => $batch->jobs->first(fn($job) => $job instanceof CharacterInfoJob));
+        Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof CharacterInfoJob));
     }
 
     /** @test */
@@ -59,7 +57,7 @@ class CharacterUpdateTest extends TestCase
 
         (new UpdateCharacter)->handle();
 
-        Bus::assertBatched(fn($batch) => $batch->jobs->first(fn($job) => $job instanceof CharacterAssetsHydrateBatch));
+        Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof CharacterAssetsHydrateBatch));
     }
 
     /** @test */
@@ -85,9 +83,9 @@ class CharacterUpdateTest extends TestCase
     /** @test */
     public function assets_hydration_job_dispatches_character_assets_job()
     {
-        $refresh_token = Event::fakeFor( function () {
+        $refresh_token = Event::fakeFor(function () {
             return RefreshToken::factory()->create([
-                'scopes' => ['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1']
+                'scopes' => ['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1'],
             ]);
         });
 
@@ -100,8 +98,8 @@ class CharacterUpdateTest extends TestCase
         $batch->shouldReceive('add')->once()->with([
             [
                 new CharacterAssetJob($job_container),
-                new CharacterAssetsNameDispatchJob($job_container)
-            ]
+                new CharacterAssetsNameDispatchJob($job_container),
+            ],
         ]);
 
         $job->shouldReceive('batch')
@@ -115,9 +113,9 @@ class CharacterUpdateTest extends TestCase
     /** @test */
     public function if_constructor_receives_single_refresh_token_push_update_to_high_queue()
     {
-        $refresh_token = Event::fakeFor( function () {
+        $refresh_token = Event::fakeFor(function () {
             return RefreshToken::factory()->create([
-                'scopes' => ['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1']
+                'scopes' => ['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1'],
             ]);
         });
 
@@ -125,15 +123,15 @@ class CharacterUpdateTest extends TestCase
 
         (new UpdateCharacter($refresh_token))->handle();
 
-        Bus::assertBatched(fn(PendingBatchFake $batch) => $batch->queue() === 'high');
+        Bus::assertBatched(fn (PendingBatchFake $batch) => $batch->queue() === 'high');
     }
 
     /** @test */
     public function it_dispatches_character_role_job()
     {
-        $refresh_token = Event::fakeFor( function () {
+        $refresh_token = Event::fakeFor(function () {
             return RefreshToken::factory()->create([
-                'scopes' => ['esi-characters.read_corporation_roles.v1']
+                'scopes' => ['esi-characters.read_corporation_roles.v1'],
             ]);
         });
 
@@ -141,15 +139,15 @@ class CharacterUpdateTest extends TestCase
 
         (new UpdateCharacter($refresh_token))->handle();
 
-        Bus::assertBatched(fn($batch) => $batch->jobs->first(fn($job) => $job instanceof CharacterRolesHydrateBatch));
+        Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof CharacterRolesHydrateBatch));
     }
 
     /** @test */
     public function roles_hydration_job_dispatches_character_roles_job()
     {
-        $refresh_token = Event::fakeFor( function () {
+        $refresh_token = Event::fakeFor(function () {
             return RefreshToken::factory()->create([
-                'scopes' => ['esi-characters.read_corporation_roles.v1']
+                'scopes' => ['esi-characters.read_corporation_roles.v1'],
             ]);
         });
 
@@ -194,9 +192,9 @@ class CharacterUpdateTest extends TestCase
     /** @test */
     public function character_contact_hydration_adds_no_jobs_to_batch_if_scopes_are_missing()
     {
-        $refresh_token = Event::fakeFor( function () {
+        $refresh_token = Event::fakeFor(function () {
             return RefreshToken::factory()->create([
-                'scopes' => ['derp']
+                'scopes' => ['derp'],
             ]);
         });
 
@@ -216,9 +214,9 @@ class CharacterUpdateTest extends TestCase
     /** @test */
     public function character_contact_hydration_adds_jobs_to_batch()
     {
-        $refresh_token = Event::fakeFor( function () {
+        $refresh_token = Event::fakeFor(function () {
             return RefreshToken::factory()->create([
-                'scopes' => ['esi-characters.read_contacts.v1']
+                'scopes' => ['esi-characters.read_contacts.v1'],
             ]);
         });
 
@@ -231,8 +229,8 @@ class CharacterUpdateTest extends TestCase
         $batch->shouldReceive('add')->once()->with([
             [
                 new CharacterContactJob($job_container),
-                new CharacterContactLabelJob($job_container)
-            ]
+                new CharacterContactLabelJob($job_container),
+            ],
         ]);
 
         $job->shouldReceive('batch')
@@ -246,9 +244,9 @@ class CharacterUpdateTest extends TestCase
     /** @test */
     public function corporation_contact_hydration_adds_jobs_to_batch()
     {
-        $refresh_token = Event::fakeFor( function () {
+        $refresh_token = Event::fakeFor(function () {
             return RefreshToken::factory()->create([
-                'scopes' => ['esi-corporations.read_contacts.v1']
+                'scopes' => ['esi-corporations.read_contacts.v1'],
             ]);
         });
 
@@ -261,8 +259,8 @@ class CharacterUpdateTest extends TestCase
         $batch->shouldReceive('add')->once()->with([
             [
                 new CorporationContactJob($job_container),
-                new CorporationContactLabelJob($job_container)
-            ]
+                new CorporationContactLabelJob($job_container),
+            ],
         ]);
 
         $job->shouldReceive('batch')
@@ -276,9 +274,9 @@ class CharacterUpdateTest extends TestCase
     /** @test */
     public function alliance_contact_hydration_adds_jobs_to_batch()
     {
-        $refresh_token = Event::fakeFor( function () {
+        $refresh_token = Event::fakeFor(function () {
             return RefreshToken::factory()->create([
-                'scopes' => ['esi-alliances.read_contacts.v1']
+                'scopes' => ['esi-alliances.read_contacts.v1'],
             ]);
         });
 
@@ -291,8 +289,8 @@ class CharacterUpdateTest extends TestCase
         $batch->shouldReceive('add')->once()->with([
             [
                 new AllianceContactJob($job_container),
-                new AllianceContactLabelJob($job_container)
-            ]
+                new AllianceContactLabelJob($job_container),
+            ],
         ]);
 
         $job->shouldReceive('batch')
@@ -306,9 +304,9 @@ class CharacterUpdateTest extends TestCase
     /** @test */
     public function characterWalletHydrationAddsJobsToBatch()
     {
-        $refresh_token = Event::fakeFor( function () {
+        $refresh_token = Event::fakeFor(function () {
             return RefreshToken::factory()->create([
-                'scopes' => ['esi-wallet.read_character_wallet.v1']
+                'scopes' => ['esi-wallet.read_character_wallet.v1'],
             ]);
         });
 
@@ -320,7 +318,8 @@ class CharacterUpdateTest extends TestCase
 
         $batch->shouldReceive('add')->once()->with([
             new CharacterWalletJournalJob($job_container),
-            new CharacterWalletTransactionJob($job_container)
+            new CharacterWalletTransactionJob($job_container),
+            new CharacterBalanceJob($job_container),
         ]);
 
         $job->shouldReceive('batch')
@@ -334,9 +333,9 @@ class CharacterUpdateTest extends TestCase
     /** @test */
     public function characterContractHydrationAddsJobsToBatch()
     {
-        $refresh_token = Event::fakeFor( function () {
+        $refresh_token = Event::fakeFor(function () {
             return RefreshToken::factory()->create([
-                'scopes' => ['esi-contracts.read_character_contracts.v1']
+                'scopes' => ['esi-contracts.read_character_contracts.v1'],
             ]);
         });
 
@@ -347,7 +346,7 @@ class CharacterUpdateTest extends TestCase
         $batch = Mockery::mock(Batch::class)->makePartial();
 
         $batch->shouldReceive('add')->once()->with([
-            new CharacterContractsJob($job_container)
+            new CharacterContractsJob($job_container),
         ]);
 
         $job->shouldReceive('batch')
@@ -365,7 +364,7 @@ class CharacterUpdateTest extends TestCase
 
         (new UpdateCharacter)->handle();
 
-        Bus::assertBatched(fn($batch) => $batch->jobs->first(fn($job) => $job instanceof CorporationHistoryJob));
+        Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof CorporationHistoryJob));
     }
 
     /** @test */
@@ -375,15 +374,15 @@ class CharacterUpdateTest extends TestCase
 
         (new UpdateCharacter)->handle();
 
-        Bus::assertBatched(fn($batch) => $batch->jobs->first(fn($job) => $job instanceof SkillsHydrateBatch));
+        Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof SkillsHydrateBatch));
     }
 
     /** @test */
     public function skillsHydrationAddsSkillJobsToBatch()
     {
-        $refresh_token = Event::fakeFor( function () {
+        $refresh_token = Event::fakeFor(function () {
             return RefreshToken::factory()->create([
-                'scopes' => ['esi-skills.read_skills.v1']
+                'scopes' => ['esi-skills.read_skills.v1'],
             ]);
         });
 
@@ -394,7 +393,7 @@ class CharacterUpdateTest extends TestCase
         $batch = Mockery::mock(Batch::class)->makePartial();
 
         $batch->shouldReceive('add')->once()->with([
-            new SkillsJob($job_container)
+            new SkillsJob($job_container),
         ]);
 
         $job->shouldReceive('batch')
@@ -408,9 +407,9 @@ class CharacterUpdateTest extends TestCase
     /** @test */
     public function skillsHydrationAddsSkillQueueJobsToBatch()
     {
-        $refresh_token = Event::fakeFor( function () {
+        $refresh_token = Event::fakeFor(function () {
             return RefreshToken::factory()->create([
-                'scopes' => ['esi-skills.read_skillqueue.v1']
+                'scopes' => ['esi-skills.read_skillqueue.v1'],
             ]);
         });
 
@@ -421,7 +420,7 @@ class CharacterUpdateTest extends TestCase
         $batch = Mockery::mock(Batch::class)->makePartial();
 
         $batch->shouldReceive('add')->once()->with([
-            new SkillQueueJob($job_container)
+            new SkillQueueJob($job_container),
         ]);
 
         $job->shouldReceive('batch')
@@ -435,9 +434,9 @@ class CharacterUpdateTest extends TestCase
     /** @test */
     public function mailsHydrationAddsMailJobsToBatch()
     {
-        $refresh_token = Event::fakeFor( function () {
+        $refresh_token = Event::fakeFor(function () {
             return RefreshToken::factory()->create([
-                'scopes' => ['esi-mail.read_mail.v1']
+                'scopes' => ['esi-mail.read_mail.v1'],
             ]);
         });
 
@@ -458,5 +457,4 @@ class CharacterUpdateTest extends TestCase
 
         $job->handle();
     }
-
 }

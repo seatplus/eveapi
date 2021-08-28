@@ -40,7 +40,7 @@ class ProcessContactResponse
         return collect($response)->each(function ($contact) {
             $contact_model = Contact::updateOrCreate([
                 'contact_id' => $contact->contact_id,
-                'contactable_id' =>$this->contactable_id,
+                'contactable_id' => $this->contactable_id,
                 'contactable_type' => $this->contactable_type,
             ], [
                 'contact_type' => $contact->contact_type,

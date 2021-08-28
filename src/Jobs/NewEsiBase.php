@@ -45,7 +45,12 @@ use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 
 abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, NewBaseJobInterface, ShouldBeUnique
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels, RateLimitsEsiCalls;
+    use Batchable;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
+    use RateLimitsEsiCalls;
 
     public ?RefreshToken $refresh_token;
 

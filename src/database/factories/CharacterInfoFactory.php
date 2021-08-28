@@ -73,18 +73,18 @@ class CharacterInfoFactory extends Factory
     public function definition()
     {
         return [
-            'character_id'    => $this->faker->numberBetween(9000000, 98000000),
-            'name'            => $this->faker->name,
+            'character_id' => $this->faker->numberBetween(9000000, 98000000),
+            'name' => $this->faker->name,
             //'corporation_id'  => $this->faker->numberBetween(98000000, 99000000),
-            'birthday'        => $this->faker->iso8601($max = 'now'),
-            'gender'          => $this->faker->randomElement(['male', 'female']),
-            'race_id'         => $this->faker->randomDigitNotNull,
-            'bloodline_id'    => $this->faker->randomDigitNotNull,
+            'birthday' => $this->faker->iso8601($max = 'now'),
+            'gender' => $this->faker->randomElement(['male', 'female']),
+            'race_id' => $this->faker->randomDigitNotNull,
+            'bloodline_id' => $this->faker->randomDigitNotNull,
             //'alliance_id'     => $this->faker->optional()->numberBetween(99000000,100000000),
-            'ancestry_id'     => $this->faker->optional()->randomDigit,
-            'description'     => $this->faker->optional()->realText(),
+            'ancestry_id' => $this->faker->optional()->randomDigit,
+            'description' => $this->faker->optional()->realText(),
             'security_status' => $this->faker->optional()->randomFloat(null, -10, +10),
-            'title'           => $this->faker->optional()->bs,
+            'title' => $this->faker->optional()->bs,
         ];
     }
 }

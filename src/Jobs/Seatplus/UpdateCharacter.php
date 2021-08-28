@@ -48,7 +48,11 @@ use Seatplus\Eveapi\Models\RefreshToken;
 
 class UpdateCharacter implements ShouldQueue
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Batchable;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     public function __construct(
         /**
@@ -91,7 +95,8 @@ class UpdateCharacter implements ShouldQueue
             new SkillsHydrateBatch($job_container),
             new MailsHydrateBatch($job_container),
 
-        ])->then(fn (Batch $batch) => logger()->info($success_message)
+        ])->then(
+            fn (Batch $batch) => logger()->info($success_message)
         )->name($batch_name)->onQueue($queue)->allowFailures()->dispatch();
     }
 }

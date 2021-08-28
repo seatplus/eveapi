@@ -5,7 +5,6 @@ namespace Seatplus\Eveapi\Tests\Jobs\Assets;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameDispatchJob;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
@@ -31,7 +30,7 @@ class CharacterAssetsNameJobTest extends TestCase
         Queue::fake();
 
         $this->job_container = $job_container = new JobContainer([
-            'refresh_token' => $this->test_character->refresh_token
+            'refresh_token' => $this->test_character->refresh_token,
         ]);
 
         //$this->job = new CharacterAssetsNameJob($job_container);
@@ -64,9 +63,9 @@ class CharacterAssetsNameJobTest extends TestCase
         $type = Event::fakeFor(fn () => Type::factory()->create([
             'group_id' => Group::factory()->create([
                 'category_id' => Category::factory()->create([
-                    'category_id' => 22
-                ])
-            ])
+                    'category_id' => 22,
+                ]),
+            ]),
         ]));
 
         $asset = Asset::factory()->create([
@@ -79,14 +78,14 @@ class CharacterAssetsNameJobTest extends TestCase
         $this->assertDatabaseHas('assets', [
             'assetable_id' => $asset->assetable_id,
             'item_id' => $asset->item_id,
-            'name' => null
+            'name' => null,
         ]);
 
         $this->mockRetrieveEsiDataAction([
             [
                 'item_id' => $asset->item_id,
-                'name' => $this->name_to_create
-            ]
+                'name' => $this->name_to_create,
+            ],
         ]);
 
         CharacterAssetsNameJob::dispatchNow($this->job_container, [$asset->item_id]);
@@ -95,7 +94,7 @@ class CharacterAssetsNameJobTest extends TestCase
         $this->assertDatabaseHas('assets', [
             'assetable_id' => $asset->assetable_id,
             'item_id' => $asset->item_id,
-            'name' => $this->name_to_create
+            'name' => $this->name_to_create,
         ]);
 
         $this->assertNotNull(cache()->store('file')->get($asset->item_id));
@@ -110,9 +109,9 @@ class CharacterAssetsNameJobTest extends TestCase
         $type = Event::fakeFor(fn () => Type::factory()->create([
             'group_id' => Group::factory()->create([
                 'category_id' => Category::factory()->create([
-                    'category_id' => 11
-                ])
-            ])
+                    'category_id' => 11,
+                ]),
+            ]),
         ]));
 
         $asset = Asset::factory()->create([
@@ -125,7 +124,7 @@ class CharacterAssetsNameJobTest extends TestCase
         $this->assertDatabaseHas('assets', [
             'assetable_id' => $asset->assetable_id,
             'item_id' => $asset->item_id,
-            'name' => null
+            'name' => null,
         ]);
 
         $this->assertRetrieveEsiDataIsNotCalled();
@@ -140,9 +139,8 @@ class CharacterAssetsNameJobTest extends TestCase
         $this->assertDatabaseMissing('assets', [
             'assetable_id' => $asset->assetable_id,
             'item_id' => $asset->item_id,
-            'name' => $this->name_to_create
+            'name' => $this->name_to_create,
         ]);
-
     }
 
     /**
@@ -155,7 +153,7 @@ class CharacterAssetsNameJobTest extends TestCase
 
         $group = Event::fakeFor(fn () => Group::factory()->create([
             'group_id' => $type->group_id,
-            'category_id' => 5 //Only Celestials, Ships, Deployable, Starbases, Orbitals and Structures might be named
+            'category_id' => 5, //Only Celestials, Ships, Deployable, Starbases, Orbitals and Structures might be named
         ]));
 
         $asset = Asset::factory()->create([
@@ -168,7 +166,7 @@ class CharacterAssetsNameJobTest extends TestCase
         $this->assertDatabaseHas('assets', [
             'assetable_id' => $asset->assetable_id,
             'item_id' => $asset->item_id,
-            'name' => null
+            'name' => null,
         ]);
 
         $this->assertRetrieveEsiDataIsNotCalled();
@@ -183,9 +181,8 @@ class CharacterAssetsNameJobTest extends TestCase
         $this->assertDatabaseMissing('assets', [
             'assetable_id' => $asset->assetable_id,
             'item_id' => $asset->item_id,
-            'name' => $this->name_to_create
+            'name' => $this->name_to_create,
         ]);
-
     }
 
     /**
@@ -206,13 +203,13 @@ class CharacterAssetsNameJobTest extends TestCase
         $this->assertDatabaseHas('assets', [
             'assetable_id' => $asset->assetable_id,
             'item_id' => $asset->item_id,
-            'name' => null
+            'name' => null,
         ]);
 
         /*$refresh_token = RefreshToken::factory()->create([
             'character_id' => $asset->character_id
         ]);*/
-        $refresh_token = RefreshToken::factory()->make(['character_id' =>$asset->assetable_id]);
+        $refresh_token = RefreshToken::factory()->make(['character_id' => $asset->assetable_id]);
 
         $this->assertRetrieveEsiDataIsNotCalled();
 
@@ -226,9 +223,8 @@ class CharacterAssetsNameJobTest extends TestCase
         $this->assertDatabaseMissing('assets', [
             'assetable_id' => $asset->assetable_id,
             'item_id' => $asset->item_id,
-            'name' => $this->name_to_create
+            'name' => $this->name_to_create,
         ]);
-
     }
 
     /**
@@ -237,14 +233,14 @@ class CharacterAssetsNameJobTest extends TestCase
      */
     public function it_runs_the_job()
     {
-        $type = Event::fakeFor( fn() => Type::factory()->create());
+        $type = Event::fakeFor(fn () => Type::factory()->create());
 
         $group = Event::fakeFor(fn () => Group::factory()->create([
             'group_id' => $type->group_id,
-            'category_id' => 22
+            'category_id' => 22,
         ]));
 
-        $asset = Event::fakeFor( fn() => Asset::factory()->create([
+        $asset = Event::fakeFor(fn () => Asset::factory()->create([
             'type_id' => $type->type_id,
             'is_singleton' => true,
         ]));
@@ -254,16 +250,16 @@ class CharacterAssetsNameJobTest extends TestCase
         $this->assertDatabaseHas('assets', [
             'assetable_id' => $asset->assetable_id,
             'item_id' => $asset->item_id,
-            'name' => null
+            'name' => null,
         ]);
 
-        $refresh_token = RefreshToken::factory()->make(['character_id' =>$asset->assetable_id]);
+        $refresh_token = RefreshToken::factory()->make(['character_id' => $asset->assetable_id]);
 
         $this->mockRetrieveEsiDataAction([
             [
                 'item_id' => $asset->item_id,
-                'name' => $this->name_to_create
-            ]
+                'name' => $this->name_to_create,
+            ],
         ]);
 
         $job_container = new JobContainer(['refresh_token' => $refresh_token]);
@@ -271,12 +267,12 @@ class CharacterAssetsNameJobTest extends TestCase
         CharacterAssetsNameJob::dispatchNow($job_container, [$asset->item_id]);
 
         //Assert that character asset created has name
-        $this->assertCount(1, Asset::where('assetable_id', $asset->assetable_id)
-            ->where('item_id',$asset->item_id)
+        $this->assertCount(
+            1,
+            Asset::where('assetable_id', $asset->assetable_id)
+            ->where('item_id', $asset->item_id)
             ->where('name', $this->name_to_create)
             ->get()
         );
-
     }
-
 }

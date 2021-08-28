@@ -3,7 +3,6 @@
 
 namespace Seatplus\Eveapi\Tests\Jobs\Universe;
 
-
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Events\RefreshTokenCreated;
@@ -25,7 +24,6 @@ class ResolveLocationJobTest extends TestCase
 
     public function setUp(): void
     {
-
         parent::setUp();
 
         Queue::fake();
@@ -33,16 +31,15 @@ class ResolveLocationJobTest extends TestCase
         Event::fake([
             UniverseStationCreated::class,
             UniverseStructureCreated::class,
-            RefreshTokenCreated::class
+            RefreshTokenCreated::class,
         ]);
     }
 
     private function buildJob(int $location_id) : ResolveLocationJob
     {
-
         $refresh_token = $this->test_character->refresh_token;
         $refresh_token->scopes = ['esi-universe.read_structures.v1'];
-        Event::fakeFor( fn() => $refresh_token->save());
+        Event::fakeFor(fn () => $refresh_token->save());
 
         return new ResolveLocationJob($location_id, $refresh_token);
     }
@@ -54,7 +51,7 @@ class ResolveLocationJobTest extends TestCase
             'location_id' => 2004,
             'assetable_id' => $this->test_character->character_id,
             'location_flag' => 'Hangar',
-            'location_type' => 'other'
+            'location_type' => 'other',
         ]);
 
         $this->buildJob(2004)->handle();
@@ -72,7 +69,7 @@ class ResolveLocationJobTest extends TestCase
             'location_id' => 60003760,
             'assetable_id' => $this->test_character->character_id,
             'location_flag' => 'Hangar',
-            'location_type' => 'station'
+            'location_type' => 'station',
         ]);
 
         $mock_data = Station::factory()->make([
@@ -84,7 +81,7 @@ class ResolveLocationJobTest extends TestCase
 
         $this->buildJob(60003760)->handle();
 
-        Queue::assertPushedOn('high', fn(ResolveUniverseStationByIdJob $job) => $job->location_id === $mock_data->station_id);
+        Queue::assertPushedOn('high', fn (ResolveUniverseStationByIdJob $job) => $job->location_id === $mock_data->station_id);
     }
 
     /**
@@ -93,7 +90,6 @@ class ResolveLocationJobTest extends TestCase
      */
     public function it_checks_only_station_older_then_a_week()
     {
-
         $location_id = 60003760;
 
         Asset::factory()->count(5)->create([
@@ -105,13 +101,13 @@ class ResolveLocationJobTest extends TestCase
 
         $mock_data = Station::factory()->create([
             'station_id' => $location_id,
-            'updated_at' => carbon()->subWeeks(2)
+            'updated_at' => carbon()->subWeeks(2),
         ]);
 
         Location::factory()->create([
             'location_id' => $location_id,
             'locatable_id' => $location_id,
-            'locatable_type' => Station::class
+            'locatable_type' => Station::class,
         ]);
 
         $this->assertTrue(carbon(Station::find($location_id)->updated_at)->isBefore(carbon()->subWeek()));
@@ -121,7 +117,7 @@ class ResolveLocationJobTest extends TestCase
 
         $this->buildJob($location_id)->handle();
 
-        Queue::assertPushedOn('high', fn(ResolveUniverseStationByIdJob $job) => $job->location_id === $location_id);
+        Queue::assertPushedOn('high', fn (ResolveUniverseStationByIdJob $job) => $job->location_id === $location_id);
     }
 
     /** @test */
@@ -138,13 +134,13 @@ class ResolveLocationJobTest extends TestCase
 
         Station::factory()->create([
             'station_id' => $location_id,
-            'updated_at' => carbon()->subDays(2)
+            'updated_at' => carbon()->subDays(2),
         ]);
 
         Location::factory()->create([
             'location_id' => $location_id,
             'locatable_id' => $location_id,
-            'locatable_type' => Station::class
+            'locatable_type' => Station::class,
         ]);
 
         $this->buildJob($location_id)->handle();
@@ -164,7 +160,7 @@ class ResolveLocationJobTest extends TestCase
             'location_id' => 1028832949394,
             'assetable_id' => $this->test_character->character_id,
             'location_flag' => 'Hangar',
-            'location_type' => 'station'
+            'location_type' => 'station',
         ]);
 
         $mock_data = Structure::factory()->make([
@@ -176,7 +172,7 @@ class ResolveLocationJobTest extends TestCase
 
         $this->buildJob(1028832949394)->handle();
 
-        Queue::assertPushedOn('low', fn(ResolveUniverseStructureByIdJob $job) => $job->location_id === $mock_data->station_id);
+        Queue::assertPushedOn('low', fn (ResolveUniverseStructureByIdJob $job) => $job->location_id === $mock_data->station_id);
     }
 
     /**
@@ -196,13 +192,13 @@ class ResolveLocationJobTest extends TestCase
 
         $mock_data = Structure::factory()->create([
             'structure_id' => $location_id,
-            'updated_at' => carbon()->subWeeks(2)
+            'updated_at' => carbon()->subWeeks(2),
         ]);
 
         Location::factory()->create([
             'location_id' => $location_id,
             'locatable_id' => $location_id,
-            'locatable_type' => Structure::class
+            'locatable_type' => Structure::class,
         ]);
 
         $this->assertTrue(carbon(Structure::find($location_id)->updated_at)->isBefore(carbon()->subWeek()));
@@ -212,12 +208,11 @@ class ResolveLocationJobTest extends TestCase
 
         $this->buildJob($location_id)->handle();
 
-        Queue::assertPushedOn('low', fn(ResolveUniverseStructureByIdJob $job) => $job->location_id === $location_id);
+        Queue::assertPushedOn('low', fn (ResolveUniverseStructureByIdJob $job) => $job->location_id === $location_id);
 
         /*$this->assertNotNull(Location::find($location_id)->locatable);
 
         $this->assertTrue(carbon(Structure::find($location_id)->updated_at)->isAfter(carbon()->subWeek()));*/
-
     }
 
     /** @test */
@@ -234,13 +229,13 @@ class ResolveLocationJobTest extends TestCase
 
         Structure::factory()->create([
             'structure_id' => $location_id,
-            'updated_at' => carbon()->subDays(2)
+            'updated_at' => carbon()->subDays(2),
         ]);
 
         Location::factory()->create([
             'location_id' => $location_id,
             'locatable_id' => $location_id,
-            'locatable_type' => Structure::class
+            'locatable_type' => Structure::class,
         ]);
 
         $this->assertTrue(carbon(Structure::find($location_id)->updated_at)->isAfter(carbon()->subWeek()));
@@ -257,5 +252,4 @@ class ResolveLocationJobTest extends TestCase
         $this->assertTrue(carbon(Structure::find($location_id)->updated_at)->isAfter(carbon()->subWeek()));
         $this->assertTrue(carbon(Structure::find($location_id)->updated_at)->isBefore(carbon()->subDay()));*/
     }
-
 }

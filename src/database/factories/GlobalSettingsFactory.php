@@ -36,9 +36,9 @@ class GlobalSettingsFactory extends Factory
     public function definition()
     {
         return [
-            'id'       => 1,
-            'name'     => $this->faker->name,
-            'value'    => $this->faker->text(),
+            'id' => 1,
+            'name' => $this->faker->name,
+            'value' => $this->faker->text(),
         ];
     }
 }

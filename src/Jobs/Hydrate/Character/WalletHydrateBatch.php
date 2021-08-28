@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Hydrate\Character;
 
+use Seatplus\Eveapi\Jobs\Wallet\CharacterBalanceJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletJournalJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
 
@@ -38,6 +39,7 @@ class WalletHydrateBatch extends HydrateCharacterBase
         $this->hydrate([
             new CharacterWalletJournalJob($this->job_container),
             new CharacterWalletTransactionJob($this->job_container),
+            new CharacterBalanceJob($this->job_container),
         ]);
     }
 

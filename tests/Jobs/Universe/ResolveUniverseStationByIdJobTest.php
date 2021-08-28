@@ -3,9 +3,7 @@
 
 namespace Seatplus\Eveapi\Tests\Jobs\Universe;
 
-
 use Illuminate\Support\Facades\Event;
-use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseStationByIdAction;
 use Seatplus\Eveapi\Events\UniverseStationCreated;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseStationByIdJob;
 use Seatplus\Eveapi\Models\Universe\Location;
@@ -21,13 +19,12 @@ class ResolveUniverseStationByIdJobTest extends TestCase
 
     public function setUp(): void
     {
-
         parent::setUp();
 
         $this->refresh_token = $this->test_character->refresh_token;
 
         Event::fake([
-            UniverseStationCreated::class
+            UniverseStationCreated::class,
         ]);
     }
 
@@ -46,7 +43,7 @@ class ResolveUniverseStationByIdJobTest extends TestCase
 
         //Assert that structure is created
         $this->assertDatabaseHas('universe_stations', [
-            'station_id' => $mock_data->station_id
+            'station_id' => $mock_data->station_id,
         ]);
     }
 
@@ -60,14 +57,14 @@ class ResolveUniverseStationByIdJobTest extends TestCase
 
         //Assert that no structure is created
         $this->assertDatabaseMissing('universe_locations', [
-            'location_id' => $mock_data->station_id
+            'location_id' => $mock_data->station_id,
         ]);
 
         (new ResolveUniverseStationByIdJob($mock_data->station_id))->handle();
 
         //Assert that structure is created
         $this->assertDatabaseHas('universe_locations', [
-            'location_id' => $mock_data->station_id
+            'location_id' => $mock_data->station_id,
         ]);
     }
 
@@ -100,19 +97,16 @@ class ResolveUniverseStationByIdJobTest extends TestCase
 
         //Assert that no structure is created
         $this->assertDatabaseMissing('universe_stations', [
-            'station_id' => $mock_data->station_id
+            'station_id' => $mock_data->station_id,
         ]);
     }
 
-
     private function buildMockEsiData()
     {
-
         $mock_data = Station::factory()->make();
 
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
 
         return $mock_data;
     }
-
 }

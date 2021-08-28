@@ -39,7 +39,8 @@ use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
 class ResolveUniverseStructureByIdJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
-    use HasPathValues, HasRequiredScopes;
+    use HasPathValues;
+    use HasRequiredScopes;
 
     public function __construct(
         RefreshToken $refresh_token,
@@ -91,10 +92,10 @@ class ResolveUniverseStructureByIdJob extends NewEsiBase implements HasPathValue
         Structure::updateOrCreate([
             'structure_id' => $this->location_id,
         ], [
-            'name'            => $result->name,
-            'owner_id'        => $result->owner_id,
+            'name' => $result->name,
+            'owner_id' => $result->owner_id,
             'solar_system_id' => $result->solar_system_id,
-            'type_id'         => $result->type_id ?? null,
+            'type_id' => $result->type_id ?? null,
         ])->touch();
 
         Location::updateOrCreate([

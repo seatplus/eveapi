@@ -36,6 +36,7 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contacts\Contact;
 use Seatplus\Eveapi\Models\Contacts\Label;
 use Seatplus\Eveapi\Models\SsoScopes;
+use Seatplus\Eveapi\Models\Wallet\Balance;
 use Seatplus\Eveapi\Models\Wallet\WalletJournal;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 
@@ -79,7 +80,7 @@ class CorporationInfo extends Model
             'character_id',
             'corporation_id',
             'character_id'
-            );
+        );
     }
 
     public function ssoScopes()
@@ -114,7 +115,7 @@ class CorporationInfo extends Model
 
     public function wallets()
     {
-        return $this->hasMany(CorporationWallet::class, 'corporation_id', 'corporation_id');
+        return $this->morphMany(Balance::class, 'balanceable');
     }
 
     public function wallet_journals()

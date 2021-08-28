@@ -3,10 +3,9 @@
 
 namespace Seatplus\Eveapi\Tests\Jobs\Corporation;
 
-
 use Illuminate\Support\Facades\Bus;
-use Seatplus\Eveapi\Esi\Jobs\Corporation\CorporationInfoAction;
 use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Esi\Jobs\Corporation\CorporationInfoAction;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationInfoJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Tests\TestCase;
@@ -23,7 +22,7 @@ class CorporationInfoJobTest extends TestCase
         parent::setUp();
 
         $this->job_container = new JobContainer([
-            'corporation_id' => $this->test_character->character_id
+            'corporation_id' => $this->test_character->character_id,
         ]);
     }
 
@@ -33,7 +32,6 @@ class CorporationInfoJobTest extends TestCase
      */
     public function retrieveTest()
     {
-
         $mock_data = $this->buildMockEsiData();
 
         // Stop CharacterInfoAction dispatching a new job
@@ -45,18 +43,16 @@ class CorporationInfoJobTest extends TestCase
 
         //Assert that test character is now created
         $this->assertDatabaseHas('corporation_infos', [
-            'name' => $mock_data->name
+            'name' => $mock_data->name,
         ]);
     }
 
     private function buildMockEsiData()
     {
-
         $mock_data = CorporationInfo::factory()->make();
 
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
 
         return $mock_data;
     }
-
 }

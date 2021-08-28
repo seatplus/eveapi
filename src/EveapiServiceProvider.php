@@ -50,13 +50,14 @@ use Seatplus\Eveapi\Models\Contacts\Contact;
 use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\Contracts\ContractItem;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
-use Seatplus\Eveapi\Models\Corporation\CorporationWallet;
 use Seatplus\Eveapi\Models\Schedules;
 use Seatplus\Eveapi\Models\Skills\Skill;
 use Seatplus\Eveapi\Models\Skills\SkillQueue;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Type;
+use Seatplus\Eveapi\Models\Wallet\Balance;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
+use Seatplus\Eveapi\Observers\BalanceObserver;
 use Seatplus\Eveapi\Observers\CharacterAffiliationObserver;
 use Seatplus\Eveapi\Observers\CharacterAssetObserver;
 use Seatplus\Eveapi\Observers\CharacterInfoObserver;
@@ -64,7 +65,6 @@ use Seatplus\Eveapi\Observers\ContactObserver;
 use Seatplus\Eveapi\Observers\ContractItemObserver;
 use Seatplus\Eveapi\Observers\ContractObserver;
 use Seatplus\Eveapi\Observers\CorporationMemberTrackingObserver;
-use Seatplus\Eveapi\Observers\CorporationWalletObserver;
 use Seatplus\Eveapi\Observers\GroupObserver;
 use Seatplus\Eveapi\Observers\SkillObserver;
 use Seatplus\Eveapi\Observers\SkillQueueObserver;
@@ -153,11 +153,11 @@ class EveapiServiceProvider extends ServiceProvider
             'local' => [
                 'seatplus-workers' => [
                     'connection' => 'redis',
-                    'queue'      => ['high', 'medium', 'low', 'default'],
-                    'balance'    => $balancing_mode,
-                    'processes'  => (int) env(self::QUEUE_BALANCING_WORKERS, 4),
+                    'queue' => ['high', 'medium', 'low', 'default'],
+                    'balance' => $balancing_mode,
+                    'processes' => (int) env(self::QUEUE_BALANCING_WORKERS, 4),
                     'block_for' => 5,
-                    'timeout'    => 120, // 2 minutes
+                    'timeout' => 120, // 2 minutes
                 ],
             ],
             'production' => [
@@ -168,7 +168,7 @@ class EveapiServiceProvider extends ServiceProvider
                     'minProcesses' => 1,
                     'maxProcesses' => (int) env(self::QUEUE_BALANCING_WORKERS, 4),
                     'tries' => 1,
-                    'timeout'    => 900, // 15 minutes
+                    'timeout' => 900, // 15 minutes
                 ],
             ],
         ];
@@ -216,7 +216,7 @@ class EveapiServiceProvider extends ServiceProvider
 
         //WalletObserver
         WalletTransaction::observe(WalletTransactionObserver::class);
-        CorporationWallet::observe(CorporationWalletObserver::class);
+        Balance::observe(BalanceObserver::class);
 
         //SkillObserver
         Skill::observe(SkillObserver::class);

@@ -47,7 +47,8 @@ class GetOwnedIds
         return User::whereId(auth()->user()->getAuthIdentifier())
             ->with('characters.roles', 'characters.corporation')
             ->get()
-            ->whenNotEmpty(fn ($collection) => $collection
+            ->whenNotEmpty(
+                fn ($collection) => $collection
                 ->first()
                 ->characters
                 // for owned corporation tokens, we need to add the affiliation as long as the character has the required role

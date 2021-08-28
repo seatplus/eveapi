@@ -62,9 +62,9 @@ class GetEseyeClient
 
         return $this->client = $this->client->get(new EsiAuthentication([
             'refresh_token' => $this->refresh_token->refresh_token,
-            'access_token'  => $this->refresh_token->token,
+            'access_token' => $this->refresh_token->token,
             'token_expires' => $this->refresh_token->expires_on,
-            'scopes'        => $this->refresh_token->scopes,
+            'scopes' => $this->refresh_token->scopes,
         ]));
     }
 }

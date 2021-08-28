@@ -3,14 +3,13 @@
 
 namespace Seatplus\Eveapi\Tests\Unit\Models;
 
-
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Events\AssetUpdating;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Assets\Asset;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Universe\Constellation;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Region;
@@ -20,7 +19,6 @@ use Seatplus\Eveapi\Tests\TestCase;
 
 class AssetModelTest extends TestCase
 {
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -32,12 +30,12 @@ class AssetModelTest extends TestCase
     public function it_creates_an_event_upon_updating()
     {
         $asset = Asset::factory()->create([
-            'assetable_id' => 42
+            'assetable_id' => 42,
         ]);
 
         $this->assertDatabaseHas('assets', [
             'assetable_id' => $asset->assetable_id,
-            'item_id' => $asset->item_id
+            'item_id' => $asset->item_id,
         ]);
 
         Event::fake();
@@ -53,12 +51,12 @@ class AssetModelTest extends TestCase
     public function it_creates_no_event_upon_no_update()
     {
         $asset = Asset::factory()->create([
-            'assetable_id' => 42
+            'assetable_id' => 42,
         ]);
 
         $this->assertDatabaseHas('assets', [
             'assetable_id' => $asset->assetable_id,
-            'item_id' => $asset->item_id
+            'item_id' => $asset->item_id,
         ]);
 
         Event::fake();
@@ -107,7 +105,7 @@ class AssetModelTest extends TestCase
     {
         $test_asset = Asset::factory()->create([
             'location_flag' => 'Hangar',
-            'location_type' => 'other'
+            'location_type' => 'other',
         ]);
 
         $assets = Asset::query()->assetsLocationIds()->first();
@@ -121,7 +119,8 @@ class AssetModelTest extends TestCase
         $test_asset = Asset::factory()->create([
             'assetable_id' => $this->test_character->character_id,//CharacterInfo::factory(),
             'assetable_type' => CharacterInfo::class,
-        ]);;
+        ]);
+        ;
 
         $characters_mock = \Mockery::mock(Collection::class);
         $characters_mock->shouldReceive('pluck')
@@ -138,7 +137,8 @@ class AssetModelTest extends TestCase
 
         //dd(Asset::all(), $this->test_character->character_id, auth()->user()->characters->pluck('character_id')->toArray());
 
-        $asset = Asset::query()->Affiliated([$this->test_character->character_id])->first();;
+        $asset = Asset::query()->Affiliated([$this->test_character->character_id])->first();
+        ;
 
         $this->assertEquals($asset->item_id, $test_asset->item_id);
     }
@@ -151,7 +151,8 @@ class AssetModelTest extends TestCase
             'assetable_type' => CharacterInfo::class,
         ]);
 
-        $asset = Asset::query()->Affiliated([$this->test_character->character_id], [$this->test_character->character_id])->first();;
+        $asset = Asset::query()->Affiliated([$this->test_character->character_id], [$this->test_character->character_id])->first();
+        ;
 
         $this->assertEquals($asset->item_id, $test_asset->item_id);
     }
@@ -211,12 +212,12 @@ class AssetModelTest extends TestCase
     public function it_has_scopeSearch_asset_content()
     {
         $test_asset = Asset::factory()->create([
-            'location_flag' => 'Hangar'
+            'location_flag' => 'Hangar',
         ]);
 
         //Create Content
         $test_asset->content()->save(Asset::factory()->withName()->create([
-            'location_flag' => 'cargo'
+            'location_flag' => 'cargo',
         ]));
 
         $assets = Asset::query()
@@ -231,17 +232,17 @@ class AssetModelTest extends TestCase
     public function it_has_scopeSearch_asset_content_content()
     {
         $test_asset = Asset::factory()->withName()->create([
-            'location_flag' => 'Hangar'
+            'location_flag' => 'Hangar',
         ]);
 
         //Create Content
         $test_asset->content()->save(Asset::factory()->create([
-            'location_flag' => 'cargo'
+            'location_flag' => 'cargo',
         ]));
 
         $content = $test_asset->content->first();
 
-            //Create Content Content
+        //Create Content Content
         $content->content()->save(Asset::factory()->withName()->create());
 
         $content_content = $content->content->first();
@@ -258,12 +259,12 @@ class AssetModelTest extends TestCase
     public function it_has_content_relationship()
     {
         $test_asset = Asset::factory()->create([
-            'location_flag' => 'Hangar'
+            'location_flag' => 'Hangar',
         ]);
 
         //Create Content
         $test_asset->content()->save(Asset::factory()->create([
-            'location_flag' => 'cargo'
+            'location_flag' => 'cargo',
         ]));
 
         $this->assertInstanceOf(Asset::class, $test_asset->content->first());
@@ -273,12 +274,12 @@ class AssetModelTest extends TestCase
     public function it_has_container_relationship()
     {
         $test_asset = Asset::factory()->create([
-            'location_flag' => 'Hangar'
+            'location_flag' => 'Hangar',
         ]);
 
         //Create Content
         $test_asset->content()->save(Asset::factory()->create([
-            'location_flag' => 'cargo'
+            'location_flag' => 'cargo',
         ]));
 
         $this->assertInstanceOf(Asset::class, $test_asset->content->first()->container);
@@ -287,54 +288,50 @@ class AssetModelTest extends TestCase
     /** @test */
     public function itHasInRegionScope()
     {
-
         $this->assertCount(0, Asset::all());
 
-        $test_asset = Event::fakeFor( fn () => Asset::factory()->create([
+        $test_asset = Event::fakeFor(fn () => Asset::factory()->create([
             'location_flag' => 'Hangar',
             'location_id' => Location::factory()->create([
                 'locatable_type' => Station::class,
                 'locatable_id' => Station::factory()->create([
                     'system_id' => System::factory()->create([
                         'constellation_id' => Constellation::factory()->create([
-                            'region_id' => Region::factory()
-                        ])
-                    ])
+                            'region_id' => Region::factory(),
+                        ]),
+                    ]),
                 ]),
-            ])
+            ]),
         ]));
 
         $region_id = $test_asset->location->locatable->system->region->region_id;
 
         $this->assertCount(1, Asset::inRegion($region_id)->get());
-        $this->assertCount(0, Asset::inRegion($region_id+1)->get());
+        $this->assertCount(0, Asset::inRegion($region_id + 1)->get());
     }
 
     /** @test */
     public function itHasInSystemScope()
     {
-
         $this->assertCount(0, Asset::all());
 
-        $test_asset = Event::fakeFor( fn () => Asset::factory()->create([
+        $test_asset = Event::fakeFor(fn () => Asset::factory()->create([
             'location_flag' => 'Hangar',
             'location_id' => Location::factory()->create([
                 'locatable_type' => Station::class,
                 'locatable_id' => Station::factory()->create([
                     'system_id' => System::factory()->create([
                         'constellation_id' => Constellation::factory()->create([
-                            'region_id' => Region::factory()
-                        ])
-                    ])
+                            'region_id' => Region::factory(),
+                        ]),
+                    ]),
                 ]),
-            ])
+            ]),
         ]));
 
         $system_id = $test_asset->location->locatable->system->system_id;
 
         $this->assertCount(1, Asset::inSystems($system_id)->get());
-        $this->assertCount(0, Asset::inSystems($system_id+1)->get());
+        $this->assertCount(0, Asset::inSystems($system_id + 1)->get());
     }
-
-
 }

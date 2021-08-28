@@ -55,8 +55,10 @@ class ResolveStructurePipe
         // if location_id is a potential structure_id ( >= 100000000)
         if ($this->location_id >= 100_000_000) {
             $this->getStructure();
-            $payload->log_message = sprintf('successfully resolved structure with id %s using refresh_token of %s',
-                $this->location_id, $this->refreshToken->character->name
+            $payload->log_message = sprintf(
+                'successfully resolved structure with id %s using refresh_token of %s',
+                $this->location_id,
+                $this->refreshToken->character->name
             );
         }
 

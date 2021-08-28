@@ -29,33 +29,34 @@ namespace Seatplus\Eveapi\Observers;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletJournalByDivisionJob;
 use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletTransactionByDivisionJob;
-use Seatplus\Eveapi\Models\Corporation\CorporationWallet;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\Wallet\Balance;
 use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 
-class CorporationWalletObserver
+class BalanceObserver
 {
-    private CorporationWallet $corporationWallet;
-
     /**
      * Handle the User "created" event.
      *
-     * @param CorporationWallet $corporationWallet
+     * @param Balance $balance
      * @return void
      * @throws \Seatplus\Eveapi\Exceptions\InvalidContainerDataException
      */
-    public function created(CorporationWallet $corporationWallet)
+    public function created(Balance $balance)
     {
-        $this->corporationWallet = $corporationWallet;
+        if ($balance->balanceable_type instanceof CharacterInfo) {
+            return;
+        }
 
         $find_corporation_refresh_token = new FindCorporationRefreshToken;
 
-        $refresh_token = $find_corporation_refresh_token($this->corporationWallet->corporation_id, head(config('eveapi.scopes.corporation.wallet')), ['Accountant', 'Junior_Accountant']);
+        $refresh_token = $find_corporation_refresh_token($balance->balanceable_id, head(config('eveapi.scopes.corporation.wallet')), ['Accountant', 'Junior_Accountant']);
 
         if ($refresh_token) {
             $job_container = new JobContainer(['refresh_token' => $refresh_token]);
 
-            CorporationWalletJournalByDivisionJob::dispatch($job_container, $corporationWallet->division)->onQueue('high');
-            CorporationWalletTransactionByDivisionJob::dispatch($job_container, $corporationWallet->division)->onQueue('high');
+            CorporationWalletJournalByDivisionJob::dispatch($job_container, $balance->division)->onQueue('high');
+            CorporationWalletTransactionByDivisionJob::dispatch($job_container, $balance->division)->onQueue('high');
         }
     }
 }

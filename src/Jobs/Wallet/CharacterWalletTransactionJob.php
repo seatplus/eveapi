@@ -43,7 +43,9 @@ use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
 class CharacterWalletTransactionJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, HasQueryStringInterface
 {
-    use HasPathValues, HasRequiredScopes, HasQueryValues;
+    use HasPathValues;
+    use HasRequiredScopes;
+    use HasQueryValues;
 
     private int $from_id = PHP_INT_MAX;
 

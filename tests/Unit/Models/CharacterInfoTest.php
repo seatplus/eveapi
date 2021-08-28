@@ -3,7 +3,6 @@
 
 namespace Seatplus\Eveapi\Tests\Unit\Models;
 
-
 use Faker\Factory;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
@@ -15,6 +14,7 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Models\Wallet\Balance;
 use Seatplus\Eveapi\Tests\TestCase;
 
 class CharacterInfoTest extends TestCase
@@ -29,7 +29,6 @@ class CharacterInfoTest extends TestCase
     /** @test */
     public function characterHasRefreshTokenRelationTest()
     {
-
         $this->assertInstanceOf(RefreshToken::class, $this->test_character->refresh_token);
     }
 
@@ -38,16 +37,16 @@ class CharacterInfoTest extends TestCase
     {
         $faker = Factory::create();
 
-        $alliance_id = $faker->numberBetween(99000000,100000000);
+        $alliance_id = $faker->numberBetween(99000000, 100000000);
 
         $affiliation = CharacterAffiliation::factory()->create([
-            'alliance_id' => $alliance_id
+            'alliance_id' => $alliance_id,
         ]);
 
         $character = $affiliation->character()->save(CharacterInfo::factory()->create());
 
         $affiliation->alliance()->associate(AllianceInfo::factory()->create([
-            'alliance_id' => $alliance_id
+            'alliance_id' => $alliance_id,
         ]));
 
         $this->assertInstanceOf(AllianceInfo::class, $character->alliance);
@@ -56,7 +55,6 @@ class CharacterInfoTest extends TestCase
     /** @test */
     public function characterHasCorporationRelationTest()
     {
-
         $this->assertInstanceOf(CorporationInfo::class, $this->test_character->corporation);
     }
 
@@ -66,7 +64,7 @@ class CharacterInfoTest extends TestCase
         $application = Application::factory()->create([
             'corporation_id' => $this->test_character->corporation->corporation_id,
             'applicationable_type' => CharacterInfo::class,
-            'applicationable_id' => $this->test_character->character_id
+            'applicationable_id' => $this->test_character->character_id,
         ]);
 
         $this->assertInstanceOf(Application::class, $this->test_character->application);
@@ -77,7 +75,7 @@ class CharacterInfoTest extends TestCase
     {
         $asset = Asset::factory()->create([
             'assetable_id' => $this->test_character->character_id,
-            'assetable_type' => CharacterInfo::class
+            'assetable_type' => CharacterInfo::class,
         ]);
 
         $this->assertInstanceOf(Asset::class, $this->test_character->refresh()->assets->first());
@@ -105,4 +103,14 @@ class CharacterInfoTest extends TestCase
         $this->assertInstanceOf(CharacterInfo::class, $contract->characters->first());
     }
 
+    /** @test */
+    public function character_has_balance_relationship()
+    {
+        $balance = Balance::factory()->withDivision()->create([
+            'balanceable_id' => $this->test_character->character_id,
+            'balanceable_type' => CharacterInfo::class,
+        ]);
+
+        $this->assertInstanceOf(Balance::class, $this->test_character->refresh()->balance);
+    }
 }

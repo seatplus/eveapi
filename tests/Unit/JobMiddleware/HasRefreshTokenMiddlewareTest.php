@@ -26,18 +26,15 @@ class HasRefreshTokenMiddlewareTest extends TestCase
 
     public function setUp(): void
     {
-
         parent::setUp();
 
         $this->mockJob();
         $this->middleware = new HasRefreshTokenMiddleware();
-
     }
 
     /** @test */
     public function it_runs_with_refresh_token()
     {
-
         $this->job->shouldReceive('fire')->times(1);
 
         $this->job->refresh_token = RefreshToken::factory()->make();
@@ -48,7 +45,6 @@ class HasRefreshTokenMiddlewareTest extends TestCase
     /** @test */
     public function it_fails_without_refresh_token()
     {
-
         $this->job->shouldReceive('fail')->times(1);
 
         $this->job->refresh_token = null;
@@ -56,16 +52,12 @@ class HasRefreshTokenMiddlewareTest extends TestCase
         $this->middleware->handle($this->job, $this->next);
     }
 
-
     private function mockJob()
     {
-
         $this->job = Mockery::mock();
 
         $this->next = function ($job) {
             $job->fire();
         };
-
     }
-
 }

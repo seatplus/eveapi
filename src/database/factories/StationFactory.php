@@ -39,10 +39,10 @@ class StationFactory extends Factory
         return [
             'station_id' => $this->faker->numberBetween(60000000, 64000000),
             'name' => $this->faker->name,
-            'owner_id'  => $this->faker->optional()->numberBetween(98000000, 99000000),
-            'system_id'  => System::factory(),
+            'owner_id' => $this->faker->optional()->numberBetween(98000000, 99000000),
+            'system_id' => System::factory(),
             'type_id' => $this->faker->numberBetween(0, 10000),
-            'race_id'  => $this->faker->optional()->numberBetween(98000000, 99000000),
+            'race_id' => $this->faker->optional()->numberBetween(98000000, 99000000),
             'reprocessing_efficiency' => $this->faker->randomNumber(),
             'reprocessing_stations_take' => $this->faker->randomNumber(),
             'max_dockable_ship_volume' => $this->faker->randomNumber(),
@@ -54,7 +54,7 @@ class StationFactory extends Factory
     public function noSystem()
     {
         return $this->state(fn () => [
-            'system_id'  => $this->faker->numberBetween(30000000, 31000000),
+            'system_id' => $this->faker->numberBetween(30000000, 31000000),
         ]);
     }
 }

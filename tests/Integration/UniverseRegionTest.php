@@ -3,7 +3,6 @@
 
 namespace Seatplus\Eveapi\Tests\Integration;
 
-
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Events\UniverseConstellationCreated;
@@ -33,7 +32,6 @@ class UniverseRegionTest extends TestCase
         $station = Station::factory()->create();
 
         Event::assertDispatched(UniverseStationCreated::class);
-
     }
 
     /** @test */
@@ -65,7 +63,6 @@ class UniverseRegionTest extends TestCase
     /** @test */
     public function it_resolves_system()
     {
-
         $mock_data = System::factory()->make();
         $this->mockRetrieveEsiDataAction($mock_data->toArray());
 
@@ -73,7 +70,7 @@ class UniverseRegionTest extends TestCase
 
         //Assert that no system is created
         $this->assertDatabaseMissing('universe_systems', [
-            'system_id' => $mock_data->system_id
+            'system_id' => $mock_data->system_id,
         ]);
 
         Event::fake();
@@ -85,9 +82,8 @@ class UniverseRegionTest extends TestCase
 
         //Assert that system is created
         $this->assertDatabaseHas('universe_systems', [
-            'system_id' => $mock_data->system_id
+            'system_id' => $mock_data->system_id,
         ]);
-
     }
 
     public function event_starts_dispatcher()
@@ -143,16 +139,15 @@ class UniverseRegionTest extends TestCase
 
         //Assert that no system is present
         $this->assertDatabaseMissing('universe_constellations', [
-            'constellation_id' => $mock_data->constellation_id
+            'constellation_id' => $mock_data->constellation_id,
         ]);
 
         (new ResolveUniverseConstellationByConstellationIdJob($mock_data->constellation_id))->handle();
 
         //Assert that system is created
         $this->assertDatabaseHas('universe_constellations', [
-            'constellation_id' => $mock_data->constellation_id
+            'constellation_id' => $mock_data->constellation_id,
         ]);
-
     }
 
     /** @test */
@@ -200,18 +195,14 @@ class UniverseRegionTest extends TestCase
 
         //Assert that no system is present
         $this->assertDatabaseMissing('universe_regions', [
-            'region_id' => $mock_data->region_id
+            'region_id' => $mock_data->region_id,
         ]);
 
         (new ResolveUniverseRegionByRegionIdJob($mock_data->region_id))->handle();
 
         //Assert that system is created
         $this->assertDatabaseHas('universe_regions', [
-            'region_id' => $mock_data->region_id
+            'region_id' => $mock_data->region_id,
         ]);
-
     }
-
-
-
 }
