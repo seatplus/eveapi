@@ -1,6 +1,5 @@
 <?php
 
-use Mockery;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\RefreshToken;

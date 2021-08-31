@@ -3,7 +3,6 @@
 
 use Illuminate\Bus\Batch;
 use Illuminate\Support\Facades\Bus;
-use Mockery;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationDivisionsJob;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
