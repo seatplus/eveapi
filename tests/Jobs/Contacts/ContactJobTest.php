@@ -1,8 +1,6 @@
 <?php
 
 
-namespace Seatplus\Eveapi\Tests\Jobs\Contacts;
-
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Contacts\AllianceContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\AllianceContactLabelJob;
@@ -12,89 +10,76 @@ use Seatplus\Eveapi\Jobs\Contacts\CorporationContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\CorporationContactLabelJob;
 use Seatplus\Eveapi\Tests\TestCase;
 
-class ContactJobTest extends TestCase
-{
-    /** @test */
-    public function AllianceContactJob()
-    {
-        Queue::fake();
+uses(TestCase::class);
 
-        // Assert that no jobs were pushed...
-        Queue::assertNothingPushed();
+test('alliance contact job', function () {
+    Queue::fake();
 
-        AllianceContactJob::dispatch()->onQueue('default');
+    // Assert that no jobs were pushed...
+    Queue::assertNothingPushed();
 
-        // Assert a job was pushed to a given queue...
-        Queue::assertPushedOn('default', AllianceContactJob::class);
-    }
+    AllianceContactJob::dispatch()->onQueue('default');
 
-    /** @test */
-    public function AllianceContactLabelJob()
-    {
-        Queue::fake();
+    // Assert a job was pushed to a given queue...
+    Queue::assertPushedOn('default', AllianceContactJob::class);
+});
 
-        // Assert that no jobs were pushed...
-        Queue::assertNothingPushed();
+test('alliance contact label job', function () {
+    Queue::fake();
 
-        AllianceContactLabelJob::dispatch()->onQueue('default');
+    // Assert that no jobs were pushed...
+    Queue::assertNothingPushed();
 
-        // Assert a job was pushed to a given queue...
-        Queue::assertPushedOn('default', AllianceContactLabelJob::class);
-    }
+    AllianceContactLabelJob::dispatch()->onQueue('default');
 
-    /** @test */
-    public function CorporationContactJob()
-    {
-        Queue::fake();
+    // Assert a job was pushed to a given queue...
+    Queue::assertPushedOn('default', AllianceContactLabelJob::class);
+});
 
-        // Assert that no jobs were pushed...
-        Queue::assertNothingPushed();
+test('corporation contact job', function () {
+    Queue::fake();
 
-        CorporationContactJob::dispatch()->onQueue('default');
+    // Assert that no jobs were pushed...
+    Queue::assertNothingPushed();
 
-        // Assert a job was pushed to a given queue...
-        Queue::assertPushedOn('default', CorporationContactJob::class);
-    }
+    CorporationContactJob::dispatch()->onQueue('default');
 
-    /** @test */
-    public function CorporationContactLabelJob()
-    {
-        Queue::fake();
+    // Assert a job was pushed to a given queue...
+    Queue::assertPushedOn('default', CorporationContactJob::class);
+});
 
-        // Assert that no jobs were pushed...
-        Queue::assertNothingPushed();
+test('corporation contact label job', function () {
+    Queue::fake();
 
-        CorporationContactLabelJob::dispatch()->onQueue('default');
+    // Assert that no jobs were pushed...
+    Queue::assertNothingPushed();
 
-        // Assert a job was pushed to a given queue...
-        Queue::assertPushedOn('default', CorporationContactLabelJob::class);
-    }
+    CorporationContactLabelJob::dispatch()->onQueue('default');
 
-    /** @test */
-    public function CharacterContactJob()
-    {
-        Queue::fake();
+    // Assert a job was pushed to a given queue...
+    Queue::assertPushedOn('default', CorporationContactLabelJob::class);
+});
 
-        // Assert that no jobs were pushed...
-        Queue::assertNothingPushed();
+test('character contact job', function () {
+    Queue::fake();
 
-        CharacterContactJob::dispatch()->onQueue('default');
+    // Assert that no jobs were pushed...
+    Queue::assertNothingPushed();
 
-        // Assert a job was pushed to a given queue...
-        Queue::assertPushedOn('default', CharacterContactJob::class);
-    }
+    CharacterContactJob::dispatch()->onQueue('default');
 
-    /** @test */
-    public function CharacterContactLabelJob()
-    {
-        Queue::fake();
+    // Assert a job was pushed to a given queue...
+    Queue::assertPushedOn('default', CharacterContactJob::class);
+});
 
-        // Assert that no jobs were pushed...
-        Queue::assertNothingPushed();
+test('character contact label job', function () {
+    Queue::fake();
 
-        CharacterContactLabelJob::dispatch()->onQueue('default');
+    // Assert that no jobs were pushed...
+    Queue::assertNothingPushed();
 
-        // Assert a job was pushed to a given queue...
-        Queue::assertPushedOn('default', CharacterContactLabelJob::class);
-    }
-}
+    CharacterContactLabelJob::dispatch()->onQueue('default');
+
+    // Assert a job was pushed to a given queue...
+    Queue::assertPushedOn('default', CharacterContactLabelJob::class);
+});

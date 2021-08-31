@@ -1,8 +1,6 @@
 <?php
 
 
-namespace Seatplus\Eveapi\Tests\Integration;
-
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameDispatchJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseCategoryByIdJob;
@@ -12,60 +10,50 @@ use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Tests\TestCase;
 
-class GroupLifecycleTest extends TestCase
-{
-    protected function setUp(): void
-    {
-        parent::setUp();
+uses(TestCase::class);
 
-        Queue::fake();
-    }
+beforeEach(function () {
+    Queue::fake();
+});
 
-    /** @test */
-    public function new_group_id_dispatches_category_job_if_group_is_not_present()
-    {
-        Queue::fake();
+test('new group id dispatches category job if group is not present', function () {
+    Queue::fake();
 
-        $group = Group::factory()->create();
+    $group = Group::factory()->create();
 
-        Queue::assertPushedOn('high', ResolveUniverseCategoryByIdJob::class);
-    }
+    Queue::assertPushedOn('high', ResolveUniverseCategoryByIdJob::class);
+});
 
-    /** @test */
-    public function new_group_does_not_dispatches_group_job_if_category_is_present()
-    {
-        Queue::fake();
+test('new group does not dispatches group job if category is present', function () {
+    Queue::fake();
 
-        $category = Category::factory()->create();
+    $category = Category::factory()->create();
 
-        $group = Group::factory()->create([
-            'category_id' => $category->category_id,
-        ]);
+    $group = Group::factory()->create([
+        'category_id' => $category->category_id,
+    ]);
 
-        Queue::assertNotPushed(ResolveUniverseCategoryByIdJob::class);
-    }
+    Queue::assertNotPushed(ResolveUniverseCategoryByIdJob::class);
+});
 
-    /** @test */
-    public function it_dispatches_assets_name_job()
-    {
-        $type = Type::factory()->create();
+it('dispatches assets name job', function () {
+    $type = Type::factory()->create();
 
 
 
-        $asset = Asset::factory()->create([
-            'assetable_id' => $this->test_character->character_id,
-            'type_id' => $type->type_id,
-            'is_singleton' => true,
-        ]);
+    $asset = Asset::factory()->create([
+        'assetable_id' => $this->test_character->character_id,
+        'type_id' => $type->type_id,
+        'is_singleton' => true,
+    ]);
 
-        Queue::fake();
+    Queue::fake();
 
-        $group = Group::factory()->create([
-            'group_id' => $type->group_id,
-            'category_id' => 6,
-        ]);
+    $group = Group::factory()->create([
+        'group_id' => $type->group_id,
+        'category_id' => 6,
+    ]);
 
 
-        Queue::assertPushedOn('high', CharacterAssetsNameDispatchJob::class);
-    }
-}
+    Queue::assertPushedOn('high', CharacterAssetsNameDispatchJob::class);
+});

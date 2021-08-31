@@ -1,8 +1,6 @@
 <?php
 
 
-namespace Seatplus\Eveapi\Tests\Integration;
-
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
@@ -17,115 +15,104 @@ use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 use Seatplus\Eveapi\Services\Esi\RetrieveEsiData;
 use Seatplus\Eveapi\Tests\TestCase;
 
-class CharacterWalletTransactionLifecycleTest extends TestCase
+uses(TestCase::class);
+
+beforeEach(function () {
+    // Prevent any auto dispatching of jobs
+    Queue::fake();
+
+    $this->job_container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]);
+});
+
+test('run wallet transaction action', function () {
+    Queue::assertNothingPushed();
+    $mock_data = Event::fakeFor(fn () => WalletTransaction::factory()->count(5)->make());
+    Queue::assertNothingPushed();
+
+    $response = new EsiResponse(json_encode($mock_data), [], 'now', 200);
+    $response2 = new EsiResponse(json_encode([]), [], 'now', 200);
+
+    \Facades\Seatplus\Eveapi\Services\Esi\RetrieveEsiData::shouldReceive('execute')
+        ->andReturns([$response, $response2]);
+
+    $job_container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]);
+    $mock = Mockery::mock(CharacterWalletTransactionJob::class)->makePartial();
+
+    $mock->shouldReceive('getCharacterId')
+        ->andReturn($this->test_character->character_id);
+
+    $mock->shouldReceive('retrieve')
+        ->once()
+        ->ordered()
+        ->andReturn($response);
+
+    $mock->shouldReceive('retrieve')
+        ->once()
+        ->ordered()
+        ->andReturn($response2);
+
+    $mock->handle();
+
+    assertWalletTransaction($mock_data, $this->test_character->character_id);
+});
+
+test('creation of character wallet transaction dispatches jobs', function () {
+    $wallet_transaction = WalletTransaction::factory()->create([
+        'wallet_transactionable_id' => $this->test_character->character_id,
+    ]);
+
+    Queue::assertPushedOn('high', ResolveLocationJob::class);
+    Queue::assertPushedOn('high', ResolveUniverseTypeByIdJob::class);
+});
+
+test('creation of corporation wallet transaction dispatches jobs', function () {
+    $wallet_transaction = WalletTransaction::factory()->create([
+        'wallet_transactionable_id' => $this->test_character->corporation->corporation_id,
+        'wallet_transactionable_type' => CorporationInfo::class,
+    ]);
+
+    Queue::assertPushedOn('high', ResolveLocationJob::class);
+    Queue::assertPushedOn('high', ResolveUniverseTypeByIdJob::class);
+});
+
+// Helpers
+function buildMockEsiData()
 {
-    public JobContainer $job_container;
+    $mock_data = Event::fakeFor(fn () => WalletTransaction::factory()->count(5)->make());
 
-    public function setUp(): void
-    {
-        parent::setUp();
+    mockRetrieveEsiDataAction($mock_data->toArray());
 
-        // Prevent any auto dispatching of jobs
-        Queue::fake();
+    return $mock_data;
+}
 
-        $this->job_container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]);
-    }
-
-    /** @test */
-    public function runWalletTransactionAction()
-    {
-        Queue::assertNothingPushed();
-        $mock_data = Event::fakeFor(fn () => WalletTransaction::factory()->count(5)->make());
-        Queue::assertNothingPushed();
-
-        $response = new EsiResponse(json_encode($mock_data), [], 'now', 200);
-        $response2 = new EsiResponse(json_encode([]), [], 'now', 200);
-
-        \Facades\Seatplus\Eveapi\Services\Esi\RetrieveEsiData::shouldReceive('execute')
-            ->andReturns([$response, $response2]);
-
-        $job_container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]);
-        $mock = Mockery::mock(CharacterWalletTransactionJob::class)->makePartial();
-
-        $mock->shouldReceive('getCharacterId')
-            ->andReturn($this->test_character->character_id);
-
-        $mock->shouldReceive('retrieve')
-            ->once()
-            ->ordered()
-            ->andReturn($response);
-
-        $mock->shouldReceive('retrieve')
-            ->once()
-            ->ordered()
-            ->andReturn($response2);
-
-        $mock->handle();
-
-        $this->assertWalletTransaction($mock_data, $this->test_character->character_id);
-    }
-
-    /** @test */
-    public function creationOfCharacterWalletTransactionDispatchesJobs()
-    {
-        $wallet_transaction = WalletTransaction::factory()->create([
-            'wallet_transactionable_id' => $this->test_character->character_id,
+function assertWalletTransaction(Collection $mock_data, int $wallet_transactionable_id)
+{
+    foreach ($mock_data as $data) {
+        //Assert that character asset created
+        $this->assertDatabaseHas('wallet_transactions', [
+            'wallet_transactionable_id' => $wallet_transactionable_id,
+            'transaction_id' => $data->transaction_id,
         ]);
-
-        Queue::assertPushedOn('high', ResolveLocationJob::class);
-        Queue::assertPushedOn('high', ResolveUniverseTypeByIdJob::class);
     }
+}
 
-    /** @test */
-    public function creationOfCorporationWalletTransactionDispatchesJobs()
-    {
-        $wallet_transaction = WalletTransaction::factory()->create([
-            'wallet_transactionable_id' => $this->test_character->corporation->corporation_id,
-            'wallet_transactionable_type' => CorporationInfo::class,
-        ]);
+function mockRetrieveEsiDataAction(array $body) : void
+{
+    $data = json_encode($body);
 
-        Queue::assertPushedOn('high', ResolveLocationJob::class);
-        Queue::assertPushedOn('high', ResolveUniverseTypeByIdJob::class);
-    }
+    $response = new EsiResponse($data, [], 'now', 200);
+    $response2 = new EsiResponse(json_encode([]), [], 'now', 200);
 
-    private function buildMockEsiData()
-    {
-        $mock_data = Event::fakeFor(fn () => WalletTransaction::factory()->count(5)->make());
+    //$mock = Mockery::namedMock( CharacterWalletTransactionAction::class,  RetrieveFromEsiInterface::class)->makePartial();
+    $mock = Mockery::mock('overload:' . RetrieveEsiData::class);
 
-        $this->mockRetrieveEsiDataAction($mock_data->toArray());
+    $mock->shouldReceive('execute')
+        ->once()
+        ->ordered()
+        ->andReturn($response);
 
-        return $mock_data;
-    }
-
-    private function assertWalletTransaction(Collection $mock_data, int $wallet_transactionable_id)
-    {
-        foreach ($mock_data as $data) {
-            //Assert that character asset created
-            $this->assertDatabaseHas('wallet_transactions', [
-                'wallet_transactionable_id' => $wallet_transactionable_id,
-                'transaction_id' => $data->transaction_id,
-            ]);
-        }
-    }
-
-    private function mockRetrieveEsiDataAction(array $body) : void
-    {
-        $data = json_encode($body);
-
-        $response = new EsiResponse($data, [], 'now', 200);
-        $response2 = new EsiResponse(json_encode([]), [], 'now', 200);
-
-        //$mock = Mockery::namedMock( CharacterWalletTransactionAction::class,  RetrieveFromEsiInterface::class)->makePartial();
-        $mock = Mockery::mock('overload:' . RetrieveEsiData::class);
-
-        $mock->shouldReceive('execute')
-            ->once()
-            ->ordered()
-            ->andReturn($response);
-
-        $mock->shouldReceive('execute')
-            ->once()
-            ->ordered()
-            ->andReturn($response2);
-    }
+    $mock->shouldReceive('execute')
+        ->once()
+        ->ordered()
+        ->andReturn($response2);
 }

@@ -1,45 +1,38 @@
 <?php
 
 
-namespace Seatplus\Eveapi\Tests\Unit\Models;
-
 use Seatplus\Eveapi\Tests\TestCase;
 
-class GlobalSettingsTest extends TestCase
-{
-    /** @test */
-    public function setGlobalSetting()
-    {
-        $test_value = 'settingTest';
-        setting(['test', $test_value]);
+uses(TestCase::class);
 
-        $this->assertDatabaseHas('global_settings', [
-            'name' => 'test',
-        ]);
+test('set global setting', function () {
+    $test_value = 'settingTest';
+    setting(['test', $test_value]);
 
-        $this->assertEquals($test_value, setting('test'));
-    }
+    $this->assertDatabaseHas('global_settings', [
+        'name' => 'test',
+    ]);
 
-    /** @test */
-    public function getGlobalSetting()
-    {
-        $testing_value = bin2hex(random_bytes(10));
+    $this->assertEquals($test_value, setting('test'));
+});
 
-        // 1. try to get a non set setting, returning null
-        $value = setting('test');
+test('get global setting', function () {
+    $testing_value = bin2hex(random_bytes(10));
 
-        $this->assertNull($value);
+    // 1. try to get a non set setting, returning null
+    $value = setting('test');
 
-        // 2. set setting and expect the setting to return the previously set value.
+    $this->assertNull($value);
 
-        $value = setting(['test', $testing_value]);
+    // 2. set setting and expect the setting to return the previously set value.
 
-        $this->assertNotNull($value);
+    $value = setting(['test', $testing_value]);
 
-        $this->assertEquals($value, $testing_value);
+    $this->assertNotNull($value);
 
-        $this->assertDatabaseHas('global_settings', [
-            'name' => 'test',
-        ]);
-    }
-}
+    $this->assertEquals($value, $testing_value);
+
+    $this->assertDatabaseHas('global_settings', [
+        'name' => 'test',
+    ]);
+});

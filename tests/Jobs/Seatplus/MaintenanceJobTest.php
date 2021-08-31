@@ -1,8 +1,6 @@
 <?php
 
 
-namespace Seatplus\Eveapi\Tests\Jobs\Seatplus;
-
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
 use Mockery;
@@ -54,676 +52,592 @@ use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 use Seatplus\Eveapi\Tests\TestCase;
 
-class MaintenanceJobTest extends TestCase
-{
-    private MaintenanceJob $job;
+uses(TestCase::class);
 
-    public function setUp(): void
-    {
-        parent::setUp();
+beforeEach(function () {
+    //$this->job = new MaintenanceJob;
+});
 
-        //$this->job = new MaintenanceJob;
-    }
+it('dispatch get missing types from character assets job', function () {
+    Bus::fake();
 
-    /** @test */
-    public function it_dispatch_GetMissingTypesFromCharacterAssets_job()
-    {
-        Bus::fake();
+    (new MaintenanceJob)->handle();
 
-        (new MaintenanceJob)->handle();
+    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingTypesFromCharacterAssets));
+});
 
-        Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingTypesFromCharacterAssets));
-    }
+it('fetches missing types from assets', function () {
+    $asset = Event::fakeFor(fn () => Asset::factory()->create([
+        'assetable_id' => $this->test_character->character_id,
+    ]));
 
-    /** @test */
-    public function it_fetches_missing_types_from_assets()
-    {
-        $asset = Event::fakeFor(fn () => Asset::factory()->create([
-            'assetable_id' => $this->test_character->character_id,
-        ]));
+    $mock = Mockery::mock(GetMissingTypesFromCharacterAssets::class)->makePartial();
 
-        $mock = Mockery::mock(GetMissingTypesFromCharacterAssets::class)->makePartial();
+    $mock->shouldReceive('batch->add')
+        ->once()
+        ->with([
+            new ResolveUniverseTypeByIdJob($asset->type_id),
+        ]);
+    $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
 
-        $mock->shouldReceive('batch->add')
-            ->once()
-            ->with([
-                new ResolveUniverseTypeByIdJob($asset->type_id),
-            ]);
-        $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
+    $mock->handle();
+});
 
-        $mock->handle();
-    }
+it('dispatch get missing types from locations job', function () {
+    Bus::fake();
 
-    /** @test */
-    public function it_dispatch_GetMissingTypesFromLocations_job()
-    {
-        Bus::fake();
+    (new MaintenanceJob)->handle();
 
-        (new MaintenanceJob)->handle();
+    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingTypesFromLocations));
+});
 
-        Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingTypesFromLocations));
-    }
-
-    /** @test */
-    public function it_fetches_missing_types_from_locations()
-    {
-        $station = Event::fakeFor(fn () => Station::factory()->create());
-        $location = Event::fakeFor(fn () => Location::factory()->create([
-            'location_id' => $station->station_id,
-            'locatable_id' => $station->station_id,
-            'locatable_type' => Station::class,
-        ]));
+it('fetches missing types from locations', function () {
+    $station = Event::fakeFor(fn () => Station::factory()->create());
+    $location = Event::fakeFor(fn () => Location::factory()->create([
+        'location_id' => $station->station_id,
+        'locatable_id' => $station->station_id,
+        'locatable_type' => Station::class,
+    ]));
 
 
-        $mock = Mockery::mock(GetMissingTypesFromLocations::class)->makePartial();
+    $mock = Mockery::mock(GetMissingTypesFromLocations::class)->makePartial();
 
-        $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
-        $mock->shouldReceive('batch->add')
-            ->once()
-            ->with([
-                new ResolveUniverseTypeByIdJob($location->locatable->type_id),
-            ]);
-
-        $mock->handle();
-    }
-
-    /** @test */
-    public function it_dispatch_GetMissingGroups_job()
-    {
-        Bus::fake();
-
-        (new MaintenanceJob)->handle();
-
-        Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingGroups));
-    }
-
-    /** @test */
-    public function it_catches_missing_groups_from_type()
-    {
-        $type = Event::fakeFor(fn () => Type::factory()->create());
-
-        $mock = Mockery::mock(GetMissingGroups::class)->makePartial();
-
-        $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
-        $mock->shouldReceive('batch->add')
-            ->once()
-            ->with([
-                new ResolveUniverseGroupByIdJob($type->group_id),
-            ]);
-
-        $mock->handle();
-    }
-
-    /** @test */
-    public function it_dispatch_GetMissingCategorys_job()
-    {
-        Bus::fake();
-
-        (new MaintenanceJob)->handle();
-
-        Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingCategorys));
-    }
-
-    /** @test */
-    public function it_catches_missing_categories_from_group()
-    {
-        $group = Event::fakeFor(fn () => Group::factory()->create());
-
-        $mock = Mockery::mock(GetMissingCategorys::class)->makePartial();
-
-        $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
-        $mock->shouldReceive('batch->add')
-            ->once()
-            ->with([
-                new ResolveUniverseCategoryByIdJob($group->category_id),
-            ]);
-
-        $mock->handle();
-    }
-
-    /** @test */
-    public function it_dispatch_GetMissingLocationFromAssets_job()
-    {
-        Bus::fake();
-
-        (new MaintenanceJob)->handle();
-
-        Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingLocationFromAssets));
-    }
-
-    /** @test */
-    public function it_adds_ResolveLocationJob_for_missing_assets_location_to_batch()
-    {
-        $asset = Event::fakeFor(fn () => Asset::factory()->create([
-            'assetable_id' => $this->test_character->character_id,
-            'location_flag' => 'Hangar',
-        ]));
-
-        $mock = Mockery::mock(GetMissingLocationFromAssets::class)->makePartial();
-
-        $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
-        $mock->shouldReceive('batch->add')
-            ->once()
-            ->with([
-                new ResolveLocationJob($asset->location_id, $this->test_character->refresh_token),
-            ]);
-
-        $mock->handle();
-    }
-
-    /** @test */
-    public function getMissingLocationFromAssetsPipeCanHandleNonStationOrStructureLocations()
-    {
-        $type = Type::factory()->create();
-
-        $this->assertCount(0, Location::all());
-
-        $non_structure_or_station_location = Location::factory()->create([
-            'location_id' => $type->type_id,
-            'locatable_id' => $type->type_id,
-            'locatable_type' => Type::class,
+    $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
+    $mock->shouldReceive('batch->add')
+        ->once()
+        ->with([
+            new ResolveUniverseTypeByIdJob($location->locatable->type_id),
         ]);
 
-        $this->assertCount(1, Location::all());
+    $mock->handle();
+});
 
-        $asset = Event::fakeFor(fn () => Asset::factory()->create([
-            'assetable_id' => $this->test_character->character_id,
-            'location_flag' => 'Hangar',
-            'location_id' => $type->type_id,
-        ]));
+it('dispatch get missing groups job', function () {
+    Bus::fake();
 
-        $mock = Mockery::mock(GetMissingLocationFromAssets::class)->makePartial();
+    (new MaintenanceJob)->handle();
 
-        $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
-        $mock->shouldReceive('batch->add')
-            ->once()
-            ->with([
-                new ResolveLocationJob($type->type_id, $this->test_character->refresh_token),
-            ]);
+    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingGroups));
+});
 
-        $mock->handle();
-    }
+it('catches missing groups from type', function () {
+    $type = Event::fakeFor(fn () => Type::factory()->create());
 
-    /** @test */
-    public function it_dispatch_GetMissingAssetsNames_job()
-    {
-        Bus::fake();
+    $mock = Mockery::mock(GetMissingGroups::class)->makePartial();
 
-        (new MaintenanceJob)->handle();
-
-        Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingAssetsNames));
-    }
-
-    /** @test */
-    public function it_dispatch_resolve_missing_assets_name_jog()
-    {
-        $asset = Event::fakeFor(fn () => Asset::factory()->create([
-            'assetable_id' => $this->test_character->character_id,
-            'location_flag' => 'Hangar',
-        ]));
-
-        $type = Event::fakeFor(fn () => Type::factory()->create([
-            'type_id' => $asset->type_id,
-            'group_id' => Group::factory()->create(['category_id' => 2]),
-        ]));
-
-        $job_container = new JobContainer([
-            'refresh_token' => RefreshToken::find($this->test_character->character_id),
+    $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
+    $mock->shouldReceive('batch->add')
+        ->once()
+        ->with([
+            new ResolveUniverseGroupByIdJob($type->group_id),
         ]);
 
-        $mock = Mockery::mock(GetMissingAssetsNames::class)->makePartial();
+    $mock->handle();
+});
 
-        $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
-        $mock->shouldReceive('batch->add')
-            ->once()
-            ->with([
-                new CharacterAssetsNameDispatchJob($job_container),
-            ]);
+it('dispatch get missing categorys job', function () {
+    Bus::fake();
 
-        $mock->handle();
-    }
+    (new MaintenanceJob)->handle();
 
-    /** @test */
-    public function it_dispatch_GetMissingTypesFromCorporationMemberTracking_job()
-    {
-        Bus::fake();
+    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingCategorys));
+});
 
-        (new MaintenanceJob)->handle();
+it('catches missing categories from group', function () {
+    $group = Event::fakeFor(fn () => Group::factory()->create());
 
-        Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingTypesFromCorporationMemberTracking));
-    }
+    $mock = Mockery::mock(GetMissingCategorys::class)->makePartial();
 
-    /** @test */
-    public function it_fetches_missing_types_from_corporation_member_tracking()
-    {
-        $corporation_member_tracking = Event::fakeFor(fn () => CorporationMemberTracking::factory()->create());
-
-
-        $mock = Mockery::mock(GetMissingTypesFromCorporationMemberTracking::class)->makePartial();
-
-        $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
-        $mock->shouldReceive('batch->add')
-            ->once()
-            ->with([
-                new ResolveUniverseTypeByIdJob($corporation_member_tracking->ship_type_id),
-            ]);
-
-        $mock->handle();
-    }
-
-    /** @test */
-    public function it_dispatch_GetMissingLocationFromCorporationMemberTracking_job()
-    {
-        Bus::fake();
-
-        (new MaintenanceJob)->handle();
-
-        Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingLocationFromCorporationMemberTracking));
-    }
-
-    /** @test */
-    public function it_dispatch_resolve_location_job_for_missing_corporation_member_tracking_location()
-    {
-        $corporation_member_tracking = Event::fakeFor(fn () => CorporationMemberTracking::factory()->create([
-            'character_id' => $this->test_character->character_id,
-        ]));
-
-        $mock = Mockery::mock(GetMissingLocationFromCorporationMemberTracking::class)->makePartial();
-
-        $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
-        $mock->shouldReceive('batch->add')
-            ->once()
-            ->with([
-                new ResolveLocationJob($corporation_member_tracking->location_id, $this->test_character->refresh_token),
-            ]);
-
-        $mock->handle();
-    }
-
-    /** @test */
-    public function getMissingLocationFromCorporationMemberTrackingPipeCanHandleNonStationOrStructureLocations()
-    {
-        $type = Type::factory()->create();
-
-        $this->assertCount(0, Location::all());
-
-        $non_structure_or_station_location = Location::factory()->create([
-            'location_id' => $type->type_id,
-            'locatable_id' => $type->type_id,
-            'locatable_type' => Type::class,
+    $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
+    $mock->shouldReceive('batch->add')
+        ->once()
+        ->with([
+            new ResolveUniverseCategoryByIdJob($group->category_id),
         ]);
 
-        $this->assertCount(1, Location::all());
+    $mock->handle();
+});
 
+it('dispatch get missing location from assets job', function () {
+    Bus::fake();
 
-        Event::fakeFor(fn () => CorporationMemberTracking::factory()->create([
-            'character_id' => $this->test_character->character_id,
-            'location_id' => $type->type_id,
-        ]));
+    (new MaintenanceJob)->handle();
 
-        $this->assertCount(1, CorporationMemberTracking::all());
-        $this->assertNotNull(CorporationMemberTracking::first()->location);
+    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingLocationFromAssets));
+});
 
-        $mock = Mockery::mock(GetMissingLocationFromCorporationMemberTracking::class)->makePartial();
+it('adds resolve location job for missing assets location to batch', function () {
+    $asset = Event::fakeFor(fn () => Asset::factory()->create([
+        'assetable_id' => $this->test_character->character_id,
+        'location_flag' => 'Hangar',
+    ]));
 
-        $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
-        $mock->shouldReceive('batch->add')
-            ->once()
-            ->with([
-                new ResolveLocationJob($type->type_id, $this->test_character->refresh_token),
-            ]);
+    $mock = Mockery::mock(GetMissingLocationFromAssets::class)->makePartial();
 
-        $mock->handle();
-    }
-
-    /** @test */
-    public function it_dispatch_GetMissingTypesFromWalletTransaction_job()
-    {
-        Bus::fake();
-
-        (new MaintenanceJob)->handle();
-
-        Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingTypesFromWalletTransaction));
-    }
-
-    /** @test */
-    public function it_fetches_missing_types_from_wallet_transaction()
-    {
-        $asset = Event::fakeFor(fn () => WalletTransaction::factory()->create([
-            'wallet_transactionable_id' => $this->test_character->character_id,
-        ]));
-
-        $mock = Mockery::mock(GetMissingTypesFromWalletTransaction::class)->makePartial();
-
-        $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
-        $mock->shouldReceive('batch->add')
-            ->once()
-            ->with([
-                new ResolveUniverseTypeByIdJob($asset->type_id),
-            ]);
-
-        $mock->handle();
-    }
-
-    /** @test */
-    public function it_dispatch_GetMissingLocationFromWalletTransaction_job()
-    {
-        Bus::fake();
-
-        (new MaintenanceJob)->handle();
-
-        Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingLocationFromWalletTransaction));
-    }
-
-    /** @test */
-    public function it_dispatch_resolve_location_job_for_missing_wallet_transaction_location()
-    {
-        $wallet_transaction = Event::fakeFor(fn () => WalletTransaction::factory()->create([
-            'wallet_transactionable_id' => $this->test_character->character_id,
-        ]));
-
-        $mock = Mockery::mock(GetMissingLocationFromWalletTransaction::class)->makePartial();
-
-        $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
-        $mock->shouldReceive('batch->add')
-            ->once()
-            ->with([
-                new ResolveLocationJob($wallet_transaction->location_id, $this->test_character->refresh_token),
-            ]);
-
-        $mock->handle();
-    }
-
-    /** @test */
-    public function getMissingLocationFromWalletTransactionPipeCanHandleNonStationOrStructureLocations()
-    {
-        $type = Type::factory()->create();
-
-        $this->assertCount(0, Location::all());
-
-        $non_structure_or_station_location = Location::factory()->create([
-            'location_id' => $type->type_id,
-            'locatable_id' => $type->type_id,
-            'locatable_type' => Type::class,
+    $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
+    $mock->shouldReceive('batch->add')
+        ->once()
+        ->with([
+            new ResolveLocationJob($asset->location_id, $this->test_character->refresh_token),
         ]);
 
-        $this->assertCount(1, Location::all());
+    $mock->handle();
+});
 
+test('get missing location from assets pipe can handle non station or structure locations', function () {
+    $type = Type::factory()->create();
 
-        Event::fakeFor(fn () => WalletTransaction::factory()->create([
-            'wallet_transactionable_id' => $this->test_character->character_id,
-            'location_id' => $type->type_id,
-        ]));
+    $this->assertCount(0, Location::all());
 
-        $mock = Mockery::mock(GetMissingLocationFromWalletTransaction::class)->makePartial();
+    $non_structure_or_station_location = Location::factory()->create([
+        'location_id' => $type->type_id,
+        'locatable_id' => $type->type_id,
+        'locatable_type' => Type::class,
+    ]);
 
-        $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
-        $mock->shouldReceive('batch->add')
-            ->once()
-            ->with([
-                new ResolveLocationJob($type->type_id, $this->test_character->refresh_token),
-            ]);
+    $this->assertCount(1, Location::all());
 
-        $mock->handle();
-    }
+    $asset = Event::fakeFor(fn () => Asset::factory()->create([
+        'assetable_id' => $this->test_character->character_id,
+        'location_flag' => 'Hangar',
+        'location_id' => $type->type_id,
+    ]));
 
-    /** @test */
-    public function it_dispatch_GetMissingCharacterInfosFromCorporationMemberTracking_job()
-    {
-        Bus::fake();
+    $mock = Mockery::mock(GetMissingLocationFromAssets::class)->makePartial();
 
-        (new MaintenanceJob)->handle();
-
-        Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingCharacterInfosFromCorporationMemberTracking));
-    }
-
-    /** @test */
-    public function it_dispatches_character_info_job_for_missing_member_tracking_characters()
-    {
-        $corporation_member_tracking = Event::fakeFor(fn () => CorporationMemberTracking::factory()->create([
-            'character_id' => CharacterInfo::factory()->make(),
-        ]));
-
-        $jobContainer = new JobContainer([
-            'character_id' => $corporation_member_tracking->character_id,
+    $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
+    $mock->shouldReceive('batch->add')
+        ->once()
+        ->with([
+            new ResolveLocationJob($type->type_id, $this->test_character->refresh_token),
         ]);
 
-        $mock = Mockery::mock(GetMissingCharacterInfosFromCorporationMemberTracking::class)->makePartial();
+    $mock->handle();
+});
 
-        $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
-        $mock->shouldReceive('batch->add')
-            ->once()
-            ->with([
-                new CharacterInfoJob($jobContainer),
-            ]);
+it('dispatch get missing assets names job', function () {
+    Bus::fake();
 
-        $mock->handle();
-    }
+    (new MaintenanceJob)->handle();
 
-    /** @test */
-    public function it_dispatch_GetMissingTypesFromContractItem_job()
-    {
-        Bus::fake();
+    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingAssetsNames));
+});
 
-        (new MaintenanceJob)->handle();
+it('dispatch resolve missing assets name jog', function () {
+    $asset = Event::fakeFor(fn () => Asset::factory()->create([
+        'assetable_id' => $this->test_character->character_id,
+        'location_flag' => 'Hangar',
+    ]));
 
-        Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingTypesFromContractItem));
-    }
+    $type = Event::fakeFor(fn () => Type::factory()->create([
+        'type_id' => $asset->type_id,
+        'group_id' => Group::factory()->create(['category_id' => 2]),
+    ]));
 
-    /** @test */
-    public function it_dispatches_resolve_types_job_for_missing_contract_item_types()
-    {
-        $contract_item = Event::fakeFor(fn () => ContractItem::factory()->withoutType()->create());
+    $job_container = new JobContainer([
+        'refresh_token' => RefreshToken::find($this->test_character->character_id),
+    ]);
 
-        $mock = Mockery::mock(GetMissingTypesFromContractItem::class)->makePartial();
+    $mock = Mockery::mock(GetMissingAssetsNames::class)->makePartial();
 
-        $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
-        $mock->shouldReceive('batch->add')
-            ->once()
-            ->with([
-                new ResolveUniverseTypeByIdJob($contract_item->type_id),
-            ]);
-
-        $mock->handle();
-    }
-
-    /** @test */
-    public function it_dispatch_GetMissingLocationFromContracts_job()
-    {
-        Bus::fake();
-
-        (new MaintenanceJob)->handle();
-
-        Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingLocationFromContracts));
-    }
-
-    /** @test */
-    public function it_dispatches_resolve_location_job_for_missing_contract_locations()
-    {
-        $contract = Event::fakeFor(fn () => Contract::factory()->create([
-            'start_location_id' => 12345,
-            'end_location_id' => 12345,
-            'assignee_id' => $this->test_character->character_id,
-        ]));
-
-        $mock = Mockery::mock(GetMissingLocationFromContracts::class)->makePartial();
-
-        $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
-        $mock->shouldReceive('batch->add')
-            ->once()
-            ->with([
-                new ResolveLocationJob($contract->start_location_id, $this->test_character->refresh_token),
-            ]);
-
-        $mock->handle();
-    }
-
-    /** @test */
-    public function getMissingStartLocationFromContractsPipeCanHandleNonStationOrStructureLocations()
-    {
-        $type = Type::factory()->create();
-
-        $this->assertCount(0, Location::all());
-
-        $non_structure_or_station_location = Location::factory()->create([
-            'location_id' => $type->type_id,
-            'locatable_id' => $type->type_id,
-            'locatable_type' => Type::class,
+    $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
+    $mock->shouldReceive('batch->add')
+        ->once()
+        ->with([
+            new CharacterAssetsNameDispatchJob($job_container),
         ]);
 
-        $this->assertCount(1, Location::all());
+    $mock->handle();
+});
 
-        $contract = Event::fakeFor(fn () => Contract::factory()->create([
-            'start_location_id' => $type->type_id,
-            'end_location_id' => $type->type_id,
-            'assignee_id' => $this->test_character->character_id,
-        ]));
+it('dispatch get missing types from corporation member tracking job', function () {
+    Bus::fake();
 
-        $mock = Mockery::mock(GetMissingLocationFromContracts::class)->makePartial();
+    (new MaintenanceJob)->handle();
 
-        $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
-        $mock->shouldReceive('batch->add')
-            ->once()
-            ->with([
-                new ResolveLocationJob($contract->start_location_id, $this->test_character->refresh_token),
-            ]);
+    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingTypesFromCorporationMemberTracking));
+});
 
-        $mock->handle();
-    }
+it('fetches missing types from corporation member tracking', function () {
+    $corporation_member_tracking = Event::fakeFor(fn () => CorporationMemberTracking::factory()->create());
 
-    /** @test */
-    public function it_dispatch_GetMissingConstellations_and_GetMissingRegions_asChained_job()
-    {
-        Bus::fake();
 
-        (new MaintenanceJob)->handle();
+    $mock = Mockery::mock(GetMissingTypesFromCorporationMemberTracking::class)->makePartial();
 
-        Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => [
-            new GetMissingConstellations,
-            new GetMissingRegions,
-        ])); //$batch->jobs->first(fn($job) => $job instanceof GetMissingConstellations));
-    }
-
-    /** @test */
-    public function it_dispatches_ResolveUniverseConstellationByConstellationIdJob_for_missing_constellations()
-    {
-        $system = Event::fakeFor(fn () => System::factory()->noConstellation()->create());
-
-        $mock = Mockery::mock(GetMissingConstellations::class)->makePartial();
-
-        $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
-        $mock->shouldReceive('batch->add')
-            ->once()
-            ->with([
-                new ResolveUniverseConstellationByConstellationIdJob($system->constellation_id),
-            ]);
-
-        $mock->handle();
-    }
-
-    /** @test */
-    public function it_dispatches_ResolveUniverseRegionByRegionIdJob_for_missing_regionss()
-    {
-        $constellation = Event::fakeFor(fn () => Constellation::factory()->noRegion()->create());
-
-        $mock = Mockery::mock(GetMissingRegions::class)->makePartial();
-
-        $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
-        $mock->shouldReceive('batch->add')
-            ->once()
-            ->with([
-                new ResolveUniverseRegionByRegionIdJob($constellation->region_id),
-            ]);
-
-        $mock->handle();
-    }
-
-    /** @test */
-    public function it_dispatch_GetMissingTypesFromSkills_asChained_job()
-    {
-        Bus::fake();
-
-        (new MaintenanceJob)->handle();
-
-        Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingTypesFromSkills));
-    }
-
-    /** @test */
-    public function it_dispatches_ResolveUniverseTypeByIdJob_for_missing_types_of_skills()
-    {
-        $skill = Event::fakeFor(fn () => Skill::factory(['skill_id' => 1234])->create());
-
-        $mock = Mockery::mock(GetMissingTypesFromSkills::class)->makePartial();
-
-        $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
-        $mock->shouldReceive('batch->add')
-            ->once()
-            ->with([
-                new ResolveUniverseTypeByIdJob($skill->skill_id),
-            ]);
-
-        $mock->handle();
-    }
-
-    /** @test */
-    public function it_dispatch_GetMissingTypesFromSkillQueue_asChained_job()
-    {
-        Bus::fake();
-
-        (new MaintenanceJob)->handle();
-
-        Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingTypesFromSkillQueue));
-    }
-
-    /** @test */
-    public function it_dispatches_ResolveUniverseTypeByIdJob_for_missing_types_of_skillqueue()
-    {
-        $skill = Event::fakeFor(fn () => SkillQueue::factory(['skill_id' => 1234])->create());
-
-        $mock = Mockery::mock(GetMissingTypesFromSkillQueue::class)->makePartial();
-
-        $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
-        $mock->shouldReceive('batch->add')
-            ->once()
-            ->with([
-                new ResolveUniverseTypeByIdJob($skill->skill_id),
-            ]);
-
-        $mock->handle();
-    }
-
-    /** @test */
-    public function it_dispatch_GetMissingBodysFromMails_asChained_job()
-    {
-        Bus::fake();
-
-        (new MaintenanceJob)->handle();
-
-        Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingBodysFromMails));
-    }
-
-    /** @test */
-    public function it_dispatches_MailBodyJob_for_missing_mail_bodies()
-    {
-        $this->test_character->refresh_token()->update(['scopes' => ['esi-mail.read_mail.v1']]);
-
-        $mail = Event::fakeFor(fn () => Mail::factory(['body' => null])->create());
-
-        MailRecipients::create([
-            'mail_id' => $mail->id,
-            'receivable_id' => $this->test_character->character_id,
-            'receivable_type' => CharacterInfo::class,
+    $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
+    $mock->shouldReceive('batch->add')
+        ->once()
+        ->with([
+            new ResolveUniverseTypeByIdJob($corporation_member_tracking->ship_type_id),
         ]);
 
-        $mock = Mockery::mock(GetMissingBodysFromMails::class)->makePartial();
+    $mock->handle();
+});
 
-        $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
-        $mock->shouldReceive('batch->add')
-            ->once()
-            ->with([
-                new MailBodyJob($container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]), $mail->id),
-            ]);
+it('dispatch get missing location from corporation member tracking job', function () {
+    Bus::fake();
 
-        $mock->handle();
-    }
-}
+    (new MaintenanceJob)->handle();
+
+    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingLocationFromCorporationMemberTracking));
+});
+
+it('dispatch resolve location job for missing corporation member tracking location', function () {
+    $corporation_member_tracking = Event::fakeFor(fn () => CorporationMemberTracking::factory()->create([
+        'character_id' => $this->test_character->character_id,
+    ]));
+
+    $mock = Mockery::mock(GetMissingLocationFromCorporationMemberTracking::class)->makePartial();
+
+    $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
+    $mock->shouldReceive('batch->add')
+        ->once()
+        ->with([
+            new ResolveLocationJob($corporation_member_tracking->location_id, $this->test_character->refresh_token),
+        ]);
+
+    $mock->handle();
+});
+
+test('get missing location from corporation member tracking pipe can handle non station or structure locations', function () {
+    $type = Type::factory()->create();
+
+    $this->assertCount(0, Location::all());
+
+    $non_structure_or_station_location = Location::factory()->create([
+        'location_id' => $type->type_id,
+        'locatable_id' => $type->type_id,
+        'locatable_type' => Type::class,
+    ]);
+
+    $this->assertCount(1, Location::all());
+
+
+    Event::fakeFor(fn () => CorporationMemberTracking::factory()->create([
+        'character_id' => $this->test_character->character_id,
+        'location_id' => $type->type_id,
+    ]));
+
+    $this->assertCount(1, CorporationMemberTracking::all());
+    $this->assertNotNull(CorporationMemberTracking::first()->location);
+
+    $mock = Mockery::mock(GetMissingLocationFromCorporationMemberTracking::class)->makePartial();
+
+    $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
+    $mock->shouldReceive('batch->add')
+        ->once()
+        ->with([
+            new ResolveLocationJob($type->type_id, $this->test_character->refresh_token),
+        ]);
+
+    $mock->handle();
+});
+
+it('dispatch get missing types from wallet transaction job', function () {
+    Bus::fake();
+
+    (new MaintenanceJob)->handle();
+
+    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingTypesFromWalletTransaction));
+});
+
+it('fetches missing types from wallet transaction', function () {
+    $asset = Event::fakeFor(fn () => WalletTransaction::factory()->create([
+        'wallet_transactionable_id' => $this->test_character->character_id,
+    ]));
+
+    $mock = Mockery::mock(GetMissingTypesFromWalletTransaction::class)->makePartial();
+
+    $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
+    $mock->shouldReceive('batch->add')
+        ->once()
+        ->with([
+            new ResolveUniverseTypeByIdJob($asset->type_id),
+        ]);
+
+    $mock->handle();
+});
+
+it('dispatch get missing location from wallet transaction job', function () {
+    Bus::fake();
+
+    (new MaintenanceJob)->handle();
+
+    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingLocationFromWalletTransaction));
+});
+
+it('dispatch resolve location job for missing wallet transaction location', function () {
+    $wallet_transaction = Event::fakeFor(fn () => WalletTransaction::factory()->create([
+        'wallet_transactionable_id' => $this->test_character->character_id,
+    ]));
+
+    $mock = Mockery::mock(GetMissingLocationFromWalletTransaction::class)->makePartial();
+
+    $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
+    $mock->shouldReceive('batch->add')
+        ->once()
+        ->with([
+            new ResolveLocationJob($wallet_transaction->location_id, $this->test_character->refresh_token),
+        ]);
+
+    $mock->handle();
+});
+
+test('get missing location from wallet transaction pipe can handle non station or structure locations', function () {
+    $type = Type::factory()->create();
+
+    $this->assertCount(0, Location::all());
+
+    $non_structure_or_station_location = Location::factory()->create([
+        'location_id' => $type->type_id,
+        'locatable_id' => $type->type_id,
+        'locatable_type' => Type::class,
+    ]);
+
+    $this->assertCount(1, Location::all());
+
+
+    Event::fakeFor(fn () => WalletTransaction::factory()->create([
+        'wallet_transactionable_id' => $this->test_character->character_id,
+        'location_id' => $type->type_id,
+    ]));
+
+    $mock = Mockery::mock(GetMissingLocationFromWalletTransaction::class)->makePartial();
+
+    $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
+    $mock->shouldReceive('batch->add')
+        ->once()
+        ->with([
+            new ResolveLocationJob($type->type_id, $this->test_character->refresh_token),
+        ]);
+
+    $mock->handle();
+});
+
+it('dispatch get missing character infos from corporation member tracking job', function () {
+    Bus::fake();
+
+    (new MaintenanceJob)->handle();
+
+    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingCharacterInfosFromCorporationMemberTracking));
+});
+
+it('dispatches character info job for missing member tracking characters', function () {
+    $corporation_member_tracking = Event::fakeFor(fn () => CorporationMemberTracking::factory()->create([
+        'character_id' => CharacterInfo::factory()->make(),
+    ]));
+
+    $jobContainer = new JobContainer([
+        'character_id' => $corporation_member_tracking->character_id,
+    ]);
+
+    $mock = Mockery::mock(GetMissingCharacterInfosFromCorporationMemberTracking::class)->makePartial();
+
+    $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
+    $mock->shouldReceive('batch->add')
+        ->once()
+        ->with([
+            new CharacterInfoJob($jobContainer),
+        ]);
+
+    $mock->handle();
+});
+
+it('dispatch get missing types from contract item job', function () {
+    Bus::fake();
+
+    (new MaintenanceJob)->handle();
+
+    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingTypesFromContractItem));
+});
+
+it('dispatches resolve types job for missing contract item types', function () {
+    $contract_item = Event::fakeFor(fn () => ContractItem::factory()->withoutType()->create());
+
+    $mock = Mockery::mock(GetMissingTypesFromContractItem::class)->makePartial();
+
+    $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
+    $mock->shouldReceive('batch->add')
+        ->once()
+        ->with([
+            new ResolveUniverseTypeByIdJob($contract_item->type_id),
+        ]);
+
+    $mock->handle();
+});
+
+it('dispatch get missing location from contracts job', function () {
+    Bus::fake();
+
+    (new MaintenanceJob)->handle();
+
+    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingLocationFromContracts));
+});
+
+it('dispatches resolve location job for missing contract locations', function () {
+    $contract = Event::fakeFor(fn () => Contract::factory()->create([
+        'start_location_id' => 12345,
+        'end_location_id' => 12345,
+        'assignee_id' => $this->test_character->character_id,
+    ]));
+
+    $mock = Mockery::mock(GetMissingLocationFromContracts::class)->makePartial();
+
+    $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
+    $mock->shouldReceive('batch->add')
+        ->once()
+        ->with([
+            new ResolveLocationJob($contract->start_location_id, $this->test_character->refresh_token),
+        ]);
+
+    $mock->handle();
+});
+
+test('get missing start location from contracts pipe can handle non station or structure locations', function () {
+    $type = Type::factory()->create();
+
+    $this->assertCount(0, Location::all());
+
+    $non_structure_or_station_location = Location::factory()->create([
+        'location_id' => $type->type_id,
+        'locatable_id' => $type->type_id,
+        'locatable_type' => Type::class,
+    ]);
+
+    $this->assertCount(1, Location::all());
+
+    $contract = Event::fakeFor(fn () => Contract::factory()->create([
+        'start_location_id' => $type->type_id,
+        'end_location_id' => $type->type_id,
+        'assignee_id' => $this->test_character->character_id,
+    ]));
+
+    $mock = Mockery::mock(GetMissingLocationFromContracts::class)->makePartial();
+
+    $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
+    $mock->shouldReceive('batch->add')
+        ->once()
+        ->with([
+            new ResolveLocationJob($contract->start_location_id, $this->test_character->refresh_token),
+        ]);
+
+    $mock->handle();
+});
+
+it('dispatch get missing constellations and get missing regions as chained job', function () {
+    Bus::fake();
+
+    (new MaintenanceJob)->handle();
+
+    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => [
+        new GetMissingConstellations,
+        new GetMissingRegions,
+    ])); //$batch->jobs->first(fn($job) => $job instanceof GetMissingConstellations));
+});
+
+it('dispatches resolve universe constellation by constellation id job for missing constellations', function () {
+    $system = Event::fakeFor(fn () => System::factory()->noConstellation()->create());
+
+    $mock = Mockery::mock(GetMissingConstellations::class)->makePartial();
+
+    $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
+    $mock->shouldReceive('batch->add')
+        ->once()
+        ->with([
+            new ResolveUniverseConstellationByConstellationIdJob($system->constellation_id),
+        ]);
+
+    $mock->handle();
+});
+
+it('dispatches resolve universe region by region id job for missing regionss', function () {
+    $constellation = Event::fakeFor(fn () => Constellation::factory()->noRegion()->create());
+
+    $mock = Mockery::mock(GetMissingRegions::class)->makePartial();
+
+    $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
+    $mock->shouldReceive('batch->add')
+        ->once()
+        ->with([
+            new ResolveUniverseRegionByRegionIdJob($constellation->region_id),
+        ]);
+
+    $mock->handle();
+});
+
+it('dispatch get missing types from skills as chained job', function () {
+    Bus::fake();
+
+    (new MaintenanceJob)->handle();
+
+    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingTypesFromSkills));
+});
+
+it('dispatches resolve universe type by id job for missing types of skills', function () {
+    $skill = Event::fakeFor(fn () => Skill::factory(['skill_id' => 1234])->create());
+
+    $mock = Mockery::mock(GetMissingTypesFromSkills::class)->makePartial();
+
+    $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
+    $mock->shouldReceive('batch->add')
+        ->once()
+        ->with([
+            new ResolveUniverseTypeByIdJob($skill->skill_id),
+        ]);
+
+    $mock->handle();
+});
+
+it('dispatch get missing types from skill queue as chained job', function () {
+    Bus::fake();
+
+    (new MaintenanceJob)->handle();
+
+    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingTypesFromSkillQueue));
+});
+
+it('dispatches resolve universe type by id job for missing types of skillqueue', function () {
+    $skill = Event::fakeFor(fn () => SkillQueue::factory(['skill_id' => 1234])->create());
+
+    $mock = Mockery::mock(GetMissingTypesFromSkillQueue::class)->makePartial();
+
+    $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
+    $mock->shouldReceive('batch->add')
+        ->once()
+        ->with([
+            new ResolveUniverseTypeByIdJob($skill->skill_id),
+        ]);
+
+    $mock->handle();
+});
+
+it('dispatch get missing bodys from mails as chained job', function () {
+    Bus::fake();
+
+    (new MaintenanceJob)->handle();
+
+    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingBodysFromMails));
+});
+
+it('dispatches mail body job for missing mail bodies', function () {
+    $this->test_character->refresh_token()->update(['scopes' => ['esi-mail.read_mail.v1']]);
+
+    $mail = Event::fakeFor(fn () => Mail::factory(['body' => null])->create());
+
+    MailRecipients::create([
+        'mail_id' => $mail->id,
+        'receivable_id' => $this->test_character->character_id,
+        'receivable_type' => CharacterInfo::class,
+    ]);
+
+    $mock = Mockery::mock(GetMissingBodysFromMails::class)->makePartial();
+
+    $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
+    $mock->shouldReceive('batch->add')
+        ->once()
+        ->with([
+            new MailBodyJob($container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]), $mail->id),
+        ]);
+
+    $mock->handle();
+});

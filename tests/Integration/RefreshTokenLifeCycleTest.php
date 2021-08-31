@@ -1,8 +1,6 @@
 <?php
 
 
-namespace Seatplus\Eveapi\Tests\Integration;
-
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Events\RefreshTokenCreated;
@@ -11,57 +9,48 @@ use Seatplus\Eveapi\Jobs\Seatplus\UpdateCorporation;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Tests\TestCase;
 
-class RefreshTokenLifeCycleTest extends TestCase
-{
-    /** @test */
-    public function it_generates_an_event()
-    {
-        Event::fake();
+uses(TestCase::class);
 
-        $refresh_token = RefreshToken::factory()->create();
+it('generates an event', function () {
+    Event::fake();
 
-        Event::assertDispatched(RefreshTokenCreated::class, function ($e) use ($refresh_token) {
-            return $e->refresh_token === $refresh_token;
-        });
-    }
+    $refresh_token = RefreshToken::factory()->create();
 
-    /** @test */
-    public function it_queues_update_character_job()
-    {
-        Queue::fake();
+    Event::assertDispatched(RefreshTokenCreated::class, function ($e) use ($refresh_token) {
+        return $e->refresh_token === $refresh_token;
+    });
+});
 
-        $refresh_token = RefreshToken::factory()->create();
+it('queues update character job', function () {
+    Queue::fake();
 
-        Queue::assertPushedOn('high', UpdateCharacter::class);
-    }
+    $refresh_token = RefreshToken::factory()->create();
 
-    /** @test */
-    public function it_queues_update_Character_job_after_scope_change()
-    {
-        $refresh_token = Event::fakeFor(function () {
-            return RefreshToken::factory()->create([
-                'scopes' => ['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1'],
-            ]);
-        });
+    Queue::assertPushedOn('high', UpdateCharacter::class);
+});
 
-        Queue::fake();
+it('queues update character job after scope change', function () {
+    $refresh_token = Event::fakeFor(function () {
+        return RefreshToken::factory()->create([
+            'scopes' => ['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1'],
+        ]);
+    });
 
-        $refresh_token->scopes = ['updating'];
-        $refresh_token->save();
+    Queue::fake();
 
-        Queue::assertPushedOn('high', UpdateCharacter::class);
-    }
+    $refresh_token->scopes = ['updating'];
+    $refresh_token->save();
 
-    /** @test */
-    public function it_queues_update_corporation_job_after_scope_change()
-    {
-        $refresh_token = $this->test_character->refresh_token;
+    Queue::assertPushedOn('high', UpdateCharacter::class);
+});
 
-        Queue::fake();
+it('queues update corporation job after scope change', function () {
+    $refresh_token = $this->test_character->refresh_token;
 
-        $refresh_token->scopes = ['updating'];
-        $refresh_token->save();
+    Queue::fake();
 
-        Queue::assertPushedOn('high', UpdateCorporation::class);
-    }
-}
+    $refresh_token->scopes = ['updating'];
+    $refresh_token->save();
+
+    Queue::assertPushedOn('high', UpdateCorporation::class);
+});

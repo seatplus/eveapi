@@ -1,37 +1,30 @@
 <?php
 
 
-namespace Seatplus\Eveapi\Tests\Integration;
-
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseGroupByIdJob;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Tests\TestCase;
 
-class TypeLifeCycleTest extends TestCase
-{
-    /** @test */
-    public function new_type_id_dispatches_group_job_if_group_is_not_present()
-    {
-        Queue::fake();
+uses(TestCase::class);
 
-        $type = Type::factory()->create();
+test('new type id dispatches group job if group is not present', function () {
+    Queue::fake();
 
-        Queue::assertPushedOn('high', ResolveUniverseGroupByIdJob::class);
-    }
+    $type = Type::factory()->create();
 
-    /** @test */
-    public function new_type_does_not_dispatches_group_job_if_group_is_present()
-    {
-        Queue::fake();
+    Queue::assertPushedOn('high', ResolveUniverseGroupByIdJob::class);
+});
 
-        $group = Group::factory()->create();
+test('new type does not dispatches group job if group is present', function () {
+    Queue::fake();
 
-        $type = Type::factory()->create([
-            'group_id' => $group->group_id,
-        ]);
+    $group = Group::factory()->create();
 
-        Queue::assertNotPushed(ResolveUniverseGroupByIdJob::class);
-    }
-}
+    $type = Type::factory()->create([
+        'group_id' => $group->group_id,
+    ]);
+
+    Queue::assertNotPushed(ResolveUniverseGroupByIdJob::class);
+});

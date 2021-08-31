@@ -1,41 +1,29 @@
 <?php
 
-namespace Seatplus\Eveapi\Tests\Unit\Services;
-
 use Illuminate\Support\Facades\Event;
 use Seat\Eseye\Eseye;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\Esi\GetEseyeClient;
 use Seatplus\Eveapi\Tests\TestCase;
 
-class GetEseyeClientActionTest extends TestCase
-{
-    protected $refresh_token;
+uses(TestCase::class);
 
-    protected function setUp(): void
-    {
-        parent::setUp();
+beforeEach(function () {
+    Event::fakeFor(function () {
+        $this->refresh_token = RefreshToken::factory()->create([
+            'expires_on' => now()->addMinutes(5),
+        ]);
+    });
+});
 
-        Event::fakeFor(function () {
-            $this->refresh_token = RefreshToken::factory()->create([
-                'expires_on' => now()->addMinutes(5),
-            ]);
-        });
-    }
+test('get client for null refresh token', function () {
+    $action = new GetEseyeClient;
 
-    /** @test */
-    public function getClientForNullRefreshToken()
-    {
-        $action = new GetEseyeClient;
+    $this->assertInstanceOf(Eseye::class, $action->execute());
+});
 
-        $this->assertInstanceOf(Eseye::class, $action->execute());
-    }
+test('get client', function () {
+    $action = new GetEseyeClient;
 
-    /** @test */
-    public function getClient()
-    {
-        $action = new GetEseyeClient;
-
-        $this->assertInstanceOf(Eseye::class, $action->execute());
-    }
-}
+    $this->assertInstanceOf(Eseye::class, $action->execute());
+});
