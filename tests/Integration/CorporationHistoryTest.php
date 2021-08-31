@@ -20,10 +20,10 @@ test('job creates d b entry', function () {
 
     $job_container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]);
 
-    $this->assertCount(0, CorporationHistory::all());
+    expect(CorporationHistory::all())->toHaveCount(0);
 
     CorporationHistoryJob::dispatchSync($job_container);
 
-    $this->assertCount(3, CorporationHistory::all());
-    $this->assertCount(3, $this->test_character->corporation_history);
+    expect(CorporationHistory::all())->toHaveCount(3);
+    expect($this->test_character->corporation_history)->toHaveCount(3);
 });

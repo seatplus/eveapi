@@ -15,5 +15,5 @@ test('has corporation relationship', function () {
 
     $this->assertDatabaseHas('enlistments', ['corporation_id' => $enlistment->corporation_id]);
 
-    $this->assertInstanceOf(CorporationInfo::class, $enlistment->corporation);
+    expect($enlistment->corporation)->toBeInstanceOf(CorporationInfo::class);
 });

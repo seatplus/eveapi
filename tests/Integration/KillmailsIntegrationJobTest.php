@@ -47,7 +47,7 @@ it('creates killmail', function () {
     Queue::assertPushed(ResolveUniverseTypeByIdJob::class);
 
 
-    $this->assertCount(1, Killmail::all());
+    expect(Killmail::all())->toHaveCount(1);
 
     // it has ship type
     Event::fakeFor(fn () => Type::factory()->create([
@@ -73,7 +73,7 @@ it('creates killmail', function () {
     // it creates Killmail Attackers
     $this->assertNotCount(0, KillmailAttacker::all());
     $this->assertNotCount(0, Killmail::first()->attackers);
-    $this->assertInstanceOf(Killmail::class, KillmailAttacker::first()->killmail);
+    expect(KillmailAttacker::first()->killmail)->toBeInstanceOf(Killmail::class);
 
     // killmail item should have a type relationship
     Event::fakeFor(fn () => Type::factory()->createMany([
@@ -82,8 +82,8 @@ it('creates killmail', function () {
         ],
     ]));
 
-    $this->assertInstanceOf(Type::class, KillmailAttacker::first()->weapon);
-    $this->assertInstanceOf(Type::class, KillmailAttacker::first()->ship);
+    expect(KillmailAttacker::first()->weapon)->toBeInstanceOf(Type::class);
+    expect(KillmailAttacker::first()->ship)->toBeInstanceOf(Type::class);
 });
 
 // Helpers

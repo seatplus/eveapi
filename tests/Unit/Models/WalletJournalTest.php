@@ -9,16 +9,16 @@ use Seatplus\Eveapi\Tests\TestCase;
 uses(TestCase::class);
 
 test('character has wallet journal test', function () {
-    $this->assertCount(0, $this->test_character->wallet_journals);
+    expect($this->test_character->wallet_journals)->toHaveCount(0);
 
     $wallet_journal = Event::fakeFor(fn () => WalletJournal::factory()->create([
         'wallet_journable_id' => $this->test_character->character_id,
         'wallet_journable_type' => CharacterInfo::class,
     ]));
 
-    $this->assertInstanceOf(CharacterInfo::class, $wallet_journal->wallet_journable);
+    expect($wallet_journal->wallet_journable)->toBeInstanceOf(CharacterInfo::class);
 
     $character = $this->test_character->refresh();
-    $this->assertCount(1, $character->wallet_journals);
-    $this->assertInstanceOf(WalletJournal::class, $character->wallet_journals->first());
+    expect($character->wallet_journals)->toHaveCount(1);
+    expect($character->wallet_journals->first())->toBeInstanceOf(WalletJournal::class);
 });

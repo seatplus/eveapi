@@ -13,7 +13,7 @@ test('can set propperty test', function () {
         'character_id' => 12,
     ]);
 
-    $this->assertEquals(12, $job->character_id);
+    expect($job->character_id)->toEqual(12);
 });
 
 /** @throws \Seatplus\Eveapi\Exceptions\InvalidContainerDataException
@@ -31,7 +31,7 @@ test('get character id via propperty', function () {
         'character_id' => 12,
     ]);
 
-    $this->assertEquals(12, $job->getCharacterId());
+    expect($job->getCharacterId())->toEqual(12);
 });
 
 test('get character id via refresh token', function () {
@@ -45,5 +45,5 @@ test('get character id via refresh token', function () {
         'refresh_token' => $refresh_token,
     ]);
 
-    $this->assertEquals($refresh_token->character_id, $job->getCharacterId());
+    expect($job->getCharacterId())->toEqual($refresh_token->character_id);
 });

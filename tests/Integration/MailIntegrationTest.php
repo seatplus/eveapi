@@ -22,15 +22,15 @@ beforeEach(function () {
 });
 
 it('runs mail header job', function () {
-    $this->assertCount(0, Mail::all());
+    expect(Mail::all())->toHaveCount(0);
 
     buildHeaderMockEsiData();
 
     (new MailHeaderJob($this->job_container))->handle();
 
-    $this->assertCount(5, Mail::all());
-    $this->assertCount(15, MailRecipients::all());
-    $this->assertInstanceOf(MailRecipients::class, Mail::first()->recipients->first());
+    expect(Mail::all())->toHaveCount(5);
+    expect(MailRecipients::all())->toHaveCount(15);
+    expect(Mail::first()->recipients->first())->toBeInstanceOf(MailRecipients::class);
 
     Queue::assertPushed(MailBodyJob::class);
 });
@@ -40,7 +40,7 @@ it('runs mail body job', function () {
 
     buildBodyMockEsiData();
 
-    $this->assertNull($mail->body);
+    expect($mail->body)->toBeNull();
 
     (new MailBodyJob($this->job_container, $mail->id))->handle();
 

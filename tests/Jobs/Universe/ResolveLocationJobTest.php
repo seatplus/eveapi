@@ -39,7 +39,7 @@ it('checks only asset safety checker', function () {
 
     buildJob(2004)->handle();
 
-    $this->assertNull(Location::find(2004));
+    expect(Location::find(2004))->toBeNull();
 });
 
 /**
@@ -89,7 +89,7 @@ it('checks only station older then a week', function () {
         'locatable_type' => Station::class,
     ]);
 
-    $this->assertTrue(carbon(Station::find($location_id)->updated_at)->isBefore(carbon()->subWeek()));
+    expect(carbon(Station::find($location_id)->updated_at)->isBefore(carbon()->subWeek()))->toBeTrue();
 
     Queue::fake();
     Queue::assertNothingPushed();
@@ -123,8 +123,8 @@ it('checks no station younger then a week', function () {
     buildJob($location_id)->handle();
 
     $this->assertNotNull(Location::find($location_id)->locatable);
-    $this->assertTrue(carbon(Station::find($location_id)->updated_at)->isAfter(carbon()->subWeek()));
-    $this->assertTrue(carbon(Station::find($location_id)->updated_at)->isBefore(carbon()->subDay()));
+    expect(carbon(Station::find($location_id)->updated_at)->isAfter(carbon()->subWeek()))->toBeTrue();
+    expect(carbon(Station::find($location_id)->updated_at)->isBefore(carbon()->subDay()))->toBeTrue();
 });
 
 /**
@@ -174,7 +174,7 @@ it('checks only structure older then a week', function () {
         'locatable_type' => Structure::class,
     ]);
 
-    $this->assertTrue(carbon(Structure::find($location_id)->updated_at)->isBefore(carbon()->subWeek()));
+    expect(carbon(Structure::find($location_id)->updated_at)->isBefore(carbon()->subWeek()))->toBeTrue();
 
     Queue::fake();
     Queue::assertNothingPushed();
@@ -209,7 +209,7 @@ it('checks no structure younger then a week', function () {
         'locatable_type' => Structure::class,
     ]);
 
-    $this->assertTrue(carbon(Structure::find($location_id)->updated_at)->isAfter(carbon()->subWeek()));
+    expect(carbon(Structure::find($location_id)->updated_at)->isAfter(carbon()->subWeek()))->toBeTrue();
 
     Queue::fake();
     Queue::assertNothingPushed();
@@ -220,7 +220,7 @@ it('checks no structure younger then a week', function () {
 
     /*$this->assertNotNull(Location::find($location_id)->locatable);
 
-    $this->assertTrue(carbon(Structure::find($location_id)->updated_at)->isAfter(carbon()->subWeek()));
+    expect(carbon(Structure::find($location_id)->updated_at)->isAfter(carbon()->subWeek()))->toBeTrue();
     $this->assertTrue(carbon(Structure::find($location_id)->updated_at)->isBefore(carbon()->subDay()));*/
 });
 

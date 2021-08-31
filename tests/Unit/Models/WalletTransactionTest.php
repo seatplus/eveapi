@@ -11,22 +11,22 @@ use Seatplus\Eveapi\Tests\TestCase;
 uses(TestCase::class);
 
 test('character has wallet journal test', function () {
-    $this->assertCount(0, $this->test_character->wallet_transactions);
+    expect($this->test_character->wallet_transactions)->toHaveCount(0);
 
     $wallet_transaction = Event::fakeFor(fn () => WalletTransaction::factory()->create([
         'wallet_transactionable_id' => $this->test_character->character_id,
         'wallet_transactionable_type' => CharacterInfo::class,
     ]));
 
-    $this->assertInstanceOf(CharacterInfo::class, $wallet_transaction->wallet_transactionable);
+    expect($wallet_transaction->wallet_transactionable)->toBeInstanceOf(CharacterInfo::class);
 
     $character = $this->test_character->refresh();
-    $this->assertCount(1, $character->wallet_transactions);
-    $this->assertInstanceOf(WalletTransaction::class, $character->wallet_transactions->first());
+    expect($character->wallet_transactions)->toHaveCount(1);
+    expect($character->wallet_transactions->first())->toBeInstanceOf(WalletTransaction::class);
 });
 
 test('corporation has relationships test', function () {
-    $this->assertCount(0, $this->test_character->wallet_transactions);
+    expect($this->test_character->wallet_transactions)->toHaveCount(0);
 
     $wallet_transaction = Event::fakeFor(fn () => WalletTransaction::factory()->create([
         'wallet_transactionable_id' => $this->test_character->character_id,
@@ -35,6 +35,6 @@ test('corporation has relationships test', function () {
         'location_id' => Location::factory()->create(),
     ]));
 
-    $this->assertInstanceOf(Type::class, $wallet_transaction->type);
-    $this->assertInstanceOf(Location::class, $wallet_transaction->location);
+    expect($wallet_transaction->type)->toBeInstanceOf(Type::class);
+    expect($wallet_transaction->location)->toBeInstanceOf(Location::class);
 });

@@ -8,13 +8,13 @@ use Seatplus\Eveapi\Tests\TestCase;
 uses(TestCase::class);
 
 test('character has character roles relation test', function () {
-    $this->assertInstanceOf(CharacterRole::class, $this->test_character->roles);
+    expect($this->test_character->roles)->toBeInstanceOf(CharacterRole::class);
 });
 
 test('character role has character relation test', function () {
     $character_role = $this->test_character->roles;
 
-    $this->assertInstanceOf(CharacterInfo::class, $character_role->character);
+    expect($character_role->character)->toBeInstanceOf(CharacterInfo::class);
 });
 
 test('has role test', function () {
@@ -22,7 +22,7 @@ test('has role test', function () {
         'roles' => ["Contract_Manager"],
     ]);
 
-    $this->assertTrue($character_role->hasRole('roles', 'Contract_Manager'));
+    expect($character_role->hasRole('roles', 'Contract_Manager'))->toBeTrue();
 });
 
 test('has director role test', function () {
@@ -30,7 +30,7 @@ test('has director role test', function () {
         'roles' => ['Contract_Manager', 'Director'],
     ]);
 
-    $this->assertTrue($character_role->hasRole('roles', 'Hangar_Query_3'));
+    expect($character_role->hasRole('roles', 'Hangar_Query_3'))->toBeTrue();
 });
 
 test('has no made up role', function () {
@@ -38,5 +38,5 @@ test('has no made up role', function () {
         'roles' => ['Contract_Manager', 'Director'],
     ]);
 
-    $this->assertFalse($character_role->hasRole('roles', 'Something_Made_up'));
+    expect($character_role->hasRole('roles', 'Something_Made_up'))->toBeFalse();
 });

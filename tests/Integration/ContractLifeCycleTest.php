@@ -29,7 +29,7 @@ test('observer dispatches location job with unknown location id', function () {
         'for_corporation' => true,
     ]);
 
-    $this->assertNull($contract->start_location);
+    expect($contract->start_location)->toBeNull();
     $this->assertNotNull($contract->end_location);
     $this->assertNotNull($contract->issuer);
 

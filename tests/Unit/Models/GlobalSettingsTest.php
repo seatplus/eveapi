@@ -13,7 +13,7 @@ test('set global setting', function () {
         'name' => 'test',
     ]);
 
-    $this->assertEquals($test_value, setting('test'));
+    expect(setting('test'))->toEqual($test_value);
 });
 
 test('get global setting', function () {
@@ -22,7 +22,7 @@ test('get global setting', function () {
     // 1. try to get a non set setting, returning null
     $value = setting('test');
 
-    $this->assertNull($value);
+    expect($value)->toBeNull();
 
     // 2. set setting and expect the setting to return the previously set value.
 
@@ -30,7 +30,7 @@ test('get global setting', function () {
 
     $this->assertNotNull($value);
 
-    $this->assertEquals($value, $testing_value);
+    expect($testing_value)->toEqual($value);
 
     $this->assertDatabaseHas('global_settings', [
         'name' => 'test',

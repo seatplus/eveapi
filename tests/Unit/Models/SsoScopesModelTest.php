@@ -17,11 +17,11 @@ test('one can set an alliance relationship from sso scope model', function () {
         'morphable_id' => $alliance_info->alliance_id,
     ]);
 
-    $this->assertInstanceOf(AllianceInfo::class, $sso->refresh()->morphable);
+    expect($sso->refresh()->morphable)->toBeInstanceOf(AllianceInfo::class);
 });
 
 test('has global scope', function () {
     $sso = SsoScopes::updateOrCreate(['type' => 'global'], ['selected_scopes' => collect()->toJson()]);
 
-    $this->assertEquals($sso->type, SsoScopes::global()->first()->type);
+    expect(SsoScopes::global()->first()->type)->toEqual($sso->type);
 });

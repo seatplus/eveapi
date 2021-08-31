@@ -15,8 +15,8 @@ test('character has application relationship', function () {
         'applicationable_id' => $this->test_character->character_id,
     ]);
 
-    $this->assertInstanceOf(CharacterInfo::class, $application->applicationable);
-    $this->assertInstanceOf(Application::class, $this->test_character->application);
+    expect($application->applicationable)->toBeInstanceOf(CharacterInfo::class);
+    expect($this->test_character->application)->toBeInstanceOf(Application::class);
 });
 
 it('has corporation relationship', function () {
@@ -26,13 +26,13 @@ it('has corporation relationship', function () {
         'applicationable_id' => $this->test_character->character_id,
     ]);
 
-    $this->assertInstanceOf(CorporationInfo::class, $application->corporation);
+    expect($application->corporation)->toBeInstanceOf(CorporationInfo::class);
 });
 
 test('create application through character', function () {
     $this->test_character->application()->create(['corporation_id' => $this->test_character->corporation->corporation_id]);
 
-    $this->assertInstanceOf(Application::class, $this->test_character->application);
+    expect($this->test_character->application)->toBeInstanceOf(Application::class);
 });
 
 test('has of corporation scope', function () {
@@ -42,5 +42,5 @@ test('has of corporation scope', function () {
         'applicationable_id' => $this->test_character->character_id,
     ]);
 
-    $this->assertInstanceOf(CharacterInfo::class, Application::ofCorporation($this->test_character->corporation->corporation_id)->first()->applicationable);
+    expect(Application::ofCorporation($this->test_character->corporation->corporation_id)->first()->applicationable)->toBeInstanceOf(CharacterInfo::class);
 });

@@ -22,7 +22,7 @@ beforeEach(function () {
 });
 
 test('character has refresh token relation test', function () {
-    $this->assertInstanceOf(RefreshToken::class, $this->test_character->refresh_token);
+    expect($this->test_character->refresh_token)->toBeInstanceOf(RefreshToken::class);
 });
 
 test('character has alliance relation test', function () {
@@ -40,11 +40,11 @@ test('character has alliance relation test', function () {
         'alliance_id' => $alliance_id,
     ]));
 
-    $this->assertInstanceOf(AllianceInfo::class, $character->alliance);
+    expect($character->alliance)->toBeInstanceOf(AllianceInfo::class);
 });
 
 test('character has corporation relation test', function () {
-    $this->assertInstanceOf(CorporationInfo::class, $this->test_character->corporation);
+    expect($this->test_character->corporation)->toBeInstanceOf(CorporationInfo::class);
 });
 
 it('has application relationship', function () {
@@ -54,7 +54,7 @@ it('has application relationship', function () {
         'applicationable_id' => $this->test_character->character_id,
     ]);
 
-    $this->assertInstanceOf(Application::class, $this->test_character->application);
+    expect($this->test_character->application)->toBeInstanceOf(Application::class);
 });
 
 it('has asset relationship', function () {
@@ -63,7 +63,7 @@ it('has asset relationship', function () {
         'assetable_type' => CharacterInfo::class,
     ]);
 
-    $this->assertInstanceOf(Asset::class, $this->test_character->refresh()->assets->first());
+    expect($this->test_character->refresh()->assets->first())->toBeInstanceOf(Asset::class);
 });
 
 test('upon creation dispatch affiliation job', function () {
@@ -78,10 +78,10 @@ it('has contract relationship', function () {
     $contract = Contract::factory()->create();
     $this->test_character->contracts()->attach($contract->contract_id);
 
-    $this->assertInstanceOf(Contract::class, $this->test_character->refresh()->contracts->first());
+    expect($this->test_character->refresh()->contracts->first())->toBeInstanceOf(Contract::class);
 
     // Test reverse too
-    $this->assertInstanceOf(CharacterInfo::class, $contract->characters->first());
+    expect($contract->characters->first())->toBeInstanceOf(CharacterInfo::class);
 });
 
 test('character has balance relationship', function () {
@@ -90,5 +90,5 @@ test('character has balance relationship', function () {
         'balanceable_type' => CharacterInfo::class,
     ]);
 
-    $this->assertInstanceOf(Balance::class, $this->test_character->refresh()->balance);
+    expect($this->test_character->refresh()->balance)->toBeInstanceOf(Balance::class);
 });

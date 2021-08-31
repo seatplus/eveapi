@@ -17,7 +17,7 @@ test('has system relationship', function () {
 
     $structure = Structure::factory()->create();
 
-    $this->assertInstanceOf(System::class, $structure->system);
+    expect($structure->system)->toBeInstanceOf(System::class);
 });
 
 test('has location relationship', function () {
@@ -32,5 +32,5 @@ test('has location relationship', function () {
         'locatable_type' => Structure::class,
     ]);
 
-    $this->assertInstanceOf(Location::class, $structure->location);
+    expect($structure->location)->toBeInstanceOf(Location::class);
 });

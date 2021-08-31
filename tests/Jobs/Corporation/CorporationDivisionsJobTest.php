@@ -25,13 +25,13 @@ beforeEach(function () {
 it('runs the job', function () {
     buildEsiResponseMockData();
 
-    $this->assertCount(0, CorporationDivision::all());
+    expect(CorporationDivision::all())->toHaveCount(0);
 
     CorporationDivisionsJob::dispatchSync($this->job_container);
 
-    $this->assertCount(14, CorporationDivision::all());
+    expect(CorporationDivision::all())->toHaveCount(14);
 
-    $this->assertTrue(CorporationDivision::first()->corporation instanceof CorporationInfo);
+    expect(CorporationDivision::first()->corporation instanceof CorporationInfo)->toBeTrue();
 });
 
 // Helpers

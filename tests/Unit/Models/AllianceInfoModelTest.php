@@ -14,7 +14,7 @@ it('has morphable sso scope', function () {
 
     $alliance_info->ssoScopes()->save(SsoScopes::factory()->make());
 
-    $this->assertInstanceOf(SsoScopes::class, $alliance_info->refresh()->ssoScopes);
+    expect($alliance_info->refresh()->ssoScopes)->toBeInstanceOf(SsoScopes::class);
 });
 
 it('has character affiliation', function () {
@@ -30,11 +30,11 @@ it('has character affiliation', function () {
 
     $alliance = $affiliation->alliance;
 
-    $this->assertInstanceOf(AllianceInfo::class, $alliance);
+    expect($alliance)->toBeInstanceOf(AllianceInfo::class);
 
-    $this->assertInstanceOf(CharacterInfo::class, $alliance->characters->first());
+    expect($alliance->characters->first())->toBeInstanceOf(CharacterInfo::class);
 
-    $this->assertEquals($this->test_character->character_id, $alliance->characters->first()->character_id);
+    expect($alliance->characters->first()->character_id)->toEqual($this->test_character->character_id);
 });
 
 it('has corporations relation', function () {
@@ -46,5 +46,5 @@ it('has corporations relation', function () {
     $corporation->alliance_id = $character_affiliation->alliance_id;
     $corporation->save();
 
-    $this->assertInstanceOf(CorporationInfo::class, $this->test_character->alliance->corporations->first());
+    expect($this->test_character->alliance->corporations->first())->toBeInstanceOf(CorporationInfo::class);
 });

@@ -26,7 +26,7 @@ beforeEach(function () {
 it('creates station', function () {
     $mock_data = buildMockEsiData();
 
-    $this->assertNull(Station::find($mock_data->station_id));
+    expect(Station::find($mock_data->station_id))->toBeNull();
 
 
     (new ResolveUniverseStationByIdJob($mock_data->station_id))->handle();
@@ -66,7 +66,7 @@ it('creates polymorphic relationship', function () {
 
     $location = Location::find($mock_data->station_id);
 
-    $this->assertInstanceOf(Station::class, $location->locatable);
+    expect($location->locatable)->toBeInstanceOf(Station::class);
 });
 
 /**

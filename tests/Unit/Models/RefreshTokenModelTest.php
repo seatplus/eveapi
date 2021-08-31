@@ -8,9 +8,9 @@ use Seatplus\Eveapi\Tests\TestCase;
 uses(TestCase::class);
 
 it('has character relationship', function () {
-    $this->assertInstanceOf(CharacterInfo::class, $this->test_character->refresh_token->character);
+    expect($this->test_character->refresh_token->character)->toBeInstanceOf(CharacterInfo::class);
 });
 
 it('has corporation relationship', function () {
-    $this->assertInstanceOf(CorporationInfo::class, $this->test_character->refresh_token->corporation);
+    expect($this->test_character->refresh_token->corporation)->toBeInstanceOf(CorporationInfo::class);
 });

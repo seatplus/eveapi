@@ -15,7 +15,7 @@ beforeEach(function () {
 it('has constellation', function () {
     $system = System::factory()->create();
 
-    $this->assertInstanceOf(Constellation::class, $system->constellation);
+    expect($system->constellation)->toBeInstanceOf(Constellation::class);
 });
 
 it('has stations', function () {
@@ -24,13 +24,13 @@ it('has stations', function () {
         ->hasStructures(1)
         ->create();
 
-    $this->assertInstanceOf(Structure::class, $system->structures->first());
+    expect($system->structures->first())->toBeInstanceOf(Structure::class);
 });
 
 it('has region', function () {
     $system = System::factory()->create();
 
-    $this->assertInstanceOf(Region::class, $system->constellation->region);
+    expect($system->constellation->region)->toBeInstanceOf(Region::class);
 
-    $this->assertInstanceOf(Region::class, $system->region);
+    expect($system->region)->toBeInstanceOf(Region::class);
 });

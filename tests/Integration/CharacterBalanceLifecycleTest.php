@@ -21,13 +21,13 @@ beforeEach(function () {
 test('run wallet journal job', function () {
     $mock_data = buildMockEsiData();
 
-    $this->assertCount(0, Balance::all());
+    expect(Balance::all())->toHaveCount(0);
 
     $job = new CharacterBalanceJob($this->job_container);
 
     $job->handle();
 
-    $this->assertCount(1, Balance::all());
+    expect(Balance::all())->toHaveCount(1);
 });
 
 // Helpers

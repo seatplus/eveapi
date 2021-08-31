@@ -73,7 +73,7 @@ it('creates polymorphic relationship', function () {
 
     $location = Location::find($mock_data->structure_id);
 
-    $this->assertInstanceOf(Structure::class, $location->locatable);
+    expect($location->locatable)->toBeInstanceOf(Structure::class);
 });
 
 // Helpers

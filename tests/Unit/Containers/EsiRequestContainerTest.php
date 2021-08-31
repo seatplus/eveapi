@@ -11,7 +11,7 @@ test('can set propperty test', function () {
         'version' => 'v4',
     ]);
 
-    $this->assertEquals('v4', $esi_request->version);
+    expect($esi_request->version)->toEqual('v4');
 });
 
 test('can not set propperty test', function () {
@@ -27,5 +27,5 @@ test('get public esi request', function () {
         'refresh_token' => 'someXYToken',
     ]);
 
-    $this->assertFalse($esi_request->isPublic());
+    expect($esi_request->isPublic())->toBeFalse();
 });

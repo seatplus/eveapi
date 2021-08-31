@@ -57,7 +57,7 @@ test('create many character relation', function () {
         $character->character()->save(CharacterInfo::factory()->create());
     }
 
-    $this->assertEquals(3, $corporation->characters()->count());
+    expect($corporation->characters()->count())->toEqual(3);
 });
 
 it('has morphable sso scope', function () {
@@ -67,7 +67,7 @@ it('has morphable sso scope', function () {
 
     //$corporation_info->ssoScopes()->save(SsoScopes::factory()->make());
 
-    $this->assertInstanceOf(SsoScopes::class, $corporation_info->refresh()->ssoScopes);
+    expect($corporation_info->refresh()->ssoScopes)->toBeInstanceOf(SsoScopes::class);
 });
 
 it('has recruits relationship', function () {
@@ -78,10 +78,10 @@ it('has recruits relationship', function () {
     ]);
 
     foreach ($corporation_info->refresh()->candidates as $candidate) {
-        $this->assertInstanceOf(Application::class, $candidate);
+        expect($candidate)->toBeInstanceOf(Application::class);
     }
 
-    $this->assertEquals(5, $corporation_info->refresh()->candidates->count());
+    expect($corporation_info->refresh()->candidates->count())->toEqual(5);
 });
 
 it('has alliance relationship', function () {
@@ -89,7 +89,7 @@ it('has alliance relationship', function () {
         'alliance_id' => AllianceInfo::factory(),
     ]);
 
-    $this->assertInstanceOf(AllianceInfo::class, $corporation_info->alliance);
+    expect($corporation_info->alliance)->toBeInstanceOf(AllianceInfo::class);
 });
 
 it('has members relationship', function () {
@@ -98,7 +98,7 @@ it('has members relationship', function () {
         'corporation_id' => $this->test_character->corporation->corporation_id,
     ]);
 
-    $this->assertInstanceOf(CorporationMemberTracking::class, $this->test_character->refresh()->corporation->members->first());
+    expect($this->test_character->refresh()->corporation->members->first())->toBeInstanceOf(CorporationMemberTracking::class);
 });
 
 it('has wallets relationship', function () {
@@ -107,5 +107,5 @@ it('has wallets relationship', function () {
         'balanceable_type' => CorporationInfo::class,
     ]);
 
-    $this->assertInstanceOf(Balance::class, $this->test_character->corporation->refresh()->wallets->first());
+    expect($this->test_character->corporation->refresh()->wallets->first())->toBeInstanceOf(Balance::class);
 });

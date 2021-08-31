@@ -10,7 +10,7 @@ use Seatplus\Eveapi\Tests\TestCase;
 uses(TestCase::class);
 
 test('character has mails test', function () {
-    $this->assertCount(0, $this->test_character->mails);
+    expect($this->test_character->mails)->toHaveCount(0);
 
     $mail = Event::fakeFor(fn () => Mail::factory()->create());
     $mail_receipient = Event::fakeFor(fn () => MailRecipients::factory()->create([
@@ -19,11 +19,11 @@ test('character has mails test', function () {
         'receivable_type' => CharacterInfo::class,
     ]));
 
-    $this->assertInstanceOf(Mail::class, $mail_receipient->mail);
-    $this->assertInstanceOf(CharacterInfo::class, $mail_receipient->receivable);
+    expect($mail_receipient->mail)->toBeInstanceOf(Mail::class);
+    expect($mail_receipient->receivable)->toBeInstanceOf(CharacterInfo::class);
 
     $character = $this->test_character->refresh();
 
-    $this->assertCount(1, $character->mails);
-    $this->assertInstanceOf(Mail::class, $character->mails->first());
+    expect($character->mails)->toHaveCount(1);
+    expect($character->mails->first())->toBeInstanceOf(Mail::class);
 });

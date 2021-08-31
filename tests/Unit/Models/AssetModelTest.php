@@ -64,7 +64,7 @@ test('model has types', function () {
 
     $assets = Asset::has('type')->get();
 
-    $this->assertTrue($assets->contains($test_asset));
+    expect($assets->contains($test_asset))->toBeTrue();
 });
 
 test('model misses types', function () {
@@ -72,7 +72,7 @@ test('model misses types', function () {
 
     $assets = Asset::has('type')->get();
 
-    $this->assertFalse($assets->contains($test_asset));
+    expect($assets->contains($test_asset))->toBeFalse();
 });
 
 test('model has location', function () {
@@ -82,7 +82,7 @@ test('model has location', function () {
 
     $assets = Asset::has('location')->get();
 
-    $this->assertTrue($assets->contains($test_asset));
+    expect($assets->contains($test_asset))->toBeTrue();
 });
 
 it('has scope assets location ids', function () {
@@ -93,7 +93,7 @@ it('has scope assets location ids', function () {
 
     $assets = Asset::query()->assetsLocationIds()->first();
 
-    $this->assertEquals($assets->location_id, $test_asset->location_id);
+    expect($test_asset->location_id)->toEqual($assets->location_id);
 });
 
 it('has scope affiliated without request', function () {
@@ -121,7 +121,7 @@ it('has scope affiliated without request', function () {
     $asset = Asset::query()->Affiliated([$this->test_character->character_id])->first();
     ;
 
-    $this->assertEquals($asset->item_id, $test_asset->item_id);
+    expect($test_asset->item_id)->toEqual($asset->item_id);
 });
 
 it('has scope affiliated with request', function () {
@@ -133,7 +133,7 @@ it('has scope affiliated with request', function () {
     $asset = Asset::query()->Affiliated([$this->test_character->character_id], [$this->test_character->character_id])->first();
     ;
 
-    $this->assertEquals($asset->item_id, $test_asset->item_id);
+    expect($test_asset->item_id)->toEqual($asset->item_id);
 });
 
 it('has assetable relationship', function () {
@@ -142,7 +142,7 @@ it('has assetable relationship', function () {
         'assetable_type' => CharacterInfo::class,
     ]);
 
-    $this->assertInstanceOf(CharacterInfo::class, $test_asset->assetable);
+    expect($test_asset->assetable)->toBeInstanceOf(CharacterInfo::class);
 });
 
 it('has scope affiliated where in', function () {
@@ -150,7 +150,7 @@ it('has scope affiliated where in', function () {
 
     $assets = Asset::query()->entityFilter([$test_asset->assetable_id])->first();
 
-    $this->assertEquals($assets->item_id, $test_asset->item_id);
+    expect($test_asset->item_id)->toEqual($assets->item_id);
 });
 
 it('has scope affiliated where', function () {
@@ -158,7 +158,7 @@ it('has scope affiliated where', function () {
 
     $assets = Asset::query()->entityFilter([$test_asset->assetable_id])->first();
 
-    $this->assertEquals($assets->item_id, $test_asset->item_id);
+    expect($test_asset->item_id)->toEqual($assets->item_id);
 });
 
 it('has scope search asset name', function () {
@@ -166,7 +166,7 @@ it('has scope search asset name', function () {
 
     $assets = Asset::query()->Search($test_asset->name)->first();
 
-    $this->assertEquals($assets->item_id, $test_asset->item_id);
+    expect($test_asset->item_id)->toEqual($assets->item_id);
 });
 
 it('has scope search asset type', function () {
@@ -174,7 +174,7 @@ it('has scope search asset type', function () {
 
     $assets = Asset::query()->search($test_asset->name)->first();
 
-    $this->assertEquals($assets->item_id, $test_asset->item_id);
+    expect($test_asset->item_id)->toEqual($assets->item_id);
 });
 
 it('has scope search asset content', function () {
@@ -192,7 +192,7 @@ it('has scope search asset content', function () {
         ->whereIn('location_flag', ['Hangar', 'AssetSafety', 'Deliveries'])
         ->first();
 
-    $this->assertEquals($assets->item_id, $test_asset->item_id);
+    expect($test_asset->item_id)->toEqual($assets->item_id);
 });
 
 it('has scope search asset content content', function () {
@@ -217,7 +217,7 @@ it('has scope search asset content content', function () {
         ->whereIn('location_flag', ['Hangar', 'AssetSafety', 'Deliveries'])
         ->first();
 
-    $this->assertEquals($assets->item_id, $test_asset->item_id);
+    expect($test_asset->item_id)->toEqual($assets->item_id);
 });
 
 it('has content relationship', function () {
@@ -230,7 +230,7 @@ it('has content relationship', function () {
         'location_flag' => 'cargo',
     ]));
 
-    $this->assertInstanceOf(Asset::class, $test_asset->content->first());
+    expect($test_asset->content->first())->toBeInstanceOf(Asset::class);
 });
 
 it('has container relationship', function () {
@@ -243,11 +243,11 @@ it('has container relationship', function () {
         'location_flag' => 'cargo',
     ]));
 
-    $this->assertInstanceOf(Asset::class, $test_asset->content->first()->container);
+    expect($test_asset->content->first()->container)->toBeInstanceOf(Asset::class);
 });
 
 it('has in region scope', function () {
-    $this->assertCount(0, Asset::all());
+    expect(Asset::all())->toHaveCount(0);
 
     $test_asset = Event::fakeFor(fn () => Asset::factory()->create([
         'location_flag' => 'Hangar',
@@ -265,12 +265,12 @@ it('has in region scope', function () {
 
     $region_id = $test_asset->location->locatable->system->region->region_id;
 
-    $this->assertCount(1, Asset::inRegion($region_id)->get());
-    $this->assertCount(0, Asset::inRegion($region_id + 1)->get());
+    expect(Asset::inRegion($region_id)->get())->toHaveCount(1);
+    expect(Asset::inRegion($region_id + 1)->get())->toHaveCount(0);
 });
 
 it('has in system scope', function () {
-    $this->assertCount(0, Asset::all());
+    expect(Asset::all())->toHaveCount(0);
 
     $test_asset = Event::fakeFor(fn () => Asset::factory()->create([
         'location_flag' => 'Hangar',
@@ -288,6 +288,6 @@ it('has in system scope', function () {
 
     $system_id = $test_asset->location->locatable->system->system_id;
 
-    $this->assertCount(1, Asset::inSystems($system_id)->get());
-    $this->assertCount(0, Asset::inSystems($system_id + 1)->get());
+    expect(Asset::inSystems($system_id)->get())->toHaveCount(1);
+    expect(Asset::inSystems($system_id + 1)->get())->toHaveCount(0);
 });

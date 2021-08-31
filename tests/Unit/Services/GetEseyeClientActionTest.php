@@ -19,11 +19,11 @@ beforeEach(function () {
 test('get client for null refresh token', function () {
     $action = new GetEseyeClient;
 
-    $this->assertInstanceOf(Eseye::class, $action->execute());
+    expect($action->execute())->toBeInstanceOf(Eseye::class);
 });
 
 test('get client', function () {
     $action = new GetEseyeClient;
 
-    $this->assertInstanceOf(Eseye::class, $action->execute());
+    expect($action->execute())->toBeInstanceOf(Eseye::class);
 });

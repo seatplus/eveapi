@@ -22,18 +22,18 @@ beforeEach(function () {
 });
 
 it('runs skill job', function () {
-    $this->assertCount(0, SkillQueue::all());
+    expect(SkillQueue::all())->toHaveCount(0);
 
     buildMockEsiData();
 
-    $this->assertNull($this->test_character->total_sp);
+    expect($this->test_character->total_sp)->toBeNull();
 
     (new SkillQueueJob($this->job_container))->handle();
 
-    $this->assertCount(5, SkillQueue::all());
-    $this->assertInstanceOf(Type::class, SkillQueue::first()->type);
+    expect(SkillQueue::all())->toHaveCount(5);
+    expect(SkillQueue::first()->type)->toBeInstanceOf(Type::class);
 
-    $this->assertCount(5, $this->test_character->refresh()->skill_queues);
+    expect($this->test_character->refresh()->skill_queues)->toHaveCount(5);
 });
 
 it('observes skill creation', function () {
@@ -48,15 +48,15 @@ it('deletes old queue items', function () {
     // create old Dataa
     $old_data = Event::fakeFor(fn () => SkillQueue::factory(['character_id' => $this->test_character->character_id])->create());
 
-    $this->assertCount(1, SkillQueue::all());
+    expect(SkillQueue::all())->toHaveCount(1);
 
     buildMockEsiData();
 
-    $this->assertNull($this->test_character->total_sp);
+    expect($this->test_character->total_sp)->toBeNull();
 
     (new SkillQueueJob($this->job_container))->handle();
 
-    $this->assertCount(5, SkillQueue::all());
+    expect(SkillQueue::all())->toHaveCount(5);
     $this->assertNotCount(6, SkillQueue::all());
 });
 

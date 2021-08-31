@@ -47,7 +47,7 @@ it('dispatches resolve universe type job if type is unknown', function () {
 
     $job->handle();
 
-    $this->assertCount(5, ContractItem::all());
+    expect(ContractItem::all())->toHaveCount(5);
 
     Queue::assertPushed(ResolveUniverseTypeByIdJob::class);
 });

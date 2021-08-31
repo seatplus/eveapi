@@ -10,5 +10,5 @@ uses(TestCase::class);
 test('character has corporation relation test', function () {
     $station = Station::factory()->create();
 
-    $this->assertInstanceOf(System::class, $station->system);
+    expect($station->system)->toBeInstanceOf(System::class);
 });

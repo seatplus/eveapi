@@ -186,7 +186,7 @@ it('adds resolve location job for missing assets location to batch', function ()
 test('get missing location from assets pipe can handle non station or structure locations', function () {
     $type = Type::factory()->create();
 
-    $this->assertCount(0, Location::all());
+    expect(Location::all())->toHaveCount(0);
 
     $non_structure_or_station_location = Location::factory()->create([
         'location_id' => $type->type_id,
@@ -194,7 +194,7 @@ test('get missing location from assets pipe can handle non station or structure 
         'locatable_type' => Type::class,
     ]);
 
-    $this->assertCount(1, Location::all());
+    expect(Location::all())->toHaveCount(1);
 
     $asset = Event::fakeFor(fn () => Asset::factory()->create([
         'assetable_id' => $this->test_character->character_id,
@@ -301,7 +301,7 @@ it('dispatch resolve location job for missing corporation member tracking locati
 test('get missing location from corporation member tracking pipe can handle non station or structure locations', function () {
     $type = Type::factory()->create();
 
-    $this->assertCount(0, Location::all());
+    expect(Location::all())->toHaveCount(0);
 
     $non_structure_or_station_location = Location::factory()->create([
         'location_id' => $type->type_id,
@@ -309,7 +309,7 @@ test('get missing location from corporation member tracking pipe can handle non 
         'locatable_type' => Type::class,
     ]);
 
-    $this->assertCount(1, Location::all());
+    expect(Location::all())->toHaveCount(1);
 
 
     Event::fakeFor(fn () => CorporationMemberTracking::factory()->create([
@@ -317,7 +317,7 @@ test('get missing location from corporation member tracking pipe can handle non 
         'location_id' => $type->type_id,
     ]));
 
-    $this->assertCount(1, CorporationMemberTracking::all());
+    expect(CorporationMemberTracking::all())->toHaveCount(1);
     $this->assertNotNull(CorporationMemberTracking::first()->location);
 
     $mock = Mockery::mock(GetMissingLocationFromCorporationMemberTracking::class)->makePartial();
@@ -385,7 +385,7 @@ it('dispatch resolve location job for missing wallet transaction location', func
 test('get missing location from wallet transaction pipe can handle non station or structure locations', function () {
     $type = Type::factory()->create();
 
-    $this->assertCount(0, Location::all());
+    expect(Location::all())->toHaveCount(0);
 
     $non_structure_or_station_location = Location::factory()->create([
         'location_id' => $type->type_id,
@@ -393,7 +393,7 @@ test('get missing location from wallet transaction pipe can handle non station o
         'locatable_type' => Type::class,
     ]);
 
-    $this->assertCount(1, Location::all());
+    expect(Location::all())->toHaveCount(1);
 
 
     Event::fakeFor(fn () => WalletTransaction::factory()->create([
@@ -495,7 +495,7 @@ it('dispatches resolve location job for missing contract locations', function ()
 test('get missing start location from contracts pipe can handle non station or structure locations', function () {
     $type = Type::factory()->create();
 
-    $this->assertCount(0, Location::all());
+    expect(Location::all())->toHaveCount(0);
 
     $non_structure_or_station_location = Location::factory()->create([
         'location_id' => $type->type_id,
@@ -503,7 +503,7 @@ test('get missing start location from contracts pipe can handle non station or s
         'locatable_type' => Type::class,
     ]);
 
-    $this->assertCount(1, Location::all());
+    expect(Location::all())->toHaveCount(1);
 
     $contract = Event::fakeFor(fn () => Contract::factory()->create([
         'start_location_id' => $type->type_id,

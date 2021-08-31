@@ -33,14 +33,14 @@ beforeEach(function () {
 it('runs the job', function () {
     buildCorpWalletEsiMockData();
 
-    $this->assertCount(0, Balance::all());
+    expect(Balance::all())->toHaveCount(0);
 
     // Prevent Observer from picking up the jobs
     Event::fake();
 
     (new CorporationBalanceJob($this->job_container))->handle();
 
-    $this->assertCount(7, Balance::all());
+    expect(Balance::all())->toHaveCount(7);
 });
 
 it('has observer and dispatches job', function () {
@@ -76,7 +76,7 @@ it('spawns a job for every wallet division', function () {
 
     (new CorporationWalletJournalJob($this->job_container))->handle();
 
-    $this->assertCount(7, Balance::all());
+    expect(Balance::all())->toHaveCount(7);
 
     Queue::assertPushed(CorporationWalletJournalByDivisionJob::class);
 });
@@ -87,15 +87,15 @@ it('creates wallet journal entries', function () {
 
     $corporation = $this->test_character->corporation;
 
-    $this->assertCount(0, $corporation->wallet_journals);
+    expect($corporation->wallet_journals)->toHaveCount(0);
 
     $mock_data = buildCorporationWalletJournaltEsiMockData();
 
     CorporationWalletJournalByDivisionJob::dispatchSync($this->job_container, $mock_data->first()->division);
 
     $corporation = $corporation->refresh();
-    $this->assertCount($mock_data->count(), $corporation->wallet_journals);
-    $this->assertInstanceOf(WalletJournal::class, $corporation->wallet_journals->first());
+    expect($corporation->wallet_journals)->toHaveCount($mock_data->count());
+    expect($corporation->wallet_journals->first())->toBeInstanceOf(WalletJournal::class);
 });
 
 it('creates wallet transaction entries', function () {
@@ -104,7 +104,7 @@ it('creates wallet transaction entries', function () {
 
     $corporation = $this->test_character->corporation;
 
-    $this->assertCount(0, $corporation->wallet_transactions);
+    expect($corporation->wallet_transactions)->toHaveCount(0);
 
     $mock_data = buildCorporationWalletTransactionEsiMockData();
 
@@ -114,8 +114,8 @@ it('creates wallet transaction entries', function () {
     CorporationWalletTransactionByDivisionJob::dispatchSync($this->job_container, $mock_data->first()->division);
 
     $corporation = $corporation->refresh();
-    $this->assertCount($mock_data->count(), $corporation->wallet_transactions);
-    $this->assertInstanceOf(WalletTransaction::class, $corporation->wallet_transactions->first());
+    expect($corporation->wallet_transactions)->toHaveCount($mock_data->count());
+    expect($corporation->wallet_transactions->first())->toBeInstanceOf(WalletTransaction::class);
 });
 
 // Helpers

@@ -60,17 +60,17 @@ it('has labels', function () {
 
     $job = new CharacterContactJob($this->job_container);
 
-    $this->assertCount(0, $this->test_character->contacts);
+    expect($this->test_character->contacts)->toHaveCount(0);
 
     dispatch_now($job);
 
     assertContact(collect($mock_data), $this->test_character->character_id);
 
-    $this->assertCount(1, $this->test_character->refresh()->contacts);
+    expect($this->test_character->refresh()->contacts)->toHaveCount(1);
 
     $contact = $this->test_character->refresh()->contacts->first();
 
-    $this->assertCount(3, $contact->labels);
+    expect($contact->labels)->toHaveCount(3);
 });
 
 test('contact of type character dispatches affiliation job', function () {

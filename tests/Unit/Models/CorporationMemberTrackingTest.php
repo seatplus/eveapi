@@ -28,15 +28,15 @@ beforeEach(function () {
 });
 
 it('has corporation relation', function () {
-    $this->assertInstanceOf(CorporationInfo::class, $this->tracking->corporation);
+    expect($this->tracking->corporation)->toBeInstanceOf(CorporationInfo::class);
 });
 
 it('has location relation', function () {
-    $this->assertInstanceOf(Location::class, $this->tracking->location);
+    expect($this->tracking->location)->toBeInstanceOf(Location::class);
 });
 
 it('has character relation', function () {
-    $this->assertInstanceOf(CharacterInfo::class, $this->tracking->character);
+    expect($this->tracking->character)->toBeInstanceOf(CharacterInfo::class);
 });
 
 // Helpers

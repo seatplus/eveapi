@@ -22,20 +22,20 @@ beforeEach(function () {
 });
 
 it('runs skill job', function () {
-    $this->assertCount(0, Skill::all());
+    expect(Skill::all())->toHaveCount(0);
 
     buildMockEsiData();
 
-    $this->assertNull($this->test_character->total_sp);
+    expect($this->test_character->total_sp)->toBeNull();
 
     (new SkillsJob($this->job_container))->handle();
 
-    $this->assertCount(5, Skill::all());
-    $this->assertInstanceOf(Type::class, Skill::first()->type);
+    expect(Skill::all())->toHaveCount(5);
+    expect(Skill::first()->type)->toBeInstanceOf(Type::class);
 
     $this->assertNotNull($this->test_character->refresh()->total_sp);
 
-    $this->assertCount(5, $this->test_character->refresh()->skills);
+    expect($this->test_character->refresh()->skills)->toHaveCount(5);
 });
 
 it('observes skill creation', function () {

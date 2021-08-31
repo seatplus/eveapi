@@ -21,7 +21,7 @@ it('has group', function () {
 });
 
 it('has no group', function () {
-    $this->assertNull($this->type->group);
+    expect($this->type->group)->toBeNull();
 });
 
 it('has no category', function () {
@@ -29,5 +29,5 @@ it('has no category', function () {
 
     $this->type->group()->save($group);
 
-    $this->assertNull($this->type->category);
+    expect($this->type->category)->toBeNull();
 });

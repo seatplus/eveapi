@@ -49,12 +49,12 @@ it('creates contract job', function () {
 
     $job = new CharacterContractsJob($job_container);
 
-    $this->assertCount(0, $this->test_character->refresh()->contracts);
+    expect($this->test_character->refresh()->contracts)->toHaveCount(0);
 
     Event::fakeFor(fn () => dispatch_now($job));
 
-    $this->assertCount(5, Contract::all());
-    $this->assertCount(5, $this->test_character->refresh()->contracts);
+    expect(Contract::all())->toHaveCount(5);
+    expect($this->test_character->refresh()->contracts)->toHaveCount(5);
 });
 
 it('creates contract job other way', function () {
@@ -66,7 +66,7 @@ it('creates contract job other way', function () {
 
     Event::fakeFor(fn () => CharacterContractsJob::dispatchNow($job_container));
 
-    $this->assertCount(5, Contract::all());
+    expect(Contract::all())->toHaveCount(5);
 });
 
 // Helpers
