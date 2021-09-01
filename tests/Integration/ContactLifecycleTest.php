@@ -24,39 +24,62 @@ beforeEach(function () {
 });
 
 test('run character contact', function () {
-    $mock_data = buildMockEsiData();
+    $mock_data = buildContactLifecycleMockEsiData();
 
     $job = new CharacterContactJob($this->job_container);
 
     dispatch_now($job);
 
-    assertContact($mock_data, $this->test_character->character_id);
+    //assertContact($mock_data, $this->test_character->character_id);
+
+    foreach ($mock_data as $data) {
+        //Assert that character asset created
+        $this->assertDatabaseHas('contacts', [
+            'contactable_id' => $this->test_character->character_id,
+            'contact_id' => $data->contact_id,
+        ]);
+    }
 });
 
 test('run corporation contact', function () {
-    $mock_data = buildMockEsiData();
+    $mock_data = buildContactLifecycleMockEsiData();
 
     $job = new CorporationContactJob($this->job_container);
 
     dispatch_now($job);
 
-    assertContact($mock_data, $this->test_character->corporation->corporation_id);
+    //assertContact($mock_data, $this->test_character->corporation->corporation_id);
+
+    foreach ($mock_data as $data) {
+        //Assert that character asset created
+        $this->assertDatabaseHas('contacts', [
+            'contactable_id' => $this->test_character->corporation->corporation_id,
+            'contact_id' => $data->contact_id,
+        ]);
+    }
 });
 
 test('run alliance contact', function () {
-    $mock_data = buildMockEsiData();
+    $mock_data = buildContactLifecycleMockEsiData();
 
     $job = new AllianceContactJob($this->job_container);
 
     dispatch_now($job);
 
-    assertContact($mock_data, $this->test_character->corporation->alliance_id);
+    //assertContact($mock_data, $this->test_character->corporation->alliance_id);
+    foreach ($mock_data as $data) {
+        //Assert that character asset created
+        $this->assertDatabaseHas('contacts', [
+            'contactable_id' => $this->test_character->corporation->alliance_id,
+            'contact_id' => $data->contact_id,
+        ]);
+    }
 });
 
 it('has labels', function () {
     $mock_data = Contact::factory()->withLabels()->make();
 
-    $mock_data = $this->mockRetrieveEsiDataAction([$mock_data->toArray()]);
+    $mock_data = mockRetrieveEsiDataAction([$mock_data->toArray()]);
 
     $job = new CharacterContactJob($this->job_container);
 
@@ -64,7 +87,14 @@ it('has labels', function () {
 
     dispatch_now($job);
 
-    assertContact(collect($mock_data), $this->test_character->character_id);
+    //assertContact(collect($mock_data), $this->test_character->character_id);
+    foreach (collect($mock_data) as $data) {
+        //Assert that character asset created
+        $this->assertDatabaseHas('contacts', [
+            'contactable_id' => $this->test_character->character_id,
+            'contact_id' => $data->contact_id,
+        ]);
+    }
 
     expect($this->test_character->refresh()->contacts)->toHaveCount(1);
 
@@ -86,22 +116,12 @@ test('contact of type character dispatches affiliation job', function () {
 });
 
 // Helpers
-function buildMockEsiData()
+function buildContactLifecycleMockEsiData()
 {
     $mock_data = Contact::factory()->count(5)->make();
 
-    $this->mockRetrieveEsiDataAction($mock_data->toArray());
+    mockRetrieveEsiDataAction($mock_data->toArray());
 
     return $mock_data;
 }
 
-function assertContact(Collection $mock_data, int $contactable_id)
-{
-    foreach ($mock_data as $data) {
-        //Assert that character asset created
-        $this->assertDatabaseHas('contacts', [
-            'contactable_id' => $contactable_id,
-            'contact_id' => $data->contact_id,
-        ]);
-    }
-}

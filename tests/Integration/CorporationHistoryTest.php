@@ -16,7 +16,7 @@ test('job creates d b entry', function () {
         'corporation_id' => $this->test_character->corporation->corporation_id,
     ]);
 
-    $this->mockRetrieveEsiDataAction($corporation_history->toArray());
+    mockRetrieveEsiDataAction($corporation_history->toArray());
 
     $job_container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]);
 

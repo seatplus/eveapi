@@ -37,7 +37,7 @@ it('dispatches resolve universe type job if type is unknown', function () {
 
     $mock_data = ContractItem::factory()->withoutType()->count(5)->make();
 
-    $this->mockRetrieveEsiDataAction($mock_data->toArray());
+    mockRetrieveEsiDataAction($mock_data->toArray());
 
     $job_container = new JobContainer([
         'refresh_token' => $this->test_character->refresh_token,
@@ -51,13 +51,3 @@ it('dispatches resolve universe type job if type is unknown', function () {
 
     Queue::assertPushed(ResolveUniverseTypeByIdJob::class);
 });
-
-// Helpers
-function buildMockEsiData(int $count = 5)
-{
-    $mock_data = ContractItem::factory()->count($count)->make();
-
-    $this->mockRetrieveEsiDataAction($mock_data->toArray());
-
-    return $mock_data;
-}

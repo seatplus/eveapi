@@ -122,11 +122,11 @@ it('creates wallet transaction entries', function () {
 function buildCorpWalletEsiMockData()
 {
     $mock_data = Balance::factory()->withDivision()->count(7)->make([
-        'balanceable_id' => $this->test_character->corporation->corporation_id,
+        'balanceable_id' => testCharacter()->corporation->corporation_id,
         'balanceable_type' => CorporationInfo::class,
     ]);
 
-    $this->mockRetrieveEsiDataAction($mock_data->toArray());
+    mockRetrieveEsiDataAction($mock_data->toArray());
 
     return $mock_data;
 }
@@ -134,12 +134,12 @@ function buildCorpWalletEsiMockData()
 function buildCorporationWalletJournaltEsiMockData()
 {
     $mock_data = WalletJournal::factory()->count(7)->make([
-        'wallet_journable_id' => $this->test_character->corporation->corporation_id,
+        'wallet_journable_id' => testCharacter()->corporation->corporation_id,
         'wallet_journable_type' => CorporationInfo::class,
         'division' => 3,
     ]);
 
-    $this->mockRetrieveEsiDataAction($mock_data->toArray());
+    mockRetrieveEsiDataAction($mock_data->toArray());
 
     return $mock_data;
 }
@@ -147,12 +147,12 @@ function buildCorporationWalletJournaltEsiMockData()
 function buildCorporationWalletTransactionEsiMockData()
 {
     $mock_data = WalletTransaction::factory()->count(7)->make([
-        'wallet_transactionable_id' => $this->test_character->corporation->corporation_id,
+        'wallet_transactionable_id' => testCharacter()->corporation->corporation_id,
         'wallet_transactionable_type' => CorporationInfo::class,
         'division' => 3,
     ]);
 
-    $this->mockRetrieveEsiDataAction($mock_data->toArray());
+    mockRetrieveEsiDataAction($mock_data->toArray());
 
     return $mock_data;
 }

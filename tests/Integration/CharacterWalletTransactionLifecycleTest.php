@@ -52,7 +52,14 @@ test('run wallet transaction action', function () {
 
     $mock->handle();
 
-    assertWalletTransaction($mock_data, $this->test_character->character_id);
+    //assertWalletTransaction($mock_data, $this->test_character->character_id);
+    foreach ($mock_data as $data) {
+        //Assert that character asset created
+        $this->assertDatabaseHas('wallet_transactions', [
+            'wallet_transactionable_id' => $this->test_character->character_id,
+            'transaction_id' => $data->transaction_id,
+        ]);
+    }
 });
 
 test('creation of character wallet transaction dispatches jobs', function () {
@@ -75,27 +82,16 @@ test('creation of corporation wallet transaction dispatches jobs', function () {
 });
 
 // Helpers
-function buildMockEsiData()
+/*function buildWalletTransactionMockEsiData()
 {
     $mock_data = Event::fakeFor(fn () => WalletTransaction::factory()->count(5)->make());
 
     mockRetrieveEsiDataAction($mock_data->toArray());
 
     return $mock_data;
-}
+}*/
 
-function assertWalletTransaction(Collection $mock_data, int $wallet_transactionable_id)
-{
-    foreach ($mock_data as $data) {
-        //Assert that character asset created
-        $this->assertDatabaseHas('wallet_transactions', [
-            'wallet_transactionable_id' => $wallet_transactionable_id,
-            'transaction_id' => $data->transaction_id,
-        ]);
-    }
-}
-
-function mockRetrieveEsiDataAction(array $body) : void
+/*function mockRetrieveEsiDataAction(array $body) : void
 {
     $data = json_encode($body);
 
@@ -114,4 +110,4 @@ function mockRetrieveEsiDataAction(array $body) : void
         ->once()
         ->ordered()
         ->andReturn($response2);
-}
+}*/

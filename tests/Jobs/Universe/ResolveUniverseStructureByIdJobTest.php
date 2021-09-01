@@ -29,7 +29,7 @@ beforeEach(function () {
  * @runTestsInSeparateProcesses
  */
 it('creates structure', function () {
-    $mock_data = buildMockEsiData();
+    $mock_data = buildStructureMockEsiData();
 
     //Assert that no structure is created
     $this->assertDatabaseMissing('universe_structures', [
@@ -48,7 +48,7 @@ it('creates structure', function () {
  * @runTestsInSeparateProcesses
  */
 it('creates location', function () {
-    $mock_data = buildMockEsiData();
+    $mock_data = buildStructureMockEsiData();
 
     //Assert that no structure is created
     $this->assertDatabaseMissing('universe_locations', [
@@ -67,7 +67,7 @@ it('creates location', function () {
  * @runTestsInSeparateProcesses
  */
 it('creates polymorphic relationship', function () {
-    $mock_data = buildMockEsiData();
+    $mock_data = buildStructureMockEsiData();
 
     (new ResolveUniverseStructureByIdJob($this->refresh_token, $mock_data->structure_id))->handle();
 
@@ -77,11 +77,11 @@ it('creates polymorphic relationship', function () {
 });
 
 // Helpers
-function buildMockEsiData()
+function buildStructureMockEsiData()
 {
     $mock_data = Structure::factory()->make();
 
-    $this->mockRetrieveEsiDataAction($mock_data->toArray());
+    mockRetrieveEsiDataAction($mock_data->toArray());
 
     return $mock_data;
 }

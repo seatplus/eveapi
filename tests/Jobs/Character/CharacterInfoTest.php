@@ -27,7 +27,7 @@ test('if job is queued', function () {
  * @runTestsInSeparateProcesses
  */
 test('retrieve test', function () {
-    $mock_data = buildMockEsiData();
+    $mock_data = buildCharacterInfoMockEsiData();
 
     // Stop CharacterInfoAction dispatching a new job
     Bus::fake();
@@ -50,7 +50,7 @@ test('retrieve test', function () {
 });
 
 // Helpers
-function buildMockEsiData()
+function buildCharacterInfoMockEsiData()
 {
     $mock_data = CharacterInfo::factory()->make();
 
@@ -60,7 +60,7 @@ function buildMockEsiData()
      $mock_data = $mock_data->toArray();
      $mock_data['alliance_id'] = $alliance_id;*/
 
-    $this->mockRetrieveEsiDataAction($mock_data->toArray());
+    mockRetrieveEsiDataAction($mock_data->toArray());
 
     return $mock_data;
 }

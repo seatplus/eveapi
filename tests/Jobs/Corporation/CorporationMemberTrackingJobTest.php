@@ -35,7 +35,7 @@ test('if job is queued', function () {
  * @runTestsInSeparateProcesses
  */
 test('retrieve test', function () {
-    $mock_data = buildMockEsiData();
+    $mock_data = buildCorporationMemberMockEsiData();
 
     // Stop Action dispatching a new job
     Bus::fake();
@@ -56,14 +56,14 @@ test('retrieve test', function () {
 });
 
 // Helpers
-function buildMockEsiData()
+function buildCorporationMemberMockEsiData()
 {
     $mock_data = CorporationMemberTracking::factory()->make([
-        'character_id' => $this->test_character->character_id,
-        'corporation_id' => $this->test_character->corporation->corporation_id,
+        'character_id' => testCharacter()->character_id,
+        'corporation_id' => testCharacter()->corporation->corporation_id,
     ]);
 
-    $this->mockRetrieveEsiDataAction([$mock_data->toArray()]);
+    mockRetrieveEsiDataAction([$mock_data->toArray()]);
 
     return $mock_data;
 }

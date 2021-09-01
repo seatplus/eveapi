@@ -24,7 +24,7 @@ beforeEach(function () {
 it('runs skill job', function () {
     expect(SkillQueue::all())->toHaveCount(0);
 
-    buildMockEsiData();
+    buildSkillQueueMockEsiData();
 
     expect($this->test_character->total_sp)->toBeNull();
 
@@ -50,7 +50,7 @@ it('deletes old queue items', function () {
 
     expect(SkillQueue::all())->toHaveCount(1);
 
-    buildMockEsiData();
+    buildSkillQueueMockEsiData();
 
     expect($this->test_character->total_sp)->toBeNull();
 
@@ -61,17 +61,17 @@ it('deletes old queue items', function () {
 });
 
 // Helpers
-function buildMockEsiData()
+function buildSkillQueueMockEsiData()
 {
     Queue::assertNothingPushed();
 
     $mock_data = Event::fakeFor(
-        fn () => SkillQueue::factory(['character_id' => $this->test_character->character_id])
+        fn () => SkillQueue::factory(['character_id' => testCharacter()->character_id])
         ->count(5)
         ->make()
     );
 
-    $this->mockRetrieveEsiDataAction($mock_data->toArray());
+    mockRetrieveEsiDataAction($mock_data->toArray());
 
     return $mock_data;
 }

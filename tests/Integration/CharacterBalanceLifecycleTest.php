@@ -19,7 +19,10 @@ beforeEach(function () {
 });
 
 test('run wallet journal job', function () {
-    $mock_data = buildMockEsiData();
+
+    $mock_data = Balance::factory()->make();
+
+    mockRetrieveEsiDataAction(['scalar' => $mock_data->balance]);
 
     expect(Balance::all())->toHaveCount(0);
 
@@ -29,13 +32,3 @@ test('run wallet journal job', function () {
 
     expect(Balance::all())->toHaveCount(1);
 });
-
-// Helpers
-function buildMockEsiData()
-{
-    $mock_data = Balance::factory()->make();
-
-    $this->mockRetrieveEsiDataAction(['scalar' => $mock_data->balance]);
-
-    return $mock_data;
-}

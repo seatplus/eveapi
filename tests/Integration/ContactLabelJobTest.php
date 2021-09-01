@@ -22,52 +22,62 @@ beforeEach(function () {
 });
 
 test('run character contact label', function () {
-    $mock_data = buildMockEsiData();
+    $mock_data = buildContactLabelMockEsiData();
 
     $job = new CharacterContactLabelJob($this->job_container);
 
     dispatch_now($job);
 
-    assertContactLabel($mock_data, $this->test_character->character_id);
+    //assertContactLabel($mock_data, $this->test_character->character_id);
+    foreach ($mock_data as $data) {
+        //Assert that character asset created
+        $this->assertDatabaseHas('labels', [
+            'labelable_id' => (string) $this->test_character->character_id,
+            'label_id' => $data->label_id,
+        ]);
+    }
 });
 
 test('run corporation contact label', function () {
-    $mock_data = buildMockEsiData();
+    $mock_data = buildContactLabelMockEsiData();
 
     $job = new CorporationContactLabelJob($this->job_container);
 
     dispatch_now($job);
 
-    assertContactLabel($mock_data, $this->test_character->corporation->corporation_id);
+    //assertContactLabel($mock_data, $this->test_character->corporation->corporation_id);
+    foreach ($mock_data as $data) {
+        //Assert that character asset created
+        $this->assertDatabaseHas('labels', [
+            'labelable_id' => (string) $this->test_character->corporation->corporation_id,
+            'label_id' => $data->label_id,
+        ]);
+    }
 });
 
 test('run alliance contact label', function () {
-    $mock_data = buildMockEsiData();
+    $mock_data = buildContactLabelMockEsiData();
 
     $job = new AllianceContactLabelJob($this->job_container);
 
     dispatch_now($job);
 
-    assertContactLabel($mock_data, $this->test_character->corporation->alliance_id);
-});
-
-// Helpers
-function buildMockEsiData()
-{
-    $mock_data = Label::factory()->count(5)->make();
-
-    $this->mockRetrieveEsiDataAction($mock_data->toArray());
-
-    return $mock_data;
-}
-
-function assertContactLabel(Collection $mock_data, int $labelable_id)
-{
+    //assertContactLabel($mock_data, $this->test_character->corporation->alliance_id);
     foreach ($mock_data as $data) {
         //Assert that character asset created
         $this->assertDatabaseHas('labels', [
-            'labelable_id' => (string) $labelable_id,
+            'labelable_id' => (string) $this->test_character->corporation->alliance_id,
             'label_id' => $data->label_id,
         ]);
     }
+});
+
+// Helpers
+function buildContactLabelMockEsiData()
+{
+    $mock_data = Label::factory()->count(5)->make();
+
+    mockRetrieveEsiDataAction($mock_data->toArray());
+
+    return $mock_data;
 }

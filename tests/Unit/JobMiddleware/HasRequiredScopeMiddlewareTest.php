@@ -12,7 +12,12 @@ beforeEach(function () {
 });
 
 it('fails without required scope on new esi base jobs', function () {
-    mockJob(NewEsiBase::class);
+
+    $this->job = Mockery::mock(NewEsiBase::class);
+
+    $this->next = function ($job) {
+        $job->fire();
+    };
 
     $this->job->shouldReceive('fail')->times(1);
     $this->job->shouldReceive('getRequiredScope')->andReturn('someScope');
@@ -24,12 +29,3 @@ it('fails without required scope on new esi base jobs', function () {
     $this->middleware->handle($this->job, $this->next);
 });
 
-// Helpers
-function mockJob(string $base_class)
-{
-    $this->job = Mockery::mock($base_class);
-
-    $this->next = function ($job) {
-        $job->fire();
-    };
-}

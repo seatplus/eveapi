@@ -37,7 +37,7 @@ test('if job is queued', function () {
  * @runTestsInSeparateProcesses
  */
 test('retrieve test', function () {
-    $mock_data = buildMockEsiData();
+    $mock_data = buildAssetMockEsiData();
 
 
     // Run job
@@ -71,7 +71,7 @@ it('cleans up assets', function () {
     }
 
 
-    $mock_data = buildMockEsiData();
+    $mock_data = buildAssetMockEsiData();
 
     // Run CharacterAssetsAction
     (new CharacterAssetJob($this->job_container))->handle();
@@ -97,13 +97,13 @@ it('cleans up assets', function () {
 });
 
 // Helpers
-function buildMockEsiData()
+function buildAssetMockEsiData()
 {
     $mock_data = Asset::factory()->count(5)->make([
-        'assetable_id' => $this->test_character->character_id,
+        'assetable_id' => testCharacter()->character_id,
     ]);
 
-    $this->mockRetrieveEsiDataAction($mock_data->toArray());
+    mockRetrieveEsiDataAction($mock_data->toArray());
 
     return $mock_data;
 }

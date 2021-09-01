@@ -29,7 +29,7 @@ test('job is being dispatched', function () {
 });
 
 it('runs with empty response', function () {
-    $this->mockRetrieveEsiDataAction([]);
+    mockRetrieveEsiDataAction([]);
 
     $job_container = new JobContainer([
         'refresh_token' => $this->test_character->refresh_token,
@@ -41,7 +41,7 @@ it('runs with empty response', function () {
 });
 
 it('creates contract job', function () {
-    $mock_data = buildMockEsiData();
+    $mock_data = buildContractJobMockEsiData();
 
     $job_container = new JobContainer([
         'refresh_token' => $this->test_character->refresh_token,
@@ -58,7 +58,7 @@ it('creates contract job', function () {
 });
 
 it('creates contract job other way', function () {
-    $mock_data = buildMockEsiData();
+    $mock_data = buildContractJobMockEsiData();
 
     $job_container = new JobContainer([
         'refresh_token' => $this->test_character->refresh_token,
@@ -70,11 +70,11 @@ it('creates contract job other way', function () {
 });
 
 // Helpers
-function buildMockEsiData(int $count = 5)
+function buildContractJobMockEsiData(int $count = 5)
 {
     $mock_data = Contract::factory()->count($count)->make();
 
-    $this->mockRetrieveEsiDataAction($mock_data->toArray());
+    mockRetrieveEsiDataAction($mock_data->toArray());
 
     return $mock_data;
 }

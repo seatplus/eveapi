@@ -67,7 +67,7 @@ it('updates a name', function () {
         'name' => null,
     ]);
 
-    $this->mockRetrieveEsiDataAction([
+    mockRetrieveEsiDataAction([
         [
             'item_id' => $asset->item_id,
             'name' => $this->name_to_create,
@@ -233,7 +233,7 @@ it('runs the job', function () {
 
     $refresh_token = RefreshToken::factory()->make(['character_id' => $asset->assetable_id]);
 
-    $this->mockRetrieveEsiDataAction([
+    mockRetrieveEsiDataAction([
         [
             'item_id' => $asset->item_id,
             'name' => $this->name_to_create,

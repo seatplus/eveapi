@@ -23,7 +23,7 @@ beforeEach(function () {
 });
 
 it('runs the job', function () {
-    buildEsiResponseMockData();
+    buildCorporationDivisionEsiResponseMockData();
 
     expect(CorporationDivision::all())->toHaveCount(0);
 
@@ -35,7 +35,7 @@ it('runs the job', function () {
 });
 
 // Helpers
-function buildEsiResponseMockData(): void
+function buildCorporationDivisionEsiResponseMockData(): void
 {
     $mock_data = [
         "hangar" => [
@@ -58,5 +58,5 @@ function buildEsiResponseMockData(): void
         ],
     ];
 
-    $this->mockRetrieveEsiDataAction($mock_data);
+    mockRetrieveEsiDataAction($mock_data);
 }

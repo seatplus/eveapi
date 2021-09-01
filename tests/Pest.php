@@ -13,6 +13,11 @@
 
 /** @link https://pestphp.com/docs/underlying-test-case */
 
+use Seat\Eseye\Containers\EsiResponse;
+use Seatplus\Eveapi\Services\Facade\RetrieveEsiData;
+
+uses(\Seatplus\Eveapi\Tests\TestCase::class);
+
 /*
 |--------------------------------------------------------------------------
 | Expectations
@@ -37,4 +42,18 @@
 |
 */
 
-/** @link https://pestphp.com/docs/helpers */
+function mockRetrieveEsiDataAction(array $body)
+{
+    $data = json_encode($body);
+
+    $response = new EsiResponse($data, [], 'now', 200);
+
+    RetrieveEsiData::shouldReceive('execute')
+        ->once()
+        ->andReturn($response);
+}
+
+function testCharacter()
+{
+    return \Seatplus\Eveapi\Models\Character\CharacterInfo::first();
+}

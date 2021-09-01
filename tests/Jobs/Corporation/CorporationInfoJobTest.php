@@ -22,7 +22,7 @@ beforeEach(function () {
  * @runTestsInSeparateProcesses
  */
 test('retrieve test', function () {
-    $mock_data = buildMockEsiData();
+    $mock_data = buildCorporationInfoMockEsiData();
 
     // Stop CharacterInfoAction dispatching a new job
     Bus::fake();
@@ -38,11 +38,11 @@ test('retrieve test', function () {
 });
 
 // Helpers
-function buildMockEsiData()
+function buildCorporationInfoMockEsiData()
 {
     $mock_data = CorporationInfo::factory()->make();
 
-    $this->mockRetrieveEsiDataAction($mock_data->toArray());
+    mockRetrieveEsiDataAction($mock_data->toArray());
 
     return $mock_data;
 }

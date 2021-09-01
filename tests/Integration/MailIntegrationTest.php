@@ -62,7 +62,7 @@ function buildHeaderMockEsiData()
         'from' => data_get($mail, 'from'),
         'timestamp' => data_get($mail, 'timestamp'),
         'is_read' => data_get($mail, 'is_read'),
-        'character_id' => $this->test_character->character_id,
+        'character_id' => testCharacter()->character_id,
         'labels' => [
             1, 2, 3,
         ],
@@ -77,14 +77,14 @@ function buildHeaderMockEsiData()
         ],
     ]);
 
-    $this->mockRetrieveEsiDataAction($mock_data->toArray());
+    mockRetrieveEsiDataAction($mock_data->toArray());
 
     return $mock_data;
 }
 
 function buildBodyMockEsiData()
 {
-    $this->mockRetrieveEsiDataAction([
+    mockRetrieveEsiDataAction([
         'body' => 'some elaborate long text body',
     ]);
 }

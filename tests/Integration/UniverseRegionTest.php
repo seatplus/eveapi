@@ -53,7 +53,7 @@ it('does not dispatches resolver job if system exists', function () {
 
 it('resolves system', function () {
     $mock_data = System::factory()->make();
-    $this->mockRetrieveEsiDataAction($mock_data->toArray());
+    mockRetrieveEsiDataAction($mock_data->toArray());
 
     //$job = new ResolveUniverseSystemBySystemIdJob;
 
@@ -105,7 +105,7 @@ it('does not dispatches constellation resolver job if system exists', function (
 it('resolves constellations', function () {
     $mock_data = Constellation::factory()->make();
 
-    $this->mockRetrieveEsiDataAction($mock_data->toArray());
+    mockRetrieveEsiDataAction($mock_data->toArray());
 
     //Assert that no system is present
     $this->assertDatabaseMissing('universe_constellations', [
@@ -153,7 +153,7 @@ it('does not dispatches region resolver job if region exists', function () {
 it('resolves regions', function () {
     $mock_data = Region::factory()->make();
 
-    $this->mockRetrieveEsiDataAction($mock_data->toArray());
+    mockRetrieveEsiDataAction($mock_data->toArray());
 
     //Assert that no system is present
     $this->assertDatabaseMissing('universe_regions', [

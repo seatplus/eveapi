@@ -24,7 +24,7 @@ beforeEach(function () {
  * @runTestsInSeparateProcesses
  */
 it('creates station', function () {
-    $mock_data = buildMockEsiData();
+    $mock_data = buildStationMockEsiData();
 
     expect(Station::find($mock_data->station_id))->toBeNull();
 
@@ -41,7 +41,7 @@ it('creates station', function () {
  * @runTestsInSeparateProcesses
  */
 it('creates location', function () {
-    $mock_data = buildMockEsiData();
+    $mock_data = buildStationMockEsiData();
 
     //Assert that no structure is created
     $this->assertDatabaseMissing('universe_locations', [
@@ -60,7 +60,7 @@ it('creates location', function () {
  * @runTestsInSeparateProcesses
  */
 it('creates polymorphic relationship', function () {
-    $mock_data = buildMockEsiData();
+    $mock_data = buildStationMockEsiData();
 
     (new ResolveUniverseStationByIdJob($mock_data->station_id))->handle();
 
@@ -86,11 +86,11 @@ it('does not create structure if location id is not in range', function () {
 });
 
 // Helpers
-function buildMockEsiData()
+function buildStationMockEsiData()
 {
     $mock_data = Station::factory()->make();
 
-    $this->mockRetrieveEsiDataAction($mock_data->toArray());
+    mockRetrieveEsiDataAction($mock_data->toArray());
 
     return $mock_data;
 }

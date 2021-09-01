@@ -37,7 +37,7 @@ it('runs the job', function () {
 });
 
 it('creates killmail', function () {
-    buildMockEsiData();
+    buildKillmailMockEsiData();
 
     Queue::fake();
 
@@ -87,7 +87,7 @@ it('creates killmail', function () {
 });
 
 // Helpers
-function buildMockEsiData()
+function buildKillmailMockEsiData()
 {
     $killmail = file_get_contents('tests/Stubs/19c919549fb5b4359324fc7938b21f2965f1baf0.json');
 

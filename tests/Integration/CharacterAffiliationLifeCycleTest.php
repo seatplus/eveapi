@@ -64,7 +64,7 @@ it('updates affiliation older then an hours', function () {
         'character_id' => $old_data->character_id,
     ]);
 
-    $this->mockRetrieveEsiDataAction([$old_data->toArray()]);
+    mockRetrieveEsiDataAction([$old_data->toArray()]);
 
     $job_container = new JobContainer([
         'character_id' => $old_data->character_id,
@@ -95,7 +95,7 @@ it('does not update affiliation younger then an hours', function () {
         'last_pulled' => $old_data->last_pulled,
     ]);
 
-    //$this->mockRetrieveEsiDataAction([$old_data->toArray()]);
+    //mockRetrieveEsiDataAction([$old_data->toArray()]);
     $this->assertRetrieveEsiDataIsNotCalled();
 
     //(new CharacterAffiliationAction)->execute($old_data->character_id);
@@ -132,7 +132,7 @@ it('updates other outdated affiliations', function () {
         ]);
     }
 
-    $this->mockRetrieveEsiDataAction(
+    mockRetrieveEsiDataAction(
         $old_datas->toArray()
     );
 
@@ -165,7 +165,7 @@ it('updates with no id provided', function () {
         'last_pulled' => now()->subMinutes(61),
     ]);
 
-    $this->mockRetrieveEsiDataAction([
+    mockRetrieveEsiDataAction([
         $old_data->toArray(),
     ]);
 

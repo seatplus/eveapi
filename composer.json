@@ -54,6 +54,7 @@
         }
     },
     "scripts": {
+        "test": "vendor/bin/pest",
         "watch": "vendor/bin/phpunit-watcher watch",
         "parallel": "vendor/bin/testbench package:test --parallel --no-coverage"
     }

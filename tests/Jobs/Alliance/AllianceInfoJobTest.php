@@ -33,7 +33,7 @@ test('if job is queued', function () {
  * @runTestsInSeparateProcesses
  */
 test('retrieve test', function () {
-    $mock_data = buildMockEsiData();
+    $mock_data = buildAllianceInfoMockEsiData();
 
     $job = new AllianceInfoJob($this->job_container);
 
@@ -49,11 +49,11 @@ test('retrieve test', function () {
 });
 
 // Helpers
-function buildMockEsiData()
+function buildAllianceInfoMockEsiData()
 {
     $mock_data = AllianceInfo::factory()->make();
 
-    $this->mockRetrieveEsiDataAction($mock_data->toArray());
+    mockRetrieveEsiDataAction($mock_data->toArray());
 
     return $mock_data;
 }

@@ -35,7 +35,7 @@ test('if job is queued', function () {
  * @runTestsInSeparateProcesses
  */
 test('retrieve test', function () {
-    $mock_data = buildMockEsiData();
+    $mock_data = buildCharacterRoleMockEsiData();
 
     $refresh_token = RefreshToken::factory()->make([
         'character_id' => $mock_data->character_id,
@@ -57,14 +57,14 @@ test('retrieve test', function () {
 });
 
 // Helpers
-function buildMockEsiData()
+function buildCharacterRoleMockEsiData()
 {
     $mock_data = CharacterRole::factory()->make([
         'roles' => ['Personnel_Manager'],
-        'character_id' => $this->test_character->character_id,
+        'character_id' => testCharacter()->character_id,
     ]);
 
-    $this->mockRetrieveEsiDataAction($mock_data->toArray());
+    mockRetrieveEsiDataAction($mock_data->toArray());
 
     return $mock_data;
 }

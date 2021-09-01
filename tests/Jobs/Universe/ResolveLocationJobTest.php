@@ -37,7 +37,7 @@ it('checks only asset safety checker', function () {
         'location_type' => 'other',
     ]);
 
-    buildJob(2004)->handle();
+    buildJob(2004, $this->test_character->refresh_token)->handle();
 
     expect(Location::find(2004))->toBeNull();
 });
@@ -60,7 +60,7 @@ it('checks only station checker', function () {
     Queue::fake();
     Queue::assertNothingPushed();
 
-    buildJob(60003760)->handle();
+    buildJob(60003760, $this->test_character->refresh_token)->handle();
 
     Queue::assertPushedOn('high', fn (ResolveUniverseStationByIdJob $job) => $job->location_id === $mock_data->station_id);
 });
@@ -94,7 +94,7 @@ it('checks only station older then a week', function () {
     Queue::fake();
     Queue::assertNothingPushed();
 
-    buildJob($location_id)->handle();
+    buildJob($location_id, $this->test_character->refresh_token)->handle();
 
     Queue::assertPushedOn('high', fn (ResolveUniverseStationByIdJob $job) => $job->location_id === $location_id);
 });
@@ -120,7 +120,7 @@ it('checks no station younger then a week', function () {
         'locatable_type' => Station::class,
     ]);
 
-    buildJob($location_id)->handle();
+    buildJob($location_id, $this->test_character->refresh_token)->handle();
 
     $this->assertNotNull(Location::find($location_id)->locatable);
     expect(carbon(Station::find($location_id)->updated_at)->isAfter(carbon()->subWeek()))->toBeTrue();
@@ -145,7 +145,7 @@ it('checks only structure checker', function () {
     Queue::fake();
     Queue::assertNothingPushed();
 
-    buildJob(1028832949394)->handle();
+    buildJob(1028832949394, $this->test_character->refresh_token)->handle();
 
     Queue::assertPushedOn('low', fn (ResolveUniverseStructureByIdJob $job) => $job->location_id === $mock_data->station_id);
 });
@@ -179,7 +179,7 @@ it('checks only structure older then a week', function () {
     Queue::fake();
     Queue::assertNothingPushed();
 
-    buildJob($location_id)->handle();
+    buildJob($location_id, $this->test_character->refresh_token)->handle();
 
     Queue::assertPushedOn('low', fn (ResolveUniverseStructureByIdJob $job) => $job->location_id === $location_id);
 
@@ -214,7 +214,7 @@ it('checks no structure younger then a week', function () {
     Queue::fake();
     Queue::assertNothingPushed();
 
-    buildJob($location_id)->handle();
+    buildJob($location_id, $this->test_character->refresh_token)->handle();
 
     Queue::assertNothingPushed();
 
@@ -225,9 +225,9 @@ it('checks no structure younger then a week', function () {
 });
 
 // Helpers
-function buildJob(int $location_id) : ResolveLocationJob
+function buildJob(int $location_id, \Seatplus\Eveapi\Models\RefreshToken $token) : ResolveLocationJob
 {
-    $refresh_token = $this->test_character->refresh_token;
+    $refresh_token = $token;
     $refresh_token->scopes = ['esi-universe.read_structures.v1'];
     Event::fakeFor(fn () => $refresh_token->save());
 

@@ -20,32 +20,28 @@ beforeEach(function () {
 });
 
 test('run wallet journal job', function () {
-    $mock_data = buildMockEsiData();
+    $mock_data = buildWalletJournalMockEsiData();
 
     $job = new CharacterWalletJournalJob($this->job_container);
 
     dispatch_now($job);
 
-    assertWalletJournal($mock_data, $this->test_character->character_id);
-});
-
-// Helpers
-function buildMockEsiData()
-{
-    $mock_data = WalletJournal::factory()->count(5)->make();
-
-    $this->mockRetrieveEsiDataAction($mock_data->toArray());
-
-    return $mock_data;
-}
-
-function assertWalletJournal(Collection $mock_data, int $wallet_journable_id)
-{
+    //assertWalletJournal($mock_data, $this->test_character->character_id);
     foreach ($mock_data as $data) {
         //Assert that character asset created
         $this->assertDatabaseHas('wallet_journals', [
-            'wallet_journable_id' => $wallet_journable_id,
+            'wallet_journable_id' => $this->test_character->character_id,
             'id' => $data->id,
         ]);
     }
+});
+
+// Helpers
+function buildWalletJournalMockEsiData()
+{
+    $mock_data = WalletJournal::factory()->count(5)->make();
+
+    mockRetrieveEsiDataAction($mock_data->toArray());
+
+    return $mock_data;
 }

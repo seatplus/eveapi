@@ -24,7 +24,7 @@ beforeEach(function () {
 it('runs skill job', function () {
     expect(Skill::all())->toHaveCount(0);
 
-    buildMockEsiData();
+    buildSkillMockEsiData();
 
     expect($this->test_character->total_sp)->toBeNull();
 
@@ -47,11 +47,11 @@ it('observes skill creation', function () {
 });
 
 // Helpers
-function buildMockEsiData()
+function buildSkillMockEsiData()
 {
     Queue::assertNothingPushed();
     $mocked_skills = Event::fakeFor(
-        fn () => Skill::factory(['character_id' => $this->test_character->character_id])
+        fn () => Skill::factory(['character_id' => testCharacter()->character_id])
         ->count(5)
         ->make()
     );
@@ -63,7 +63,7 @@ function buildMockEsiData()
         'unallocated_sp' => 42,
     ];
 
-    $this->mockRetrieveEsiDataAction($mock_data);
+    mockRetrieveEsiDataAction($mock_data);
 
     return $mock_data;
 }
