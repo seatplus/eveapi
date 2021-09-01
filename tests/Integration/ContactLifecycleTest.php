@@ -1,7 +1,6 @@
 <?php
 
 
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
@@ -124,4 +123,3 @@ function buildContactLifecycleMockEsiData()
 
     return $mock_data;
 }
-

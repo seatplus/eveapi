@@ -12,7 +12,6 @@ beforeEach(function () {
 });
 
 it('fails without required scope on new esi base jobs', function () {
-
     $this->job = Mockery::mock(NewEsiBase::class);
 
     $this->next = function ($job) {
@@ -28,4 +27,3 @@ it('fails without required scope on new esi base jobs', function () {
 
     $this->middleware->handle($this->job, $this->next);
 });
-

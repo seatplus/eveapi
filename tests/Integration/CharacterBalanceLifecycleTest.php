@@ -19,7 +19,6 @@ beforeEach(function () {
 });
 
 test('run wallet journal job', function () {
-
     $mock_data = Balance::factory()->make();
 
     mockRetrieveEsiDataAction(['scalar' => $mock_data->balance]);

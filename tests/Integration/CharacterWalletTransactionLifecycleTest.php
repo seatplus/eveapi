@@ -1,7 +1,6 @@
 <?php
 
 
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seat\Eseye\Containers\EsiResponse;

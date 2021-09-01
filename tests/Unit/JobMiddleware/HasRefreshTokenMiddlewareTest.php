@@ -7,7 +7,6 @@ use Seatplus\Eveapi\Tests\TestCase;
 uses(TestCase::class);
 
 beforeEach(function () {
-
     $this->middleware = new HasRefreshTokenMiddleware();
 
     $this->job = Mockery::mock();
@@ -32,5 +31,3 @@ it('fails without refresh token', function () {
 
     $this->middleware->handle($this->job, $this->next);
 });
-
-
