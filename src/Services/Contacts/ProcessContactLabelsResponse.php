@@ -26,7 +26,6 @@
 
 namespace Seatplus\Eveapi\Services\Contacts;
 
-
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\Eveapi\Models\Contacts\Label;
 

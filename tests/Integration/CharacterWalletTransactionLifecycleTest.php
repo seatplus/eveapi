@@ -11,8 +11,8 @@ use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
-use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Services\Facade\RetrieveEsiData;
+use Seatplus\Eveapi\Tests\TestCase;
 
 uses(TestCase::class);
 

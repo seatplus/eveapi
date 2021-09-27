@@ -40,7 +40,6 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
      */
     private $esi_request_container;
 
-
     public function retrieve(?int $page = null): EsiResponse
     {
         $this->builldEsiRequestContainer($page);

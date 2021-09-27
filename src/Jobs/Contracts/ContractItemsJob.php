@@ -61,8 +61,7 @@ class ContractItemsJob extends NewEsiBase implements HasPathValuesInterface, Has
         public int $contract_id,
         public JobContainer $job_container,
         public string $type = 'character'
-    )
-    {
+    ) {
         parent::__construct($job_container);
 
         $path_values = $this->type === 'character'

@@ -1,7 +1,6 @@
 <?php
 
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
-use Seatplus\Eveapi\Exceptions\InvalidContainerDataException;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Tests\TestCase;
 

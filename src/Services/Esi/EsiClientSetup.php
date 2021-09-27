@@ -34,12 +34,10 @@ class EsiClientSetup
         ]);
 
         $config->setConfiguration($esi_configuration);
-
     }
 
     public function get(?EsiAuthentication $authentication = null): EsiClient
     {
-
         $client = new EsiClient;
 
         if ($authentication) {
@@ -53,5 +51,4 @@ class EsiClientSetup
 
         return $client;
     }
-
 }

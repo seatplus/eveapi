@@ -49,9 +49,8 @@ class RetrieveEsiData
 
     public function getClient(): EsiClient
     {
-
-        if(! isset($this->client)) {
-            if(is_null($this->request->refreshToken)) {
+        if (! isset($this->client)) {
+            if (is_null($this->request->refreshToken)) {
                 $this->client = $this->esi_client->get();
             }
 
@@ -114,7 +113,6 @@ class RetrieveEsiData
 
     private function buildClient()
     {
-
         $this->getClient()->setVersion($this->request->version);
         $this->getClient()->setRequestBody($this->request->request_body);
         $this->getClient()->setQueryParameters($this->request->query_parameters);
@@ -127,7 +125,6 @@ class RetrieveEsiData
 
     private function logWarnings(EsiResponse $response)
     {
-
         $logger = Configuration::getInstance()->getLogger();
 
         if (! is_null($response->pages) && $this->request->page === null) {

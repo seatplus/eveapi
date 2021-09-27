@@ -93,7 +93,7 @@ class ResolveUniverseSystemBySystemIdJob extends NewEsiBase implements HasPathVa
                 'name' => $response->name,
                 'security_status' => $response->security_status,
 
-                'security_class' => data_get($response,'security_class'),
+                'security_class' => data_get($response, 'security_class'),
             ]
         );
     }
