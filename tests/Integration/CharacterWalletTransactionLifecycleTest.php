@@ -3,15 +3,16 @@
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
-use Seat\Eseye\Containers\EsiResponse;
+
+use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
-use Seatplus\Eveapi\Services\Esi\RetrieveEsiData;
 use Seatplus\Eveapi\Tests\TestCase;
+use Seatplus\Eveapi\Services\Facade\RetrieveEsiData;
 
 uses(TestCase::class);
 
@@ -30,7 +31,7 @@ test('run wallet transaction action', function () {
     $response = new EsiResponse(json_encode($mock_data), [], 'now', 200);
     $response2 = new EsiResponse(json_encode([]), [], 'now', 200);
 
-    \Facades\Seatplus\Eveapi\Services\Esi\RetrieveEsiData::shouldReceive('execute')
+    RetrieveEsiData::shouldReceive('execute')
         ->andReturns([$response, $response2]);
 
     $job_container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]);

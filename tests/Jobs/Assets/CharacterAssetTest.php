@@ -39,7 +39,6 @@ test('if job is queued', function () {
 test('retrieve test', function () {
     $mock_data = buildAssetMockEsiData();
 
-
     // Run job
     (new CharacterAssetJob($this->job_container))->handle();
 

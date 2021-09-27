@@ -37,7 +37,6 @@ use Seatplus\Eveapi\Events\RefreshTokenCreated;
 use Seatplus\Eveapi\Events\UniverseConstellationCreated;
 use Seatplus\Eveapi\Events\UniverseSystemCreated;
 use Seatplus\Eveapi\Events\UpdatingRefreshTokenEvent;
-use Seatplus\Eveapi\Helpers\EseyeSetup;
 use Seatplus\Eveapi\Listeners\DispatchGetConstellationById;
 use Seatplus\Eveapi\Listeners\DispatchGetRegionById;
 use Seatplus\Eveapi\Listeners\DispatchGetSystemJobSubscriber;
@@ -70,6 +69,7 @@ use Seatplus\Eveapi\Observers\SkillObserver;
 use Seatplus\Eveapi\Observers\SkillQueueObserver;
 use Seatplus\Eveapi\Observers\TypeObserver;
 use Seatplus\Eveapi\Observers\WalletTransactionObserver;
+use Seatplus\Eveapi\Services\Esi\EsiClientSetup;
 
 class EveapiServiceProvider extends ServiceProvider
 {
@@ -118,7 +118,7 @@ class EveapiServiceProvider extends ServiceProvider
 
         // Eseye Singleton
         $this->app->singleton('esi-client', function () {
-            return new EseyeSetup;
+            return new EsiClientSetup;
         });
     }
 

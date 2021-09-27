@@ -13,7 +13,8 @@
 
 /** @link https://pestphp.com/docs/underlying-test-case */
 
-use Seat\Eseye\Containers\EsiResponse;
+
+use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\Eveapi\Services\Facade\RetrieveEsiData;
 
 uses(\Seatplus\Eveapi\Tests\TestCase::class);

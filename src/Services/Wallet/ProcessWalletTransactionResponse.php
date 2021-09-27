@@ -26,7 +26,8 @@
 
 namespace Seatplus\Eveapi\Services\Wallet;
 
-use Seat\Eseye\Containers\EsiResponse;
+
+use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 
 class ProcessWalletTransactionResponse

@@ -104,8 +104,8 @@ class AllianceInfoJob extends NewEsiBase implements HasPathValuesInterface
             'creator_corporation_id' => $response->creator_corporation_id,
             'creator_id' => $response->creator_id,
             'date_founded' => carbon($response->date_founded),
-            'executor_corporation_id' => $response->optional('executor_corporation_id'),
-            'faction_id' => $response->optional('faction_id'),
+            'executor_corporation_id' => data_get($response, 'executor_corporation_id'),
+            'faction_id' => data_get($response, 'faction_id'),
             'name' => $response->name,
             'ticker' => $response->ticker,
         ])->save();
