@@ -1,8 +1,6 @@
 <?php
 
 
-namespace Seatplus\Eveapi\Tests\Integration;
-
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Containers\JobContainer;
@@ -13,84 +11,67 @@ use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
-class SkillQueueLifeCycleTest extends TestCase
+uses(TestCase::class);
+uses(MockRetrieveEsiDataAction::class);
+
+beforeEach(function () {
+    // Prevent any auto dispatching of jobs
+    Queue::fake();
+
+    $this->job_container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]);
+});
+
+it('runs skill job', function () {
+    expect(SkillQueue::all())->toHaveCount(0);
+
+    buildSkillQueueMockEsiData();
+
+    expect($this->test_character->total_sp)->toBeNull();
+
+    (new SkillQueueJob($this->job_container))->handle();
+
+    expect(SkillQueue::all())->toHaveCount(5);
+    expect(SkillQueue::first()->type)->toBeInstanceOf(Type::class);
+
+    expect($this->test_character->refresh()->skill_queues)->toHaveCount(5);
+});
+
+it('observes skill creation', function () {
+    Queue::assertNothingPushed();
+
+    SkillQueue::factory(['skill_id' => 123])->create();
+
+    Queue::assertPushed(ResolveUniverseTypeByIdJob::class);
+});
+
+it('deletes old queue items', function () {
+    // create old Dataa
+    $old_data = Event::fakeFor(fn () => SkillQueue::factory(['character_id' => $this->test_character->character_id])->create());
+
+    expect(SkillQueue::all())->toHaveCount(1);
+
+    buildSkillQueueMockEsiData();
+
+    expect($this->test_character->total_sp)->toBeNull();
+
+    (new SkillQueueJob($this->job_container))->handle();
+
+    expect(SkillQueue::all())->toHaveCount(5);
+    $this->assertNotCount(6, SkillQueue::all());
+});
+
+// Helpers
+function buildSkillQueueMockEsiData()
 {
-    use MockRetrieveEsiDataAction;
+    Queue::assertNothingPushed();
 
-    public JobContainer $job_container;
+    $mock_data = Event::fakeFor(
+        fn () => SkillQueue::factory(['character_id' => testCharacter()->character_id])
+        ->count(5)
+        ->make()
+    );
 
-    /**
-     * @var array|null
-     */
-    private ?array $mocked_skills;
+    mockRetrieveEsiDataAction($mock_data->toArray());
 
-    public function setUp(): void
-    {
-        parent::setUp();
-
-        // Prevent any auto dispatching of jobs
-        Queue::fake();
-
-        $this->job_container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]);
-    }
-
-    /** @test */
-    public function itRunsSkillJob()
-    {
-        $this->assertCount(0, SkillQueue::all());
-
-        $this->buildMockEsiData();
-
-        $this->assertNull($this->test_character->total_sp);
-
-        (new SkillQueueJob($this->job_container))->handle();
-
-        $this->assertCount(5, SkillQueue::all());
-        $this->assertInstanceOf(Type::class, SkillQueue::first()->type);
-
-        $this->assertCount(5, $this->test_character->refresh()->skill_queues);
-    }
-
-    /** @test */
-    public function itObservesSkillCreation()
-    {
-        Queue::assertNothingPushed();
-
-        SkillQueue::factory(['skill_id' => 123])->create();
-
-        Queue::assertPushed(ResolveUniverseTypeByIdJob::class);
-    }
-
-    /** @test */
-    public function itDeletesOldQueueItems()
-    {
-        // create old Dataa
-        $old_data = Event::fakeFor(fn () => SkillQueue::factory(['character_id' => $this->test_character->character_id])->create());
-
-        $this->assertCount(1, SkillQueue::all());
-
-        $this->buildMockEsiData();
-
-        $this->assertNull($this->test_character->total_sp);
-
-        (new SkillQueueJob($this->job_container))->handle();
-
-        $this->assertCount(5, SkillQueue::all());
-        $this->assertNotCount(6, SkillQueue::all());
-    }
-
-    private function buildMockEsiData()
-    {
-        Queue::assertNothingPushed();
-
-        $mock_data = Event::fakeFor(
-            fn () => SkillQueue::factory(['character_id' => $this->test_character->character_id])
-            ->count(5)
-            ->make()
-        );
-
-        $this->mockRetrieveEsiDataAction($mock_data->toArray());
-
-        return $mock_data;
-    }
+    return $mock_data;
 }

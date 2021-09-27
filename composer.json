@@ -43,7 +43,8 @@
         "spatie/phpunit-watcher": "^1.11",
         "itsgoingd/clockwork": "^5.0",
         "barryvdh/laravel-ide-helper": "^2.6",
-        "phpunit/phpunit":  "^9.0"
+        "pestphp/pest": "^1.18",
+        "pestphp/pest-plugin-laravel": "^1.1"
     },
     "extra": {
         "laravel": {
@@ -53,6 +54,7 @@
         }
     },
     "scripts": {
+        "test": "vendor/bin/pest",
         "watch": "vendor/bin/phpunit-watcher watch",
         "parallel": "vendor/bin/testbench package:test --parallel --no-coverage"
     }

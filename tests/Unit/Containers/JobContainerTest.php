@@ -1,60 +1,49 @@
 <?php
 
-namespace Seatplus\Eveapi\Tests\Unit\Containers;
-
 use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Exceptions\InvalidContainerDataException;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Tests\TestCase;
 
-class JobContainerTest extends TestCase
-{
-    /** @test */
-    public function canSetProppertyTest()
-    {
-        $job = new JobContainer([
-            'character_id' => 12,
-        ]);
+uses(TestCase::class);
 
-        $this->assertEquals(12, $job->character_id);
-    }
+test('can set propperty test', function () {
+    $job = new JobContainer([
+        'character_id' => 12,
+    ]);
 
-    /** @test
-     * @throws \Seatplus\Eveapi\Exceptions\InvalidContainerDataException
-     */
-    public function canNotSetProppertyTest()
-    {
-        $this->expectException(InvalidContainerDataException::class);
+    expect($job->character_id)->toEqual(12);
+});
 
-        new JobContainer([
-            'herpaderp' => 'v4',
-        ]);
-    }
+/** @throws \Seatplus\Eveapi\Exceptions\InvalidContainerDataException
+ */
+test('can not set propperty test', function () {
+    $this->expectException(InvalidContainerDataException::class);
 
-    /** @test */
-    public function getCharacterIdViaPropperty()
-    {
-        $job = new JobContainer([
-            'character_id' => 12,
-        ]);
+    new JobContainer([
+        'herpaderp' => 'v4',
+    ]);
+});
 
-        $this->assertEquals(12, $job->getCharacterId());
-    }
+test('get character id via propperty', function () {
+    $job = new JobContainer([
+        'character_id' => 12,
+    ]);
 
-    /** @test */
-    public function getCharacterIdViaRefreshToken()
-    {
-        Event::fake();
+    expect($job->getCharacterId())->toEqual(12);
+});
 
-        $refresh_token = RefreshToken::factory()->create([
-            'expires_on' => now()->addDay(),
-        ]);
+test('get character id via refresh token', function () {
+    Event::fake();
 
-        $job = new JobContainer([
-            'refresh_token' => $refresh_token,
-        ]);
+    $refresh_token = RefreshToken::factory()->create([
+        'expires_on' => now()->addDay(),
+    ]);
 
-        $this->assertEquals($refresh_token->character_id, $job->getCharacterId());
-    }
-}
+    $job = new JobContainer([
+        'refresh_token' => $refresh_token,
+    ]);
+
+    expect($job->getCharacterId())->toEqual($refresh_token->character_id);
+});

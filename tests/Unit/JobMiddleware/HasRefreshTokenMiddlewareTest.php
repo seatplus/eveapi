@@ -1,63 +1,33 @@
 <?php
 
-namespace Seatplus\Eveapi\Tests\Unit\JobMiddleware;
-
-use Mockery;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Tests\TestCase;
 
-class HasRefreshTokenMiddlewareTest extends TestCase
-{
-    /**
-     * @var \Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware
-     */
-    private $middleware;
+uses(TestCase::class);
 
-    /**
-     * @var \Mockery\LegacyMockInterface|\Mockery\MockInterface
-     */
-    private $job;
+beforeEach(function () {
+    $this->middleware = new HasRefreshTokenMiddleware();
 
-    /**
-     * @var \Closure
-     */
-    private $next;
+    $this->job = Mockery::mock();
 
-    public function setUp(): void
-    {
-        parent::setUp();
+    $this->next = function ($job) {
+        $job->fire();
+    };
+});
 
-        $this->mockJob();
-        $this->middleware = new HasRefreshTokenMiddleware();
-    }
+it('runs with refresh token', function () {
+    $this->job->shouldReceive('fire')->times(1);
 
-    /** @test */
-    public function it_runs_with_refresh_token()
-    {
-        $this->job->shouldReceive('fire')->times(1);
+    $this->job->refresh_token = RefreshToken::factory()->make();
 
-        $this->job->refresh_token = RefreshToken::factory()->make();
+    $this->middleware->handle($this->job, $this->next);
+});
 
-        $this->middleware->handle($this->job, $this->next);
-    }
+it('fails without refresh token', function () {
+    $this->job->shouldReceive('fail')->times(1);
 
-    /** @test */
-    public function it_fails_without_refresh_token()
-    {
-        $this->job->shouldReceive('fail')->times(1);
+    $this->job->refresh_token = null;
 
-        $this->job->refresh_token = null;
-
-        $this->middleware->handle($this->job, $this->next);
-    }
-
-    private function mockJob()
-    {
-        $this->job = Mockery::mock();
-
-        $this->next = function ($job) {
-            $job->fire();
-        };
-    }
-}
+    $this->middleware->handle($this->job, $this->next);
+});

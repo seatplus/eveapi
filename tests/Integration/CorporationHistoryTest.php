@@ -1,35 +1,29 @@
 <?php
 
 
-namespace Seatplus\Eveapi\Tests\Integration;
-
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Character\CorporationHistoryJob;
 use Seatplus\Eveapi\Models\Character\CorporationHistory;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
-class CorporationHistoryTest extends TestCase
-{
-    use MockRetrieveEsiDataAction;
+uses(TestCase::class);
+uses(MockRetrieveEsiDataAction::class);
 
-    /** @test */
-    public function jobCreatesDBEntry()
-    {
-        $corporation_history = CorporationHistory::factory()->count(3)->make([
-            'character_id' => $this->test_character->character_id,
-            'corporation_id' => $this->test_character->corporation->corporation_id,
-        ]);
+test('job creates d b entry', function () {
+    $corporation_history = CorporationHistory::factory()->count(3)->make([
+        'character_id' => $this->test_character->character_id,
+        'corporation_id' => $this->test_character->corporation->corporation_id,
+    ]);
 
-        $this->mockRetrieveEsiDataAction($corporation_history->toArray());
+    mockRetrieveEsiDataAction($corporation_history->toArray());
 
-        $job_container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]);
+    $job_container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]);
 
-        $this->assertCount(0, CorporationHistory::all());
+    expect(CorporationHistory::all())->toHaveCount(0);
 
-        CorporationHistoryJob::dispatchSync($job_container);
+    CorporationHistoryJob::dispatchSync($job_container);
 
-        $this->assertCount(3, CorporationHistory::all());
-        $this->assertCount(3, $this->test_character->corporation_history);
-    }
-}
+    expect(CorporationHistory::all())->toHaveCount(3);
+    expect($this->test_character->corporation_history)->toHaveCount(3);
+});

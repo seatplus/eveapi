@@ -1,26 +1,21 @@
 <?php
 
 
-namespace Seatplus\Eveapi\Tests\Unit\Services;
-
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Services\DispatchIndividualUpdate;
 use Seatplus\Eveapi\Tests\TestCase;
 
-class DispatchIndividualUpdateServiceTest extends TestCase
-{
-    /** @test */
-    public function it_dispatches_job()
-    {
-        $refresh_token = $this->test_character->refresh_token;
-        $job = 'character.assets';
+uses(TestCase::class);
 
-        Queue::fake();
+it('dispatches job', function () {
+    $refresh_token = $this->test_character->refresh_token;
+    $job = 'character.assets';
 
-        (new DispatchIndividualUpdate($refresh_token))->execute($job);
+    Queue::fake();
 
-        $job_class = config('eveapi.jobs')[$job];
+    (new DispatchIndividualUpdate($refresh_token))->execute($job);
 
-        Queue::assertPushedOn('high', $job_class);
-    }
-}
+    $job_class = config('eveapi.jobs')[$job];
+
+    Queue::assertPushedOn('high', $job_class);
+});

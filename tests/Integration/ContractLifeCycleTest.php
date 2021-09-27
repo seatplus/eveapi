@@ -1,44 +1,37 @@
 <?php
 
 
-namespace Seatplus\Eveapi\Tests\Integration;
-
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Tests\TestCase;
 
-class ContractLifeCycleTest extends TestCase
-{
-    /** @test */
-    public function ObserverDispatchesNothingByDefaultUponCreationWithFactory()
-    {
-        $fake = Queue::fake();
+uses(TestCase::class);
 
-        $contract = Contract::factory()->create(['for_corporation' => true]);
+test('observer dispatches nothing by default upon creation with factory', function () {
+    $fake = Queue::fake();
 
-        $this->assertNotNull($contract->start_location);
-        $this->assertNotNull($contract->end_location);
-        $this->assertNotNull($contract->issuer);
+    $contract = Contract::factory()->create(['for_corporation' => true]);
 
-        Queue::assertNothingPushed();
-    }
+    $this->assertNotNull($contract->start_location);
+    $this->assertNotNull($contract->end_location);
+    $this->assertNotNull($contract->issuer);
 
-    /** @test */
-    public function ObserverDispatchesLocationJobWithUnknownLocationId()
-    {
-        $fake = Queue::fake();
+    Queue::assertNothingPushed();
+});
 
-        $contract = Contract::factory()->create([
-            'assignee_id' => $this->test_character->character_id,
-            'start_location_id' => 123456,
-            'for_corporation' => true,
-        ]);
+test('observer dispatches location job with unknown location id', function () {
+    $fake = Queue::fake();
 
-        $this->assertNull($contract->start_location);
-        $this->assertNotNull($contract->end_location);
-        $this->assertNotNull($contract->issuer);
+    $contract = Contract::factory()->create([
+        'assignee_id' => $this->test_character->character_id,
+        'start_location_id' => 123456,
+        'for_corporation' => true,
+    ]);
 
-        Queue::assertPushedOn('high', ResolveLocationJob::class);
-    }
-}
+    expect($contract->start_location)->toBeNull();
+    $this->assertNotNull($contract->end_location);
+    $this->assertNotNull($contract->issuer);
+
+    Queue::assertPushedOn('high', ResolveLocationJob::class);
+});

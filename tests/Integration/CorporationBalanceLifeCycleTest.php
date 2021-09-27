@@ -1,8 +1,6 @@
 <?php
 
 
-namespace Seatplus\Eveapi\Tests\Integration;
-
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Containers\JobContainer;
@@ -17,160 +15,144 @@ use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
-class CorporationBalanceLifeCycleTest extends TestCase
+uses(TestCase::class);
+uses(MockRetrieveEsiDataAction::class);
+
+beforeEach(function () {
+    $refresh_token = Event::fakeFor(function () {
+        $token = $this->test_character->refresh_token;
+        $token->scopes = ['esi-wallet.read_corporation_wallets.v1'];
+        $token->save();
+
+        return $token;
+    });
+
+    $this->job_container = new JobContainer(['refresh_token' => $refresh_token]);
+});
+
+it('runs the job', function () {
+    buildCorpWalletEsiMockData();
+
+    expect(Balance::all())->toHaveCount(0);
+
+    // Prevent Observer from picking up the jobs
+    Event::fake();
+
+    (new CorporationBalanceJob($this->job_container))->handle();
+
+    expect(Balance::all())->toHaveCount(7);
+});
+
+it('has observer and dispatches job', function () {
+    $character_roles = $this->test_character->roles;
+    $character_roles->roles = ['Accountant'];
+    $character_roles->save();
+
+    Queue::fake();
+
+    $balances = Balance::factory()
+        ->withDivision()
+        ->count(7)
+        ->create([
+            'balanceable_id' => $this->test_character->corporation->corporation_id,
+            'balanceable_type' => CorporationInfo::class,
+        ]);
+
+    Queue::assertPushed(CorporationWalletJournalByDivisionJob::class);
+    Queue::assertPushed(CorporationWalletTransactionByDivisionJob::class);
+});
+
+it('spawns a job for every wallet division', function () {
+    $character_roles = $this->test_character->roles;
+    $character_roles->roles = ['Accountant'];
+    $character_roles->save();
+
+    Queue::fake();
+
+    Event::fakeFor(fn () => Balance::factory()->withDivision()->count(7)->create([
+        'balanceable_id' => $this->test_character->corporation->corporation_id,
+        'balanceable_type' => CorporationInfo::class,
+    ]));
+
+    (new CorporationWalletJournalJob($this->job_container))->handle();
+
+    expect(Balance::all())->toHaveCount(7);
+
+    Queue::assertPushed(CorporationWalletJournalByDivisionJob::class);
+});
+
+it('creates wallet journal entries', function () {
+    $this->test_character->refresh_token()->update(['scopes' => config('eveapi.scopes.corporation.wallet')]);
+    $this->test_character->roles()->update(['roles' => ['Accountant']]);
+
+    $corporation = $this->test_character->corporation;
+
+    expect($corporation->wallet_journals)->toHaveCount(0);
+
+    $mock_data = buildCorporationWalletJournaltEsiMockData();
+
+    CorporationWalletJournalByDivisionJob::dispatchSync($this->job_container, $mock_data->first()->division);
+
+    $corporation = $corporation->refresh();
+    expect($corporation->wallet_journals)->toHaveCount($mock_data->count());
+    expect($corporation->wallet_journals->first())->toBeInstanceOf(WalletJournal::class);
+});
+
+it('creates wallet transaction entries', function () {
+    $this->test_character->refresh_token()->update(['scopes' => config('eveapi.scopes.corporation.wallet')]);
+    $this->test_character->roles()->update(['roles' => ['Accountant']]);
+
+    $corporation = $this->test_character->corporation;
+
+    expect($corporation->wallet_transactions)->toHaveCount(0);
+
+    $mock_data = buildCorporationWalletTransactionEsiMockData();
+
+    // Prevent Observers to pickup any new jobs
+    Event::fake();
+
+    CorporationWalletTransactionByDivisionJob::dispatchSync($this->job_container, $mock_data->first()->division);
+
+    $corporation = $corporation->refresh();
+    expect($corporation->wallet_transactions)->toHaveCount($mock_data->count());
+    expect($corporation->wallet_transactions->first())->toBeInstanceOf(WalletTransaction::class);
+});
+
+// Helpers
+function buildCorpWalletEsiMockData()
 {
-    use MockRetrieveEsiDataAction;
+    $mock_data = Balance::factory()->withDivision()->count(7)->make([
+        'balanceable_id' => testCharacter()->corporation->corporation_id,
+        'balanceable_type' => CorporationInfo::class,
+    ]);
 
-    private JobContainer $job_container;
+    mockRetrieveEsiDataAction($mock_data->toArray());
 
-    public function setUp(): void
-    {
-        parent::setUp();
+    return $mock_data;
+}
 
-        $refresh_token = Event::fakeFor(function () {
-            $token = $this->test_character->refresh_token;
-            $token->scopes = ['esi-wallet.read_corporation_wallets.v1'];
-            $token->save();
+function buildCorporationWalletJournaltEsiMockData()
+{
+    $mock_data = WalletJournal::factory()->count(7)->make([
+        'wallet_journable_id' => testCharacter()->corporation->corporation_id,
+        'wallet_journable_type' => CorporationInfo::class,
+        'division' => 3,
+    ]);
 
-            return $token;
-        });
+    mockRetrieveEsiDataAction($mock_data->toArray());
 
-        $this->job_container = new JobContainer(['refresh_token' => $refresh_token]);
-    }
+    return $mock_data;
+}
 
-    /** @test */
-    public function itRunsTheJob()
-    {
-        $this->buildCorpWalletEsiMockData();
+function buildCorporationWalletTransactionEsiMockData()
+{
+    $mock_data = WalletTransaction::factory()->count(7)->make([
+        'wallet_transactionable_id' => testCharacter()->corporation->corporation_id,
+        'wallet_transactionable_type' => CorporationInfo::class,
+        'division' => 3,
+    ]);
 
-        $this->assertCount(0, Balance::all());
+    mockRetrieveEsiDataAction($mock_data->toArray());
 
-        // Prevent Observer from picking up the jobs
-        Event::fake();
-
-        (new CorporationBalanceJob($this->job_container))->handle();
-
-        $this->assertCount(7, Balance::all());
-    }
-
-    /** @test */
-    public function itHasObserverAndDispatchesJob()
-    {
-        $character_roles = $this->test_character->roles;
-        $character_roles->roles = ['Accountant'];
-        $character_roles->save();
-
-        Queue::fake();
-
-        $balances = Balance::factory()
-            ->withDivision()
-            ->count(7)
-            ->create([
-                'balanceable_id' => $this->test_character->corporation->corporation_id,
-                'balanceable_type' => CorporationInfo::class,
-            ]);
-
-        Queue::assertPushed(CorporationWalletJournalByDivisionJob::class);
-        Queue::assertPushed(CorporationWalletTransactionByDivisionJob::class);
-    }
-
-    /** @test */
-    public function itSpawnsAJobForEveryWalletDivision()
-    {
-        $character_roles = $this->test_character->roles;
-        $character_roles->roles = ['Accountant'];
-        $character_roles->save();
-
-        Queue::fake();
-
-        Event::fakeFor(fn () => Balance::factory()->withDivision()->count(7)->create([
-            'balanceable_id' => $this->test_character->corporation->corporation_id,
-            'balanceable_type' => CorporationInfo::class,
-        ]));
-
-        (new CorporationWalletJournalJob($this->job_container))->handle();
-
-        $this->assertCount(7, Balance::all());
-
-        Queue::assertPushed(CorporationWalletJournalByDivisionJob::class);
-    }
-
-    /** @test */
-    public function itCreatesWalletJournalEntries()
-    {
-        $this->test_character->refresh_token()->update(['scopes' => config('eveapi.scopes.corporation.wallet')]);
-        $this->test_character->roles()->update(['roles' => ['Accountant']]);
-
-        $corporation = $this->test_character->corporation;
-
-        $this->assertCount(0, $corporation->wallet_journals);
-
-        $mock_data = $this->buildCorporationWalletJournaltEsiMockData();
-
-        CorporationWalletJournalByDivisionJob::dispatchSync($this->job_container, $mock_data->first()->division);
-
-        $corporation = $corporation->refresh();
-        $this->assertCount($mock_data->count(), $corporation->wallet_journals);
-        $this->assertInstanceOf(WalletJournal::class, $corporation->wallet_journals->first());
-    }
-
-    /** @test */
-    public function itCreatesWalletTransactionEntries()
-    {
-        $this->test_character->refresh_token()->update(['scopes' => config('eveapi.scopes.corporation.wallet')]);
-        $this->test_character->roles()->update(['roles' => ['Accountant']]);
-
-        $corporation = $this->test_character->corporation;
-
-        $this->assertCount(0, $corporation->wallet_transactions);
-
-        $mock_data = $this->buildCorporationWalletTransactionEsiMockData();
-
-        // Prevent Observers to pickup any new jobs
-        Event::fake();
-
-        CorporationWalletTransactionByDivisionJob::dispatchSync($this->job_container, $mock_data->first()->division);
-
-        $corporation = $corporation->refresh();
-        $this->assertCount($mock_data->count(), $corporation->wallet_transactions);
-        $this->assertInstanceOf(WalletTransaction::class, $corporation->wallet_transactions->first());
-    }
-
-    private function buildCorpWalletEsiMockData()
-    {
-        $mock_data = Balance::factory()->withDivision()->count(7)->make([
-            'balanceable_id' => $this->test_character->corporation->corporation_id,
-            'balanceable_type' => CorporationInfo::class,
-        ]);
-
-        $this->mockRetrieveEsiDataAction($mock_data->toArray());
-
-        return $mock_data;
-    }
-
-    private function buildCorporationWalletJournaltEsiMockData()
-    {
-        $mock_data = WalletJournal::factory()->count(7)->make([
-            'wallet_journable_id' => $this->test_character->corporation->corporation_id,
-            'wallet_journable_type' => CorporationInfo::class,
-            'division' => 3,
-        ]);
-
-        $this->mockRetrieveEsiDataAction($mock_data->toArray());
-
-        return $mock_data;
-    }
-
-    private function buildCorporationWalletTransactionEsiMockData()
-    {
-        $mock_data = WalletTransaction::factory()->count(7)->make([
-            'wallet_transactionable_id' => $this->test_character->corporation->corporation_id,
-            'wallet_transactionable_type' => CorporationInfo::class,
-            'division' => 3,
-        ]);
-
-        $this->mockRetrieveEsiDataAction($mock_data->toArray());
-
-        return $mock_data;
-    }
+    return $mock_data;
 }

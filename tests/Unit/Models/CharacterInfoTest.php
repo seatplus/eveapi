@@ -1,8 +1,6 @@
 <?php
 
 
-namespace Seatplus\Eveapi\Tests\Unit\Models;
-
 use Faker\Factory;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
@@ -17,100 +15,80 @@ use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Wallet\Balance;
 use Seatplus\Eveapi\Tests\TestCase;
 
-class CharacterInfoTest extends TestCase
-{
-    protected function setUp(): void
-    {
-        parent::setUp();
+uses(TestCase::class);
 
-        Queue::fake();
-    }
+beforeEach(function () {
+    Queue::fake();
+});
 
-    /** @test */
-    public function characterHasRefreshTokenRelationTest()
-    {
-        $this->assertInstanceOf(RefreshToken::class, $this->test_character->refresh_token);
-    }
+test('character has refresh token relation test', function () {
+    expect($this->test_character->refresh_token)->toBeInstanceOf(RefreshToken::class);
+});
 
-    /** @test */
-    public function characterHasAllianceRelationTest()
-    {
-        $faker = Factory::create();
+test('character has alliance relation test', function () {
+    $faker = Factory::create();
 
-        $alliance_id = $faker->numberBetween(99000000, 100000000);
+    $alliance_id = $faker->numberBetween(99000000, 100000000);
 
-        $affiliation = CharacterAffiliation::factory()->create([
-            'alliance_id' => $alliance_id,
-        ]);
+    $affiliation = CharacterAffiliation::factory()->create([
+        'alliance_id' => $alliance_id,
+    ]);
 
-        $character = $affiliation->character()->save(CharacterInfo::factory()->create());
+    $character = $affiliation->character()->save(CharacterInfo::factory()->create());
 
-        $affiliation->alliance()->associate(AllianceInfo::factory()->create([
-            'alliance_id' => $alliance_id,
-        ]));
+    $affiliation->alliance()->associate(AllianceInfo::factory()->create([
+        'alliance_id' => $alliance_id,
+    ]));
 
-        $this->assertInstanceOf(AllianceInfo::class, $character->alliance);
-    }
+    expect($character->alliance)->toBeInstanceOf(AllianceInfo::class);
+});
 
-    /** @test */
-    public function characterHasCorporationRelationTest()
-    {
-        $this->assertInstanceOf(CorporationInfo::class, $this->test_character->corporation);
-    }
+test('character has corporation relation test', function () {
+    expect($this->test_character->corporation)->toBeInstanceOf(CorporationInfo::class);
+});
 
-    /** @test */
-    public function it_has_application_relationship()
-    {
-        $application = Application::factory()->create([
-            'corporation_id' => $this->test_character->corporation->corporation_id,
-            'applicationable_type' => CharacterInfo::class,
-            'applicationable_id' => $this->test_character->character_id,
-        ]);
+it('has application relationship', function () {
+    $application = Application::factory()->create([
+        'corporation_id' => $this->test_character->corporation->corporation_id,
+        'applicationable_type' => CharacterInfo::class,
+        'applicationable_id' => $this->test_character->character_id,
+    ]);
 
-        $this->assertInstanceOf(Application::class, $this->test_character->application);
-    }
+    expect($this->test_character->application)->toBeInstanceOf(Application::class);
+});
 
-    /** @test */
-    public function it_has_asset_relationship()
-    {
-        $asset = Asset::factory()->create([
-            'assetable_id' => $this->test_character->character_id,
-            'assetable_type' => CharacterInfo::class,
-        ]);
+it('has asset relationship', function () {
+    $asset = Asset::factory()->create([
+        'assetable_id' => $this->test_character->character_id,
+        'assetable_type' => CharacterInfo::class,
+    ]);
 
-        $this->assertInstanceOf(Asset::class, $this->test_character->refresh()->assets->first());
-    }
+    expect($this->test_character->refresh()->assets->first())->toBeInstanceOf(Asset::class);
+});
 
-    /** @test */
-    public function upon_creation_dispatch_affiliation_job()
-    {
-        Queue::fake();
+test('upon creation dispatch affiliation job', function () {
+    Queue::fake();
 
-        $character = CharacterInfo::factory()->create();
+    $character = CharacterInfo::factory()->create();
 
-        Queue::assertPushedOn('high', CharacterAffiliationJob::class);
-    }
+    Queue::assertPushedOn('high', CharacterAffiliationJob::class);
+});
 
-    /** @test */
-    public function it_has_contract_relationship()
-    {
-        $contract = Contract::factory()->create();
-        $this->test_character->contracts()->attach($contract->contract_id);
+it('has contract relationship', function () {
+    $contract = Contract::factory()->create();
+    $this->test_character->contracts()->attach($contract->contract_id);
 
-        $this->assertInstanceOf(Contract::class, $this->test_character->refresh()->contracts->first());
+    expect($this->test_character->refresh()->contracts->first())->toBeInstanceOf(Contract::class);
 
-        // Test reverse too
-        $this->assertInstanceOf(CharacterInfo::class, $contract->characters->first());
-    }
+    // Test reverse too
+    expect($contract->characters->first())->toBeInstanceOf(CharacterInfo::class);
+});
 
-    /** @test */
-    public function character_has_balance_relationship()
-    {
-        $balance = Balance::factory()->withDivision()->create([
-            'balanceable_id' => $this->test_character->character_id,
-            'balanceable_type' => CharacterInfo::class,
-        ]);
+test('character has balance relationship', function () {
+    $balance = Balance::factory()->withDivision()->create([
+        'balanceable_id' => $this->test_character->character_id,
+        'balanceable_type' => CharacterInfo::class,
+    ]);
 
-        $this->assertInstanceOf(Balance::class, $this->test_character->refresh()->balance);
-    }
-}
+    expect($this->test_character->refresh()->balance)->toBeInstanceOf(Balance::class);
+});

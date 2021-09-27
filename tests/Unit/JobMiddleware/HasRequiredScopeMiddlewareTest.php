@@ -1,56 +1,29 @@
 <?php
 
-namespace Seatplus\Eveapi\Tests\Unit\JobMiddleware;
-
-use Mockery;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Tests\TestCase;
 
-class HasRequiredScopeMiddlewareTest extends TestCase
-{
-    /**
-     * @var \Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware
-     */
-    private $middleware;
+uses(TestCase::class);
 
+beforeEach(function () {
+    $this->middleware = new HasRequiredScopeMiddleware();
+});
 
-    private $job;
+it('fails without required scope on new esi base jobs', function () {
+    $this->job = Mockery::mock(NewEsiBase::class);
 
-    /**
-     * @var \Closure
-     */
-    private $next;
+    $this->next = function ($job) {
+        $job->fire();
+    };
 
-    public function setUp(): void
-    {
-        parent::setUp();
+    $this->job->shouldReceive('fail')->times(1);
+    $this->job->shouldReceive('getRequiredScope')->andReturn('someScope');
 
-        $this->middleware = new HasRequiredScopeMiddleware();
-    }
+    $this->job->refresh_token = RefreshToken::factory()->make([
+        'scopes' => ['someDifferentScope'],
+    ]);
 
-    /** @test */
-    public function it_fails_without_required_scope_on_NewEsiBase_jobs()
-    {
-        $this->mockJob(NewEsiBase::class);
-
-        $this->job->shouldReceive('fail')->times(1);
-        $this->job->shouldReceive('getRequiredScope')->andReturn('someScope');
-
-        $this->job->refresh_token = RefreshToken::factory()->make([
-            'scopes' => ['someDifferentScope'],
-        ]);
-
-        $this->middleware->handle($this->job, $this->next);
-    }
-
-    private function mockJob(string $base_class)
-    {
-        $this->job = Mockery::mock($base_class);
-
-        $this->next = function ($job) {
-            $job->fire();
-        };
-    }
-}
+    $this->middleware->handle($this->job, $this->next);
+});

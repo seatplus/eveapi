@@ -1,8 +1,6 @@
 <?php
 
 
-namespace Seatplus\Eveapi\Tests\Integration;
-
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfoJob;
@@ -12,194 +10,175 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
-class CharacterAffiliationLifeCycleTest extends TestCase
-{
-    use MockRetrieveEsiDataAction;
+uses(TestCase::class);
+uses(MockRetrieveEsiDataAction::class);
 
-    protected CharacterAffiliationJob $job;
+beforeEach(function () {
+    $job_container = new JobContainer([
+        'character_id' => $this->test_character->character_id,
+    ]);
 
-    protected function setUp(): void
-    {
-        parent::setUp();
+    $this->job = new CharacterAffiliationJob($job_container);
+});
 
-        $job_container = new JobContainer([
-            'character_id' => $this->test_character->character_id,
-        ]);
+it('dispatches alliance job', function () {
+    Queue::fake();
+    Queue::assertNothingPushed();
 
-        $this->job = new CharacterAffiliationJob($job_container);
-    }
+    $character = CharacterInfo::factory()->create();
+    $character->character_affiliation()->delete();
 
-    /** @test */
-    public function it_dispatches_alliance_job()
-    {
-        Queue::fake();
-        Queue::assertNothingPushed();
+    $character_affiliation = CharacterAffiliation::factory()->create([
+        'character_id' => $character->character_id,
+        'alliance_id' => 123456,
+    ]);
 
-        $character = CharacterInfo::factory()->create();
-        $character->character_affiliation()->delete();
+    Queue::assertPushedOn('high', AllianceInfoJob::class);
+});
 
-        $character_affiliation = CharacterAffiliation::factory()->create([
-            'character_id' => $character->character_id,
-            'alliance_id' => 123456,
-        ]);
+it('dispatches no alliance job if alliance id is null', function () {
+    Queue::fake();
+    Queue::assertNothingPushed();
 
-        Queue::assertPushedOn('high', AllianceInfoJob::class);
-    }
+    $character = CharacterInfo::factory()->create();
+    $character->character_affiliation()->delete();
 
-    /** @test */
-    public function it_dispatches_no_alliance_job_if_alliance_id_is_null()
-    {
-        Queue::fake();
-        Queue::assertNothingPushed();
+    $character_affiliation = CharacterAffiliation::factory()->create([
+        'character_id' => $character->character_id,
+        'alliance_id' => null,
+    ]);
 
-        $character = CharacterInfo::factory()->create();
-        $character->character_affiliation()->delete();
+    Queue::assertNotPushed(AllianceInfoJob::class);
+});
 
-        $character_affiliation = CharacterAffiliation::factory()->create([
-            'character_id' => $character->character_id,
-            'alliance_id' => null,
-        ]);
+/**
+ * @runTestsInSeparateProcesses
+ */
+it('updates affiliation older then an hours', function () {
+    $old_data = CharacterAffiliation::factory()->create([
+        'last_pulled' => now()->subMinutes(61),
+    ]);
 
-        Queue::assertNotPushed(AllianceInfoJob::class);
-    }
+    $this->assertDatabaseHas('character_affiliations', [
+        'last_pulled' => $old_data->last_pulled,
+        'character_id' => $old_data->character_id,
+    ]);
 
-    /**
-     * @test
-     * @runTestsInSeparateProcesses
-     */
-    public function it_updates_affiliation_older_then_an_hours()
-    {
-        $old_data = CharacterAffiliation::factory()->create([
-            'last_pulled' => now()->subMinutes(61),
-        ]);
+    mockRetrieveEsiDataAction([$old_data->toArray()]);
 
+    $job_container = new JobContainer([
+        'character_id' => $old_data->character_id,
+    ]);
+
+    (new CharacterAffiliationJob($job_container))->handle();
+
+    /*(new CharacterAffiliationAction)->execute($old_data->character_id);*/
+
+    $this->assertDatabaseMissing('character_affiliations', [
+        'last_pulled' => $old_data->last_pulled,
+    ]);
+});
+
+/**
+ * @runTestsInSeparateProcesses
+ */
+it('does not update affiliation younger then an hours', function () {
+    CharacterAffiliation::all()->each(function ($character_affiliation) {
+        $character_affiliation->delete();
+    });
+
+    $old_data = CharacterAffiliation::factory()->create([
+        'last_pulled' => now()->subMinutes(42),
+    ]);
+
+    $this->assertDatabaseHas('character_affiliations', [
+        'last_pulled' => $old_data->last_pulled,
+    ]);
+
+    //mockRetrieveEsiDataAction([$old_data->toArray()]);
+    $this->assertRetrieveEsiDataIsNotCalled();
+
+    //(new CharacterAffiliationAction)->execute($old_data->character_id);
+
+    $job_container = new JobContainer([
+        'character_id' => $old_data->character_id,
+    ]);
+
+    (new CharacterAffiliationJob($job_container))->handle();
+
+    $this->assertDatabaseHas('character_affiliations', [
+        'last_pulled' => $old_data->last_pulled,
+        'character_id' => $old_data->character_id,
+    ]);
+});
+
+/**
+ * @runTestsInSeparateProcesses
+ */
+it('updates other outdated affiliations', function () {
+    CharacterAffiliation::all()->each(function ($character_affiliation) {
+        $character_affiliation->delete();
+    });
+
+    $old_datas = CharacterAffiliation::factory()->count(3)->create([
+        'last_pulled' => now()->subMinutes(90),
+    ]);
+
+    //$old_datas = CharacterAffiliation::all();
+
+    foreach ($old_datas as $old_data) {
         $this->assertDatabaseHas('character_affiliations', [
             'last_pulled' => $old_data->last_pulled,
-            'character_id' => $old_data->character_id,
         ]);
+    }
 
-        $this->mockRetrieveEsiDataAction([$old_data->toArray()]);
+    mockRetrieveEsiDataAction(
+        $old_datas->toArray()
+    );
 
-        $job_container = new JobContainer([
-            'character_id' => $old_data->character_id,
-        ]);
+    // Only do send first character
+    //(new CharacterAffiliationAction)->execute($old_datas->first()->character_id);
 
-        (new CharacterAffiliationJob($job_container))->handle();
+    $job_container = new JobContainer([
+        'character_id' => $old_data->first()->character_id,
+    ]);
 
-        /*(new CharacterAffiliationAction)->execute($old_data->character_id);*/
+    (new CharacterAffiliationJob($job_container))->handle();
 
+    foreach ($old_datas as $old_data) {
         $this->assertDatabaseMissing('character_affiliations', [
-            'last_pulled' => $old_data->last_pulled,
-        ]);
-    }
-
-    /**
-     * @test
-     * @runTestsInSeparateProcesses
-     */
-    public function it_does_not_update_affiliation_younger_then_an_hours()
-    {
-        CharacterAffiliation::all()->each(function ($character_affiliation) {
-            $character_affiliation->delete();
-        });
-
-        $old_data = CharacterAffiliation::factory()->create([
-            'last_pulled' => now()->subMinutes(42),
-        ]);
-
-        $this->assertDatabaseHas('character_affiliations', [
-            'last_pulled' => $old_data->last_pulled,
-        ]);
-
-        //$this->mockRetrieveEsiDataAction([$old_data->toArray()]);
-        $this->assertRetrieveEsiDataIsNotCalled();
-
-        //(new CharacterAffiliationAction)->execute($old_data->character_id);
-
-        $job_container = new JobContainer([
             'character_id' => $old_data->character_id,
-        ]);
-
-        (new CharacterAffiliationJob($job_container))->handle();
-
-        $this->assertDatabaseHas('character_affiliations', [
-            'last_pulled' => $old_data->last_pulled,
-            'character_id' => $old_data->character_id,
-        ]);
-    }
-
-    /**
-     * @test
-     * @runTestsInSeparateProcesses
-     */
-    public function it_updates_other_outdated_affiliations()
-    {
-        CharacterAffiliation::all()->each(function ($character_affiliation) {
-            $character_affiliation->delete();
-        });
-
-        $old_datas = CharacterAffiliation::factory()->count(3)->create([
-            'last_pulled' => now()->subMinutes(90),
-        ]);
-
-        //$old_datas = CharacterAffiliation::all();
-
-        foreach ($old_datas as $old_data) {
-            $this->assertDatabaseHas('character_affiliations', [
-                'last_pulled' => $old_data->last_pulled,
-            ]);
-        }
-
-        $this->mockRetrieveEsiDataAction(
-            $old_datas->toArray()
-        );
-
-        // Only do send first character
-        //(new CharacterAffiliationAction)->execute($old_datas->first()->character_id);
-
-        $job_container = new JobContainer([
-            'character_id' => $old_data->first()->character_id,
-        ]);
-
-        (new CharacterAffiliationJob($job_container))->handle();
-
-        foreach ($old_datas as $old_data) {
-            $this->assertDatabaseMissing('character_affiliations', [
-                'character_id' => $old_data->character_id,
-                'last_pulled' => $old_data->last_pulled,
-            ]);
-        }
-    }
-
-    /**
-     * @test
-     * @runTestsInSeparateProcesses
-     */
-    public function it_updates_with_no_id_provided()
-    {
-        CharacterAffiliation::all()->each(function ($character_affiliation) {
-            $character_affiliation->delete();
-        });
-
-        $old_data = CharacterAffiliation::factory()->create([
-            'last_pulled' => now()->subMinutes(61),
-        ]);
-
-        $this->mockRetrieveEsiDataAction([
-            $old_data->toArray(),
-        ]);
-
-        $this->assertDatabaseHas('character_affiliations', [
-            'last_pulled' => $old_data->last_pulled,
-        ]);
-
-        //$return_value = (new CharacterAffiliationAction)->execute();
-        (new CharacterAffiliationJob)->handle();
-
-        //$this->assertNull($return_value);
-
-        $this->assertDatabaseMissing('character_affiliations', [
             'last_pulled' => $old_data->last_pulled,
         ]);
     }
-}
+});
+
+/**
+ * @runTestsInSeparateProcesses
+ */
+it('updates with no id provided', function () {
+    CharacterAffiliation::all()->each(function ($character_affiliation) {
+        $character_affiliation->delete();
+    });
+
+    $old_data = CharacterAffiliation::factory()->create([
+        'last_pulled' => now()->subMinutes(61),
+    ]);
+
+    mockRetrieveEsiDataAction([
+        $old_data->toArray(),
+    ]);
+
+    $this->assertDatabaseHas('character_affiliations', [
+        'last_pulled' => $old_data->last_pulled,
+    ]);
+
+    //$return_value = (new CharacterAffiliationAction)->execute();
+    (new CharacterAffiliationJob)->handle();
+
+    //$this->assertNull($return_value);
+
+    $this->assertDatabaseMissing('character_affiliations', [
+        'last_pulled' => $old_data->last_pulled,
+    ]);
+});

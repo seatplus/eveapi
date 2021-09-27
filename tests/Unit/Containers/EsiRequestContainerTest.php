@@ -1,40 +1,31 @@
 <?php
 
-namespace Seatplus\Eveapi\Tests\Unit\Containers;
-
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
 use Seatplus\Eveapi\Exceptions\InvalidContainerDataException;
 use Seatplus\Eveapi\Tests\TestCase;
 
-class EsiRequestContainerTest extends TestCase
-{
-    /** @test */
-    public function canSetProppertyTest()
-    {
-        $esi_request = new EsiRequestContainer([
-            'version' => 'v4',
-        ]);
+uses(TestCase::class);
 
-        $this->assertEquals('v4', $esi_request->version);
-    }
+test('can set propperty test', function () {
+    $esi_request = new EsiRequestContainer([
+        'version' => 'v4',
+    ]);
 
-    /** @test     */
-    public function canNotSetProppertyTest()
-    {
-        $this->expectException(InvalidContainerDataException::class);
+    expect($esi_request->version)->toEqual('v4');
+});
 
-        $esi_request = new EsiRequestContainer([
-            'herpaderp' => 'v4',
-        ]);
-    }
+test('can not set propperty test', function () {
+    $this->expectException(InvalidContainerDataException::class);
 
-    /** @test */
-    public function getPublicEsiRequest()
-    {
-        $esi_request = new EsiRequestContainer([
-            'refresh_token' => 'someXYToken',
-        ]);
+    $esi_request = new EsiRequestContainer([
+        'herpaderp' => 'v4',
+    ]);
+});
 
-        $this->assertFalse($esi_request->isPublic());
-    }
-}
+test('get public esi request', function () {
+    $esi_request = new EsiRequestContainer([
+        'refresh_token' => 'someXYToken',
+    ]);
+
+    expect($esi_request->isPublic())->toBeFalse();
+});

@@ -1,8 +1,6 @@
 <?php
 
 
-namespace Seatplus\Eveapi\Tests\Unit\Models;
-
 use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Events\UniverseStructureCreated;
 use Seatplus\Eveapi\Models\Universe\Location;
@@ -10,34 +8,29 @@ use Seatplus\Eveapi\Models\Universe\Structure;
 use Seatplus\Eveapi\Models\Universe\System;
 use Seatplus\Eveapi\Tests\TestCase;
 
-class UniverseStructureModelTest extends TestCase
-{
-    /** @test */
-    public function has_system_relationship()
-    {
-        Event::fake([
-            UniverseStructureCreated::class,
-        ]);
+uses(TestCase::class);
 
-        $structure = Structure::factory()->create();
+test('has system relationship', function () {
+    Event::fake([
+        UniverseStructureCreated::class,
+    ]);
 
-        $this->assertInstanceOf(System::class, $structure->system);
-    }
+    $structure = Structure::factory()->create();
 
-    /** @test */
-    public function has_location_relationship()
-    {
-        Event::fake([
-            UniverseStructureCreated::class,
-        ]);
+    expect($structure->system)->toBeInstanceOf(System::class);
+});
 
-        $structure = Structure::factory()->create();
-        $location = Location::factory()->create([
-            'location_id' => $structure->structure_id,
-            'locatable_id' => $structure->structure_id,
-            'locatable_type' => Structure::class,
-        ]);
+test('has location relationship', function () {
+    Event::fake([
+        UniverseStructureCreated::class,
+    ]);
 
-        $this->assertInstanceOf(Location::class, $structure->location);
-    }
-}
+    $structure = Structure::factory()->create();
+    $location = Location::factory()->create([
+        'location_id' => $structure->structure_id,
+        'locatable_id' => $structure->structure_id,
+        'locatable_type' => Structure::class,
+    ]);
+
+    expect($structure->location)->toBeInstanceOf(Location::class);
+});

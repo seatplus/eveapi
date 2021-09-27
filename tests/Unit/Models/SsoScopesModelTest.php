@@ -1,34 +1,27 @@
 <?php
 
 
-namespace Seatplus\Eveapi\Tests\Unit\Models;
-
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\SsoScopes;
 use Seatplus\Eveapi\Tests\TestCase;
 
-class SsoScopesModelTest extends TestCase
-{
-    /** @test */
-    public function one_can_set_an_alliance_relationship_from_sso_scope_model()
-    {
-        $alliance_info = AllianceInfo::factory()->create();
+uses(TestCase::class);
 
-        $alliance_info->ssoScopes()->save(SsoScopes::factory()->make());
+test('one can set an alliance relationship from sso scope model', function () {
+    $alliance_info = AllianceInfo::factory()->create();
 
-        $sso = SsoScopes::factory()->create([
-            'morphable_type' => AllianceInfo::class,
-            'morphable_id' => $alliance_info->alliance_id,
-        ]);
+    $alliance_info->ssoScopes()->save(SsoScopes::factory()->make());
 
-        $this->assertInstanceOf(AllianceInfo::class, $sso->refresh()->morphable);
-    }
+    $sso = SsoScopes::factory()->create([
+        'morphable_type' => AllianceInfo::class,
+        'morphable_id' => $alliance_info->alliance_id,
+    ]);
 
-    /** @test */
-    public function has_global_scope()
-    {
-        $sso = SsoScopes::updateOrCreate(['type' => 'global'], ['selected_scopes' => collect()->toJson()]);
+    expect($sso->refresh()->morphable)->toBeInstanceOf(AllianceInfo::class);
+});
 
-        $this->assertEquals($sso->type, SsoScopes::global()->first()->type);
-    }
-}
+test('has global scope', function () {
+    $sso = SsoScopes::updateOrCreate(['type' => 'global'], ['selected_scopes' => collect()->toJson()]);
+
+    expect(SsoScopes::global()->first()->type)->toEqual($sso->type);
+});
