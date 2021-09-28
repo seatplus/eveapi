@@ -73,7 +73,7 @@ it('dispatches wallet hydration job', function () {
 });
 
 test('hydration job dispatches corporation wallet job as accountant', function () {
-    \Illuminate\Support\Facades\Event::fakeFor(fn() => updateRefreshTokenScopes($this->test_character->refresh_token, config('eveapi.scopes.corporation.wallet'))->save());
+    \Illuminate\Support\Facades\Event::fakeFor(fn () => updateRefreshTokenScopes($this->test_character->refresh_token, config('eveapi.scopes.corporation.wallet'))->save());
 
     $this->test_character->roles()->update(['roles' => ['Accountant']]);
 

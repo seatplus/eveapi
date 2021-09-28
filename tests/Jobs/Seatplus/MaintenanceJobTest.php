@@ -619,7 +619,6 @@ it('dispatch get missing bodys from mails as chained job', function () {
 });
 
 it('dispatches mail body job for missing mail bodies', function () {
-
     $refresh_token = updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-mail.read_mail.v1']);
     $refresh_token->save();
 
@@ -637,7 +636,6 @@ it('dispatches mail body job for missing mail bodies', function () {
     $mock->shouldReceive('batch->add')
         ->once()
         ->with(Mockery::on(function ($argument) {
-
             $argumentIsArray = is_array($argument);
             $argumentHasLengthOfOne = count($argument);
             $jobIsMailBodyJob = $argument[0] instanceof MailBodyJob;

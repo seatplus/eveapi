@@ -13,7 +13,7 @@ uses(MockRetrieveEsiDataAction::class);
 
 beforeEach(function () {
     $refresh_token = Event::fakeFor(function () {
-        updateRefreshTokenScopes($this->test_character->refresh_token,['esi-corporations.read_divisions.v1'])->save();
+        updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-corporations.read_divisions.v1'])->save();
         $this->test_character->roles()->update(['roles' => ['Director']]);
 
         return $this->test_character->refresh()->refresh_token;

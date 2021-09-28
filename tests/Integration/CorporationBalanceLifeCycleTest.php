@@ -81,7 +81,7 @@ it('spawns a job for every wallet division', function () {
 });
 
 it('creates wallet journal entries', function () {
-    Event::fakeFor(fn() => updateRefreshTokenScopes($this->test_character->refresh_token, config('eveapi.scopes.corporation.wallet'))->save());
+    Event::fakeFor(fn () => updateRefreshTokenScopes($this->test_character->refresh_token, config('eveapi.scopes.corporation.wallet'))->save());
     $this->test_character->roles()->update(['roles' => ['Accountant']]);
 
     $corporation = $this->test_character->corporation;
@@ -98,7 +98,7 @@ it('creates wallet journal entries', function () {
 });
 
 it('creates wallet transaction entries', function () {
-    Event::fakeFor(fn() => updateRefreshTokenScopes($this->test_character->refresh_token, config('eveapi.scopes.corporation.wallet'))->save());
+    Event::fakeFor(fn () => updateRefreshTokenScopes($this->test_character->refresh_token, config('eveapi.scopes.corporation.wallet'))->save());
     $this->test_character->roles()->update(['roles' => ['Accountant']]);
 
     $corporation = $this->test_character->corporation;

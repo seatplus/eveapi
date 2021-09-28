@@ -93,9 +93,8 @@ class RefreshToken extends Model
      */
     public function getTokenAttribute($value): ?array
     {
-
         if ($this->expires_on->gt(Carbon::now())) {
-            return json_decode($value,1);
+            return json_decode($value, 1);
         }
 
         return null;

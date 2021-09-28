@@ -21,7 +21,6 @@ beforeEach(function () {
     ]);
 
     $this->refresh_token = RefreshToken::factory()->scopes(['esi-universe.read_structures.v1'])->create();
-
 });
 
 /**

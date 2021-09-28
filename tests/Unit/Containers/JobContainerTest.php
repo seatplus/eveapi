@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Exceptions\InvalidContainerDataException;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Tests\TestCase;
 

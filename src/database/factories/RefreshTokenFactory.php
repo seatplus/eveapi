@@ -63,10 +63,8 @@ class RefreshTokenFactory extends Factory
             data_set($token, 'scp', $scopes);
 
             return [
-                'token' => json_encode($token)
+                'token' => json_encode($token),
             ];
-
         });
-
     }
 }
