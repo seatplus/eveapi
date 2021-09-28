@@ -619,7 +619,9 @@ it('dispatch get missing bodys from mails as chained job', function () {
 });
 
 it('dispatches mail body job for missing mail bodies', function () {
-    $this->test_character->refresh_token()->update(['scopes' => ['esi-mail.read_mail.v1']]);
+
+    $refresh_token = updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-mail.read_mail.v1']);
+    $refresh_token->save();
 
     $mail = Event::fakeFor(fn () => Mail::factory(['body' => null])->create());
 
@@ -634,9 +636,14 @@ it('dispatches mail body job for missing mail bodies', function () {
     $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
     $mock->shouldReceive('batch->add')
         ->once()
-        ->with([
-            new MailBodyJob($container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]), $mail->id),
-        ]);
+        ->with(Mockery::on(function ($argument) {
+
+            $argumentIsArray = is_array($argument);
+            $argumentHasLengthOfOne = count($argument);
+            $jobIsMailBodyJob = $argument[0] instanceof MailBodyJob;
+
+            return $argumentIsArray && $argumentHasLengthOfOne && $jobIsMailBodyJob;
+        }));
 
     $mock->handle();
 });

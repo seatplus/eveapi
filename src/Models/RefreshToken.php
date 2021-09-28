@@ -51,7 +51,7 @@ class RefreshToken extends Model
      * @var array
      */
     protected $casts = [
-        'scopes' => 'array',
+        //'token' => 'array',
     ];
 
     /**
@@ -89,12 +89,13 @@ class RefreshToken extends Model
      *
      * @param $value
      *
-     * @return mixed
+     * @return array|null
      */
-    public function getTokenAttribute($value)
+    public function getTokenAttribute($value): ?array
     {
+
         if ($this->expires_on->gt(Carbon::now())) {
-            return $value;
+            return json_decode($value,1);
         }
 
         return null;
@@ -125,8 +126,15 @@ class RefreshToken extends Model
         return $this->corporation->corporation_id;
     }
 
+    public function getScopesAttribute()
+    {
+        return data_get(json_decode($this->getRawOriginal('token')), 'scp', []);
+    }
+
     public function hasScope(string $scope): bool
     {
-        return in_array($scope, $this->scopes);
+        $scopes = $this->getScopesAttribute();
+
+        return in_array($scope, $scopes);
     }
 }

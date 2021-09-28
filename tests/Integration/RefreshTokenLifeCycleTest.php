@@ -31,14 +31,12 @@ it('queues update character job', function () {
 
 it('queues update character job after scope change', function () {
     $refresh_token = Event::fakeFor(function () {
-        return RefreshToken::factory()->create([
-            'scopes' => ['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1'],
-        ]);
+        return RefreshToken::factory()->scopes(['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1'])->create();
     });
 
     Queue::fake();
 
-    $refresh_token->scopes = ['updating'];
+    $refresh_token->token = ['updating'];
     $refresh_token->save();
 
     Queue::assertPushedOn('high', UpdateCharacter::class);
@@ -49,7 +47,7 @@ it('queues update corporation job after scope change', function () {
 
     Queue::fake();
 
-    $refresh_token->scopes = ['updating'];
+    updateRefreshTokenScopes($refresh_token, ['updating']);
     $refresh_token->save();
 
     Queue::assertPushedOn('high', UpdateCorporation::class);

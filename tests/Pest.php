@@ -58,3 +58,12 @@ function testCharacter()
 {
     return \Seatplus\Eveapi\Models\Character\CharacterInfo::first();
 }
+
+function updateRefreshTokenScopes(\Seatplus\Eveapi\Models\RefreshToken $refreshToken, array $scopes)
+{
+    $token = json_decode($refreshToken->getRawOriginal('token'), true);
+    data_set($token, 'scp', $scopes);
+    $refreshToken->token = json_encode($token);
+
+    return $refreshToken;
+}

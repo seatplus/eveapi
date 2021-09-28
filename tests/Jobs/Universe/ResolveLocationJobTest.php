@@ -227,8 +227,9 @@ it('checks no structure younger then a week', function () {
 // Helpers
 function buildJob(int $location_id, \Seatplus\Eveapi\Models\RefreshToken $token) : ResolveLocationJob
 {
-    $refresh_token = $token;
-    $refresh_token->scopes = ['esi-universe.read_structures.v1'];
+
+    $refresh_token = updateRefreshTokenScopes($token, ['esi-universe.read_structures.v1']);
+
     Event::fakeFor(fn () => $refresh_token->save());
 
     return new ResolveLocationJob($location_id, $refresh_token);

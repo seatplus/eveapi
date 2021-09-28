@@ -16,7 +16,7 @@ use Seatplus\Eveapi\Tests\TestCase;
 uses(TestCase::class);
 
 it('does not dispatches corporation member tracking as non director', function () {
-    $this->test_character->refresh_token()->update(['scopes' => ['esi-corporations.track_members.v1']]);
+    updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-corporations.track_members.v1'])->save();
     $this->test_character->roles()->update(['roles' => []]);
 
     $job_container = new JobContainer(['corporation_id' => $this->test_character->corporation->corporation_id]);
@@ -39,7 +39,7 @@ it('dispatches member tracking hydration job', function () {
 });
 
 test('hydration job dispatches corporation member tracking job as director', function () {
-    $this->test_character->refresh_token()->update(['scopes' => ['esi-corporations.track_members.v1']]);
+    updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-corporations.track_members.v1'])->save();
     $this->test_character->roles()->update(['roles' => ['Director']]);
 
     $job_container = new JobContainer(['corporation_id' => $this->test_character->corporation->corporation_id]);
@@ -73,7 +73,8 @@ it('dispatches wallet hydration job', function () {
 });
 
 test('hydration job dispatches corporation wallet job as accountant', function () {
-    $this->test_character->refresh_token()->update(['scopes' => config('eveapi.scopes.corporation.wallet')]);
+    \Illuminate\Support\Facades\Event::fakeFor(fn() => updateRefreshTokenScopes($this->test_character->refresh_token, config('eveapi.scopes.corporation.wallet'))->save());
+
     $this->test_character->roles()->update(['roles' => ['Accountant']]);
 
     $job_container = new JobContainer(['corporation_id' => $this->test_character->corporation->corporation_id]);
