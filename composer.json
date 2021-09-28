@@ -31,10 +31,10 @@
         "ext-redis": "*",
         "laravel/framework": "^8.0",
         "laravel/horizon": "^5.0",
-        "seatplus/eseye": "^3.0",
+        "seatplus/esi-client": "^0.9",
         "spatie/laravel-activitylog": "^3.16",
         "doctrine/dbal": "^3.0",
-        "spatie/data-transfer-object": "^2.5"
+        "spatie/data-transfer-object": "^3.7"
     },
     "require-dev": {
         "orchestra/testbench": "^6.10",
@@ -55,7 +55,7 @@
     },
     "scripts": {
         "test": "vendor/bin/pest",
-        "watch": "vendor/bin/phpunit-watcher watch",
+        "test-coverage": "XDEBUG_MODE=coverage ./vendor/bin/pest --coverage",
         "parallel": "vendor/bin/testbench package:test --parallel --no-coverage"
     }
 }

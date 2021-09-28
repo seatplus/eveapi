@@ -73,9 +73,7 @@ it('does not dispatch asset job for missing scopes', function () {
 
 test('assets hydration job dispatches character assets job', function () {
     $refresh_token = Event::fakeFor(function () {
-        return RefreshToken::factory()->create([
-            'scopes' => ['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1'],
-        ]);
+        return RefreshToken::factory()->scopes(['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1'])->create();
     });
 
     $job_container = new JobContainer(['refresh_token' => $refresh_token]);
@@ -101,9 +99,7 @@ test('assets hydration job dispatches character assets job', function () {
 
 test('if constructor receives single refresh token push update to high queue', function () {
     $refresh_token = Event::fakeFor(function () {
-        return RefreshToken::factory()->create([
-            'scopes' => ['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1'],
-        ]);
+        return RefreshToken::factory()->scopes(['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1'])->create();
     });
 
     Bus::fake();
@@ -115,9 +111,7 @@ test('if constructor receives single refresh token push update to high queue', f
 
 it('dispatches character role job', function () {
     $refresh_token = Event::fakeFor(function () {
-        return RefreshToken::factory()->create([
-            'scopes' => ['esi-characters.read_corporation_roles.v1'],
-        ]);
+        return RefreshToken::factory()->scopes(['esi-characters.read_corporation_roles.v1'])->create();
     });
 
     Bus::fake();
@@ -129,9 +123,7 @@ it('dispatches character role job', function () {
 
 test('roles hydration job dispatches character roles job', function () {
     $refresh_token = Event::fakeFor(function () {
-        return RefreshToken::factory()->create([
-            'scopes' => ['esi-characters.read_corporation_roles.v1'],
-        ]);
+        return RefreshToken::factory()->scopes(['esi-characters.read_corporation_roles.v1'])->create();
     });
 
     $job_container = new JobContainer(['refresh_token' => $refresh_token]);
@@ -166,15 +158,11 @@ test('hydration does not dispatch role job for missing scopes', function () {
     Bus::fake();
 
     $job->handle();
-
-    //Bus::assertNotDispatched(CharacterAssetJob::class);
 });
 
 test('character contact hydration adds no jobs to batch if scopes are missing', function () {
     $refresh_token = Event::fakeFor(function () {
-        return RefreshToken::factory()->create([
-            'scopes' => ['derp'],
-        ]);
+        return RefreshToken::factory()->scopes(['derp'])->create();
     });
 
     $job_container = new JobContainer(['refresh_token' => $refresh_token]);
@@ -192,9 +180,7 @@ test('character contact hydration adds no jobs to batch if scopes are missing', 
 
 test('character contact hydration adds jobs to batch', function () {
     $refresh_token = Event::fakeFor(function () {
-        return RefreshToken::factory()->create([
-            'scopes' => ['esi-characters.read_contacts.v1'],
-        ]);
+        return RefreshToken::factory()->scopes(['esi-characters.read_contacts.v1'])->create();
     });
 
     $job_container = new JobContainer(['refresh_token' => $refresh_token]);
@@ -220,9 +206,7 @@ test('character contact hydration adds jobs to batch', function () {
 
 test('corporation contact hydration adds jobs to batch', function () {
     $refresh_token = Event::fakeFor(function () {
-        return RefreshToken::factory()->create([
-            'scopes' => ['esi-corporations.read_contacts.v1'],
-        ]);
+        return RefreshToken::factory()->scopes(['esi-corporations.read_contacts.v1'])->create();
     });
 
     $job_container = new JobContainer(['refresh_token' => $refresh_token]);
@@ -248,9 +232,7 @@ test('corporation contact hydration adds jobs to batch', function () {
 
 test('alliance contact hydration adds jobs to batch', function () {
     $refresh_token = Event::fakeFor(function () {
-        return RefreshToken::factory()->create([
-            'scopes' => ['esi-alliances.read_contacts.v1'],
-        ]);
+        return RefreshToken::factory()->scopes(['esi-alliances.read_contacts.v1'])->create();
     });
 
     $job_container = new JobContainer(['refresh_token' => $refresh_token]);
@@ -276,9 +258,7 @@ test('alliance contact hydration adds jobs to batch', function () {
 
 test('character wallet hydration adds jobs to batch', function () {
     $refresh_token = Event::fakeFor(function () {
-        return RefreshToken::factory()->create([
-            'scopes' => ['esi-wallet.read_character_wallet.v1'],
-        ]);
+        return RefreshToken::factory()->scopes(['esi-wallet.read_character_wallet.v1'])->create();
     });
 
     $job_container = new JobContainer(['refresh_token' => $refresh_token]);
@@ -303,9 +283,7 @@ test('character wallet hydration adds jobs to batch', function () {
 
 test('character contract hydration adds jobs to batch', function () {
     $refresh_token = Event::fakeFor(function () {
-        return RefreshToken::factory()->create([
-            'scopes' => ['esi-contracts.read_character_contracts.v1'],
-        ]);
+        return RefreshToken::factory()->scopes(['esi-contracts.read_character_contracts.v1'])->create();
     });
 
     $job_container = new JobContainer(['refresh_token' => $refresh_token]);
@@ -344,9 +322,7 @@ it('dispatches skills job', function () {
 
 test('skills hydration adds skill jobs to batch', function () {
     $refresh_token = Event::fakeFor(function () {
-        return RefreshToken::factory()->create([
-            'scopes' => ['esi-skills.read_skills.v1'],
-        ]);
+        return RefreshToken::factory()->scopes(['esi-skills.read_skills.v1'])->create();
     });
 
     $job_container = new JobContainer(['refresh_token' => $refresh_token]);
@@ -369,9 +345,7 @@ test('skills hydration adds skill jobs to batch', function () {
 
 test('skills hydration adds skill queue jobs to batch', function () {
     $refresh_token = Event::fakeFor(function () {
-        return RefreshToken::factory()->create([
-            'scopes' => ['esi-skills.read_skillqueue.v1'],
-        ]);
+        return RefreshToken::factory()->scopes(['esi-skills.read_skillqueue.v1'])->create();
     });
 
     $job_container = new JobContainer(['refresh_token' => $refresh_token]);
@@ -394,9 +368,7 @@ test('skills hydration adds skill queue jobs to batch', function () {
 
 test('mails hydration adds mail jobs to batch', function () {
     $refresh_token = Event::fakeFor(function () {
-        return RefreshToken::factory()->create([
-            'scopes' => ['esi-mail.read_mail.v1'],
-        ]);
+        return RefreshToken::factory()->scopes(['esi-mail.read_mail.v1'])->create();
     });
 
     $job_container = new JobContainer(['refresh_token' => $refresh_token]);

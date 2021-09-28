@@ -93,15 +93,15 @@ class CorporationInfoJob extends NewEsiBase implements HasPathValuesInterface
             'ceo_id' => $response->ceo_id,
             'creator_id' => $response->creator_id,
             'tax_rate' => $response->tax_rate,
-            'alliance_id' => $response->optional('alliance_id'),
+            'alliance_id' => data_get($response, 'alliance_id'),
             'date_founded' => property_exists($response, 'date_founded') ?
                 carbon($response->date_founded) : null,
-            'description' => $response->optional('description'),
-            'faction_id' => $response->optional('faction_id'),
-            'home_station_id' => $response->optional('home_station_id'),
-            'shares' => $response->optional('shares'),
-            'url' => $response->optional('url'),
-            'war_eligible' => $response->optional('war_eligible'),
+            'description' => data_get($response, 'description'),
+            'faction_id' => data_get($response, 'faction_id'),
+            'home_station_id' => data_get($response, 'home_station_id'),
+            'shares' => data_get($response, 'shares'),
+            'url' => data_get($response, 'url'),
+            'war_eligible' => data_get($response, 'war_eligible'),
         ])->save();
     }
 }

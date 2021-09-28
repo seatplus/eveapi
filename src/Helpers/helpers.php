@@ -68,3 +68,22 @@ if (! function_exists('setting')) {
         return is_countable($setting) ? (count($setting) > 1 ? $setting : $setting[0]) : $setting;
     }
 }
+
+if (! function_exists('carbon')) {
+
+    /**
+     * A helper to get a fresh instance of Carbon.
+     *
+     * @param null $data
+     *
+     * @return \Carbon\Carbon
+     */
+    function carbon($data = null)
+    {
+        if (! is_null($data)) {
+            return new \Carbon\Carbon($data);
+        }
+
+        return new \Carbon\Carbon;
+    }
+}

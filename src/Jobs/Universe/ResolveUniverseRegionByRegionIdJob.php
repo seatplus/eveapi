@@ -90,7 +90,7 @@ class ResolveUniverseRegionByRegionIdJob extends NewEsiBase implements HasPathVa
             ['region_id' => $response->region_id],
             [
                 'name' => $response->name,
-                'description' => $response->optional('description'),
+                'description' => data_get($response, 'description'),
             ]
         );
     }

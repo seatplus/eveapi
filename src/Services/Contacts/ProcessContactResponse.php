@@ -26,7 +26,7 @@
 
 namespace Seatplus\Eveapi\Services\Contacts;
 
-use Seat\Eseye\Containers\EsiResponse;
+use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\Eveapi\Models\Contacts\Contact;
 
 class ProcessContactResponse

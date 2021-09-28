@@ -233,6 +233,10 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
      */
     public function getCharacterId(): ?int
     {
+        if (! isset($this->character_id)) {
+            $this->character_id = $this->getRefreshToken()->character_id;
+        }
+
         return $this->character_id;
     }
 
@@ -249,7 +253,11 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
      */
     public function getCorporationId(): int
     {
-        return $this->corporation_id ?? optional(CharacterAffiliation::find($this->character_id))->corporation_id;
+        if (! isset($this->corporation_id)) {
+            $this->corporation_id = CharacterAffiliation::find($this->getCharacterId())?->corporation_id;
+        }
+
+        return $this->corporation_id;
     }
 
     /**

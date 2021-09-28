@@ -36,7 +36,7 @@ class UpdatingRefreshTokenListener
     {
         $refresh_token = $refresh_token_event->refresh_token;
 
-        if ($refresh_token->isDirty('scopes')) {
+        if ($refresh_token->isDirty('token')) {
             UpdateCharacter::dispatch($refresh_token)->onQueue('high');
 
             $corporation_id = $refresh_token?->character?->corporation?->corporation_id;

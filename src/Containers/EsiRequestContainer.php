@@ -26,55 +26,25 @@
 
 namespace Seatplus\Eveapi\Containers;
 
-use Seatplus\Eveapi\Exceptions\InvalidContainerDataException;
+use Seatplus\Eveapi\Models\RefreshToken;
+use Spatie\DataTransferObject\DataTransferObject;
 
-class EsiRequestContainer
+class EsiRequestContainer extends DataTransferObject
 {
-    protected $data = [
-        'method' => '',
-        'version' => '',
-        'endpoint' => '',
-        'refresh_token' => null,
-        'path_values' => [],
-        'page' => null,
-        'request_body' => [],
-        'query_string' => [],
-    ];
+    public string $method;
+    public string $version;
+    public string $endpoint;
+    public ?int $page = null;
 
-    public function __construct(array $data = null)
-    {
-        if (! is_null($data)) {
-            foreach ($data as $key => $value) {
-                if (! array_key_exists($key, $this->data)) {
-                    throw new InvalidContainerDataException(
-                        'Key ' . $key . ' is not valid for this container'
-                    );
-                }
+    public ?RefreshToken $refresh_token = null;
 
-                $this->$key = $value;
-            }
-        }
-    }
-
-    public function __set($key, $value): void
-    {
-        if (array_key_exists($key, $this->data)) {
-            $this->data[$key] = $value;
-        }
-    }
-
-    public function __get($key)
-    {
-        if (array_key_exists($key, $this->data)) {
-            return $this->data[$key];
-        }
-
-        return '';
-    }
+    public array $path_values = [];
+    public array $request_body = [];
+    public array $query_parameters = [];
 
     public function isPublic(): bool
     {
-        return is_null($this->data['refresh_token']);
+        return is_null($this->refresh_token);
     }
 
     public function setRequestBody(array $request_body)

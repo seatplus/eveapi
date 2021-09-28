@@ -93,15 +93,15 @@ class CharacterInfoJob extends NewEsiBase implements HasPathValuesInterface
             'character_id' => $this->character_id,
         ], [
             'name' => $response->name,
-            'description' => $response->optional('description'),
+            'description' => data_get($response, 'description'),
             'birthday' => $response->birthday,
             'gender' => $response->gender,
             'race_id' => $response->race_id,
             'bloodline_id' => $response->bloodline_id,
-            'ancestry_id' => $response->optional('ancestry_id'),
-            'security_status' => $response->optional('security_status'),
-            'faction_id' => $response->optional('faction_id'),
-            'title' => $response->optional('title'),
+            'ancestry_id' => data_get($response, 'ancestry_id'),
+            'security_status' => data_get($response, 'security_status'),
+            'faction_id' => data_get($response, 'faction_id'),
+            'title' => data_get($response, 'title'),
         ]);
     }
 }

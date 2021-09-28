@@ -26,7 +26,7 @@
 
 namespace Seatplus\Eveapi\Services\Wallet;
 
-use Seat\Eseye\Containers\EsiResponse;
+use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contracts\Contract;

@@ -26,49 +26,19 @@
 
 namespace Seatplus\Eveapi\Containers;
 
-use Seatplus\Eveapi\Exceptions\InvalidContainerDataException;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\RefreshToken;
+use Spatie\DataTransferObject\Attributes\Strict;
+use Spatie\DataTransferObject\DataTransferObject;
 
-class JobContainer
+#[Strict]
+class JobContainer extends DataTransferObject
 {
-    protected $data = [
-        'refresh_token' => null,
-        'character_id' => null,
-        'corporation_id' => null,
-        'alliance_id' => null,
-        'queue' => 'default',
-    ];
-
-    public function __construct(array $data = null)
-    {
-        if (! is_null($data)) {
-            foreach ($data as $key => $value) {
-                if (! array_key_exists($key, $this->data)) {
-                    throw new InvalidContainerDataException(
-                        'Key ' . $key . ' is not valid for this container'
-                    );
-                }
-
-                $this->$key = $value;
-            }
-        }
-    }
-
-    public function __set($key, $value): void
-    {
-        if (array_key_exists($key, $this->data)) {
-            $this->data[$key] = $value;
-        }
-    }
-
-    public function __get($key)
-    {
-        if (array_key_exists($key, $this->data)) {
-            return $this->data[$key];
-        }
-
-        return '';
-    }
+    public ?RefreshToken $refresh_token = null;
+    public ?int $character_id = null;
+    public ?int $corporation_id = null;
+    public ?int $alliance_id = null;
+    public string $queue = 'default';
 
     public function getCharacterId()
     {

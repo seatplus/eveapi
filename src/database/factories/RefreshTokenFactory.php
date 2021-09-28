@@ -38,9 +38,33 @@ class RefreshTokenFactory extends Factory
         return [
             'character_id' => $this->faker->numberBetween(9000000, 98000000),
             'refresh_token' => 'MmLZC2vwExCby2vbdgEVpOxXPUG3mIGfkQM5gl9IPtA',
-            'scopes' => config('eveapi.scopes.minimum'),
             'expires_on' => now()->addMinutes(10),
-            'token' => '1|CfDJ8O+5Z0aH+aBNj61BXVSPWfj8DD6qBe5+pX4wW3xbFK7HHkOj+iGMNK77msOP0MvPSE/2h4v8AypOYxL9g+yUeiCixwOnY7arXZ+y0koNeujlyl9V5Zp1ju1Vr1/JZASzK6r/d16UMj4CVma/FqPYwjFtP0WpO24jokw1X4A2LQXm',
+            'token' => json_encode([
+                "scp" => [
+                    "esi-skills.read_skills.v1",
+                    "esi-skills.read_skillqueue.v1",
+                ],
+                "jti" => "998e12c7-3241-43c5-8355-2c48822e0a1b",
+                "kid" => "JWT-Signature-Key",
+                "sub" => "CHARACTER:EVE:123123",
+                "azp" => "my3rdpartyclientid",
+                "name" => "Some Bloke",
+                "owner" => "8PmzCeTKb4VFUDrHLc/AeZXDSWM=",
+                "exp" => 1534412504,
+                "iss" => "login.eveonline.com",
+            ]),
         ];
+    }
+
+    public function scopes(array $scopes)
+    {
+        return $this->state(function (array $attributes) use ($scopes) {
+            $token = json_decode(data_get($attributes, 'token'), true);
+            data_set($token, 'scp', $scopes);
+
+            return [
+                'token' => json_encode($token),
+            ];
+        });
     }
 }

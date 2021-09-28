@@ -20,8 +20,7 @@ uses(MockRetrieveEsiDataAction::class);
 
 beforeEach(function () {
     $refresh_token = Event::fakeFor(function () {
-        $token = $this->test_character->refresh_token;
-        $token->scopes = ['esi-wallet.read_corporation_wallets.v1'];
+        $token = updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-wallet.read_corporation_wallets.v1']);
         $token->save();
 
         return $token;
@@ -82,7 +81,7 @@ it('spawns a job for every wallet division', function () {
 });
 
 it('creates wallet journal entries', function () {
-    $this->test_character->refresh_token()->update(['scopes' => config('eveapi.scopes.corporation.wallet')]);
+    Event::fakeFor(fn () => updateRefreshTokenScopes($this->test_character->refresh_token, config('eveapi.scopes.corporation.wallet'))->save());
     $this->test_character->roles()->update(['roles' => ['Accountant']]);
 
     $corporation = $this->test_character->corporation;
@@ -99,7 +98,7 @@ it('creates wallet journal entries', function () {
 });
 
 it('creates wallet transaction entries', function () {
-    $this->test_character->refresh_token()->update(['scopes' => config('eveapi.scopes.corporation.wallet')]);
+    Event::fakeFor(fn () => updateRefreshTokenScopes($this->test_character->refresh_token, config('eveapi.scopes.corporation.wallet'))->save());
     $this->test_character->roles()->update(['roles' => ['Accountant']]);
 
     $corporation = $this->test_character->corporation;

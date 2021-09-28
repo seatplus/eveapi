@@ -26,8 +26,8 @@
 
 namespace Seatplus\Eveapi\Esi;
 
-use Seat\Eseye\Containers\EsiResponse;
-use Seat\Eseye\Exceptions\RequestFailedException;
+use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
+use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
 use Seatplus\Eveapi\Services\Facade\RetrieveEsiData;
 use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
@@ -40,17 +40,6 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
      */
     private $esi_request_container;
 
-    /**
-     * @param int|null $page
-     *
-     * @return \Seat\Eseye\Containers\EsiResponse
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     * @throws \Seat\Eseye\Exceptions\EsiScopeAccessDeniedException
-     * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
-     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
-     * @throws \Seat\Eseye\Exceptions\RequestFailedException
-     * @throws \Seat\Eseye\Exceptions\UriDataMissingException
-     */
     public function retrieve(?int $page = null): EsiResponse
     {
         $this->builldEsiRequestContainer($page);
@@ -64,8 +53,6 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
 
             throw $exception;
         }
-
-        //return (new RetrieveEsiData)->execute($this->esi_request_container);
     }
 
     private function getBaseEsiReuestContainer(): EsiRequestContainer

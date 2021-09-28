@@ -27,9 +27,11 @@
 namespace Seatplus\Eveapi\Services\Esi;
 
 use Illuminate\Support\Str;
-use Seat\Eseye\Containers\EsiResponse;
-use Seat\Eseye\Eseye;
-use Seat\Eseye\Exceptions\RequestFailedException;
+use Seatplus\EsiClient\Configuration;
+use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
+use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
+use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
 use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 
@@ -39,45 +41,59 @@ class RetrieveEsiData
 
     protected $get_eseye_client_action;
 
-    protected Eseye $client;
+    protected EsiClient $client;
 
     protected EsiRequestContainer $request;
 
+    private EsiClientSetup $esi_client;
+
+    public function getClient(): EsiClient
+    {
+        if (! isset($this->client)) {
+            if (is_null($this->request->refreshToken)) {
+                $this->client = $this->esi_client->get();
+            }
+
+            // retrieve up-to-date token
+            $refresh_token = $this->request->refresh_token->fresh();
+
+            $authentication = new EsiAuthentication([
+                'refresh_token' => $refresh_token->refresh_token,
+                'access_token' => $refresh_token->token,
+                'token_expires' => $refresh_token->expires_on,
+                'scopes' => $refresh_token->scopes,
+            ]);
+
+            $this->client = $this->esi_client->get($authentication);
+        }
+
+        return $this->client;
+    }
+
+    public function setClient(EsiClient $client): void
+    {
+        $this->client = $client;
+    }
+
     public function __construct()
     {
-        $this->get_eseye_client_action = new GetEseyeClient();
+        $this->esi_client = app('esi-client');
     }
 
     /**
-     * @param EsiRequestContainer $request
-     * @return \Seat\Eseye\Containers\EsiResponse
      * @throws RequestFailedException
-     * @throws \Seat\Eseye\Exceptions\EsiScopeAccessDeniedException
-     * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
-     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
-     * @throws \Seat\Eseye\Exceptions\UriDataMissingException
+     * @throws \Seatplus\EsiClient\Exceptions\EsiScopeAccessDeniedException
      */
     public function execute(EsiRequestContainer $request): EsiResponse
     {
         $this->request = $request;
 
-        $client = $this->get_eseye_client_action->execute($this->request->refresh_token);
-
-        $this->client = $client;
-        $this->client->setVersion($this->request->version);
-        $this->client->setBody($this->request->request_body);
-        $this->client->setQueryString($this->request->query_string);
-
-        // Configure the page to get
-        if (! is_null($this->request->page)) {
-            $this->client->page($this->request->page);
-        }
+        $this->buildClient();
 
         try {
             $result = $this->client->invoke($this->request->method, $this->request->endpoint, $this->request->path_values);
         } catch (RequestFailedException $exception) {
             $this->handleException($exception);
-
             // Rethrow the exception
             throw $exception;
         }
@@ -88,26 +104,49 @@ class RetrieveEsiData
             return $result;
         }
 
-        // Perform error checking
-        $this->getLogWarningAction()->setEseyeClient($this->client)->execute($result, $this->request->page);
+        $this->logWarnings($result);
 
         $this->updateRefreshToken();
 
         return $result;
     }
 
-    private function getLogWarningAction(): LogWarnings
+    private function buildClient()
     {
-        return new LogWarnings();
+        $this->getClient()->setVersion($this->request->version);
+        $this->getClient()->setRequestBody($this->request->request_body);
+        $this->getClient()->setQueryParameters($this->request->query_parameters);
+
+        // Configure the page to get
+        if (! is_null($this->request->page)) {
+            $this->getClient()->setQueryParameters(['page' => $this->request->page]);
+        }
+    }
+
+    private function logWarnings(EsiResponse $response)
+    {
+        $logger = Configuration::getInstance()->getLogger();
+
+        if (! is_null($response->pages) && $this->request->page === null) {
+            $logger->warning('Response contained pages but none was expected');
+        }
+
+        if (! is_null($this->request->page) && $response->pages === null) {
+            $logger->warning('Expected a paged response but had none');
+        }
+
+        if (array_key_exists('Warning', $response->headers)) {
+            $logger->warning('A response contained a warning: ' . $response->headers['Warning']);
+        }
     }
 
     private function updateRefreshToken()
     {
-        if (is_null($this->client) || $this->request->isPublic()) {
+        if (is_null($this->getClient()) || $this->request->isPublic()) {
             return;
         }
 
-        $auth = $this->client->getAuthentication();
+        $auth = $this->getClient()->getAuthentication();
 
         $refresh_token = $this->request->refresh_token;
         $refresh_token->token = $auth->access_token ?? '-';
@@ -119,19 +158,19 @@ class RetrieveEsiData
     private function handleException(RequestFailedException $exception)
     {
         // If error is in 4xx or 5xx range increase esi rate limit
-        if (($exception->getEsiResponse()->getErrorCode() >= 400) && ($exception->getEsiResponse()->getErrorCode() <= 599)) {
+        if (($exception->getOriginalException()->getCode() >= 400) && ($exception->getOriginalException()->getCode() <= 599)) {
             $this->incrementEsiRateLimit();
         }
 
         // If RateLimited directly raise the EsiRateLimit to 80
-        if (Str::contains($exception->getEsiResponse()->error(), 'This software has exceeded the error limit for ESI.')) {
+        if (Str::contains($exception->getErrorMessage(), 'This software has exceeded the error limit for ESI.')) {
             $this->incrementEsiRateLimit(80);
         }
 
         // If the token can't login and we get an HTTP 400 together with
         // and error message stating that this is an invalid_token, remove
         // the token from SeAT plus.
-        if ($exception->getEsiResponse()->getErrorCode() == 400 && in_array($exception->getEsiResponse()->error(), [
+        if ($exception->getOriginalException()->getCode() == 400 && in_array($exception->getErrorMessage(), [
             'invalid_token: The refresh token is expired.',
             'invalid_token: The refresh token does not match the client specified.',
         ])) {

@@ -20,9 +20,7 @@ beforeEach(function () {
         RefreshTokenCreated::class,
     ]);
 
-    $this->refresh_token = RefreshToken::factory()->create([
-        'scopes' => ['esi-universe.read_structures.v1'],
-    ]);
+    $this->refresh_token = RefreshToken::factory()->scopes(['esi-universe.read_structures.v1'])->create();
 });
 
 /**

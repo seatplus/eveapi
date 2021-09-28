@@ -13,7 +13,8 @@
 
 /** @link https://pestphp.com/docs/underlying-test-case */
 
-use Seat\Eseye\Containers\EsiResponse;
+
+use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\Eveapi\Services\Facade\RetrieveEsiData;
 
 uses(\Seatplus\Eveapi\Tests\TestCase::class);
@@ -56,4 +57,13 @@ function mockRetrieveEsiDataAction(array $body)
 function testCharacter()
 {
     return \Seatplus\Eveapi\Models\Character\CharacterInfo::first();
+}
+
+function updateRefreshTokenScopes(\Seatplus\Eveapi\Models\RefreshToken $refreshToken, array $scopes)
+{
+    $token = json_decode($refreshToken->getRawOriginal('token'), true);
+    data_set($token, 'scp', $scopes);
+    $refreshToken->token = json_encode($token);
+
+    return $refreshToken;
 }

@@ -55,8 +55,6 @@ abstract class HydrateCharacterBase implements Hydrate
 
     public function hasRequiredScope(): bool
     {
-        return $this->required_scope
-            ? in_array($this->required_scope, $this->job_container->refresh_token->refresh()->scopes)
-            : true;
+        return ! $this->required_scope || $this->job_container->refresh_token->refresh()->hasScope($this->required_scope);
     }
 }

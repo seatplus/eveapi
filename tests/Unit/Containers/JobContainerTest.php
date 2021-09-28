@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Exceptions\InvalidContainerDataException;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Tests\TestCase;
 
@@ -19,7 +18,7 @@ test('can set propperty test', function () {
 /** @throws \Seatplus\Eveapi\Exceptions\InvalidContainerDataException
  */
 test('can not set propperty test', function () {
-    $this->expectException(InvalidContainerDataException::class);
+    $this->expectException(\Spatie\DataTransferObject\Exceptions\UnknownProperties::class);
 
     new JobContainer([
         'herpaderp' => 'v4',
