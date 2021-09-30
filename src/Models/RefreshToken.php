@@ -27,6 +27,7 @@
 namespace Seatplus\Eveapi\Models;
 
 use Carbon\Carbon;
+use Firebase\JWT\JWT;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -46,13 +47,6 @@ class RefreshToken extends Model
     {
         return RefreshTokenFactory::new();
     }
-
-    /**
-     * @var array
-     */
-    protected $casts = [
-        //'token' => 'array',
-    ];
 
     /**
      * @var array
@@ -94,7 +88,7 @@ class RefreshToken extends Model
     public function getTokenAttribute($value): ?array
     {
         if ($this->expires_on->gt(Carbon::now())) {
-            return json_decode($value, 1);
+            return $value;
         }
 
         return null;
@@ -127,7 +121,12 @@ class RefreshToken extends Model
 
     public function getScopesAttribute()
     {
-        return data_get(json_decode($this->getRawOriginal('token')), 'scp', []);
+        $jwt = $this->getRawOriginal('token');
+        $jwt_payload_base64_encoded = explode('.', $jwt)[1];
+
+        $jwt_payload = JWT::urlsafeB64Decode($jwt_payload_base64_encoded);
+
+        return data_get(json_decode($jwt_payload), 'scp', []);
     }
 
     public function hasScope(string $scope): bool

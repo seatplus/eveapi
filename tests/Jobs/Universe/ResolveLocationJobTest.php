@@ -217,11 +217,6 @@ it('checks no structure younger then a week', function () {
     buildJob($location_id, $this->test_character->refresh_token)->handle();
 
     Queue::assertNothingPushed();
-
-    /*$this->assertNotNull(Location::find($location_id)->locatable);
-
-    expect(carbon(Structure::find($location_id)->updated_at)->isAfter(carbon()->subWeek()))->toBeTrue();
-    $this->assertTrue(carbon(Structure::find($location_id)->updated_at)->isBefore(carbon()->subDay()));*/
 });
 
 // Helpers

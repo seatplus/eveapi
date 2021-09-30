@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\database\factories;
 
+use Firebase\JWT\JWT;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\RefreshToken;
 
@@ -35,24 +36,26 @@ class RefreshTokenFactory extends Factory
 
     public function definition()
     {
+        $jwt_payload = json_encode([
+            "scp" => [
+                "esi-skills.read_skills.v1",
+                "esi-skills.read_skillqueue.v1",
+            ],
+            "jti" => "998e12c7-3241-43c5-8355-2c48822e0a1b",
+            "kid" => "JWT-Signature-Key",
+            "sub" => "CHARACTER:EVE:123123",
+            "azp" => "my3rdpartyclientid",
+            "name" => "Some Bloke",
+            "owner" => "8PmzCeTKb4VFUDrHLc/AeZXDSWM=",
+            "exp" => 1534412504,
+            "iss" => "login.eveonline.com",
+        ]);
+
         return [
             'character_id' => $this->faker->numberBetween(9000000, 98000000),
             'refresh_token' => 'MmLZC2vwExCby2vbdgEVpOxXPUG3mIGfkQM5gl9IPtA',
             'expires_on' => now()->addMinutes(10),
-            'token' => json_encode([
-                "scp" => [
-                    "esi-skills.read_skills.v1",
-                    "esi-skills.read_skillqueue.v1",
-                ],
-                "jti" => "998e12c7-3241-43c5-8355-2c48822e0a1b",
-                "kid" => "JWT-Signature-Key",
-                "sub" => "CHARACTER:EVE:123123",
-                "azp" => "my3rdpartyclientid",
-                "name" => "Some Bloke",
-                "owner" => "8PmzCeTKb4VFUDrHLc/AeZXDSWM=",
-                "exp" => 1534412504,
-                "iss" => "login.eveonline.com",
-            ]),
+            'token' => $this->buildJWT($jwt_payload),
         ];
     }
 
@@ -63,8 +66,27 @@ class RefreshTokenFactory extends Factory
             data_set($token, 'scp', $scopes);
 
             return [
-                'token' => json_encode($token),
+                'token' => $this->buildJWT(json_encode($token)),
             ];
         });
+    }
+
+    private function buildJWT(string $payload)
+    {
+        $jwt_header = json_encode([
+            "alg" => "RS256",
+            "kid" => "JWT-Signature-Key",
+            "typ" => "JWT",
+        ]);
+
+        $data = JWT::urlsafeB64Encode($jwt_header) . "." . JWT::urlsafeB64Encode($payload);
+
+        $signature = hash_hmac(
+            'sha256',
+            $data,
+            'test'
+        );
+
+        return "${data}.${signature}";
     }
 }
