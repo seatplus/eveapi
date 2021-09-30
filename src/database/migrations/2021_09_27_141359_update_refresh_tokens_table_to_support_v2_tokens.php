@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::table('refresh_tokens', function (Blueprint $table) {
             $table->dropColumn('scopes');
-            $table->json('token')->change();
+            $table->text('token')->change();
         });
     }
 };

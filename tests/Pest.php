@@ -14,6 +14,7 @@
 /** @link https://pestphp.com/docs/underlying-test-case */
 
 
+use Firebase\JWT\JWT;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\Eveapi\Services\Facade\RetrieveEsiData;
 
@@ -61,9 +62,30 @@ function testCharacter()
 
 function updateRefreshTokenScopes(\Seatplus\Eveapi\Models\RefreshToken $refreshToken, array $scopes)
 {
-    $token = json_decode($refreshToken->getRawOriginal('token'), true);
-    data_set($token, 'scp', $scopes);
-    $refreshToken->token = json_encode($token);
+    $jwt = $refreshToken->getRawOriginal('token');
+    $jwt_payload_base64_encoded = explode('.', $jwt)[1];
+    // create an associative array
+    $jwt_payload = json_decode(JWT::urlsafeB64Decode($jwt_payload_base64_encoded), true);
+    // update scopes
+    $jwt_payload['scp'] = $scopes;
+    // create a json object
+    $jwt_payload = json_encode($jwt_payload);
+
+    $jwt_header = json_encode([
+        "alg" => "RS256",
+        "kid" => "JWT-Signature-Key",
+        "typ" => "JWT",
+    ]);
+
+    $data = JWT::urlsafeB64Encode($jwt_header) . "." . JWT::urlsafeB64Encode($jwt_payload);
+
+    $signature= hash_hmac(
+        'sha256',
+        base64_encode($jwt_header) . "." . base64_encode($jwt_payload),
+        'test'
+    );
+
+    $refreshToken->token = "${data}.${signature}";
 
     return $refreshToken;
 }
