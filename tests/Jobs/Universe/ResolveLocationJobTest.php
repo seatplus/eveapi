@@ -217,7 +217,6 @@ it('checks no structure younger then a week', function () {
     buildJob($location_id, $this->test_character->refresh_token)->handle();
 
     Queue::assertNothingPushed();
-
 });
 
 // Helpers

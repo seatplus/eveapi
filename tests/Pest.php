@@ -79,7 +79,7 @@ function updateRefreshTokenScopes(\Seatplus\Eveapi\Models\RefreshToken $refreshT
 
     $data = JWT::urlsafeB64Encode($jwt_header) . "." . JWT::urlsafeB64Encode($jwt_payload);
 
-    $signature= hash_hmac(
+    $signature = hash_hmac(
         'sha256',
         base64_encode($jwt_header) . "." . base64_encode($jwt_payload),
         'test'

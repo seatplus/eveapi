@@ -36,7 +36,6 @@ class RefreshTokenFactory extends Factory
 
     public function definition()
     {
-
         $jwt_payload = json_encode([
             "scp" => [
                 "esi-skills.read_skills.v1",
