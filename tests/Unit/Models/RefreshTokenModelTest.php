@@ -27,4 +27,4 @@ it('only returns token if it is not already considered expired', function () {
     expect($refresh_token)
         ->expires_on->toBeLessThan(\Illuminate\Support\Carbon::now())
         ->token->toBeNull();
-})->only();
+});

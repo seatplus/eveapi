@@ -6,6 +6,7 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/9c06342438c0fb4a4cdc/test_coverage)](https://codeclimate.com/github/seatplus/eveapi/test_coverage)
 [![Total Downloads](https://poser.pugx.org/seatplus/eveapi/downloads)](https://packagist.org/packages/seatplus/eveapi)
 [![License](https://poser.pugx.org/seatplus/eveapi/license)](https://packagist.org/packages/seatplus/eveapi)
+[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/seatplus/eveapi/Laravel?label=Tests)](https://github.com/seatplus/eveapi/actions?query=workflow%3Alaravel+branch%3Adevelop)
 
 ## Feaures
 Provide ability to:
