@@ -39,8 +39,6 @@ class RetrieveEsiData
 {
     use RateLimitsEsiCalls;
 
-    protected $get_eseye_client_action;
-
     protected EsiClient $client;
 
     protected EsiRequestContainer $request;
@@ -50,18 +48,20 @@ class RetrieveEsiData
     public function getClient(): EsiClient
     {
         if (! isset($this->client)) {
-            if (is_null($this->request->refreshToken)) {
+            if (is_null($this->request->refresh_token)) {
                 $this->client = $this->esi_client->get();
+
+                return $this->client;
             }
 
             // retrieve up-to-date token
-            $refresh_token = $this->request->refresh_token->fresh();
+            $refresh_token = $this->request->refresh_token;
+            $refresh_token = $refresh_token->fresh();
 
             $authentication = new EsiAuthentication([
                 'refresh_token' => $refresh_token->refresh_token,
                 'access_token' => $refresh_token->token,
                 'token_expires' => $refresh_token->expires_on,
-                'scopes' => $refresh_token->scopes,
             ]);
 
             $this->client = $this->esi_client->get($authentication);
@@ -180,5 +180,13 @@ class RetrieveEsiData
                 $this->request->refresh_token->delete();
             }
         }
+    }
+
+    /**
+     * @param EsiRequestContainer $request
+     */
+    public function setRequest(EsiRequestContainer $request): void
+    {
+        $this->request = $request;
     }
 }
