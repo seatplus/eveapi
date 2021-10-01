@@ -55,7 +55,6 @@ abstract class TestCase extends OrchestraTestCase
         return [
             EveapiServiceProvider::class,
             HorizonServiceProvider::class,
-            ClockworkServiceProvider::class,
             RayServiceProvider::class,
         ];
     }
