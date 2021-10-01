@@ -3,7 +3,6 @@
 
 namespace Seatplus\Eveapi\Tests;
 
-use Clockwork\Support\Laravel\ClockworkServiceProvider;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Horizon\HorizonServiceProvider;

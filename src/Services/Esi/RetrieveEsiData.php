@@ -48,9 +48,9 @@ class RetrieveEsiData
     public function getClient(): EsiClient
     {
         if (! isset($this->client)) {
-
             if (is_null($this->request->refresh_token)) {
                 $this->client = $this->esi_client->get();
+
                 return $this->client;
             }
 
@@ -65,7 +65,6 @@ class RetrieveEsiData
             ]);
 
             $this->client = $this->esi_client->get($authentication);
-
         }
 
         return $this->client;
