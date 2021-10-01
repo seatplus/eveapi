@@ -27,7 +27,7 @@
 namespace Seatplus\Eveapi\Services\Facade;
 
 use Illuminate\Support\Facades\Facade;
-use Seat\Eseye\Containers\EsiResponse;
+use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
 use Seatplus\Eveapi\Services\Esi\RetrieveEsiData as RetrieveEsiDataAlias;
 
