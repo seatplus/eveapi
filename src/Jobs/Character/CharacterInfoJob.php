@@ -44,7 +44,7 @@ class CharacterInfoJob extends NewEsiBase implements HasPathValuesInterface
 
         $this->setMethod('get');
         $this->setEndpoint('/characters/{character_id}/');
-        $this->setVersion('v4');
+        $this->setVersion('v5');
 
         $this->setPathValues([
             'character_id' => $this->character_id,
@@ -98,7 +98,6 @@ class CharacterInfoJob extends NewEsiBase implements HasPathValuesInterface
             'gender' => $response->gender,
             'race_id' => $response->race_id,
             'bloodline_id' => $response->bloodline_id,
-            'ancestry_id' => data_get($response, 'ancestry_id'),
             'security_status' => data_get($response, 'security_status'),
             'faction_id' => data_get($response, 'faction_id'),
             'title' => data_get($response, 'title'),

@@ -80,8 +80,6 @@ class CharacterInfoFactory extends Factory
             'gender' => $this->faker->randomElement(['male', 'female']),
             'race_id' => $this->faker->randomDigitNotNull,
             'bloodline_id' => $this->faker->randomDigitNotNull,
-            //'alliance_id'     => $this->faker->optional()->numberBetween(99000000,100000000),
-            'ancestry_id' => $this->faker->optional()->randomDigit,
             'description' => $this->faker->optional()->realText(),
             'security_status' => $this->faker->optional()->randomFloat(null, -10, +10),
             'title' => $this->faker->optional()->bs,

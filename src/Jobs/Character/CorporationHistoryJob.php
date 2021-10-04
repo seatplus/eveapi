@@ -44,7 +44,7 @@ class CorporationHistoryJob extends NewEsiBase implements HasPathValuesInterface
 
         $this->setMethod('get');
         $this->setEndpoint('/characters/{character_id}/corporationhistory/');
-        $this->setVersion('v1');
+        $this->setVersion('v2');
 
         $this->setPathValues([
             'character_id' => $this->getCharacterId(),
