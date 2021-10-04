@@ -60,7 +60,7 @@ class RetrieveEsiData
 
             $authentication = new EsiAuthentication([
                 'refresh_token' => $refresh_token->refresh_token,
-                'access_token' => $refresh_token->token,
+                'access_token' => $refresh_token->getRawOriginal('token'),
                 'token_expires' => $refresh_token->expires_on,
             ]);
 
@@ -91,7 +91,7 @@ class RetrieveEsiData
         $this->buildClient();
 
         try {
-            $result = $this->client->invoke($this->request->method, $this->request->endpoint, $this->request->path_values);
+            $result = $this->getClient()->invoke($this->request->method, $this->request->endpoint, $this->request->path_values);
         } catch (RequestFailedException $exception) {
             $this->handleException($exception);
             // Rethrow the exception

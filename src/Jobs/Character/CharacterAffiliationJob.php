@@ -45,7 +45,7 @@ class CharacterAffiliationJob extends NewEsiBase implements HasRequestBodyInterf
 
         $this->setMethod('post');
         $this->setEndpoint('/characters/affiliation/');
-        $this->setVersion('v1');
+        $this->setVersion('v2');
     }
 
     public function tags(): array
@@ -87,11 +87,9 @@ class CharacterAffiliationJob extends NewEsiBase implements HasRequestBodyInterf
             // Remove $character_id that is already in DB and younger then 60minutes
                 $db_entry = CharacterAffiliation::find($value);
 
-                return $db_entry
-                ? $db_entry->last_pulled->diffInMinutes(now()) > 60
-                : true;
+                return ! $db_entry || $db_entry->last_pulled->diffInMinutes(now()) > 60;
             }))->pipe(function (Collection $collection) {
-                //Check all other character affiliations present in DB that are younger then 60 minutes
+                //Check all other character affiliations present in DB that are younger than 60 minutes
                 $character_affiliations = CharacterAffiliation::cursor()->filter(function ($character_affiliation) {
                     return $character_affiliation->last_pulled->diffInMinutes(now()) > 60;
                 });
@@ -115,19 +113,17 @@ class CharacterAffiliationJob extends NewEsiBase implements HasRequestBodyInterf
 
                     $timestamp = now();
 
-                    collect($response)->map(function ($result) use ($timestamp) {
-                        return CharacterAffiliation::updateOrCreate(
-                            [
-                                'character_id' => $result->character_id,
-                            ],
-                            [
-                                'corporation_id' => $result->corporation_id,
-                                'alliance_id' => optional($result)->alliance_id,
-                                'faction_id' => optional($result)->faction_id,
-                                'last_pulled' => $timestamp,
-                            ]
-                        );
-                    })->each(function (CharacterAffiliation $character_affiliation) use ($timestamp) {
+                    collect($response)->map(fn ($result) => CharacterAffiliation::updateOrCreate(
+                        [
+                            'character_id' => $result->character_id,
+                        ],
+                        [
+                            'corporation_id' => $result->corporation_id,
+                            'alliance_id' => optional($result)->alliance_id,
+                            'faction_id' => optional($result)->faction_id,
+                            'last_pulled' => $timestamp,
+                        ]
+                    ))->each(function (CharacterAffiliation $character_affiliation) use ($timestamp) {
                         $character_affiliation->last_pulled = $timestamp;
                         $character_affiliation->save();
                     });
