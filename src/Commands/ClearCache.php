@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Commands;
 
+use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
@@ -63,8 +64,6 @@ class ClearCache extends Command
 
         $this->flushRedis();
 
-        $this->removeFileCache();
-
         $this->clearArtisanCache();
 
         $this->truncateBatch();
@@ -83,24 +82,6 @@ class ClearCache extends Command
         }
     }
 
-    private function removeFileCache()
-    {
-
-        // Eseye Cache Clearing
-        $eseye_cache = config('eveapi.config.eseye_cache');
-
-        if (! File::isWritable($eseye_cache)) {
-            $this->error('Eseye Cache directory at ' . $eseye_cache . ' is not writable');
-
-            return;
-        }
-
-        $this->info('Clearing the Eseye Cache at: ' . $eseye_cache);
-
-        if (! File::deleteDirectory($eseye_cache, true)) {
-            $this->error('Failed to clear the Eseye Cache directory. Check permissions.');
-        }
-    }
 
     private function clearArtisanCache()
     {
@@ -111,6 +92,6 @@ class ClearCache extends Command
 
     private function truncateBatch()
     {
-        \DB::table('job_batches')->truncate();
+        DB::table('job_batches')->truncate();
     }
 }
