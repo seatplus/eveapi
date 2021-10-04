@@ -26,11 +26,10 @@
 
 namespace Seatplus\Eveapi\Commands;
 
-use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis as RedisHelper;
 
 class ClearCache extends Command
@@ -81,7 +80,6 @@ class ClearCache extends Command
             $this->error('Failed to clear the Redis Cache. Error: ' . $exception->getMessage());
         }
     }
-
 
     private function clearArtisanCache()
     {

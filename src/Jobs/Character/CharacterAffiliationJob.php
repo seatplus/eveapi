@@ -87,7 +87,7 @@ class CharacterAffiliationJob extends NewEsiBase implements HasRequestBodyInterf
             // Remove $character_id that is already in DB and younger then 60minutes
                 $db_entry = CharacterAffiliation::find($value);
 
-                return !$db_entry || $db_entry->last_pulled->diffInMinutes(now()) > 60;
+                return ! $db_entry || $db_entry->last_pulled->diffInMinutes(now()) > 60;
             }))->pipe(function (Collection $collection) {
                 //Check all other character affiliations present in DB that are younger than 60 minutes
                 $character_affiliations = CharacterAffiliation::cursor()->filter(function ($character_affiliation) {
@@ -113,7 +113,7 @@ class CharacterAffiliationJob extends NewEsiBase implements HasRequestBodyInterf
 
                     $timestamp = now();
 
-                    collect($response)->map(fn($result) => CharacterAffiliation::updateOrCreate(
+                    collect($response)->map(fn ($result) => CharacterAffiliation::updateOrCreate(
                         [
                             'character_id' => $result->character_id,
                         ],
