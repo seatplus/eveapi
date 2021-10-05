@@ -92,15 +92,15 @@ class ResolveUniverseTypeByIdJob extends NewEsiBase implements HasPathValuesInte
                 'description' => $response->description,
                 'published' => $response->published,
 
-                'capacity' => $response->optional('capacity'),
-                'graphic_id' => $response->optional('graphic_id'),
-                'icon_id' => $response->optional('icon_id'),
-                'market_group_id' => $response->optional('market_group_id'),
-                'mass' => $response->optional('mass'),
-                'packaged_volume' => $response->optional('packaged_volume'),
-                'portion_size' => $response->optional('portion_size'),
-                'radius' => $response->optional('radius'),
-                'volume' => $response->optional('volume'),
+                'capacity' => data_get($response, 'capacity'),
+                'graphic_id' => data_get($response, 'graphic_id'),
+                'icon_id' => data_get($response, 'icon_id'),
+                'market_group_id' => data_get($response, 'market_group_id'),
+                'mass' => data_get($response, 'mass'),
+                'packaged_volume' => data_get($response, 'packaged_volume'),
+                'portion_size' => data_get($response, 'portion_size'),
+                'radius' => data_get($response, 'radius'),
+                'volume' => data_get($response, 'volume'),
             ]
         );
     }
