@@ -167,17 +167,35 @@ class RetrieveEsiData
             $this->incrementEsiRateLimit(80);
         }
 
+        // Sometimes CCP does funny stuff, such as: issue tokens that are valid for to long.
+        // invalidate the token
+        if($exception->getOriginalException()->getCode() === 403 && $exception->getErrorMessage() === 'token expiry is too far in the future') {
+            if (! is_null($this->request->refresh_token)) {
+                $this->request->refresh_token->expires_on = carbon()->subMinutes(10);
+                $this->request->refresh_token->save();
+            }
+        }
+
         // If the token can't login and we get an HTTP 400 together with
         // and error message stating that this is an invalid_token, remove
         // the token from SeAT plus.
         if ($exception->getOriginalException()->getCode() == 400 && in_array($exception->getErrorMessage(), [
             'invalid_token: The refresh token is expired.',
             'invalid_token: The refresh token does not match the client specified.',
+            'invalid_grant: Invalid refresh token. Character grant missing/expired.',
+            'invalid_grant: Invalid refresh token. Unable to migrate grant.',
+            'invalid_grant: Invalid refresh token. Token missing/expired.',
         ])) {
 
-            // Remove the invalid token
+
             if (! is_null($this->request->refresh_token)) {
-                $this->request->refresh_token->delete();
+
+                $refresh_token = $this->request->refresh_token->refresh();
+
+                // Try compensating for race conditions, only delete invalid tokens that have not been updated recently
+                if(carbon($refresh_token->updated_at)->isBefore(carbon()->subMinutes()))
+                    // Remove the invalid token
+                    $refresh_token->delete();
             }
         }
     }
