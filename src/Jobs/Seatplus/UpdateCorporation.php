@@ -79,6 +79,7 @@ class UpdateCorporation implements ShouldQueue
             ->then(fn (Batch $batch) => logger()->info($success_message))
             ->name($batch_name)
             ->onQueue($job_container->queue)
+            ->onConnection(config('queue.default'))
             ->allowFailures()
             ->dispatch();
     }

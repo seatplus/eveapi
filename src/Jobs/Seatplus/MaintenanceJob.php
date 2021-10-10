@@ -111,6 +111,8 @@ class MaintenanceJob implements ShouldQueue
         ])
             ->then(fn (Batch $batch) => logger()->info('Maintenance job finished'))
             ->name('Maintenance Job')
+            ->onQueue('default')
+            ->onConnection(config('queue.default'))
             ->allowFailures()
             ->dispatch();
     }

@@ -98,7 +98,7 @@ class UpdateCharacter implements ShouldQueue
         ])->then(
             fn (Batch $batch) => logger()->info($success_message)
         )->name($batch_name)->onQueue($queue)
-            ->onConnection('redis')
+            ->onConnection(config('queue.default'))
             ->allowFailures()->dispatch();
     }
 }
