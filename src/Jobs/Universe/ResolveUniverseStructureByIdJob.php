@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Universe;
 
+use Illuminate\Queue\MaxAttemptsExceededException;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
@@ -104,5 +105,13 @@ class ResolveUniverseStructureByIdJob extends NewEsiBase implements HasPathValue
             'locatable_id' => $this->location_id,
             'locatable_type' => Structure::class,
         ]);
+    }
+
+    public function failed(\Throwable $exception) : void
+    {
+
+        if($exception instanceof MaxAttemptsExceededException) {
+            $this->delete();
+        }
     }
 }
