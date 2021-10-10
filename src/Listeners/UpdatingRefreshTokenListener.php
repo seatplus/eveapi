@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Listeners;
 
+use Firebase\JWT\JWT;
 use Seatplus\Eveapi\Events\UpdatingRefreshTokenEvent;
 use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
 use Seatplus\Eveapi\Jobs\Seatplus\UpdateCorporation;
@@ -35,8 +36,11 @@ class UpdatingRefreshTokenListener
     public function handle(UpdatingRefreshTokenEvent $refresh_token_event)
     {
         $refresh_token = $refresh_token_event->refresh_token;
+        $original_scopes = $refresh_token->getOriginal('scopes');
+        $new_scopes = $this->getScopes($refresh_token->token);
 
-        if ($refresh_token->isDirty('token')) {
+
+        if (array_diff($new_scopes, $original_scopes)) {
             UpdateCharacter::dispatch($refresh_token)->onQueue('high');
 
             $corporation_id = $refresh_token?->character?->corporation?->corporation_id;
@@ -45,5 +49,16 @@ class UpdatingRefreshTokenListener
                 UpdateCorporation::dispatch($corporation_id)->onQueue('high');
             }
         }
+    }
+
+    private function getScopes(string $jwt)
+    {
+        $jwt_payload_base64_encoded = explode('.', $jwt)[1];
+
+        $jwt_payload = JWT::urlsafeB64Decode($jwt_payload_base64_encoded);
+
+        $scopes = data_get(json_decode($jwt_payload), 'scp', []);
+
+        return is_array($scopes) ? $scopes : [$scopes];
     }
 }

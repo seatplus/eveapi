@@ -60,7 +60,7 @@ function testCharacter()
     return \Seatplus\Eveapi\Models\Character\CharacterInfo::first();
 }
 
-function updateRefreshTokenScopes(\Seatplus\Eveapi\Models\RefreshToken $refreshToken, array $scopes)
+function updateRefreshTokenScopes(\Seatplus\Eveapi\Models\RefreshToken $refreshToken, array $scopes): \Seatplus\Eveapi\Models\RefreshToken
 {
     $jwt = $refreshToken->getRawOriginal('token');
     $jwt_payload_base64_encoded = explode('.', $jwt)[1];
