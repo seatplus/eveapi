@@ -68,4 +68,4 @@ it('queues update corporation job after scope change', function () {
     $token->save();
 
     Queue::assertPushedOn('high', UpdateCorporation::class);
-})->only();
+});
