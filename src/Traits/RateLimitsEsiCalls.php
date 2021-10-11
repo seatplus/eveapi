@@ -26,7 +26,7 @@
 
 namespace Seatplus\Eveapi\Traits;
 
-use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Trait RateLimitsEsiCalls.
@@ -59,7 +59,7 @@ trait RateLimitsEsiCalls
      */
     public function isEsiRateLimited(): bool
     {
-        if (cache()->get($this->ratelimit_key) < $this->ratelimit) {
+        if (Cache::get($this->ratelimit_key) < $this->ratelimit) {
             return false;
         }
 
@@ -73,20 +73,11 @@ trait RateLimitsEsiCalls
      */
     public function incrementEsiRateLimit(int $amount = 1)
     {
-        if ($this->getRateLimitKeyTtl() > 3) {
-            cache()->increment($this->ratelimit_key, $amount);
+        if (Cache::has($this->ratelimit_key)) {
+            Cache::increment($this->ratelimit_key, $amount);
         } else {
-            cache()->set($this->ratelimit_key, $amount, carbon('now')
-                ->addMinutes($this->ratelimit_duration));
+            Cache::put($this->ratelimit_key, $amount, carbon('now')->addMinutes($this->ratelimit_duration));
         }
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getRateLimitKeyTtl()
-    {
-        return Redis::ttl('seat:' . $this->ratelimit_key);
     }
 
     /**
