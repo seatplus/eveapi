@@ -34,6 +34,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Redis;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\Character\CorporationHistoryJob;
@@ -64,16 +65,15 @@ class UpdateCharacter implements ShouldQueue
 
     public function handle()
     {
-        if ($this->refresh_token) {
-            return $this->execute($this->refresh_token, 'high');
-        }
 
-        return RefreshToken::cursor()->each(function ($token) {
-            $this->execute($token);
-        });
+        $this->refresh_token
+            ? $this->execute($this->refresh_token, 'high')
+            : RefreshToken::cursor()->each(function ($token) {
+                $this->execute($token);
+            });
     }
 
-    private function execute(RefreshToken $refresh_token, string $queue = 'default')
+    private function execute(RefreshToken $refresh_token, string $queue = 'default') :void
     {
         $job_container = new JobContainer(['refresh_token' => $refresh_token, 'queue' => $queue]);
 
@@ -81,24 +81,27 @@ class UpdateCharacter implements ShouldQueue
         $success_message = sprintf('Character update batch of %s processed!', $character);
         $batch_name = sprintf('%s (character) update batch', $character);
 
-        return Bus::batch([
+        Redis::throttle($batch_name)->block(0)->allow(1)->then(
+            fn() => Bus::batch([
 
-            // Public endpoint hence no hydration or added logic required
-            new CharacterInfoJob($job_container),
-            new CorporationHistoryJob($job_container),
+                // Public endpoint hence no hydration or added logic required
+                new CharacterInfoJob($job_container),
+                new CorporationHistoryJob($job_container),
 
-            new CharacterAssetsHydrateBatch($job_container),
-            new CharacterRolesHydrateBatch($job_container),
-            new ContactHydrateBatch($job_container),
-            new WalletHydrateBatch($job_container),
-            new ContractHydrateBatch($job_container),
-            new SkillsHydrateBatch($job_container),
-            new MailsHydrateBatch($job_container),
+                new CharacterAssetsHydrateBatch($job_container),
+                new CharacterRolesHydrateBatch($job_container),
+                new ContactHydrateBatch($job_container),
+                new WalletHydrateBatch($job_container),
+                new ContractHydrateBatch($job_container),
+                new SkillsHydrateBatch($job_container),
+                new MailsHydrateBatch($job_container),
 
-        ])->then(
-            fn (Batch $batch) => logger()->info($success_message)
-        )->name($batch_name)->onQueue($queue)
-            ->onConnection(config('queue.default'))
-            ->allowFailures()->dispatch();
+            ])->then(
+                fn (Batch $batch) => logger()->info($success_message)
+            )->name($batch_name)->onQueue($queue)
+                ->onConnection(config('queue.default'))
+                ->allowFailures()->dispatch(),
+            fn() => logger()->info("Update batch of ${character} could not be started, a previous batch is still processing")
+        );
     }
 }
