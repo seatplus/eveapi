@@ -69,16 +69,6 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
     protected string $jobType = '';
 
     /**
-     * Determine the time at which the job should timeout.
-     *
-     * @return \DateTime
-     */
-    public function retryUntil()
-    {
-        return now()->addMinutes($this->getMinutesUntilTimeout());
-    }
-
-    /**
      * The number of seconds after which the job's unique lock will be released.
      *
      * @var int
