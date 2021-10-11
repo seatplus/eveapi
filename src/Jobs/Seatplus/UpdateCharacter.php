@@ -77,31 +77,7 @@ class UpdateCharacter implements ShouldQueue
     {
         $job_container = new JobContainer(['refresh_token' => $refresh_token, 'queue' => $queue]);
 
-        $character = optional($refresh_token->refresh()->character)->name ?? $refresh_token->character_id;
-        $success_message = sprintf('Character update batch of %s processed!', $character);
-        $batch_name = sprintf('%s (character) update batch', $character);
+        IndividualCharacterUpdate::dispatch($job_container)->onQueue($queue);
 
-        Redis::throttle($batch_name)->block(0)->allow(1)->then(
-            fn() => Bus::batch([
-
-                // Public endpoint hence no hydration or added logic required
-                new CharacterInfoJob($job_container),
-                new CorporationHistoryJob($job_container),
-
-                new CharacterAssetsHydrateBatch($job_container),
-                new CharacterRolesHydrateBatch($job_container),
-                new ContactHydrateBatch($job_container),
-                new WalletHydrateBatch($job_container),
-                new ContractHydrateBatch($job_container),
-                new SkillsHydrateBatch($job_container),
-                new MailsHydrateBatch($job_container),
-
-            ])->then(
-                fn (Batch $batch) => logger()->info($success_message)
-            )->name($batch_name)->onQueue($queue)
-                ->onConnection(config('queue.default'))
-                ->allowFailures()->dispatch(),
-            fn() => logger()->info("Update batch of ${character} could not be started, a previous batch is still processing")
-        );
     }
 }
