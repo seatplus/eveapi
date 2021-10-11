@@ -47,7 +47,7 @@ class CharacterInfoJob extends NewEsiBase implements HasPathValuesInterface
         $this->setVersion('v5');
 
         $this->setPathValues([
-            'character_id' => $this->character_id,
+            'character_id' => $this->getCharacterId(),
         ]);
     }
 
@@ -56,7 +56,7 @@ class CharacterInfoJob extends NewEsiBase implements HasPathValuesInterface
         return [
             'character',
             'info',
-            'character_id:' . $this->character_id,
+            'character_id:' . $this->getCharacterId(),
         ];
     }
 
@@ -90,7 +90,7 @@ class CharacterInfoJob extends NewEsiBase implements HasPathValuesInterface
         }
 
         CharacterInfo::updateOrCreate([
-            'character_id' => $this->character_id,
+            'character_id' => $this->getCharacterId(),
         ], [
             'name' => $response->name,
             'description' => data_get($response, 'description'),
