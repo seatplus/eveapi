@@ -26,25 +26,13 @@
 
 namespace Seatplus\Eveapi\Jobs\Seatplus;
 
-use Illuminate\Bus\Batch;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Bus;
-use Illuminate\Support\Facades\Redis;
 use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
-use Seatplus\Eveapi\Jobs\Character\CorporationHistoryJob;
-use Seatplus\Eveapi\Jobs\Hydrate\Character\CharacterAssetsHydrateBatch;
-use Seatplus\Eveapi\Jobs\Hydrate\Character\CharacterRolesHydrateBatch;
-use Seatplus\Eveapi\Jobs\Hydrate\Character\ContactHydrateBatch;
-use Seatplus\Eveapi\Jobs\Hydrate\Character\ContractHydrateBatch;
-use Seatplus\Eveapi\Jobs\Hydrate\Character\MailsHydrateBatch;
-use Seatplus\Eveapi\Jobs\Hydrate\Character\SkillsHydrateBatch;
-use Seatplus\Eveapi\Jobs\Hydrate\Character\WalletHydrateBatch;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 class UpdateCharacter implements ShouldQueue
@@ -65,7 +53,6 @@ class UpdateCharacter implements ShouldQueue
 
     public function handle()
     {
-
         $this->refresh_token
             ? $this->execute($this->refresh_token, 'high')
             : RefreshToken::cursor()->each(function ($token) {
@@ -78,6 +65,5 @@ class UpdateCharacter implements ShouldQueue
         $job_container = new JobContainer(['refresh_token' => $refresh_token, 'queue' => $queue]);
 
         IndividualCharacterUpdate::dispatch($job_container)->onQueue($queue);
-
     }
 }

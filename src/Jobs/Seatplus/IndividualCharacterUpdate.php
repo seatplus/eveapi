@@ -46,7 +46,6 @@ class IndividualCharacterUpdate implements ShouldQueue
 
     public function handle()
     {
-
         $character = optional($this->jobContainer->refresh_token->refresh()->character)->name ?? $this->jobContainer->refresh_token->character_id;
 
         Bus::batch([
