@@ -65,7 +65,6 @@ class UpdateCharacter implements ShouldQueue
 
     public function handle()
     {
-
         $this->refresh_token
             ? $this->execute($this->refresh_token, 'high')
             : RefreshToken::cursor()->each(function ($token) {
@@ -82,7 +81,7 @@ class UpdateCharacter implements ShouldQueue
         $batch_name = sprintf('%s (character) update batch', $character);
 
         Redis::throttle($batch_name)->block(0)->allow(1)->then(
-            fn() => Bus::batch([
+            fn () => Bus::batch([
 
                 // Public endpoint hence no hydration or added logic required
                 new CharacterInfoJob($job_container),
@@ -101,7 +100,7 @@ class UpdateCharacter implements ShouldQueue
             )->name($batch_name)->onQueue($queue)
                 ->onConnection(config('queue.default'))
                 ->allowFailures()->dispatch(),
-            fn() => logger()->info("Update batch of ${character} could not be started, a previous batch is still processing")
+            fn () => logger()->info("Update batch of ${character} could not be started, a previous batch is still processing")
         );
     }
 }
