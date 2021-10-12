@@ -69,8 +69,7 @@ class CharacterRoleJob extends NewEsiBase implements HasPathValuesInterface, Has
             new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
             (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by($this->uniqueId())
-                ->when(fn () => ! $this->isEsiRateLimited())
+                ->by('esiratelimit')
                 ->backoff(5),
         ];
     }

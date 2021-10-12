@@ -69,8 +69,7 @@ class CharacterInfoJob extends NewEsiBase implements HasPathValuesInterface
     {
         return [
             (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by($this->uniqueId())
-                ->when(fn () => ! $this->isEsiRateLimited())
+                ->by('esiratelimit')
                 ->backoff(5),
         ];
     }
