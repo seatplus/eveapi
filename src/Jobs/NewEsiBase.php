@@ -75,6 +75,8 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
      */
     public int $uniqueFor = 3600;
 
+    public $tries = 5;
+
     /**
      * The unique ID of the job.
      *
