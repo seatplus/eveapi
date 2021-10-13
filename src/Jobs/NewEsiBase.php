@@ -82,7 +82,7 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
      */
     public function retryUntil()
     {
-        return now()->addMinutes( $this->getMinutesUntilTimeout());
+        return now()->addMinutes($this->getMinutesUntilTimeout());
     }
 
     /**

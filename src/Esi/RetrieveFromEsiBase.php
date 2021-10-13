@@ -58,7 +58,7 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
                 $this->fail($exception);
             }
 
-            if(! $exception->getOriginalException() instanceof MaxAttemptsExceededException) {
+            if (! $exception->getOriginalException() instanceof MaxAttemptsExceededException) {
                 report($exception->getOriginalException());
             }
 
