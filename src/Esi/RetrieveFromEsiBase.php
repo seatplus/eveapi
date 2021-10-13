@@ -27,6 +27,7 @@
 namespace Seatplus\Eveapi\Esi;
 
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\MaxAttemptsExceededException;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
@@ -44,7 +45,7 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
     private $esi_request_container;
 
     /**
-     * @throws RequestFailedException
+     * @throws RequestFailedException|\Exception
      */
     public function retrieve(?int $page = null): EsiResponse
     {
@@ -57,9 +58,11 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
                 $this->fail($exception);
             }
 
-            report($exception);
+            if(! $exception->getOriginalException() instanceof MaxAttemptsExceededException) {
+                report($exception->getOriginalException());
+            }
 
-            throw $exception;
+            throw $exception->getOriginalException();
         }
     }
 

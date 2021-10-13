@@ -75,7 +75,15 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
      */
     public int $uniqueFor = 3600;
 
-    public $tries = 5;
+    /**
+     * Determine the time at which the job should timeout.
+     *
+     * @return \DateTime
+     */
+    public function retryUntil()
+    {
+        return now()->addMinutes( $this->getMinutesUntilTimeout());
+    }
 
     /**
      * The unique ID of the job.
