@@ -7,7 +7,7 @@ use Seatplus\Eveapi\Models\Mail\Mail;
 use Seatplus\Eveapi\Models\Mail\MailRecipients;
 use Seatplus\Eveapi\Tests\TestCase;
 
-uses(TestCase::class);
+
 
 test('character has mails test', function () {
     expect($this->test_character->mails)->toHaveCount(0);

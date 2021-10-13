@@ -10,7 +10,7 @@ use Seatplus\Eveapi\Models\Contacts\Label;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
-uses(TestCase::class);
+
 uses(MockRetrieveEsiDataAction::class);
 
 beforeEach(function () {

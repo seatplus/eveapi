@@ -9,7 +9,7 @@ use Seatplus\Eveapi\Jobs\Seatplus\UpdateCorporation;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Tests\TestCase;
 
-uses(TestCase::class);
+
 
 it('generates an event', function () {
     Event::fake();

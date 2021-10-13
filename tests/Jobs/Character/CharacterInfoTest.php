@@ -8,16 +8,28 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
-uses(TestCase::class);
+
 uses(MockRetrieveEsiDataAction::class);
 
-test('if job is queued', function () {
+it('dispatches job on default queue by character_id', function () {
     Queue::fake();
 
     // Assert that no jobs were pushed...
     Queue::assertNothingPushed();
 
-    CharacterInfoJob::dispatch()->onQueue('default');
+    CharacterInfoJob::dispatch(new JobContainer(['character_id' => 123]))->onQueue('default');
+
+    // Assert a job was pushed to a given queue...
+    Queue::assertPushedOn('default', CharacterInfoJob::class);
+});
+
+it('dispatches job on default queue by refresh_token', function () {
+    Queue::fake();
+
+    // Assert that no jobs were pushed...
+    Queue::assertNothingPushed();
+
+    CharacterInfoJob::dispatch(new JobContainer(['refresh_token' => testCharacter()->refresh_token]))->onQueue('default');
 
     // Assert a job was pushed to a given queue...
     Queue::assertPushedOn('default', CharacterInfoJob::class);

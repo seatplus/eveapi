@@ -11,7 +11,7 @@ use Seatplus\Eveapi\Models\SsoScopes;
 use Seatplus\Eveapi\Models\Wallet\Balance;
 use Seatplus\Eveapi\Tests\TestCase;
 
-uses(TestCase::class);
+
 
 beforeEach(function () {
     Queue::fake();

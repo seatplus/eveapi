@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Services\DispatchIndividualUpdate;
 use Seatplus\Eveapi\Tests\TestCase;
 
-uses(TestCase::class);
+
 
 it('dispatches job', function () {
     $refresh_token = $this->test_character->refresh_token;

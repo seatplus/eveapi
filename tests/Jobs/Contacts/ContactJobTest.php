@@ -10,7 +10,7 @@ use Seatplus\Eveapi\Jobs\Contacts\CorporationContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\CorporationContactLabelJob;
 use Seatplus\Eveapi\Tests\TestCase;
 
-uses(TestCase::class);
+
 
 test('alliance contact job', function () {
     Queue::fake();

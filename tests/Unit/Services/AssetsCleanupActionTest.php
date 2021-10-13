@@ -6,7 +6,7 @@ use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Services\Jobs\AssetCleanupAction;
 use Seatplus\Eveapi\Tests\TestCase;
 
-uses(TestCase::class);
+
 
 beforeEach(function () {
     Queue::fake();

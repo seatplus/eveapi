@@ -5,7 +5,7 @@ use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Tests\TestCase;
 
-uses(TestCase::class);
+
 
 beforeEach(function () {
     $this->middleware = new HasRequiredScopeMiddleware();
