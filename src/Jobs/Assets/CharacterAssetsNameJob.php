@@ -101,10 +101,6 @@ class CharacterAssetsNameJob extends NewEsiBase implements HasPathValuesInterfac
     {
         $responses = $this->retrieve();
 
-        if ($responses->isCachedLoad()) {
-            return;
-        }
-
         collect($responses)->each(function ($response) {
 
             // "None" seems to indicate that no name is set.

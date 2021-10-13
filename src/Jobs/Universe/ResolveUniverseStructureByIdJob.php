@@ -76,9 +76,8 @@ class ResolveUniverseStructureByIdJob extends NewEsiBase implements HasPathValue
             new HasRequiredScopeMiddleware,
             // This is very likely throwing errors if user is not on acl. In order to not getting blocked by esi rate limit only use half of allowed errors
             (new ThrottlesExceptionsWithRedis($this->getRatelimit() / 2, 5))
-                 ->by($this->uniqueId())
-                 ->when(fn () => ! $this->isEsiRateLimited())
-                 ->backoff(5),
+                ->by('esiratelimit')
+                ->backoff(5),
         ];
     }
 
@@ -107,10 +106,14 @@ class ResolveUniverseStructureByIdJob extends NewEsiBase implements HasPathValue
         ]);
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function failed(\Throwable $exception) : void
     {
-        if ($exception instanceof MaxAttemptsExceededException) {
-            $this->delete();
-        }
+        $exception instanceof MaxAttemptsExceededException
+            ? $this->delete()
+            : throw $exception;
+
     }
 }
