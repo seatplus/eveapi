@@ -12,7 +12,7 @@ use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Tests\TestCase;
 
-uses(TestCase::class);
+
 
 beforeEach(function () {
     Queue::fake();

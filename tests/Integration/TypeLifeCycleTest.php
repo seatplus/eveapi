@@ -7,7 +7,7 @@ use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Tests\TestCase;
 
-uses(TestCase::class);
+
 
 test('new type id dispatches group job if group is not present', function () {
     Queue::fake();

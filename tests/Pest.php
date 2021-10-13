@@ -14,11 +14,12 @@
 /** @link https://pestphp.com/docs/underlying-test-case */
 
 
+use Faker\Factory;
 use Firebase\JWT\JWT;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\Eveapi\Services\Facade\RetrieveEsiData;
 
-uses(\Seatplus\Eveapi\Tests\TestCase::class);
+uses(\Seatplus\Eveapi\Tests\TestCase::class)->in('Unit', 'Integration', 'Jobs');
 
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +44,12 @@ uses(\Seatplus\Eveapi\Tests\TestCase::class);
 | global functions to help you to reduce the number of lines of code in your test files.
 |
 */
+
+function faker()
+{
+   return Factory::create();
+
+}
 
 function mockRetrieveEsiDataAction(array $body)
 {

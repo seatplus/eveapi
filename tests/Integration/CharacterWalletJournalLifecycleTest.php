@@ -8,7 +8,7 @@ use Seatplus\Eveapi\Models\Wallet\WalletJournal;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
-uses(TestCase::class);
+
 uses(MockRetrieveEsiDataAction::class);
 
 beforeEach(function () {

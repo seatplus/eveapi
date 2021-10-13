@@ -18,7 +18,7 @@ use Seatplus\Eveapi\Models\Universe\System;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
-uses(TestCase::class);
+
 uses(MockRetrieveEsiDataAction::class);
 
 test('universe station creation creates event', function () {

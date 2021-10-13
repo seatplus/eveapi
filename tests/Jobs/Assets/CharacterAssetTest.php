@@ -7,7 +7,7 @@ use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
-uses(TestCase::class);
+
 uses(MockRetrieveEsiDataAction::class);
 
 beforeEach(function () {

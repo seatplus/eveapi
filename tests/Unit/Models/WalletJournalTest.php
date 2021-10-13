@@ -6,7 +6,7 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Wallet\WalletJournal;
 use Seatplus\Eveapi\Tests\TestCase;
 
-uses(TestCase::class);
+
 
 test('character has wallet journal test', function () {
     expect($this->test_character->wallet_journals)->toHaveCount(0);

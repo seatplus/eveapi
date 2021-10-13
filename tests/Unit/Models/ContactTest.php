@@ -11,7 +11,7 @@ use Seatplus\Eveapi\Models\Contacts\Label;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Tests\TestCase;
 
-uses(TestCase::class);
+
 
 test('character has contact test', function () {
     expect($this->test_character->contacts)->toHaveCount(0);

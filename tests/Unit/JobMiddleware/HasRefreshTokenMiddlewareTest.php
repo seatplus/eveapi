@@ -4,7 +4,7 @@ use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Tests\TestCase;
 
-uses(TestCase::class);
+
 
 beforeEach(function () {
     $this->middleware = new HasRefreshTokenMiddleware();

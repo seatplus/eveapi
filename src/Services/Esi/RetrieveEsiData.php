@@ -55,8 +55,7 @@ class RetrieveEsiData
             }
 
             // retrieve up-to-date token
-            $refresh_token = $this->request->refresh_token;
-            $refresh_token = $refresh_token->fresh();
+            $refresh_token = $this->request->refresh_token->refresh();
 
             $authentication = new EsiAuthentication([
                 'refresh_token' => $refresh_token->refresh_token,
@@ -109,6 +108,14 @@ class RetrieveEsiData
         $this->updateRefreshToken();
 
         return $result;
+    }
+
+    /**
+     * @param EsiRequestContainer $request
+     */
+    public function setRequest(EsiRequestContainer $request): void
+    {
+        $this->request = $request;
     }
 
     private function buildClient()
@@ -198,11 +205,4 @@ class RetrieveEsiData
         }
     }
 
-    /**
-     * @param EsiRequestContainer $request
-     */
-    public function setRequest(EsiRequestContainer $request): void
-    {
-        $this->request = $request;
-    }
 }

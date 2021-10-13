@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Esi;
 
+use Illuminate\Queue\InteractsWithQueue;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
@@ -35,11 +36,16 @@ use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
 {
     use RateLimitsEsiCalls;
+    use InteractsWithQueue;
+
     /**
      * @var \Seatplus\Eveapi\Containers\EsiRequestContainer|null
      */
     private $esi_request_container;
 
+    /**
+     * @throws RequestFailedException
+     */
     public function retrieve(?int $page = null): EsiResponse
     {
         $this->builldEsiRequestContainer($page);
@@ -50,6 +56,8 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
             if ($exception->getMessage() === 'Forbidden') {
                 $this->fail($exception);
             }
+
+            report($exception);
 
             throw $exception;
         }

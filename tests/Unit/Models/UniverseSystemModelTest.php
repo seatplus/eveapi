@@ -7,7 +7,7 @@ use Seatplus\Eveapi\Models\Universe\Structure;
 use Seatplus\Eveapi\Models\Universe\System;
 use Seatplus\Eveapi\Tests\TestCase;
 
-uses(TestCase::class);
+
 
 beforeEach(function () {
 });
