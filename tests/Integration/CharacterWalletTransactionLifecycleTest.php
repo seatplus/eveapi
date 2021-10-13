@@ -12,9 +12,6 @@ use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 use Seatplus\Eveapi\Services\Facade\RetrieveEsiData;
-use Seatplus\Eveapi\Tests\TestCase;
-
-
 
 beforeEach(function () {
     // Prevent any auto dispatching of jobs

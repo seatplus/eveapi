@@ -3,9 +3,6 @@
 
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Recruitment\Enlistments;
-use Seatplus\Eveapi\Tests\TestCase;
-
-
 
 test('has corporation relationship', function () {
     $enlistment = Enlistments::create([

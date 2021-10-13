@@ -114,6 +114,5 @@ class ResolveUniverseStructureByIdJob extends NewEsiBase implements HasPathValue
         $exception instanceof MaxAttemptsExceededException
             ? $this->delete()
             : throw $exception;
-
     }
 }

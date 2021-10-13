@@ -5,9 +5,6 @@ use Seatplus\Eveapi\Models\Universe\Constellation;
 use Seatplus\Eveapi\Models\Universe\Region;
 use Seatplus\Eveapi\Models\Universe\Structure;
 use Seatplus\Eveapi\Models\Universe\System;
-use Seatplus\Eveapi\Tests\TestCase;
-
-
 
 beforeEach(function () {
 });

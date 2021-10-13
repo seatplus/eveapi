@@ -33,9 +33,6 @@ use Seatplus\Eveapi\Jobs\Wallet\CharacterBalanceJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletJournalJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
 use Seatplus\Eveapi\Models\RefreshToken;
-use Seatplus\Eveapi\Tests\TestCase;
-
-
 
 it('dispatches character info', function () {
     Bus::fake();
