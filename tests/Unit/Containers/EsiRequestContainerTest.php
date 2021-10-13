@@ -2,8 +2,6 @@
 
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
 use Seatplus\Eveapi\Models\RefreshToken;
-use Seatplus\Eveapi\Tests\TestCase;
-
 
 test('setRequestBody method', function () {
     $esi_request = new EsiRequestContainer([

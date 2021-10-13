@@ -5,9 +5,6 @@ use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Mail\Mail;
 use Seatplus\Eveapi\Models\Mail\MailRecipients;
-use Seatplus\Eveapi\Tests\TestCase;
-
-
 
 test('character has mails test', function () {
     expect($this->test_character->mails)->toHaveCount(0);

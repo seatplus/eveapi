@@ -47,8 +47,7 @@ uses(\Seatplus\Eveapi\Tests\TestCase::class)->in('Unit', 'Integration', 'Jobs');
 
 function faker()
 {
-   return Factory::create();
-
+    return Factory::create();
 }
 
 function mockRetrieveEsiDataAction(array $body)

@@ -8,9 +8,6 @@ use Seatplus\Eveapi\Jobs\Contacts\CharacterContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\CharacterContactLabelJob;
 use Seatplus\Eveapi\Jobs\Contacts\CorporationContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\CorporationContactLabelJob;
-use Seatplus\Eveapi\Tests\TestCase;
-
-
 
 test('alliance contact job', function () {
     Queue::fake();

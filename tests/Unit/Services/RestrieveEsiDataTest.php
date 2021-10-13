@@ -3,7 +3,6 @@
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
 use Seatplus\Eveapi\Services\Esi\RetrieveEsiData;
 
-
 test('it returns client for an unauthenticated request', function () {
     $retrieve = new RetrieveEsiData();
 
@@ -18,7 +17,6 @@ test('it returns client for an unauthenticated request', function () {
 });
 
 test('it returns client for an authenticated request', function () {
-
     $esi_array = [
         'eve_client_id' => faker()->sha256,
         'eve_client_secret' => faker()->sha256,

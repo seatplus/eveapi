@@ -6,9 +6,7 @@ use Seatplus\Eveapi\Events\UniverseStationCreated;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseStationByIdJob;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
-use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
-
 
 uses(MockRetrieveEsiDataAction::class);
 
