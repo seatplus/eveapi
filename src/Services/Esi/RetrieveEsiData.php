@@ -120,6 +120,8 @@ class RetrieveEsiData
 
     private function buildClient()
     {
+        unset($this->client);
+
         $this->getClient()->setVersion($this->request->version);
         $this->getClient()->setRequestBody($this->request->request_body);
         $this->getClient()->setQueryParameters($this->request->query_parameters);
