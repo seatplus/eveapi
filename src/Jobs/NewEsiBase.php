@@ -68,6 +68,8 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
 
     protected string $jobType = '';
 
+    public bool $failOnTimeout = true;
+
     /**
      * The number of seconds after which the job's unique lock will be released.
      *
