@@ -42,14 +42,14 @@ class CharacterRoleJob extends NewEsiBase implements HasPathValuesInterface, Has
     use HasPathValues;
     use HasRequiredScopes;
 
-    public function __construct(?JobContainer $job_container = null)
+    public function __construct(JobContainer $job_container = null)
     {
-        $this->setJobType('public');
+        $this->setJobType('character');
         parent::__construct($job_container);
 
         $this->setMethod('get');
         $this->setEndpoint('/characters/{character_id}/roles/');
-        $this->setVersion('v2');
+        $this->setVersion('v3');
 
         $this->setRequiredScope('esi-characters.read_corporation_roles.v1');
 
