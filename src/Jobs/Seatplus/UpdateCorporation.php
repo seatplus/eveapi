@@ -54,7 +54,6 @@ class UpdateCorporation implements ShouldQueue
     {
         if ($this->corporation_id) {
             $this->dispatchUpdate($this->corporation_id, 'high');
-
         } else {
             RefreshToken::with('corporation', 'character.roles')
                 ->cursor()

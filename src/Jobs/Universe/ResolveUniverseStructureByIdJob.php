@@ -26,7 +26,6 @@
 
 namespace Seatplus\Eveapi\Jobs\Universe;
 
-use Illuminate\Queue\MaxAttemptsExceededException;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
@@ -105,5 +104,4 @@ class ResolveUniverseStructureByIdJob extends NewEsiBase implements HasPathValue
             'locatable_type' => Structure::class,
         ]);
     }
-
 }
