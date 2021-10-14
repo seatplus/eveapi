@@ -12,9 +12,7 @@ use Seatplus\Eveapi\Models\Killmails\KillmailAttacker;
 use Seatplus\Eveapi\Models\Killmails\KillmailItem;
 use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Services\Facade\RetrieveEsiData;
-use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
-
 
 uses(MockRetrieveEsiDataAction::class);
 

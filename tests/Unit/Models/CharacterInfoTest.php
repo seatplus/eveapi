@@ -13,9 +13,6 @@ use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Wallet\Balance;
-use Seatplus\Eveapi\Tests\TestCase;
-
-
 
 beforeEach(function () {
     Queue::fake();

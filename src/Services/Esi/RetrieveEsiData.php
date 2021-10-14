@@ -178,7 +178,7 @@ class RetrieveEsiData
 
         // Sometimes CCP does funny stuff, such as: issue tokens that are valid for to long.
         // invalidate the token
-        if($exception->getOriginalException()->getCode() === 403 && $exception->getErrorMessage() === 'token expiry is too far in the future') {
+        if ($exception->getOriginalException()->getCode() === 403 && $exception->getErrorMessage() === 'token expiry is too far in the future') {
             if (! is_null($this->request->refresh_token)) {
                 $this->request->refresh_token->expires_on = carbon()->subMinutes(10);
                 $this->request->refresh_token->save();
@@ -195,18 +195,15 @@ class RetrieveEsiData
             'invalid_grant: Invalid refresh token. Unable to migrate grant.',
             'invalid_grant: Invalid refresh token. Token missing/expired.',
         ])) {
-
-
             if (! is_null($this->request->refresh_token)) {
-
                 $refresh_token = $this->request->refresh_token->refresh();
 
                 // Try compensating for race conditions, only delete invalid tokens that have not been updated recently
-                if(carbon($refresh_token->updated_at)->isBefore(carbon()->subMinutes()))
+                if (carbon($refresh_token->updated_at)->isBefore(carbon()->subMinutes())) {
                     // Remove the invalid token
                     $refresh_token->delete();
+                }
             }
         }
     }
-
 }
