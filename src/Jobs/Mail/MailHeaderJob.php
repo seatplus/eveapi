@@ -94,7 +94,7 @@ class MailHeaderJob extends NewEsiBase implements HasPathValuesInterface, HasReq
                 'subject' => data_get($mail, 'subject'),
                 'from' => data_get($mail, 'from'),
                 'timestamp' => carbon(data_get($mail, 'timestamp')),
-                'is_read' => data_get($mail, 'is_read'),
+                'is_read' => data_get($mail, 'is_read', false),
             ])
             ->chunk(1000)
             ->each(fn (Collection $chunk) => Mail::upsert($chunk->toArray(), 'id'));
