@@ -4,9 +4,6 @@
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Contracts\Contract;
-use Seatplus\Eveapi\Tests\TestCase;
-
-
 
 test('observer dispatches nothing by default upon creation with factory', function () {
     $fake = Queue::fake();

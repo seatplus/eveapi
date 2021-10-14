@@ -82,7 +82,6 @@ class CharacterContractsJob extends NewEsiBase implements HasPathValuesInterface
 
     public function handle(): void
     {
-
         $page = 1;
 
         while (true) {

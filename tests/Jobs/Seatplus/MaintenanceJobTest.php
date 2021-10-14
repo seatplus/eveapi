@@ -49,9 +49,6 @@ use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\System;
 use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
-use Seatplus\Eveapi\Tests\TestCase;
-
-
 
 beforeEach(function () {
     //$this->job = new MaintenanceJob;

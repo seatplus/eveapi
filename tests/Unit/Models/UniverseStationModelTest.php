@@ -3,9 +3,6 @@
 
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\System;
-use Seatplus\Eveapi\Tests\TestCase;
-
-
 
 test('character has corporation relation test', function () {
     $station = Station::factory()->create();

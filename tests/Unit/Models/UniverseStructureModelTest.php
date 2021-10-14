@@ -6,9 +6,6 @@ use Seatplus\Eveapi\Events\UniverseStructureCreated;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Structure;
 use Seatplus\Eveapi\Models\Universe\System;
-use Seatplus\Eveapi\Tests\TestCase;
-
-
 
 test('has system relationship', function () {
     Event::fake([

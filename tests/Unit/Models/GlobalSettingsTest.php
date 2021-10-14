@@ -1,7 +1,6 @@
 <?php
 
 
-use Seatplus\Eveapi\Tests\TestCase;
 
 
 

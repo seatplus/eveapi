@@ -9,9 +9,6 @@ use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Models\SsoScopes;
 use Seatplus\Eveapi\Models\Wallet\Balance;
-use Seatplus\Eveapi\Tests\TestCase;
-
-
 
 beforeEach(function () {
     Queue::fake();
