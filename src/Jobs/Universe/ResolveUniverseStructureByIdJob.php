@@ -37,6 +37,7 @@ use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Structure;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
+use Throwable;
 
 class ResolveUniverseStructureByIdJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
@@ -106,11 +107,4 @@ class ResolveUniverseStructureByIdJob extends NewEsiBase implements HasPathValue
         ]);
     }
 
-    public function failed(\Throwable $exception) : void
-    {
-
-        if($exception instanceof MaxAttemptsExceededException) {
-            $this->delete();
-        }
-    }
 }

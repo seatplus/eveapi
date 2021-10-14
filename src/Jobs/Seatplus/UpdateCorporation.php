@@ -53,14 +53,15 @@ class UpdateCorporation implements ShouldQueue
     public function handle()
     {
         if ($this->corporation_id) {
-            return $this->dispatchUpdate($this->corporation_id, 'high');
-        }
+            $this->dispatchUpdate($this->corporation_id, 'high');
 
-        return RefreshToken::with('corporation', 'character.roles')
-            ->cursor()
-            ->map(fn ($token) => $token->corporation->corporation_id)
-            ->unique()
-            ->each(fn ($corporation_id) => $this->dispatchUpdate($corporation_id));
+        } else {
+            RefreshToken::with('corporation', 'character.roles')
+                ->cursor()
+                ->map(fn ($token) => $token->corporation->corporation_id)
+                ->unique()
+                ->each(fn ($corporation_id) => $this->dispatchUpdate($corporation_id));
+        }
     }
 
     private function execute(JobContainer $job_container, int $corporation_id)
