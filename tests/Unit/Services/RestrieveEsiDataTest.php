@@ -44,4 +44,4 @@ test('it returns client for an authenticated request', function () {
         ->toBeInstanceOf(\Seatplus\EsiClient\DataTransferObjects\EsiAuthentication::class)
         ->client_id->toBeString()->toBe($esi_array['eve_client_id'])
         ->secret->toBeString()->toBe($esi_array['eve_client_secret']);
-})->only();
+});
