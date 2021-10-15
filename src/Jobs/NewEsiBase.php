@@ -71,13 +71,20 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
     protected string $jobType = '';
 
     /**
-     * Determine the time at which the job should timeout.
+     * The number of times the job may be attempted.
      *
-     * @return \DateTime
+     * @var int
      */
-    public function retryUntil()
+    public $tries = 3;
+
+    /**
+     * Calculate the number of seconds to wait before retrying the job.
+     *
+     * @return array
+     */
+    public function backoff()
     {
-        return now()->addMinutes($this->getMinutesUntilTimeout());
+        return [1*60, 5*60, 10*60];
     }
 
     /**
@@ -132,6 +139,7 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
      */
     abstract public function handle(): void;
 
+    // TODO Remove methode and setJobType
     final public function getMinutesUntilTimeout(): int
     {
         $type = isset($this->jobType) ? $this->getJobType() : '';
