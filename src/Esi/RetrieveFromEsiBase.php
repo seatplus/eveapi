@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Esi;
 
+use Illuminate\Queue\InteractsWithQueue;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
@@ -35,11 +36,13 @@ use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
 {
     use RateLimitsEsiCalls;
-    /**
-     * @var \Seatplus\Eveapi\Containers\EsiRequestContainer|null
-     */
-    private $esi_request_container;
+    use InteractsWithQueue;
 
+    private EsiRequestContainer $esi_request_container;
+
+    /**
+     * @throws RequestFailedException
+     */
     public function retrieve(?int $page = null): EsiResponse
     {
         $this->builldEsiRequestContainer($page);
@@ -47,11 +50,17 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
         try {
             return RetrieveEsiData::execute($this->esi_request_container);
         } catch (RequestFailedException $exception) {
-            if ($exception->getMessage() === 'Forbidden') {
-                $this->fail($exception);
+            if ($exception->getOriginalException()?->getResponse()?->getReasonPhrase() === 'Forbidden') {
+                $this->esi_request_container->endpoint === '/universe/structures/{structure_id}/'
+                  ? $this->delete()
+                  : $this->fail($exception);
             }
 
-            throw $exception;
+            throw $exception->getErrorMessage() ? $exception : new \Exception(
+                $exception->getOriginalException()?->getResponse()?->getReasonPhrase(),
+                $exception->getOriginalException()->getCode(),
+                $exception->getOriginalException()->getPrevious()
+            );
         }
     }
 

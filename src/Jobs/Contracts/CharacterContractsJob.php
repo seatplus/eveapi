@@ -66,8 +66,7 @@ class CharacterContractsJob extends NewEsiBase implements HasPathValuesInterface
             new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
             (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by($this->uniqueId())
-                ->when(fn () => ! $this->isEsiRateLimited())
+                ->by('esiratelimit')
                 ->backoff(5),
         ];
     }
@@ -83,12 +82,6 @@ class CharacterContractsJob extends NewEsiBase implements HasPathValuesInterface
 
     public function handle(): void
     {
-        if ($this->batching() && $this->batch()->cancelled()) {
-            // Determine if the batch has been cancelled...
-
-            return;
-        }
-
         $page = 1;
 
         while (true) {

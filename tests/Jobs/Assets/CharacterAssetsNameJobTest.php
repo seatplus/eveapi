@@ -10,10 +10,8 @@ use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Category;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Type;
-use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
-uses(TestCase::class);
 uses(MockRetrieveEsiDataAction::class);
 
 beforeEach(function () {

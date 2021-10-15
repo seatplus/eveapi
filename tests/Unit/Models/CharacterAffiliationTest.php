@@ -6,9 +6,6 @@ use Seatplus\Eveapi\Jobs\Alliances\AllianceInfoJob;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationInfoJob;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Observers\CharacterAffiliationObserver;
-use Seatplus\Eveapi\Tests\TestCase;
-
-uses(TestCase::class);
 
 test('upon creation dispatch corp job', function () {
     Queue::fake();

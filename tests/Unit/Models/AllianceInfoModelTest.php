@@ -5,9 +5,6 @@ use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\SsoScopes;
-use Seatplus\Eveapi\Tests\TestCase;
-
-uses(TestCase::class);
 
 it('has morphable sso scope', function () {
     $alliance_info = AllianceInfo::factory()->create();

@@ -4,9 +4,6 @@
 use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Type;
-use Seatplus\Eveapi\Tests\TestCase;
-
-uses(TestCase::class);
 
 beforeEach(function () {
     $this->type = Event::fakeFor(fn () => Type::factory()->create());

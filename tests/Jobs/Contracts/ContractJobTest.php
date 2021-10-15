@@ -6,10 +6,8 @@ use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Contracts\CharacterContractsJob;
 use Seatplus\Eveapi\Models\Contracts\Contract;
-use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
-uses(TestCase::class);
 uses(MockRetrieveEsiDataAction::class);
 
 test('job is being dispatched', function () {

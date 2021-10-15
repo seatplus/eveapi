@@ -1,9 +1,8 @@
 <?php
 
 
-use Seatplus\Eveapi\Tests\TestCase;
 
-uses(TestCase::class);
+
 
 test('set global setting', function () {
     $test_value = 'settingTest';

@@ -59,8 +59,7 @@ class ResolveUniverseSystemBySystemIdJob extends NewEsiBase implements HasPathVa
     {
         return [
             (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by($this->uniqueId())
-                ->when(fn () => ! $this->isEsiRateLimited())
+                ->by('esiratelimit')
                 ->backoff(5),
         ];
     }

@@ -8,10 +8,8 @@ use Seatplus\Eveapi\Jobs\Skills\SkillsJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Skills\Skill;
 use Seatplus\Eveapi\Models\Universe\Type;
-use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
-uses(TestCase::class);
 uses(MockRetrieveEsiDataAction::class);
 
 beforeEach(function () {
