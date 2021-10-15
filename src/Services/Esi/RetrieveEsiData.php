@@ -31,6 +31,7 @@ use Seatplus\EsiClient\Configuration;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiClient\Exceptions\EsiScopeAccessDeniedException;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
 use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
@@ -81,7 +82,7 @@ class RetrieveEsiData
 
     /**
      * @throws RequestFailedException
-     * @throws \Seatplus\EsiClient\Exceptions\EsiScopeAccessDeniedException
+     * @throws EsiScopeAccessDeniedException
      */
     public function execute(EsiRequestContainer $request): EsiResponse
     {
