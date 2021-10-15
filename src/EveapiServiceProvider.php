@@ -27,8 +27,11 @@
 namespace Seatplus\Eveapi;
 
 use Exception;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Queue\Middleware\RateLimitedWithRedis;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Horizon\Horizon;
@@ -102,6 +105,14 @@ class EveapiServiceProvider extends ServiceProvider
 
         // Add commands
         $this->addCommands();
+
+        RateLimiter::for('corporation_batch', fn ($job) => Limit::perHour(1)
+            ->by($job->corporation_id ?? 'corporation_batch')
+        );
+
+        RateLimiter::for('character_batch', fn ($job) => Limit::perHour(1)
+            ->by($job->character_id ?? 'character_batch')
+        );
     }
 
     public function register()

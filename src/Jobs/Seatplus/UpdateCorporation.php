@@ -31,6 +31,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\RateLimitedWithRedis;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Containers\JobContainer;
@@ -46,8 +47,15 @@ class UpdateCorporation implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    public function __construct(private ?int $corporation_id = null)
+    public function __construct(public ?int $corporation_id = null)
     {
+    }
+
+    public function middleware()
+    {
+        return  [
+            new RateLimitedWithRedis('corporation_batch')
+        ];
     }
 
     public function handle()
