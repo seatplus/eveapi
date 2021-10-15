@@ -111,7 +111,9 @@ class EveapiServiceProvider extends ServiceProvider
             ->by($job->corporation_id ?? 'corporation_batch')
         );
 
-        RateLimiter::for('character_batch', fn ($job) => Limit::perHour(1)
+        RateLimiter::for(
+            'character_batch',
+            fn ($job) => Limit::perHour(1)
             ->by($job?->refresh_token?->character_id ?? 'character_batch')
         );
     }
