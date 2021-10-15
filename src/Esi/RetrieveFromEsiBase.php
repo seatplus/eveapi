@@ -38,10 +38,7 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
     use RateLimitsEsiCalls;
     use InteractsWithQueue;
 
-    /**
-     * @var \Seatplus\Eveapi\Containers\EsiRequestContainer|null
-     */
-    private $esi_request_container;
+    private EsiRequestContainer $esi_request_container;
 
     /**
      * @throws RequestFailedException
@@ -53,7 +50,9 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
         try {
             return RetrieveEsiData::execute($this->esi_request_container);
         } catch (RequestFailedException $exception) {
-            if ($exception->getMessage() === 'Forbidden') {
+
+
+            if ($exception?->getOriginalException()?->getResponse()?->getReasonPhrase()  === 'Forbidden') {
 
               $this->esi_request_container->endpoint === '/universe/structures/{structure_id}/'
                   ? $this->delete()
