@@ -32,6 +32,7 @@ use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\MaxAttemptsExceededException;
 use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\RetrieveFromEsiBase;
@@ -42,6 +43,7 @@ use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\MinutesUntilNextSchedule;
 use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
+use Throwable;
 
 abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, NewBaseJobInterface, ShouldBeUnique
 {
@@ -276,5 +278,24 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
     public function getAllianceId(): ?int
     {
         return $this->alliance_id;
+    }
+
+    /**
+     * Handle a job failure.
+     *
+     * @param  \Throwable  $exception
+     * @return void
+     */
+    public function failed(Throwable $exception)
+    {
+        if ($exception instanceof MaxAttemptsExceededException) {
+
+            return;
+        }
+
+        if ($exception->getOriginalException()?->getResponse()?->getReasonPhrase() === 'Forbidden') {
+
+            $this->fail($exception);
+        }
     }
 }
