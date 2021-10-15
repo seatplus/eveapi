@@ -110,11 +110,10 @@ class ResolveUniverseStructureByIdJob extends NewEsiBase implements HasPathValue
 
     public function failed($exception)
     {
-
         if ($exception instanceof MaxAttemptsExceededException) {
-
             $this->delete();
             logger()->info('deleted job because MaxAttemptsException');
+
             return;
         }
 
@@ -122,10 +121,10 @@ class ResolveUniverseStructureByIdJob extends NewEsiBase implements HasPathValue
         if ($exception?->getOriginalException()?->getResponse()?->getReasonPhrase() === 'Forbidden') {
             logger()->info('Received Forbidden, going to delete the job');
             $this->job->delete();
+
             return;
         }
 
         $this->delete();
     }
-
 }

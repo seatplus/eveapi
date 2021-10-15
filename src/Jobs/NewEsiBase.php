@@ -289,12 +289,10 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
     public function failed(Throwable $exception)
     {
         if ($exception instanceof MaxAttemptsExceededException) {
-
             return;
         }
 
         if ($exception->getOriginalException()?->getResponse()?->getReasonPhrase() === 'Forbidden') {
-
             $this->fail($exception);
         }
     }

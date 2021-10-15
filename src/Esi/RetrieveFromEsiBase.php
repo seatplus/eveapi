@@ -50,11 +50,8 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
         try {
             return RetrieveEsiData::execute($this->esi_request_container);
         } catch (RequestFailedException $exception) {
-
-
-            if ($exception?->getOriginalException()?->getResponse()?->getReasonPhrase()  === 'Forbidden') {
-
-              $this->esi_request_container->endpoint === '/universe/structures/{structure_id}/'
+            if ($exception?->getOriginalException()?->getResponse()?->getReasonPhrase() === 'Forbidden') {
+                $this->esi_request_container->endpoint === '/universe/structures/{structure_id}/'
                   ? $this->delete()
                   : $this->fail($exception);
             }
