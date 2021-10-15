@@ -84,7 +84,7 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
      */
     public function backoff()
     {
-        return [1*60, 5*60, 10*60];
+        return [1 * 60, 5 * 60, 10 * 60];
     }
 
     /**
