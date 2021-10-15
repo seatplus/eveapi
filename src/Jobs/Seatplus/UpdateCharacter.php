@@ -66,7 +66,7 @@ class UpdateCharacter implements ShouldQueue
     public function middleware()
     {
         return  [
-            new RateLimitedWithRedis('character_batch'),
+            (new RateLimitedWithRedis('character_batch'))->dontRelease(),
         ];
     }
 
