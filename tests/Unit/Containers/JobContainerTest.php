@@ -3,9 +3,6 @@
 use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Models\RefreshToken;
-use Seatplus\Eveapi\Tests\TestCase;
-
-uses(TestCase::class);
 
 test('can set propperty test', function () {
     $job = new JobContainer([

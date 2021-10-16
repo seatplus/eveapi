@@ -6,10 +6,8 @@ use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\Jobs\Corporation\CorporationMemberTrackingAction;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
-use Seatplus\Eveapi\Tests\TestCase;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
-uses(TestCase::class);
 uses(MockRetrieveEsiDataAction::class);
 
 /**

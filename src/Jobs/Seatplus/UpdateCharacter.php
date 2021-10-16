@@ -32,6 +32,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\RateLimitedWithRedis;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Containers\JobContainer;
@@ -58,8 +59,15 @@ class UpdateCharacter implements ShouldQueue
         /**
          * @var \Seatplus\Eveapi\Models\RefreshToken|null
          */
-        private ?RefreshToken $refresh_token = null
+        public ?RefreshToken $refresh_token = null
     ) {
+    }
+
+    public function middleware()
+    {
+        return  [
+            (new RateLimitedWithRedis('character_batch'))->dontRelease(),
+        ];
     }
 
     public function handle()

@@ -55,7 +55,7 @@ class CharacterAffiliationJob extends NewEsiBase implements HasRequestBodyInterf
             'affiliation',
         ];
 
-        return $this->character_id ? array_merge($tags, ['character_id:' . $this->character_id]) : $tags;
+        return $this->getCharacterId() ? array_merge($tags, ['character_id:' . $this->getCharacterId()]) : $tags;
     }
 
     /**
@@ -67,8 +67,7 @@ class CharacterAffiliationJob extends NewEsiBase implements HasRequestBodyInterf
     {
         return [
             (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by($this->uniqueId())
-                ->when(fn () => ! $this->isEsiRateLimited())
+                ->by('esiratelimit')
                 ->backoff(5),
         ];
     }

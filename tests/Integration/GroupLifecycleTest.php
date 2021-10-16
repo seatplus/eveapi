@@ -8,9 +8,6 @@ use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Universe\Category;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Type;
-use Seatplus\Eveapi\Tests\TestCase;
-
-uses(TestCase::class);
 
 beforeEach(function () {
     Queue::fake();

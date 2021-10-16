@@ -76,8 +76,7 @@ class CharacterAssetsNameJob extends NewEsiBase implements HasPathValuesInterfac
             new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
             (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by($this->uniqueId())
-                ->when(fn () => ! $this->isEsiRateLimited())
+                ->by('esiratelimit')
                 ->backoff(5),
         ];
     }
@@ -101,10 +100,6 @@ class CharacterAssetsNameJob extends NewEsiBase implements HasPathValuesInterfac
     public function handle(): void
     {
         $responses = $this->retrieve();
-
-        if ($responses->isCachedLoad()) {
-            return;
-        }
 
         collect($responses)->each(function ($response) {
 

@@ -3,9 +3,6 @@
 
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Character\CharacterRole;
-use Seatplus\Eveapi\Tests\TestCase;
-
-uses(TestCase::class);
 
 test('character has character roles relation test', function () {
     expect($this->test_character->roles)->toBeInstanceOf(CharacterRole::class);

@@ -32,6 +32,7 @@ use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\MaxAttemptsExceededException;
 use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\RetrieveFromEsiBase;
@@ -42,6 +43,7 @@ use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\MinutesUntilNextSchedule;
 use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
+use Throwable;
 
 abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, NewBaseJobInterface, ShouldBeUnique
 {
@@ -69,13 +71,20 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
     protected string $jobType = '';
 
     /**
-     * Determine the time at which the job should timeout.
+     * The number of times the job may be attempted.
      *
-     * @return \DateTime
+     * @var int
      */
-    public function retryUntil()
+    public $tries = 3;
+
+    /**
+     * Calculate the number of seconds to wait before retrying the job.
+     *
+     * @return array
+     */
+    public function backoff()
     {
-        return now()->addMinutes($this->getMinutesUntilTimeout());
+        return [1 * 60, 5 * 60, 10 * 60];
     }
 
     /**
@@ -130,6 +139,7 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
      */
     abstract public function handle(): void;
 
+    // TODO Remove methode and setJobType
     final public function getMinutesUntilTimeout(): int
     {
         $type = isset($this->jobType) ? $this->getJobType() : '';
@@ -276,5 +286,22 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
     public function getAllianceId(): ?int
     {
         return $this->alliance_id;
+    }
+
+    /**
+     * Handle a job failure.
+     *
+     * @param  \Throwable  $exception
+     * @return void
+     */
+    public function failed(Throwable $exception)
+    {
+        if ($exception instanceof MaxAttemptsExceededException) {
+            return;
+        }
+
+        if ($exception->getOriginalException()?->getResponse()?->getReasonPhrase() === 'Forbidden') {
+            $this->fail($exception);
+        }
     }
 }

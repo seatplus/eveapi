@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Universe;
 
+use Illuminate\Queue\MaxAttemptsExceededException;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
@@ -41,6 +42,8 @@ class ResolveUniverseStructureByIdJob extends NewEsiBase implements HasPathValue
 {
     use HasPathValues;
     use HasRequiredScopes;
+
+    public int $maxExceptions = 1;
 
     public function __construct(
         RefreshToken $refresh_token,
@@ -75,8 +78,7 @@ class ResolveUniverseStructureByIdJob extends NewEsiBase implements HasPathValue
             new HasRequiredScopeMiddleware,
             // This is very likely throwing errors if user is not on acl. In order to not getting blocked by esi rate limit only use half of allowed errors
             (new ThrottlesExceptionsWithRedis($this->getRatelimit() / 2, 5))
-                 ->by($this->uniqueId())
-                 ->when(fn () => ! $this->isEsiRateLimited())
+                 ->by('esiratelimit')
                  ->backoff(5),
         ];
     }
@@ -104,5 +106,25 @@ class ResolveUniverseStructureByIdJob extends NewEsiBase implements HasPathValue
             'locatable_id' => $this->location_id,
             'locatable_type' => Structure::class,
         ]);
+    }
+
+    public function failed($exception)
+    {
+        if ($exception instanceof MaxAttemptsExceededException) {
+            $this->delete();
+            logger()->info('deleted job because MaxAttemptsException');
+
+            return;
+        }
+
+
+        if ($exception?->getOriginalException()?->getResponse()?->getReasonPhrase() === 'Forbidden') {
+            logger()->info('Received Forbidden, going to delete the job');
+            $this->job->delete();
+
+            return;
+        }
+
+        $this->delete();
     }
 }

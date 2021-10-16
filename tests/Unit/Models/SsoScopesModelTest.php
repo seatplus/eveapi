@@ -3,9 +3,6 @@
 
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\SsoScopes;
-use Seatplus\Eveapi\Tests\TestCase;
-
-uses(TestCase::class);
 
 test('one can set an alliance relationship from sso scope model', function () {
     $alliance_info = AllianceInfo::factory()->create();

@@ -7,9 +7,6 @@ use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
-use Seatplus\Eveapi\Tests\TestCase;
-
-uses(TestCase::class);
 
 beforeEach(function () {
     Queue::fake();
