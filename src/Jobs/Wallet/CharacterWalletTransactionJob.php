@@ -134,6 +134,6 @@ class CharacterWalletTransactionJob extends NewEsiBase implements HasPathValuesI
 
         // see https://divinglaravel.com/avoiding-memory-leaks-when-running-laravel-queue-workers
         // This job is very memory consuming hence avoiding memory leaks, the worker should restart
-        app('queue.worker')->shouldQuit  = 1;
+        app('queue.worker')->shouldQuit = 1;
     }
 }

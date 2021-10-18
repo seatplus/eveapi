@@ -173,7 +173,7 @@ class EveapiServiceProvider extends ServiceProvider
                     'block_for' => 5,
                     'timeout' => 120, // 2 minutes
                     'maxTime' => 3600,
-                    'maxJobs' => 1000
+                    'maxJobs' => 1000,
                 ],
             ],
             'production' => [
@@ -186,7 +186,7 @@ class EveapiServiceProvider extends ServiceProvider
                     'tries' => 1,
                     'timeout' => 900, // 15 minutes
                     'maxTime' => 3600,
-                    'maxJobs' => 1000
+                    'maxJobs' => 1000,
                 ],
             ],
         ];
