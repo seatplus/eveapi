@@ -172,17 +172,21 @@ class EveapiServiceProvider extends ServiceProvider
                     'processes' => (int) env(self::QUEUE_BALANCING_WORKERS, 4),
                     'block_for' => 5,
                     'timeout' => 120, // 2 minutes
+                    'maxTime' => 3600,
+                    'maxJobs' => 1000
                 ],
             ],
             'production' => [
                 'seatplus-workers' => [
                     'connection' => 'redis',
-                    'queue' => ['high', 'default'],
+                    'queue' => ['high', 'medium', 'low', 'default'],
                     'balance' => 'auto',
                     'minProcesses' => 1,
                     'maxProcesses' => (int) env(self::QUEUE_BALANCING_WORKERS, 4),
                     'tries' => 1,
                     'timeout' => 900, // 15 minutes
+                    'maxTime' => 3600,
+                    'maxJobs' => 1000
                 ],
             ],
         ];
