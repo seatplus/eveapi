@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Assets;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
@@ -45,9 +46,15 @@ class CharacterAssetsNameJob extends NewEsiBase implements HasPathValuesInterfac
     use HasPathValues;
     use HasRequestBody;
 
+    const CELESTIAL_CATEGORY = 2;
+    const SHIP_CATEGORY = 6;
+    const DEPLOYABLE_CATEGORY = 22;
+    const STARBASE_CATEGORY = 23;
+    const ORBITALS_CATEGORY = 46;
+    const STRUCTURE_CATEGORY = 65;
+
     public function __construct(
-        JobContainer $job_container,
-        private array $item_ids
+        JobContainer $job_container
     ) {
         $this->setJobType('character');
         parent::__construct($job_container);
@@ -59,10 +66,8 @@ class CharacterAssetsNameJob extends NewEsiBase implements HasPathValuesInterfac
         $this->setRequiredScope('esi-assets.read_assets.v1');
 
         $this->setPathValues([
-            'character_id' => $this->refresh_token->character_id,
+            'character_id' => $this->getCharacterId(),
         ]);
-
-        $this->setRequestBody($this->item_ids);
     }
 
     /**
@@ -88,7 +93,6 @@ class CharacterAssetsNameJob extends NewEsiBase implements HasPathValuesInterfac
             'character_id: ' . $this->character_id,
             'assets',
             'name',
-            sprintf('item_ids: %s', collect($this->item_ids)->implode(', ')),
         ];
     }
 
@@ -99,21 +103,45 @@ class CharacterAssetsNameJob extends NewEsiBase implements HasPathValuesInterfac
      */
     public function handle(): void
     {
-        $responses = $this->retrieve();
 
-        collect($responses)->each(function ($response) {
+        if ($this->batching() && $this->batch()->cancelled()) {
+            // Determine if the batch has been cancelled...
 
-            // "None" seems to indicate that no name is set.
-            if ($response->name === 'None') {
-                return;
-            }
+            return;
+        }
 
-            //cache items for 1 hrs
-            cache()->store('file')->put($response->item_id, $response->name, 3600);
+        Asset::query()
+            ->with('type.group')
+            ->whereHas('type.group', function (Builder $query) {
+                // Only Celestials, Ships, Deployable, Starbases, Orbitals and Structures might be named
+                $query->whereIn('category_id', [
+                    self::CELESTIAL_CATEGORY, self::SHIP_CATEGORY, self::DEPLOYABLE_CATEGORY,
+                    self::STARBASE_CATEGORY, self::ORBITALS_CATEGORY, self::STRUCTURE_CATEGORY,
+                ]);
+            })
+            ->where('assetable_id', $this->getCharacterId())
+            ->select('item_id')
+            ->where('is_singleton', true)
+            ->pluck('item_id')
+            ->chunk(1000)->each(function ($item_ids) {
+                $clean_item_ids = $item_ids->flatten()->toArray();
 
-            Asset::where('assetable_id', $this->refresh_token->character_id)
-                ->where('item_id', $response->item_id)
-                ->update(['name' => $response->name]);
-        });
+                $this->setRequestBody($clean_item_ids);
+
+                $response = $this->retrieve();
+
+                collect($response)->each(function ($response) {
+
+                    // "None" seems to indicate that no name is set.
+                    if ($response->name === 'None') {
+                        return;
+                    }
+
+                    Asset::where('assetable_id', $this->refresh_token->character_id)
+                        ->where('item_id', $response->item_id)
+                        ->update(['name' => $response->name]);
+                });
+            });
+
     }
 }

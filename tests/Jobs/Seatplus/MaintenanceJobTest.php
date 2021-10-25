@@ -4,7 +4,7 @@
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameDispatchJob;
+use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingAssetsNames;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingBodysFromMails;
@@ -240,7 +240,7 @@ it('dispatch resolve missing assets name jog', function () {
     $mock->shouldReceive('batch->add')
         ->once()
         ->with([
-            new CharacterAssetsNameDispatchJob($job_container),
+            new CharacterAssetsNameJob($job_container),
         ]);
 
     $mock->handle();
