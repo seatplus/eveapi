@@ -79,7 +79,6 @@ it('updates a name', function () {
         'item_id' => $asset->item_id,
         'name' => $this->name_to_create,
     ]);
-
 });
 
 /**

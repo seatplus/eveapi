@@ -103,7 +103,6 @@ class CharacterAssetsNameJob extends NewEsiBase implements HasPathValuesInterfac
      */
     public function handle(): void
     {
-
         if ($this->batching() && $this->batch()->cancelled()) {
             // Determine if the batch has been cancelled...
 
@@ -142,6 +141,5 @@ class CharacterAssetsNameJob extends NewEsiBase implements HasPathValuesInterfac
                         ->update(['name' => $response->name]);
                 });
             });
-
     }
 }
