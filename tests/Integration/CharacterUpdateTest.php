@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Testing\Fakes\PendingBatchFake;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameDispatchJob;
+use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob as CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterRoleJob;
 use Seatplus\Eveapi\Jobs\Character\CorporationHistoryJob;
@@ -82,7 +82,7 @@ test('assets hydration job dispatches character assets job', function () {
     $batch->shouldReceive('add')->once()->with([
         [
             new CharacterAssetJob($job_container),
-            new CharacterAssetsNameDispatchJob($job_container),
+            new CharacterAssetsNameJob($job_container),
         ],
     ]);
 

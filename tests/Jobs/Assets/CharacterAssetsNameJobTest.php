@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameDispatchJob;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\RefreshToken;
@@ -72,16 +71,14 @@ it('updates a name', function () {
         ],
     ]);
 
-    CharacterAssetsNameJob::dispatchNow($this->job_container, [$asset->item_id]);
+    (new CharacterAssetsNameJob($this->job_container))->handle();
 
-    //Assert that character asset created has no name
+    //Assert that character asset created has name
     $this->assertDatabaseHas('assets', [
         'assetable_id' => $asset->assetable_id,
         'item_id' => $asset->item_id,
         'name' => $this->name_to_create,
     ]);
-
-    $this->assertNotNull(cache()->store('file')->get($asset->item_id));
 });
 
 /**
@@ -111,11 +108,7 @@ it('does not update for wrong category', function () {
 
     $this->assertRetrieveEsiDataIsNotCalled();
 
-    Queue::fake();
 
-    CharacterAssetsNameDispatchJob::dispatchNow($this->job_container);
-
-    Queue::assertNotPushed(CharacterAssetsNameJob::class);
 
     //Assert that character asset created has no name
     $this->assertDatabaseMissing('assets', [
@@ -151,11 +144,6 @@ it('does not run if category id is out of scope', function () {
 
     $this->assertRetrieveEsiDataIsNotCalled();
 
-    Queue::fake();
-
-    CharacterAssetsNameDispatchJob::dispatchNow($this->job_container);
-
-    Queue::assertNotPushed(CharacterAssetsNameJob::class);
 
     //Assert that character asset created has no name
     $this->assertDatabaseMissing('assets', [
@@ -190,12 +178,6 @@ it('does not run if group is missing', function () {
     $refresh_token = RefreshToken::factory()->make(['character_id' => $asset->assetable_id]);
 
     $this->assertRetrieveEsiDataIsNotCalled();
-
-    Queue::fake();
-
-    CharacterAssetsNameDispatchJob::dispatchNow($this->job_container);
-
-    Queue::assertNotPushed(CharacterAssetsNameJob::class);
 
     //Assert that character asset created has no name
     $this->assertDatabaseMissing('assets', [
