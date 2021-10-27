@@ -28,6 +28,7 @@ namespace Seatplus\Eveapi\Jobs\Universe;
 
 use Illuminate\Queue\MaxAttemptsExceededException;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
+use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
@@ -85,7 +86,14 @@ class ResolveUniverseStructureByIdJob extends NewEsiBase implements HasPathValue
 
     public function handle(): void
     {
-        $result = $this->retrieve();
+        try {
+            $result = $this->retrieve();
+        } catch (RequestFailedException $exception) {
+            $this->delete();
+
+            return;
+        }
+
 
         if ($result->isCachedLoad()) {
             return;
