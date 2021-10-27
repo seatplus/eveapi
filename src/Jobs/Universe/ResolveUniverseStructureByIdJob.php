@@ -90,6 +90,7 @@ class ResolveUniverseStructureByIdJob extends NewEsiBase implements HasPathValue
             $result = $this->retrieve();
         } catch (RequestFailedException $exception) {
             $this->delete();
+
             return;
         }
 
