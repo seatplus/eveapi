@@ -54,6 +54,14 @@ class Contract extends Model
      */
     protected $primaryKey = 'contract_id';
 
+
+    /**
+     * Indicates if the model's ID is auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
+
     public function getIssuerAttribute()
     {
         return $this->for_corporation ? $this->issuer_corporation : $this->issuer_character;

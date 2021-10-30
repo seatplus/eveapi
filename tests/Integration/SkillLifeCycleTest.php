@@ -11,6 +11,7 @@ use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 uses(MockRetrieveEsiDataAction::class);
+uses(\Illuminate\Foundation\Testing\LazilyRefreshDatabase::class);
 
 beforeEach(function () {
     // Prevent any auto dispatching of jobs

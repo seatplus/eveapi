@@ -95,12 +95,13 @@ it('does not dispatches constellation resolver job if system exists', function (
     // Assert that no jobs were pushed...
     Queue::assertNothingPushed();
 
-    $station = System::factory()->create();
+    $system = System::factory()->create();
 
     Queue::assertNotPushed(ResolveUniverseConstellationByConstellationIdJob::class);
 });
 
 it('resolves constellations', function () {
+    Queue::fake();
     $mock_data = Constellation::factory()->make();
 
     mockRetrieveEsiDataAction($mock_data->toArray());

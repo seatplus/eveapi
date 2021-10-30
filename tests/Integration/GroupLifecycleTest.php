@@ -31,6 +31,7 @@ test('new group does not dispatches group job if category is present', function 
     ]);
 
     Queue::assertNotPushed(ResolveUniverseCategoryByIdJob::class);
+
 });
 
 it('dispatches assets name job', function () {

@@ -37,7 +37,7 @@ class StationFactory extends Factory
     public function definition()
     {
         return [
-            'station_id' => $this->faker->numberBetween(60000000, 64000000),
+            'station_id' => $this->faker->unique()->numberBetween(60000000, 64000000),
             'name' => $this->faker->name,
             'owner_id' => $this->faker->optional()->numberBetween(98000000, 99000000),
             'system_id' => System::factory(),
@@ -47,7 +47,6 @@ class StationFactory extends Factory
             'reprocessing_stations_take' => $this->faker->randomNumber(),
             'max_dockable_ship_volume' => $this->faker->randomNumber(),
             'office_rental_cost' => $this->faker->randomDigit,
-
         ];
     }
 

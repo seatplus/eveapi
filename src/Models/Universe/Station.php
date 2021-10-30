@@ -48,6 +48,13 @@ class Station extends Model
     protected $guarded = [];
 
     /**
+     * Indicates if the model's ID is auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
+
+    /**
      * @var string
      */
     protected $primaryKey = 'station_id';

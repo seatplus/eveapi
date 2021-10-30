@@ -36,6 +36,7 @@ class SystemFactory extends Factory
 
     public function definition()
     {
+
         return [
             'system_id' => $this->faker->numberBetween(30000000, 32000000),
             'name' => $this->faker->name,
@@ -51,4 +52,18 @@ class SystemFactory extends Factory
             'constellation_id' => $this->faker->numberBetween(20000000, 22000000),
         ]);
     }
+
+    /**
+     * Configure the model factory.
+     *
+     * @return $this
+     */
+    /*public function configure()
+    {
+        return $this->afterMaking(function (System $sytem) {
+            //
+        })->afterCreating(function (System $sytem) {
+
+        });
+    }*/
 }

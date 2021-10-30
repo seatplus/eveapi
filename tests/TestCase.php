@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Horizon\HorizonServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
+use PDO;
 use Seatplus\Eveapi\EveapiServiceProvider;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Spatie\LaravelRay\RayServiceProvider;
@@ -65,7 +66,8 @@ abstract class TestCase extends OrchestraTestCase
     {
         // Path to our migrations to load
         //$this->loadMigrationsFrom(__DIR__ . '/database/migrations');
-        $this->artisan('migrate', ['--database' => 'testbench']);
+        //$this->artisan('migrate', ['--database' => 'testbench']);
+        $this->artisan('migrate');
     }
 
     /**
@@ -76,15 +78,32 @@ abstract class TestCase extends OrchestraTestCase
      */
     protected function getEnvironmentSetUp($app)
     {
+
         // Use memory SQLite, cleans it self up
-        $app['config']->set('database.default', 'testbench');
+        config(['database.default' => 'mysql']);
+        /*$app['config']->set('database.default', 'testbench');
         $app['config']->set('database.connections.testbench', [
-            'driver' => 'sqlite',
-            'database' => ':memory:',
+            'driver' => 'mysql',
+            //'url' => env('DATABASE_URL'),
+            'host' => '172.0.0.1',
+            'port' => '3308',
+            'database' => 'testbench',
+            'username' => 'default',
+            'password' => 'secret',
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
             'prefix' => '',
-        ]);
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ]);*/
 
         config(['app.debug' => true]);
+        config(['activitylog.table_name' => 'activity_log']);
 
         //$app['router']->aliasMiddleware('auth', Authenticate::class);
     }

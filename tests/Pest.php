@@ -16,10 +16,12 @@
 
 use Faker\Factory;
 use Firebase\JWT\JWT;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\Eveapi\Services\Facade\RetrieveEsiData;
 
 uses(\Seatplus\Eveapi\Tests\TestCase::class)->in('Unit', 'Integration', 'Jobs');
+uses(\Illuminate\Foundation\Testing\LazilyRefreshDatabase::class)->in('Unit', 'Integration', 'Jobs');
 
 /*
 |--------------------------------------------------------------------------
