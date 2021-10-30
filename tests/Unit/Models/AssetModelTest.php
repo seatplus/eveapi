@@ -161,7 +161,7 @@ it('has scope affiliated where', function () {
 it('has scope search asset name', function () {
     $test_asset = Asset::factory()->withName()->create();
 
-    $search_string = substr($test_asset->name,0,3);
+    $search_string = substr($test_asset->name, 0, 3);
 
     $assets = Asset::query()->search($search_string)->first();
 
@@ -172,7 +172,7 @@ it('has scope search asset name', function () {
 it('has scope search asset type', function () {
     $test_asset = Asset::factory()->withType()->create();
 
-    $search_string = substr($test_asset->type->name,0,3);
+    $search_string = substr($test_asset->type->name, 0, 3);
 
     $assets = Asset::query()->search($search_string)->first();
 
@@ -190,7 +190,7 @@ it('has scope search asset content', function () {
         'location_flag' => 'cargo',
     ]));
 
-    $search_string = substr($test_asset->content->first()->name,0,3);
+    $search_string = substr($test_asset->content->first()->name, 0, 3);
 
     $assets = Asset::query()
         ->Search($search_string)
@@ -215,7 +215,7 @@ it('has scope search asset content content', function () {
     //Create Content Content
     $content->content()->save(Asset::factory()->withName()->withType()->create());
 
-    $search_string = substr($content->content->first()->name,0,3);
+    $search_string = substr($content->content->first()->name, 0, 3);
 
     $assets = Asset::query()
         ->Search($search_string)
@@ -226,7 +226,7 @@ it('has scope search asset content content', function () {
         ->toEqual($assets->item_id);
 
     // Search for type of content_content
-    $search_string = substr($content->content->first()->type->name,0,3);
+    $search_string = substr($content->content->first()->type->name, 0, 3);
 
     expect($search_string)->toBeString()->toHaveLength(3);
 
@@ -237,7 +237,6 @@ it('has scope search asset content content', function () {
 
     expect($test_asset->item_id)
         ->toEqual($assets->item_id);
-
 });
 
 it('has content relationship', function () {

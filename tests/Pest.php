@@ -16,7 +16,6 @@
 
 use Faker\Factory;
 use Firebase\JWT\JWT;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\Eveapi\Services\Facade\RetrieveEsiData;
 

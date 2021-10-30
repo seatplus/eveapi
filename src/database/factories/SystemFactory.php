@@ -36,7 +36,6 @@ class SystemFactory extends Factory
 
     public function definition()
     {
-
         return [
             'system_id' => $this->faker->numberBetween(30000000, 32000000),
             'name' => $this->faker->name,

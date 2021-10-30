@@ -185,13 +185,13 @@ class Asset extends Model
 
     public function scopeSearch(Builder $query, string $terms = null)
     {
-        collect(str_getcsv($terms,' ','"'))->filter()
+        collect(str_getcsv($terms, ' ', '"'))->filter()
             ->each(function ($term) use ($query) {
                 $term = $term.'%';
 
-                $query->whereIn('item_id',function (\Illuminate\Database\Query\Builder $query) use ($term) {
+                $query->whereIn('item_id', function (\Illuminate\Database\Query\Builder $query) use ($term) {
                     $query->select('item_id')
-                        ->from(fn($query) => $query
+                        ->from(fn ($query) => $query
                             ->select('item_id')
                             ->from('assets')
                             ->where('name_normalized', 'like', $term)
@@ -226,10 +226,8 @@ class Asset extends Model
                                     ->where('content_content.name_normalized', 'like', $term)
                                     ->orWhere('universe_types.name_normalized', 'like', $term)
                                     ->orWhere('universe_groups.name_normalized', 'like', $term)
-                            )
-                        ,'matches');
+                            ), 'matches');
                 });
             });
-
     }
 }

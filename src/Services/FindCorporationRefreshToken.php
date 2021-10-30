@@ -46,9 +46,9 @@ class FindCorporationRefreshToken
             ->whereHas('corporation', fn ($query) => $query->where('corporation_infos.corporation_id', $corporation_id))
             ->cursor()
             ->shuffle()
-            ->filter(function (RefreshToken $token) use ($scopes){
+            ->filter(function (RefreshToken $token) use ($scopes) {
                 foreach ($scopes as $scope) {
-                    if($token->hasScope($scope)) {
+                    if ($token->hasScope($scope)) {
                         return true;
                     }
                 }

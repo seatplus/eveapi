@@ -36,8 +36,8 @@ it('dispatches resolve universe type job if type is unknown', function () {
 
     $mock_data = ContractItem::factory()->withoutType()->count(5)->make();
 
-    $contract = \Illuminate\Support\Facades\Event::fakeFor(fn() => Contract::factory()->create([
-        'contract_id' => $mock_data->first()->contract_id
+    $contract = \Illuminate\Support\Facades\Event::fakeFor(fn () => Contract::factory()->create([
+        'contract_id' => $mock_data->first()->contract_id,
     ]));
 
     mockRetrieveEsiDataAction($mock_data->toArray());
