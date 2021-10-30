@@ -8,13 +8,15 @@ use Seatplus\Eveapi\Models\Contracts\Contract;
 test('observer dispatches nothing by default upon creation with factory', function () {
     $fake = Queue::fake();
 
-    $contract = Contract::factory()->create(['for_corporation' => true]);
+    $contract = Contract::factory()->create([
+        'for_corporation' => true,
+    ]);
 
     $this->assertNotNull($contract->start_location);
     $this->assertNotNull($contract->end_location);
     $this->assertNotNull($contract->issuer);
 
-    Queue::assertNothingPushed();
+    Queue::assertNotPushed(ResolveLocationJob::class);
 });
 
 test('observer dispatches location job with unknown location id', function () {

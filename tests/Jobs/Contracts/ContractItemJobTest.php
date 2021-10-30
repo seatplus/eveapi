@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Contracts\ContractItemsJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
+use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\Contracts\ContractItem;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
@@ -35,13 +36,17 @@ it('dispatches resolve universe type job if type is unknown', function () {
 
     $mock_data = ContractItem::factory()->withoutType()->count(5)->make();
 
+    $contract = \Illuminate\Support\Facades\Event::fakeFor(fn () => Contract::factory()->create([
+        'contract_id' => $mock_data->first()->contract_id,
+    ]));
+
     mockRetrieveEsiDataAction($mock_data->toArray());
 
     $job_container = new JobContainer([
         'refresh_token' => $this->test_character->refresh_token,
     ]);
 
-    $job = new ContractItemsJob($mock_data->first()->contract_id, $job_container);
+    $job = new ContractItemsJob($contract->contract_id, $job_container);
 
     $job->handle();
 

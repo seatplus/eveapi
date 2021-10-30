@@ -448,7 +448,14 @@ it('dispatch get missing types from contract item job', function () {
 });
 
 it('dispatches resolve types job for missing contract item types', function () {
-    $contract_item = Event::fakeFor(fn () => ContractItem::factory()->withoutType()->create());
+    $contract_item = Event::fakeFor(function () {
+        $contract = Contract::factory()->create();
+
+        return ContractItem::factory()->withoutType()->create([
+            'contract_id' => $contract->contract_id,
+        ]);
+    });
+
 
     $mock = Mockery::mock(GetMissingTypesFromContractItem::class)->makePartial();
 

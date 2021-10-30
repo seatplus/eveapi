@@ -50,7 +50,7 @@ class MailFactory extends Factory
             'id' => $this->faker->unique()->randomNumber(),
             'subject' => $this->faker->sentence,
             'from' => CharacterInfo::factory(),
-            'timestamp' => $this->faker->iso8601,
+            'timestamp' => $this->faker->dateTime($max = 'now', $timezone = null)->format('Y-m-d H:i:s'),
             'is_read' => $this->faker->boolean,
         ];
     }

@@ -54,6 +54,14 @@ class Asset extends Model
      */
     protected $primaryKey = 'item_id';
 
+
+    /**
+     * Indicates if the model's ID is auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
+
     /**
      * The attributes that should be cast to native types.
      *
@@ -175,37 +183,51 @@ class Asset extends Model
         );
     }
 
-    public function scopeSearch(Builder $query, string $query_string): Builder
+    public function scopeSearch(Builder $query, string $terms = null)
     {
-        /*return $query->where('character_assets.name','like', '%' . $query_string . '%');*/
-        return $query->where(function ($query) use ($query_string) {
-            $query->where('name', 'like', '%' . $query_string . '%')
-                ->orWhereHas('type', function (Builder $query) use ($query_string) {
-                    $query->where('name', 'like', '%' . $query_string . '%');
-                })
-                ->orWhereHas('type.group', function (Builder $query) use ($query_string) {
-                    $query->where('name', 'like', '%' . $query_string . '%');
-                })
-                // Content
-                ->orWhereHas('content', function (Builder $query) use ($query_string) {
-                    $query->where('name', 'like', '%' . $query_string . '%');
-                })
-                ->orWhereHas('content.type', function (Builder $query) use ($query_string) {
-                    $query->where('name', 'like', '%' . $query_string . '%');
-                })
-                ->orWhereHas('content.type.group', function (Builder $query) use ($query_string) {
-                    $query->where('name', 'like', '%' . $query_string . '%');
-                })
-                // Content Content
-                ->orWhereHas('content.content', function (Builder $query) use ($query_string) {
-                    $query->where('name', 'like', '%' . $query_string . '%');
-                })
-                ->orWhereHas('content.content.type', function (Builder $query) use ($query_string) {
-                    $query->where('name', 'like', '%' . $query_string . '%');
-                })
-                ->orWhereHas('content.content.type.group', function (Builder $query) use ($query_string) {
-                    $query->where('name', 'like', '%' . $query_string . '%');
+        collect(str_getcsv($terms, ' ', '"'))->filter()
+            ->each(function ($term) use ($query) {
+                $term = $term.'%';
+
+                $query->whereIn('item_id', function (\Illuminate\Database\Query\Builder $query) use ($term) {
+                    $query->select('item_id')
+                        ->from(fn ($query) => $query
+                            ->select('item_id')
+                            ->from('assets')
+                            ->where('name_normalized', 'like', $term)
+                            ->union(
+                                $query->newQuery()
+                                    ->from('assets')
+                                    ->select('assets.item_id')
+                                    ->leftJoin('universe_types', 'universe_types.type_id', '=', 'assets.type_id')
+                                    ->leftJoin('universe_groups', 'universe_groups.group_id', '=', 'universe_types.group_id')
+                                    ->where('universe_types.name_normalized', 'like', $term)
+                                    ->orWhere('universe_groups.name_normalized', 'like', $term)
+                            )
+                            ->union(
+                                $query->newQuery()
+                                    ->from('assets')
+                                    ->select('assets.item_id')
+                                    ->join('assets as content', 'content.location_id', '=', 'assets.item_id')
+                                    ->leftJoin('universe_types', 'universe_types.type_id', '=', 'content.type_id')
+                                    ->leftJoin('universe_groups', 'universe_groups.group_id', '=', 'universe_types.group_id')
+                                    ->where('content.name_normalized', 'like', $term)
+                                    ->orWhere('universe_types.name_normalized', 'like', $term)
+                                    ->orWhere('universe_groups.name_normalized', 'like', $term)
+                            )
+                            ->union(
+                                $query->newQuery()
+                                    ->from('assets')
+                                    ->select('assets.item_id')
+                                    ->join('assets as content', 'content.location_id', '=', 'assets.item_id')
+                                    ->join('assets as content_content', 'content_content.location_id', '=', 'content.item_id')
+                                    ->leftJoin('universe_types', 'universe_types.type_id', '=', 'content_content.type_id')
+                                    ->leftJoin('universe_groups', 'universe_groups.group_id', '=', 'universe_types.group_id')
+                                    ->where('content_content.name_normalized', 'like', $term)
+                                    ->orWhere('universe_types.name_normalized', 'like', $term)
+                                    ->orWhere('universe_groups.name_normalized', 'like', $term)
+                            ), 'matches');
                 });
-        });
+            });
     }
 }

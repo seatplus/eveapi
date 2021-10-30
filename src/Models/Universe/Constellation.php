@@ -53,6 +53,13 @@ class Constellation extends Model
     protected $primaryKey = 'constellation_id';
 
     /**
+     * Indicates if the model's ID is auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
+
+    /**
      * The table associated with the model.
      *
      * @var string

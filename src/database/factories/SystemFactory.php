@@ -51,4 +51,18 @@ class SystemFactory extends Factory
             'constellation_id' => $this->faker->numberBetween(20000000, 22000000),
         ]);
     }
+
+    /**
+     * Configure the model factory.
+     *
+     * @return $this
+     */
+    /*public function configure()
+    {
+        return $this->afterMaking(function (System $sytem) {
+            //
+        })->afterCreating(function (System $sytem) {
+
+        });
+    }*/
 }

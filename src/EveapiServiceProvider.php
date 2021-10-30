@@ -96,6 +96,9 @@ class EveapiServiceProvider extends ServiceProvider
         // Add Horizon Snapshot schedule
         $this->addHorizonSnapshotSchedule();
 
+        // Add Horizon terminate schedule
+        $this->addHorizonTerminateSchedule();
+
         // Add other schedules
         $this->addSchedules();
 
@@ -203,6 +206,14 @@ class EveapiServiceProvider extends ServiceProvider
         $this->app->booted(function () {
             $schedule = $this->app->make(Schedule::class);
             $schedule->command('horizon:snapshot')->everyFiveMinutes();
+        });
+    }
+
+    private function addHorizonTerminateSchedule()
+    {
+        $this->app->booted(function () {
+            $schedule = $this->app->make(Schedule::class);
+            $schedule->command('horizon:terminate')->hourly();
         });
     }
 

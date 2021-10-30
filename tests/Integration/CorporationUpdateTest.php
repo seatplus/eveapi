@@ -37,7 +37,10 @@ it('dispatches member tracking hydration job', function () {
 
 test('hydration job dispatches corporation member tracking job as director', function () {
     updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-corporations.track_members.v1'])->save();
-    $this->test_character->roles()->update(['roles' => ['Director']]);
+    expect($this->test_character->refresh_token->hasScope('esi-corporations.track_members.v1'))->toBeTrue();
+
+    $this->test_character->roles()->updateOrCreate(['roles' => ['Director']]);
+    expect($this->test_character->roles)->roles->toBeArray();
 
     $job_container = new JobContainer(['corporation_id' => $this->test_character->corporation->corporation_id]);
 
@@ -71,8 +74,11 @@ it('dispatches wallet hydration job', function () {
 
 test('hydration job dispatches corporation wallet job as accountant', function () {
     \Illuminate\Support\Facades\Event::fakeFor(fn () => updateRefreshTokenScopes($this->test_character->refresh_token, config('eveapi.scopes.corporation.wallet'))->save());
+    expect($this->test_character->refresh_token->hasScope(head(config('eveapi.scopes.corporation.wallet'))))->toBeTrue();
 
-    $this->test_character->roles()->update(['roles' => ['Accountant']]);
+    $this->test_character->roles()->updateOrCreate(['roles' => ['Accountant']]);
+
+    expect($this->test_character->roles)->roles->toBeArray();
 
     $job_container = new JobContainer(['corporation_id' => $this->test_character->corporation->corporation_id]);
 

@@ -51,6 +51,8 @@ class Location extends Model
      */
     protected $primaryKey = 'location_id';
 
+    public $incrementing = false;
+
     protected $with = ['locatable'];
 
     /**

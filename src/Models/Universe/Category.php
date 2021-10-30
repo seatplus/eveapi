@@ -52,6 +52,13 @@ class Category extends Model
     protected $primaryKey = 'category_id';
 
     /**
+     * Indicates if the model's ID is auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
+
+    /**
      * The table associated with the model.
      *
      * @var string

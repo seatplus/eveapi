@@ -52,6 +52,13 @@ class ContractItem extends Model
      */
     protected $primaryKey = 'record_id';
 
+    /**
+     * Indicates if the model's ID is auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
+
     public function type()
     {
         return $this->hasOne(Type::class, 'type_id', 'type_id');

@@ -161,17 +161,23 @@ it('has scope affiliated where', function () {
 it('has scope search asset name', function () {
     $test_asset = Asset::factory()->withName()->create();
 
-    $assets = Asset::query()->Search($test_asset->name)->first();
+    $search_string = substr($test_asset->name, 0, 3);
 
-    expect($test_asset->item_id)->toEqual($assets->item_id);
+    $assets = Asset::query()->search($search_string)->first();
+
+    expect($test_asset->item_id)
+        ->toEqual($assets->item_id);
 });
 
 it('has scope search asset type', function () {
-    $test_asset = Asset::factory()->withName()->create();
+    $test_asset = Asset::factory()->withType()->create();
 
-    $assets = Asset::query()->search($test_asset->name)->first();
+    $search_string = substr($test_asset->type->name, 0, 3);
 
-    expect($test_asset->item_id)->toEqual($assets->item_id);
+    $assets = Asset::query()->search($search_string)->first();
+
+    expect($test_asset->item_id)
+        ->toEqual($assets->item_id);
 });
 
 it('has scope search asset content', function () {
@@ -184,8 +190,10 @@ it('has scope search asset content', function () {
         'location_flag' => 'cargo',
     ]));
 
+    $search_string = substr($test_asset->content->first()->name, 0, 3);
+
     $assets = Asset::query()
-        ->Search($test_asset->content->first()->name)
+        ->Search($search_string)
         ->whereIn('location_flag', ['Hangar', 'AssetSafety', 'Deliveries'])
         ->first();
 
@@ -205,16 +213,30 @@ it('has scope search asset content content', function () {
     $content = $test_asset->content->first();
 
     //Create Content Content
-    $content->content()->save(Asset::factory()->withName()->create());
+    $content->content()->save(Asset::factory()->withName()->withType()->create());
 
-    $content_content = $content->content->first();
+    $search_string = substr($content->content->first()->name, 0, 3);
 
     $assets = Asset::query()
-        ->Search($content_content->name)
+        ->Search($search_string)
         ->whereIn('location_flag', ['Hangar', 'AssetSafety', 'Deliveries'])
         ->first();
 
-    expect($test_asset->item_id)->toEqual($assets->item_id);
+    expect($test_asset->item_id)
+        ->toEqual($assets->item_id);
+
+    // Search for type of content_content
+    $search_string = substr($content->content->first()->type->name, 0, 3);
+
+    expect($search_string)->toBeString()->toHaveLength(3);
+
+    $assets = Asset::query()
+        ->search($search_string)
+        ->whereIn('location_flag', ['Hangar', 'AssetSafety', 'Deliveries'])
+        ->first();
+
+    expect($test_asset->item_id)
+        ->toEqual($assets->item_id);
 });
 
 it('has content relationship', function () {
