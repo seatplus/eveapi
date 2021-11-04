@@ -60,7 +60,7 @@ class ContractFactory extends Factory
             'reward' => $this->faker->randomFloat(),
             'end_location_id' => Location::factory()->withStation(),
             'start_location_id' => Location::factory()->withStation(),
-            'title' => $this->faker->paragraph,
+            'title' => $this->faker->text(),
             'volume' => $this->faker->randomFloat(),
         ];
     }
