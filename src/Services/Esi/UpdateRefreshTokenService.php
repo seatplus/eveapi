@@ -17,7 +17,6 @@ class UpdateRefreshTokenService
 
     public function update(RefreshToken $refreshToken): RefreshToken
     {
-
         $authentication = new EsiAuthentication([
             'client_id' => config('eveapi.config.esi.eve_client_id'),
             'secret' => config('eveapi.config.esi.eve_client_secret'),
@@ -43,7 +42,7 @@ class UpdateRefreshTokenService
      */
     public function getRefreshTokenService(): EsiClientUpdateToken
     {
-        if(!isset($this->refreshTokenService)) {
+        if (! isset($this->refreshTokenService)) {
             $this->setRefreshTokenService(new EsiClientUpdateToken);
         }
 
@@ -59,5 +58,4 @@ class UpdateRefreshTokenService
 
         return $this;
     }
-
 }

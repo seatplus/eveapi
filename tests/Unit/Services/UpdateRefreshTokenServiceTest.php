@@ -2,9 +2,7 @@
 
 use Seatplus\EsiClient\Services\UpdateRefreshTokenService;
 
-it('updates RefreshToken', function ($refresh_token, $access_token, $expires_in){
-
-
+it('updates RefreshToken', function ($refresh_token, $access_token, $expires_in) {
     $mock = Mockery::mock(UpdateRefreshTokenService::class);
     $mock->shouldReceive('getRefreshTokenResponse')
         ->andReturn([
@@ -27,7 +25,6 @@ it('updates RefreshToken', function ($refresh_token, $access_token, $expires_in)
         ->getRawOriginal('token')->toBeString()->toBe($access_token);
 
     Mockery::close();
-
 })->with([
-    [faker()->uuid, faker()->uuid(), faker()->randomNumber(4)]
+    [faker()->uuid, faker()->uuid(), faker()->randomNumber(4)],
 ]);

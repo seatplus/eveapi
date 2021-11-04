@@ -212,10 +212,9 @@ class RetrieveEsiData
 
     private function getUpToDateRefreshToken(): RefreshToken
     {
-
         $token = $this->request->refresh_token->refresh();
 
-        if(carbon($token->expires_on)->gt(now()->addMinute())) {
+        if (carbon($token->expires_on)->gt(now()->addMinute())) {
             return $token;
         }
 

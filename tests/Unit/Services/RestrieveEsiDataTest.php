@@ -53,7 +53,7 @@ it('updates outdated refresh_tokens', function () {
 
     config()->set('eveapi.config.esi', $esi_array);
     $refresh_token = RefreshToken::factory()->create([
-        'expires_on' => now()->addSeconds(50)
+        'expires_on' => now()->addSeconds(50),
     ]);
 
     $retrieve = new RetrieveEsiData();
@@ -68,7 +68,7 @@ it('updates outdated refresh_tokens', function () {
     $retrieve->setRequest($request_container);
 
     $update_refresh_token = RefreshToken::factory()->create([
-        'expires_on' => now()->addHour()
+        'expires_on' => now()->addHour(),
     ]);
 
     $lock = Mockery::mock();
@@ -86,5 +86,4 @@ it('updates outdated refresh_tokens', function () {
         ->token_expires->toBeString()->toBe($update_refresh_token->expires_on->toDateTimeString());
 
     Mockery::close();
-
 });
