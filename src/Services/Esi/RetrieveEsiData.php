@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Services\Esi;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Seatplus\EsiClient\Configuration;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
@@ -34,6 +35,7 @@ use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiClient\Exceptions\EsiScopeAccessDeniedException;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
+use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 
 class RetrieveEsiData
@@ -56,7 +58,7 @@ class RetrieveEsiData
             }
 
             // retrieve up-to-date token
-            $refresh_token = $this->request->refresh_token->refresh();
+            $refresh_token = $this->getUpToDateRefreshToken();
 
             $authentication = new EsiAuthentication([
                 'refresh_token' => $refresh_token->refresh_token,
@@ -206,5 +208,20 @@ class RetrieveEsiData
                 }
             }
         }
+    }
+
+    private function getUpToDateRefreshToken(): RefreshToken
+    {
+
+        $token = $this->request->refresh_token->refresh();
+
+        if(carbon($token->expires_on)->gt(now()->addMinute())) {
+            return $token;
+        }
+
+        $character_id = $token->character_id;
+
+        return Cache::lock("update refresh_token of charcter_id: ${character_id}", 10)
+            ->get(fn () => UpdateRefreshTokenService::make()->update($token));
     }
 }
