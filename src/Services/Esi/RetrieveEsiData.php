@@ -212,15 +212,17 @@ class RetrieveEsiData
 
     private function getUpToDateRefreshToken(): RefreshToken
     {
-        $token = $this->request->refresh_token->refresh();
+        $character_id = $this->request->refresh_token->character_id;
 
-        if (carbon($token->expires_on)->gt(now()->addMinute())) {
-            return $token;
-        }
+        return Cache::lock("get up to date refresh_token of character_id: ${character_id}", 10)
+            ->get(function () {
+                $token = $this->request->refresh_token->refresh();
 
-        $character_id = $token->character_id;
+                if (carbon($token->expires_on)->gt(now()->addMinute())) {
+                    return $token;
+                }
 
-        return Cache::lock("update refresh_token of charcter_id: ${character_id}", 10)
-            ->get(fn () => UpdateRefreshTokenService::make()->update($token));
+                return UpdateRefreshTokenService::make()->update($token);
+            });
     }
 }
