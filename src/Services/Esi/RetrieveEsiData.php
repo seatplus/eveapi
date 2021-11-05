@@ -216,7 +216,6 @@ class RetrieveEsiData
 
         return Cache::lock("get up to date refresh_token of character_id: ${character_id}", 10)
             ->get(function () {
-
                 $token = $this->request->refresh_token->refresh();
 
                 if (carbon($token->expires_on)->gt(now()->addMinute())) {
