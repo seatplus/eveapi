@@ -199,21 +199,41 @@ class Asset extends Model
                                 $query->newQuery()
                                     ->from('assets')
                                     ->select('assets.item_id')
-                                    ->leftJoin('universe_types', 'universe_types.type_id', '=', 'assets.type_id')
-                                    ->leftJoin('universe_groups', 'universe_groups.group_id', '=', 'universe_types.group_id')
-                                    ->where('universe_types.name_normalized', 'like', $term)
-                                    ->orWhere('universe_groups.name_normalized', 'like', $term)
+                                    ->whereIn('type_id', fn($query) => $query
+                                        ->select('type_id')
+                                        ->from(fn($query) => $query
+                                            ->select('type_id')
+                                            ->from('universe_types')
+                                            ->where('name_normalized', 'like', $term)
+                                            ->union(
+                                                $query->newQuery()
+                                                    ->from('universe_types')
+                                                    ->select('type_id')
+                                                    ->join('universe_groups', 'universe_groups.group_id', '=', 'universe_types.group_id')
+                                                    ->where('universe_groups.name_normalized', 'like', $term)
+                                            ), 'type_matches')
+                                    )
                             )
                             ->union(
                                 $query->newQuery()
                                     ->from('assets')
                                     ->select('assets.item_id')
                                     ->join('assets as content', 'content.location_id', '=', 'assets.item_id')
-                                    ->leftJoin('universe_types', 'universe_types.type_id', '=', 'content.type_id')
-                                    ->leftJoin('universe_groups', 'universe_groups.group_id', '=', 'universe_types.group_id')
                                     ->where('content.name_normalized', 'like', $term)
-                                    ->orWhere('universe_types.name_normalized', 'like', $term)
-                                    ->orWhere('universe_groups.name_normalized', 'like', $term)
+                                    ->orWhereIn('content.type_id', fn($query) => $query
+                                        ->select('type_id')
+                                        ->from(fn($query) => $query
+                                            ->select('type_id')
+                                            ->from('universe_types')
+                                            ->where('name_normalized', 'like', $term)
+                                            ->union(
+                                                $query->newQuery()
+                                                    ->from('universe_types')
+                                                    ->select('type_id')
+                                                    ->join('universe_groups', 'universe_groups.group_id', '=', 'universe_types.group_id')
+                                                    ->where('universe_groups.name_normalized', 'like', $term)
+                                            ), 'type_matches')
+                                    )
                             )
                             ->union(
                                 $query->newQuery()
@@ -221,11 +241,22 @@ class Asset extends Model
                                     ->select('assets.item_id')
                                     ->join('assets as content', 'content.location_id', '=', 'assets.item_id')
                                     ->join('assets as content_content', 'content_content.location_id', '=', 'content.item_id')
-                                    ->leftJoin('universe_types', 'universe_types.type_id', '=', 'content_content.type_id')
-                                    ->leftJoin('universe_groups', 'universe_groups.group_id', '=', 'universe_types.group_id')
                                     ->where('content_content.name_normalized', 'like', $term)
-                                    ->orWhere('universe_types.name_normalized', 'like', $term)
-                                    ->orWhere('universe_groups.name_normalized', 'like', $term)
+                                    ->orWhereIn('content_content.type_id', fn($query) => $query
+                                        ->select('type_id')
+                                        ->from(fn($query) => $query
+                                            ->select('type_id')
+                                            ->from('universe_types')
+                                            ->where('name_normalized', 'like', $term)
+                                            ->union(
+                                                $query->newQuery()
+                                                    ->from('universe_types')
+                                                    ->select('type_id')
+                                                    ->join('universe_groups', 'universe_groups.group_id', '=', 'universe_types.group_id')
+                                                    ->where('universe_groups.name_normalized', 'like', $term)
+                                            ), 'type_matches')
+                                    )
+
                             ), 'matches');
                 });
             });
