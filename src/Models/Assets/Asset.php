@@ -199,9 +199,11 @@ class Asset extends Model
                                 $query->newQuery()
                                     ->from('assets')
                                     ->select('assets.item_id')
-                                    ->whereIn('type_id', fn($query) => $query
+                                    ->whereIn(
+                                        'type_id',
+                                        fn ($query) => $query
                                         ->select('type_id')
-                                        ->from(fn($query) => $query
+                                        ->from(fn ($query) => $query
                                             ->select('type_id')
                                             ->from('universe_types')
                                             ->where('name_normalized', 'like', $term)
@@ -220,9 +222,11 @@ class Asset extends Model
                                     ->select('assets.item_id')
                                     ->join('assets as content', 'content.location_id', '=', 'assets.item_id')
                                     ->where('content.name_normalized', 'like', $term)
-                                    ->orWhereIn('content.type_id', fn($query) => $query
+                                    ->orWhereIn(
+                                        'content.type_id',
+                                        fn ($query) => $query
                                         ->select('type_id')
-                                        ->from(fn($query) => $query
+                                        ->from(fn ($query) => $query
                                             ->select('type_id')
                                             ->from('universe_types')
                                             ->where('name_normalized', 'like', $term)
@@ -242,9 +246,11 @@ class Asset extends Model
                                     ->join('assets as content', 'content.location_id', '=', 'assets.item_id')
                                     ->join('assets as content_content', 'content_content.location_id', '=', 'content.item_id')
                                     ->where('content_content.name_normalized', 'like', $term)
-                                    ->orWhereIn('content_content.type_id', fn($query) => $query
+                                    ->orWhereIn(
+                                        'content_content.type_id',
+                                        fn ($query) => $query
                                         ->select('type_id')
-                                        ->from(fn($query) => $query
+                                        ->from(fn ($query) => $query
                                             ->select('type_id')
                                             ->from('universe_types')
                                             ->where('name_normalized', 'like', $term)
@@ -256,7 +262,6 @@ class Asset extends Model
                                                     ->where('universe_groups.name_normalized', 'like', $term)
                                             ), 'type_matches')
                                     )
-
                             ), 'matches');
                 });
             });
