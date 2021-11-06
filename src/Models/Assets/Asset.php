@@ -189,7 +189,7 @@ class Asset extends Model
             ->each(function ($term) use ($query) {
                 $term = $term.'%';
 
-                $query->whereIn('item_id', function (\Illuminate\Database\Query\Builder $query) use ($term) {
+                $query->whereIn('item_id', function ($query) use ($term) {
                     $query->select('item_id')
                         ->from(fn ($query) => $query
                             ->select('item_id')

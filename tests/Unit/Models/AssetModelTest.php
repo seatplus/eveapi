@@ -165,8 +165,9 @@ it('has scope search asset name', function () {
 
     $assets = Asset::query()->search($search_string)->first();
 
-    expect($test_asset->item_id)
-        ->toEqual($assets->item_id);
+    expect($assets)
+        ->name->toBeString()->toBe($test_asset->name)
+        ->item_id->toBeInt()->toBe($test_asset->item_id);
 });
 
 it('has scope search asset type', function () {
@@ -176,8 +177,8 @@ it('has scope search asset type', function () {
 
     $assets = Asset::query()->search($search_string)->first();
 
-    expect($test_asset->item_id)
-        ->toEqual($assets->item_id);
+    expect($assets)
+        ->item_id->toBeInt()->toBe($test_asset->item_id);
 });
 
 it('has scope search asset content', function () {
@@ -235,8 +236,9 @@ it('has scope search asset content content', function () {
         ->whereIn('location_flag', ['Hangar', 'AssetSafety', 'Deliveries'])
         ->first();
 
-    expect($test_asset->item_id)
-        ->toEqual($assets->item_id);
+    expect($assets)
+        ->name->toBeString()->toBe($test_asset->name)
+        ->item_id->toBeInt()->toBe($test_asset->item_id);
 });
 
 it('has content relationship', function () {

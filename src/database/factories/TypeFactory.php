@@ -39,7 +39,7 @@ class TypeFactory extends Factory
             'type_id' => $this->faker->numberBetween(0, 10000),
             'group_id' => $this->faker->numberBetween(0, 10000),
             'description' => $this->faker->company,
-            'name' => $this->faker->name,
+            'name' => implode(" ", $this->faker->words(2)),
             'published' => $this->faker->boolean,
         ];
     }
