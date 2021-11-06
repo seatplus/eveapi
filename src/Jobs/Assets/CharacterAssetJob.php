@@ -36,7 +36,6 @@ use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Seatplus\Eveapi\Services\Jobs\AssetCleanupAction;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
@@ -131,10 +130,18 @@ class CharacterAssetJob extends NewEsiBase implements HasPathValuesInterface, Ha
         }
 
         // Cleanup old items
-        (new AssetCleanupAction)->execute($this->refresh_token->character_id, $this->known_assets->toArray());
+        $this->cleanup();
 
         // see https://divinglaravel.com/avoiding-memory-leaks-when-running-laravel-queue-workers
         // This job is very memory consuming hence avoiding memory leaks, the worker should restart
         app('queue.worker')->shouldQuit = 1;
+    }
+
+    private function cleanup()
+    {
+        Asset::query()
+            ->where('assetable_id', $this->getCharacterId())
+            ->whereNotIn('item_id', $this->known_assets->toArray())
+            ->delete();
     }
 }
