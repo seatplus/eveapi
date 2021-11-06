@@ -130,13 +130,18 @@ class CharacterAssetJob extends NewEsiBase implements HasPathValuesInterface, Ha
         }
 
         // Cleanup old items
-        Asset::query()
-            ->where('assetable_id', $this->getCharacterId())
-            ->whereNotIn('item_id', $this->known_assets->toArray())
-            ->delete();
+        $this->cleanup();
 
         // see https://divinglaravel.com/avoiding-memory-leaks-when-running-laravel-queue-workers
         // This job is very memory consuming hence avoiding memory leaks, the worker should restart
         app('queue.worker')->shouldQuit = 1;
+    }
+
+    private function cleanup()
+    {
+        Asset::query()
+            ->where('assetable_id', $this->getCharacterId())
+            ->whereNotIn('item_id', $this->known_assets->toArray())
+            ->delete();
     }
 }
