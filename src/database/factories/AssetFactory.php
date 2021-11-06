@@ -55,7 +55,7 @@ class AssetFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'name' => $this->faker->unique()->name,
+                'name' => implode(' ', $this->faker->unique()->words(2)),
             ];
         });
     }
