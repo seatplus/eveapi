@@ -56,11 +56,13 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
                   : $this->fail($exception);
             }
 
-            throw $exception->getErrorMessage() ? $exception : new \Exception(
+            $exception = $exception->getErrorMessage() ? $exception : new \Exception(
                 $exception->getOriginalException()?->getResponse()?->getReasonPhrase(),
                 $exception->getOriginalException()->getCode(),
                 $exception->getOriginalException()->getPrevious()
             );
+
+            $this->fail($exception);
         }
     }
 
