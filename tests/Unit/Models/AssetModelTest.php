@@ -168,7 +168,6 @@ it('has scope search asset name', function () {
     expect($assets)
         ->name->toBeString()->toBe($test_asset->name)
         ->item_id->toBeInt()->toBe($test_asset->item_id);
-
 });
 
 it('has scope search asset type', function () {
