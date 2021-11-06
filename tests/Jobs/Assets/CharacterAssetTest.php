@@ -40,7 +40,6 @@ test('retrieve test', function () {
     // Run job
     (new CharacterAssetJob($this->job_container))->handle();
 
-
     foreach ($mock_data as $data) {
         //Assert that character asset created
         $this->assertDatabaseHas('assets', [
