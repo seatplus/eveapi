@@ -100,7 +100,7 @@ class CorporationWalletJournalJob implements ShouldQueue, ShouldBeUnique
                 CorporationInfo::class,
                 fn (Builder $query) => $query->where('corporation_id', $this->corporation_id)
             )
-            ->cursor()
+            ->get()
             ->each(
                 fn ($wallet) => $this->batching()
                 ? $this->handleBatching($wallet->division)

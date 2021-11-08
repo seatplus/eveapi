@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationDivisionsJob;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
+use Seatplus\Eveapi\Jobs\Hydrate\Corporation\CorporationDivisionHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Corporation\CorporationMemberTrackingHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Corporation\CorporationWalletHydrateBatch;
 use Seatplus\Eveapi\Jobs\Seatplus\UpdateCorporation;
@@ -87,11 +88,38 @@ test('hydration job dispatches corporation wallet job as accountant', function (
     $batch = Mockery::mock(Batch::class)->makePartial();
 
     $batch->shouldReceive('add')->once()->with([
-        new CorporationDivisionsJob($job_container),
         [
             new CorporationBalanceJob($job_container),
             new CorporationWalletJournalJob($job_container),
         ],
+    ]);
+
+    $job->shouldReceive('batch')
+        ->once()->andReturn($batch);
+
+    Bus::fake();
+
+    $job->handle();
+});
+
+test('hydration job dispatches corporation divisions job as director', function () {
+    \Illuminate\Support\Facades\Event::fakeFor(fn () => updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-corporations.read_divisions.v1'])->save());
+    expect($this->test_character)->refresh_token->hasScope('esi-corporations.read_divisions.v1')->toBeTrue();
+
+    $this->test_character->roles()->updateOrCreate(['roles' => ['Director']]);
+
+    expect($this->test_character->roles)
+        ->roles->toBeArray()
+        ->hasRole('roles', 'Director');
+
+    $job_container = new JobContainer(['corporation_id' => $this->test_character->corporation->corporation_id]);
+
+    $job = Mockery::mock(CorporationDivisionHydrateBatch::class . '[batch]', [$job_container]);
+
+    $batch = Mockery::mock(Batch::class)->makePartial();
+
+    $batch->shouldReceive('add')->once()->with([
+        new CorporationDivisionsJob($job_container),
     ]);
 
     $job->shouldReceive('batch')

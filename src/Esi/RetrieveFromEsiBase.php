@@ -50,19 +50,9 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
         try {
             return RetrieveEsiData::execute($this->esi_request_container);
         } catch (RequestFailedException $exception) {
-            if ($exception->getOriginalException()?->getResponse()?->getReasonPhrase() === 'Forbidden') {
-                $this->esi_request_container->endpoint === '/universe/structures/{structure_id}/'
-                  ? $this->delete()
-                  : $this->fail($exception);
-            }
+            $this->handleException($exception);
 
-            $exception = $exception->getErrorMessage() ? $exception : new \Exception(
-                $exception->getOriginalException()?->getResponse()?->getReasonPhrase(),
-                $exception->getOriginalException()->getCode(),
-                $exception->getOriginalException()->getPrevious()
-            );
-
-            $this->fail($exception);
+            throw $exception;
         }
     }
 
@@ -96,5 +86,18 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
         }
 
         $this->esi_request_container->page = $page;
+    }
+
+    private function handleException(RequestFailedException $exception)
+    {
+        // if access is forbidden
+        if ($exception->getOriginalException()?->getResponse()?->getReasonPhrase() === 'Forbidden') {
+            match ($this->esi_request_container->endpoint) {
+                // if attempt was made for structure endpoint
+                '/universe/structures/{structure_id}/' => $this->delete(),
+                // by default fail a forbidden request
+                default => $this->fail($exception)
+            };
+        }
     }
 }

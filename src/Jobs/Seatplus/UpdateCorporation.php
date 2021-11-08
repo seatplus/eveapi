@@ -35,6 +35,7 @@ use Illuminate\Queue\Middleware\RateLimitedWithRedis;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Jobs\Hydrate\Corporation\CorporationDivisionHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Corporation\CorporationMemberTrackingHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Corporation\CorporationWalletHydrateBatch;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
@@ -79,7 +80,7 @@ class UpdateCorporation implements ShouldQueue
         $batch_name = sprintf('%s (corporation) update batch', $corporation);
 
         $batch = Bus::batch([
-
+            new CorporationDivisionHydrateBatch($job_container),
             new CorporationMemberTrackingHydrateBatch($job_container),
             new CorporationWalletHydrateBatch($job_container),
 
