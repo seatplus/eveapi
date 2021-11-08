@@ -64,7 +64,6 @@ abstract class HydrateCorporationBase implements ShouldQueue
 
     final public function enrichJobContainerWithRefreshToken(JobContainer $job_container): JobContainer
     {
-
         $job_container->refresh_token = $this->getRefreshToken(
             $job_container->getCorporationId(),
             $this->getRequiredScope(),
@@ -76,7 +75,7 @@ abstract class HydrateCorporationBase implements ShouldQueue
 
     public function getRefreshToken(int $corporation_id, string $required_scope, string|array $required_roles): ?RefreshToken
     {
-        return call_user_func_array($this->getFindCorporationRefreshToken(),[$corporation_id, $required_scope, $required_roles]);
+        return call_user_func_array($this->getFindCorporationRefreshToken(), [$corporation_id, $required_scope, $required_roles]);
     }
 
     /**
@@ -84,7 +83,7 @@ abstract class HydrateCorporationBase implements ShouldQueue
      */
     public function getFindCorporationRefreshToken(): FindCorporationRefreshToken
     {
-        if(!isset($this->findCorporationRefreshToken)) {
+        if (! isset($this->findCorporationRefreshToken)) {
             $this->findCorporationRefreshToken = new FindCorporationRefreshToken;
         }
 
