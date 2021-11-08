@@ -46,7 +46,6 @@ class CorporationWalletHydrateBatch extends HydrateCorporationBase
     {
         if ($this->job_container->getRefreshToken()) {
             $this->batch()->add([
-                new CorporationDivisionsJob($this->job_container),
                 [
                     new CorporationBalanceJob($this->job_container),
                     new CorporationWalletJournalJob($this->job_container),

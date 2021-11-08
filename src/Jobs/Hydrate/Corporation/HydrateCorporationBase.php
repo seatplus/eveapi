@@ -33,6 +33,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 
 abstract class HydrateCorporationBase implements ShouldQueue
@@ -48,6 +49,8 @@ abstract class HydrateCorporationBase implements ShouldQueue
      */
     public JobContainer $job_container;
 
+    private FindCorporationRefreshToken $findCorporationRefreshToken;
+
     public function __construct(JobContainer $job_container)
     {
         $this->job_container = $this->enrichJobContainerWithRefreshToken($job_container);
@@ -61,14 +64,30 @@ abstract class HydrateCorporationBase implements ShouldQueue
 
     final public function enrichJobContainerWithRefreshToken(JobContainer $job_container): JobContainer
     {
-        $find_corporation_refresh_token = new FindCorporationRefreshToken;
 
-        $job_container->refresh_token = $find_corporation_refresh_token(
+        $job_container->refresh_token = $this->getRefreshToken(
             $job_container->getCorporationId(),
             $this->getRequiredScope(),
             $this->getRequiredRoles()
         );
 
         return $job_container;
+    }
+
+    public function getRefreshToken(int $corporation_id, string $required_scope, string|array $required_roles): ?RefreshToken
+    {
+        return call_user_func_array($this->getFindCorporationRefreshToken(),[$corporation_id, $required_scope, $required_roles]);
+    }
+
+    /**
+     * @return FindCorporationRefreshToken
+     */
+    public function getFindCorporationRefreshToken(): FindCorporationRefreshToken
+    {
+        if(!isset($this->findCorporationRefreshToken)) {
+            $this->findCorporationRefreshToken = new FindCorporationRefreshToken;
+        }
+
+        return $this->findCorporationRefreshToken;
     }
 }

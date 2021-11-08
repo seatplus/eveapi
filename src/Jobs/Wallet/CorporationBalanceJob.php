@@ -82,7 +82,7 @@ class CorporationBalanceJob extends NewEsiBase implements HasPathValuesInterface
         return [
             'corporation',
             'corporation_id: ' . $this->getCorporationId(),
-            'wallets',
+            'balances',
         ];
     }
 

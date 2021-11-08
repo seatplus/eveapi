@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Esi;
 
+use Exception;
 use Illuminate\Queue\InteractsWithQueue;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
@@ -50,20 +51,12 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
         try {
             return RetrieveEsiData::execute($this->esi_request_container);
         } catch (RequestFailedException $exception) {
-            if ($exception->getOriginalException()?->getResponse()?->getReasonPhrase() === 'Forbidden') {
-                $this->esi_request_container->endpoint === '/universe/structures/{structure_id}/'
-                  ? $this->delete()
-                  : $this->fail($exception);
-            }
 
-            $exception =  $exception->getErrorMessage() ? $exception : new \Exception(
-                $exception->getOriginalException()?->getResponse()?->getReasonPhrase(),
-                $exception->getOriginalException()->getCode(),
-                $exception->getOriginalException()->getPrevious()
-            );
+            $this->handleException($exception);
 
-            $this->fail($exception);
+            throw $exception;
         }
+
     }
 
     private function getBaseEsiReuestContainer(): EsiRequestContainer
@@ -96,5 +89,19 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
         }
 
         $this->esi_request_container->page = $page;
+    }
+
+    private function handleException(RequestFailedException $exception)
+    {
+        // if access is forbidden
+        if ($exception->getOriginalException()?->getResponse()?->getReasonPhrase() === 'Forbidden') {
+            //if attempt was made for structure endpoint
+            if($this->esi_request_container->endpoint === '/universe/structures/{structure_id}/') {
+                // delete the job
+                $this->delete();
+            };
+        }
+
+        $this->fail($exception);
     }
 }

@@ -93,9 +93,9 @@ class CorporationDivisionsJob extends NewEsiBase implements HasPathValuesInterfa
     {
         $response = $this->retrieve();
 
-        /*if ($response->isCachedLoad()) {
+        if ($response->isCachedLoad()) {
             return;
-        }*/
+        }
 
         collect($response)->each(fn (array $entries, string $division_type) => collect($entries)
             ->each(fn ($entry) => CorporationDivision::updateOrCreate(
