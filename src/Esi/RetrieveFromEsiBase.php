@@ -26,7 +26,6 @@
 
 namespace Seatplus\Eveapi\Esi;
 
-use Exception;
 use Illuminate\Queue\InteractsWithQueue;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
@@ -51,12 +50,10 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
         try {
             return RetrieveEsiData::execute($this->esi_request_container);
         } catch (RequestFailedException $exception) {
-
             $this->handleException($exception);
 
             throw $exception;
         }
-
     }
 
     private function getBaseEsiReuestContainer(): EsiRequestContainer
@@ -96,7 +93,7 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
         // if access is forbidden
         if ($exception->getOriginalException()?->getResponse()?->getReasonPhrase() === 'Forbidden') {
             //if attempt was made for structure endpoint
-            if($this->esi_request_container->endpoint === '/universe/structures/{structure_id}/') {
+            if ($this->esi_request_container->endpoint === '/universe/structures/{structure_id}/') {
                 // delete the job
                 $this->delete();
             };
