@@ -92,13 +92,13 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
     {
         // if access is forbidden
         if ($exception->getOriginalException()?->getResponse()?->getReasonPhrase() === 'Forbidden') {
-            //if attempt was made for structure endpoint
-            if ($this->esi_request_container->endpoint === '/universe/structures/{structure_id}/') {
-                // delete the job
-                $this->delete();
+
+            match ($this->esi_request_container->endpoint) {
+                // if attempt was made for structure endpoint
+                '/universe/structures/{structure_id}/' => $this->delete(),
+                // by default fail a forbidden request
+                default => $this->fail($exception)
             };
         }
-
-        $this->fail($exception);
     }
 }
