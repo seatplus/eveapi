@@ -122,7 +122,7 @@ class MailHeaderJob extends NewEsiBase implements HasPathValuesInterface, HasReq
                 $mail_body = Mail::query()->firstWhere('id', data_get($mail, 'mail_id'))?->body;
 
                 // if mail body is not null
-                if(! is_null($mail_body)) {
+                if (! is_null($mail_body)) {
                     // don't dispatch a get mail body job - as it is already present
                     return;
                 }
