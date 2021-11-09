@@ -189,6 +189,20 @@ class Asset extends Model
             ->each(function ($term) use ($query) {
                 $term = $term.'%';
 
+                // Use CTE Table for type search
+                $query->withExpression('type_matches', fn ($query) => $query
+                    ->select('type_id')
+                    ->from('universe_types')
+                    ->where('name_normalized', 'like', $term)
+                    ->union(
+                        $query->newQuery()
+                            ->from('universe_types')
+                            ->select('type_id')
+                            ->join('universe_groups', 'universe_groups.group_id', '=', 'universe_types.group_id')
+                            ->where('universe_groups.name_normalized', 'like', $term)
+                    ));
+
+                // search for item names
                 $query->whereIn('item_id', function ($query) use ($term) {
                     $query->select('item_id')
                         ->from(fn ($query) => $query
@@ -203,17 +217,7 @@ class Asset extends Model
                                         'type_id',
                                         fn ($query) => $query
                                         ->select('type_id')
-                                        ->from(fn ($query) => $query
-                                            ->select('type_id')
-                                            ->from('universe_types')
-                                            ->where('name_normalized', 'like', $term)
-                                            ->union(
-                                                $query->newQuery()
-                                                    ->from('universe_types')
-                                                    ->select('type_id')
-                                                    ->join('universe_groups', 'universe_groups.group_id', '=', 'universe_types.group_id')
-                                                    ->where('universe_groups.name_normalized', 'like', $term)
-                                            ), 'type_matches')
+                                        ->from('type_matches')
                                     )
                             )
                             ->union(
@@ -226,17 +230,7 @@ class Asset extends Model
                                         'content.type_id',
                                         fn ($query) => $query
                                         ->select('type_id')
-                                        ->from(fn ($query) => $query
-                                            ->select('type_id')
-                                            ->from('universe_types')
-                                            ->where('name_normalized', 'like', $term)
-                                            ->union(
-                                                $query->newQuery()
-                                                    ->from('universe_types')
-                                                    ->select('type_id')
-                                                    ->join('universe_groups', 'universe_groups.group_id', '=', 'universe_types.group_id')
-                                                    ->where('universe_groups.name_normalized', 'like', $term)
-                                            ), 'type_matches')
+                                        ->from('type_matches')
                                     )
                             )
                             ->union(
@@ -250,17 +244,7 @@ class Asset extends Model
                                         'content_content.type_id',
                                         fn ($query) => $query
                                         ->select('type_id')
-                                        ->from(fn ($query) => $query
-                                            ->select('type_id')
-                                            ->from('universe_types')
-                                            ->where('name_normalized', 'like', $term)
-                                            ->union(
-                                                $query->newQuery()
-                                                    ->from('universe_types')
-                                                    ->select('type_id')
-                                                    ->join('universe_groups', 'universe_groups.group_id', '=', 'universe_types.group_id')
-                                                    ->where('universe_groups.name_normalized', 'like', $term)
-                                            ), 'type_matches')
+                                        ->from('type_matches')
                                     )
                             ), 'matches');
                 });
