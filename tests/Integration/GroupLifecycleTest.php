@@ -36,8 +36,6 @@ test('new group does not dispatches group job if category is present', function 
 it('dispatches assets name job', function () {
     $type = Type::factory()->create();
 
-
-
     $asset = Asset::factory()->create([
         'assetable_id' => $this->test_character->character_id,
         'type_id' => $type->type_id,

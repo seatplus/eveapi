@@ -57,7 +57,7 @@ class FindCorporationRefreshToken
             })
             ->first(function ($token) use ($roles) {
                 foreach ($roles as $role) {
-                    if ($token->character->roles->hasRole('roles', $role) ?? null) {
+                    if ($token->character?->roles?->hasRole('roles', $role)) {
                         return true;
                     }
                 }
