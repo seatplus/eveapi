@@ -34,7 +34,8 @@
         "seatplus/esi-client": "^0.10.0",
         "spatie/laravel-activitylog": "^3.16",
         "doctrine/dbal": "^3.0",
-        "spatie/data-transfer-object": "^3.7"
+        "spatie/data-transfer-object": "^3.7",
+        "staudenmeir/laravel-cte": "^1.0"
     },
     "require-dev": {
         "orchestra/testbench": "^6.10",
