@@ -15,11 +15,10 @@ it('creates group', function () {
 
     expect(Group::first())->toBeNull();
 
-    Event::fakeFor(fn() => \Seatplus\Eveapi\Jobs\Universe\ResolveUniverseGroupByIdJob::dispatchSync($mock_data->group_id));
+    Event::fakeFor(fn () => \Seatplus\Eveapi\Jobs\Universe\ResolveUniverseGroupByIdJob::dispatchSync($mock_data->group_id));
 
     expect(Group::first())
         ->first()->category_id->toBe($mock_data->category_id);
-
 });
 
 
