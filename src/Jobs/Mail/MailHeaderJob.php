@@ -118,6 +118,15 @@ class MailHeaderJob extends NewEsiBase implements HasPathValuesInterface, HasReq
 
                 MailRecipients::upsert($recipients, ['mail_id', 'receivable_id']);
 
+                // Get mail
+                $mail_body = Mail::query()->firstWhere('id', data_get($mail, 'mail_id'))?->body;
+
+                // if mail body is not null
+                if (! is_null($mail_body)) {
+                    // don't dispatch a get mail body job - as it is already present
+                    return;
+                }
+
                 // Get Mail Body
                 $this->batching()
                     ? $this->batch()->add([new MailBodyJob($this->job_container, data_get($mail, 'mail_id'))])
