@@ -4,13 +4,11 @@
 namespace Seatplus\Eveapi\Tests;
 
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Queue;
 use Laravel\Horizon\HorizonServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
-use PDO;
 use Seatplus\Eveapi\EveapiServiceProvider;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Spatie\LaravelRay\RayServiceProvider;
+use Staudenmeir\LaravelCte\DatabaseServiceProvider;
 
 abstract class TestCase extends OrchestraTestCase
 {
@@ -55,7 +53,7 @@ abstract class TestCase extends OrchestraTestCase
         return [
             EveapiServiceProvider::class,
             HorizonServiceProvider::class,
-            RayServiceProvider::class,
+            DatabaseServiceProvider::class,
         ];
     }
 
@@ -81,26 +79,6 @@ abstract class TestCase extends OrchestraTestCase
 
         // Use memory SQLite, cleans it self up
         config(['database.default' => 'mysql']);
-        /*$app['config']->set('database.default', 'testbench');
-        $app['config']->set('database.connections.testbench', [
-            'driver' => 'mysql',
-            //'url' => env('DATABASE_URL'),
-            'host' => '172.0.0.1',
-            'port' => '3308',
-            'database' => 'testbench',
-            'username' => 'default',
-            'password' => 'secret',
-            'unix_socket' => env('DB_SOCKET', ''),
-            'charset' => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => '',
-            'prefix_indexes' => true,
-            'strict' => true,
-            'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
-        ]);*/
 
         config(['app.debug' => true]);
         config(['activitylog.table_name' => 'activity_log']);
