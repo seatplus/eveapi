@@ -11,14 +11,13 @@ use Seatplus\Eveapi\Models\Contacts\Label;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
 beforeEach(function () {
-   $alliance = AllianceInfo::factory()->create();
+    $alliance = AllianceInfo::factory()->create();
 
-   $test_corporation = $this->test_character->corporation;
-   $test_corporation->alliance_id = $alliance->alliance_id;
-   $test_corporation->save();
+    $test_corporation = $this->test_character->corporation;
+    $test_corporation->alliance_id = $alliance->alliance_id;
+    $test_corporation->save();
 
-   $this->test_character = $this->test_character->refresh();
-
+    $this->test_character = $this->test_character->refresh();
 });
 
 test('character has contact test', function () {
@@ -90,7 +89,6 @@ test('contact has label', function () {
 
 
 test('withStandings scope returns contact with corporation and alliance standing', function ($contactable_id, $contactable_type, $contact_type) {
-
     Event::fake();
     expect($contactable_id)->toBeNumeric();
 
@@ -144,20 +142,18 @@ test('withStandings scope returns contact with corporation and alliance standing
         CorporationInfo::class => expect($result)->first()->corporation_standing->toBe(-5.0),
         AllianceInfo::class => expect($result)->first()->alliance_standing->toBe(-5.0),
     };
-
 })->with([
-    [fn() => $this->test_character->corporation->corporation_id, CorporationInfo::class, 'character'],
-    [fn() => $this->test_character->corporation->corporation_id, CorporationInfo::class, 'corporation'],
-    [fn() => $this->test_character->corporation->corporation_id, CorporationInfo::class, 'alliance'],
-    [fn() => $this->test_character->corporation->corporation_id, CorporationInfo::class, 'faction'],
-    [fn() => $this->test_character->alliance->alliance_id, AllianceInfo::class, 'character'],
-    [fn() => $this->test_character->alliance->alliance_id, AllianceInfo::class, 'corporation'],
-    [fn() => $this->test_character->alliance->alliance_id, AllianceInfo::class, 'alliance'],
-    [fn() => $this->test_character->alliance->alliance_id, AllianceInfo::class, 'faction'],
+    [fn () => $this->test_character->corporation->corporation_id, CorporationInfo::class, 'character'],
+    [fn () => $this->test_character->corporation->corporation_id, CorporationInfo::class, 'corporation'],
+    [fn () => $this->test_character->corporation->corporation_id, CorporationInfo::class, 'alliance'],
+    [fn () => $this->test_character->corporation->corporation_id, CorporationInfo::class, 'faction'],
+    [fn () => $this->test_character->alliance->alliance_id, AllianceInfo::class, 'character'],
+    [fn () => $this->test_character->alliance->alliance_id, AllianceInfo::class, 'corporation'],
+    [fn () => $this->test_character->alliance->alliance_id, AllianceInfo::class, 'alliance'],
+    [fn () => $this->test_character->alliance->alliance_id, AllianceInfo::class, 'faction'],
 ]);
 
 it('returns highest hierarchical standing of multiple contact ', function ($contactable_id, $contactable_type) {
-
     Event::fake();
 
     $affiliation = CharacterAffiliation::factory()->create([
@@ -186,7 +182,7 @@ it('returns highest hierarchical standing of multiple contact ', function ($cont
     ]);
 
     expect(Contact::all())->toHaveCount(2);
-    expect(Contact::query()->where('contactable_type',CharacterInfo::class)->get())
+    expect(Contact::query()->where('contactable_type', CharacterInfo::class)->get())
         ->toHaveCount(1);
     expect(Contact::query()->where('contactable_type', $contactable_type)->get())
         ->toHaveCount(1);
@@ -214,18 +210,15 @@ it('returns highest hierarchical standing of multiple contact ', function ($cont
 
     expect($result)
         ->toHaveCount(1)
-        ->each(function($contact) use ($contactable_type) {
-
+        ->each(function ($contact) use ($contactable_type) {
             $contact->standing->toBe(10.0);
 
             match ($contactable_type) {
                 CorporationInfo::class => $contact->corporation_standing->toBe(-10.0),
                 AllianceInfo::class => $contact->alliance_standing->toBe(-10.0),
             };
-
         });
-
 })->with([
-    [fn() => $this->test_character->corporation->corporation_id, CorporationInfo::class],
-    [fn() => $this->test_character->alliance->alliance_id, AllianceInfo::class]
+    [fn () => $this->test_character->corporation->corporation_id, CorporationInfo::class],
+    [fn () => $this->test_character->alliance->alliance_id, AllianceInfo::class],
 ]);
