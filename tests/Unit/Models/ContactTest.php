@@ -10,6 +10,17 @@ use Seatplus\Eveapi\Models\Contacts\ContactLabel;
 use Seatplus\Eveapi\Models\Contacts\Label;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
+beforeEach(function () {
+   $alliance = AllianceInfo::factory()->create();
+
+   $test_corporation = $this->test_character->corporation;
+   $test_corporation->alliance_id = $alliance->alliance_id;
+   $test_corporation->save();
+
+   $this->test_character = $this->test_character->refresh();
+
+});
+
 test('character has contact test', function () {
     expect($this->test_character->contacts)->toHaveCount(0);
 
@@ -77,38 +88,144 @@ test('contact has label', function () {
     $this->assertNotNull(ContactLabel::first()->label_name);
 });
 
-test('contact has character affiliation', function () {
-    $contact = Event::fakeFor(fn () => Contact::factory()->create([
-        'contact_id' => $this->test_character->character_id,
+
+test('withStandings scope returns contact with corporation and alliance standing', function ($contactable_id, $contactable_type, $contact_type) {
+
+    Event::fake();
+    expect($contactable_id)->toBeNumeric();
+
+    $affiliation = CharacterAffiliation::factory()->create([
+        'alliance_id' => faker()->numberBetween(99000000, 100000000),
+        'faction_id' => faker()->numberBetween(500000, 1000000),
+    ]);
+
+    // 1. Create contact of test_character
+    Contact::factory()->create([
+        'contact_id' => $affiliation->character_id,
         'contact_type' => 'character',
+        'standing' => 10.0,
         'contactable_id' => $this->test_character->character_id,
         'contactable_type' => CharacterInfo::class,
-    ]));
+    ]);
 
-    expect($contact->affiliations instanceof CharacterAffiliation)->toBeTrue();
-    expect($contact->affiliations->character_id)->toEqual($this->test_character->character_id);
-});
+    expect(Contact::all())->toHaveCount(1);
 
-test('contact has corporation affiliation', function () {
-    $contact = Event::fakeFor(fn () => Contact::factory()->create([
-        'contact_id' => $this->test_character->corporation->corporation_id,
+    // 2. Create contact for contactable type with negative standing
+    $contact_id = match ($contact_type) {
+        'character' => $affiliation->character_id,
+        'corporation' => $affiliation->corporation_id,
+        'alliance' => $affiliation->alliance_id,
+        'faction' => $affiliation->faction_id,
+    };
+
+    expect($contact_id)->toBeNumeric();
+
+    Contact::factory()->create([
+        'contact_id' => $contact_id,
+        'contact_type' => $contact_type,
+        'standing' => -5.0,
+        'contactable_id' => $contactable_id,
+        'contactable_type' => $contactable_type,
+    ]);
+
+    expect(Contact::all())->toHaveCount(2);
+
+    // Then for the test user get the contact and see the standing
+    $result = Contact::query()
+        ->where('contactable_id', $this->test_character->character_id)
+        ->withStandings($this->test_character->corporation->corporation_id, $this->test_character->alliance->alliance_id)
+        ->get();
+
+    expect($result)
+        ->toHaveCount(1)
+        ->first()->standing->toBe(10.0);
+
+    match ($contactable_type) {
+        CorporationInfo::class => expect($result)->first()->corporation_standing->toBe(-5.0),
+        AllianceInfo::class => expect($result)->first()->alliance_standing->toBe(-5.0),
+    };
+
+})->with([
+    [fn() => $this->test_character->corporation->corporation_id, CorporationInfo::class, 'character'],
+    [fn() => $this->test_character->corporation->corporation_id, CorporationInfo::class, 'corporation'],
+    [fn() => $this->test_character->corporation->corporation_id, CorporationInfo::class, 'alliance'],
+    [fn() => $this->test_character->corporation->corporation_id, CorporationInfo::class, 'faction'],
+    [fn() => $this->test_character->alliance->alliance_id, AllianceInfo::class, 'character'],
+    [fn() => $this->test_character->alliance->alliance_id, AllianceInfo::class, 'corporation'],
+    [fn() => $this->test_character->alliance->alliance_id, AllianceInfo::class, 'alliance'],
+    [fn() => $this->test_character->alliance->alliance_id, AllianceInfo::class, 'faction'],
+]);
+
+it('returns highest hierarchical standing of multiple contact ', function ($contactable_id, $contactable_type) {
+
+    Event::fake();
+
+    $affiliation = CharacterAffiliation::factory()->create([
+        'alliance_id' => faker()->numberBetween(99000000, 100000000),
+        'faction_id' => faker()->numberBetween(500000, 1000000),
+    ]);
+
+    // 1. Create contact of test_character
+    $contact = Contact::factory()->create([
+        'contact_id' => $affiliation->character_id,
+        'contact_type' => 'character',
+        'standing' => 10.0,
+        'contactable_id' => $this->test_character->character_id,
+        'contactable_type' => CharacterInfo::class,
+    ]);
+
+    expect(Contact::all())->toHaveCount(1);
+
+    // 2. Let's add that contact as character to contactable_type contacts
+    Contact::factory()->create([
+        'contact_id' => $affiliation->character_id,
+        'contact_type' => 'character',
+        'standing' => 5.0,
+        'contactable_id' => $contactable_id,
+        'contactable_type' => $contactable_type,
+    ]);
+
+    expect(Contact::all())->toHaveCount(2);
+    expect(Contact::query()->where('contactable_type',CharacterInfo::class)->get())
+        ->toHaveCount(1);
+    expect(Contact::query()->where('contactable_type', $contactable_type)->get())
+        ->toHaveCount(1);
+
+    // 3. But the contactable_type does not like its corporation
+    Contact::factory()->create([
+        'contact_id' => $affiliation->corporation_id,
         'contact_type' => 'corporation',
-        'contactable_id' => $this->test_character->character_id,
-        'contactable_type' => CharacterInfo::class,
-    ]));
+        'standing' => -10.0,
+        'contactable_id' => $contactable_id,
+        'contactable_type' => $contactable_type,
+    ]);
 
-    expect($contact->affiliations instanceof CharacterAffiliation)->toBeTrue();
-    expect($contact->affiliations->corporation_id)->toEqual($this->test_character->corporation->corporation_id);
-});
+    expect(Contact::all())->toHaveCount(3);
+    expect(Contact::query()->where('contactable_type', CharacterInfo::class)->get())
+        ->toHaveCount(1);
+    expect(Contact::query()->where('contactable_type', $contactable_type)->get())
+        ->toHaveCount(2);
 
-test('contact has alliance affiliation', function () {
-    $contact = Event::fakeFor(fn () => Contact::factory()->create([
-        'contact_id' => $this->test_character->corporation->alliance_id,
-        'contact_type' => 'alliance',
-        'contactable_id' => $this->test_character->character_id,
-        'contactable_type' => CharacterInfo::class,
-    ]));
+    // Then for the test user get the contact and see the standing
+    $result = Contact::query()
+        ->where('contactable_id', $this->test_character->character_id)
+        ->withStandings($this->test_character->corporation->corporation_id, $contactable_type === AllianceInfo::class ? $contactable_id : null)
+        ->get();
 
-    expect($contact->affiliations instanceof CharacterAffiliation)->toBeTrue();
-    expect($contact->affiliations->alliance_id)->toEqual($this->test_character->corporation->alliance_id);
-});
+    expect($result)
+        ->toHaveCount(1)
+        ->each(function($contact) use ($contactable_type) {
+
+            $contact->standing->toBe(10.0);
+
+            match ($contactable_type) {
+                CorporationInfo::class => $contact->corporation_standing->toBe(-10.0),
+                AllianceInfo::class => $contact->alliance_standing->toBe(-10.0),
+            };
+
+        });
+
+})->with([
+    [fn() => $this->test_character->corporation->corporation_id, CorporationInfo::class],
+    [fn() => $this->test_character->alliance->alliance_id, AllianceInfo::class]
+]);
