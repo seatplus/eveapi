@@ -49,10 +49,10 @@ it('creates BatchUpdate entries', function () {
         ->batchable_type->toBe(\Seatplus\Eveapi\Models\Character\CharacterInfo::class)
         ->batchable->toBeInstanceOf(\Seatplus\Eveapi\Models\Character\CharacterInfo::class)
         ->finished_at->toBeNull()
-        ->started_at->toBeString();
+        ->started_at->toBeInstanceOf(\Carbon\Carbon::class);
 
 
-})->only();
+});
 
 it('dispatches character info', function () {
     Bus::fake();

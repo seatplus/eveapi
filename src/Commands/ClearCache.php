@@ -94,6 +94,7 @@ class ClearCache extends Command
     private function truncateBatch()
     {
         DB::table('job_batches')->truncate();
+        BatchUpdate::query()->pending()->delete();
     }
 
     private function cleanupBatchUpdate()

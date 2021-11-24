@@ -10,7 +10,7 @@ return new class extends Migration {
         Schema::create('batch_updates', function (Blueprint $table) {
             $table->id();
             $table->morphs('batchable');
-            $table->string('batch_id')->nullable();
+            $table->string('batch_id')->nullable()->index();
             $table->timestamp('started_at')->nullable();
             $table->timestamp('finished_at')->nullable();
             $table->timestamps();

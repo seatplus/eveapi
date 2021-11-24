@@ -16,14 +16,24 @@ class BatchUpdate extends Model
      */
     protected $guarded = [];
 
+    protected $casts = [
+        'started_at' => 'datetime',
+        'finished_at' => 'datetime',
+    ];
+
     public function batchable(): MorphTo
     {
         return $this->morphTo();
     }
 
+    public function getIsPendingAttribute()
+    {
+        return !is_null($this->started_at) && is_null($this->finished_at);
+    }
+
     public function scopePending(Builder $query)
     {
-        $query->whereNull('finished_at');
+        $query->whereNotNull('started_at')->whereNull('finished_at');
     }
 
     public function scopeCharacter(Builder $query)
