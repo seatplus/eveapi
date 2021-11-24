@@ -34,6 +34,22 @@ use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletJournalJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
 use Seatplus\Eveapi\Models\RefreshToken;
 
+it('creates BatchUpdate entries', function () {
+    Bus::fake();
+
+    expect(testCharacter())->refresh_token->not()->toBeNull();
+
+    (new UpdateCharacter)->handle();
+
+    expect(\Seatplus\Eveapi\Models\BatchUpdate::all())->toHaveCount(RefreshToken::count());
+    expect(\Seatplus\Eveapi\Models\BatchUpdate::first())
+        ->batchable_id->toBe(testCharacter()->character_id)
+        ->batchable_type->toBe(\Seatplus\Eveapi\Models\Character\CharacterInfo::class)
+        ->batchable->toBeInstanceOf(\Seatplus\Eveapi\Models\Character\CharacterInfo::class)
+        ->finished_at->toBeNull()
+        ->started_at->toBeInstanceOf(\Carbon\Carbon::class);
+});
+
 it('dispatches character info', function () {
     Bus::fake();
 
@@ -53,7 +69,7 @@ it('dispatch assets hydration job', function () {
 it('does not dispatch asset job for missing scopes', function () {
     Bus::fake();
 
-    (new UpdateCharacter)->handle();
+    //(new UpdateCharacter)->handle();
 
     $job_container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]);
 

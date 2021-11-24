@@ -31,6 +31,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis as RedisHelper;
+use Seatplus\Eveapi\Models\BatchUpdate;
 
 class ClearCache extends Command
 {
@@ -67,6 +68,8 @@ class ClearCache extends Command
 
         $this->truncateBatch();
 
+        $this->cleanupBatchUpdate();
+
         $this->info('success');
     }
 
@@ -91,5 +94,12 @@ class ClearCache extends Command
     private function truncateBatch()
     {
         DB::table('job_batches')->truncate();
+        BatchUpdate::query()->pending()->delete();
+    }
+
+    private function cleanupBatchUpdate()
+    {
+        $this->info('cleanup pending batch updates');
+        BatchUpdate::query()->pending()->delete();
     }
 }

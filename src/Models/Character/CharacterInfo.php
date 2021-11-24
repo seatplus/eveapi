@@ -32,6 +32,7 @@ use Seatplus\Eveapi\database\factories\CharacterInfoFactory;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Application;
 use Seatplus\Eveapi\Models\Assets\Asset;
+use Seatplus\Eveapi\Models\BatchUpdate;
 use Seatplus\Eveapi\Models\Contacts\Contact;
 use Seatplus\Eveapi\Models\Contacts\Label;
 use Seatplus\Eveapi\Models\Contracts\Contract;
@@ -198,5 +199,10 @@ class CharacterInfo extends Model
     public function balance()
     {
         return $this->morphOne(Balance::class, 'balanceable');
+    }
+
+    public function batch_update()
+    {
+        return $this->morphOne(BatchUpdate::class, 'batchable');
     }
 }

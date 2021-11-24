@@ -45,6 +45,8 @@ use Seatplus\Eveapi\Jobs\Hydrate\Character\ContractHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\MailsHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\SkillsHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\WalletHydrateBatch;
+use Seatplus\Eveapi\Models\BatchUpdate;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 class UpdateCharacter implements ShouldQueue
@@ -72,21 +74,52 @@ class UpdateCharacter implements ShouldQueue
 
     public function handle()
     {
-        if ($this->refresh_token) {
-            return $this->execute($this->refresh_token, 'high');
-        }
-
-        return RefreshToken::cursor()->each(function ($token) {
-            $this->execute($token);
-        });
+        $this->refresh_token
+            ? $this->addPriorityBatch($this->refresh_token)
+            : RefreshToken::cursor()->each(fn ($token) => $this->addBatch($token));
     }
 
-    private function execute(RefreshToken $refresh_token, string $queue = 'default')
+    public function addPriorityBatch(RefreshToken $refreshToken)
+    {
+        BatchUpdate::query()
+            ->where('batchable_id', $refreshToken->character_id)
+            ->delete();
+
+        $this->addBatch($refreshToken, 'high');
+    }
+
+    public function addBatch(RefreshToken $refreshToken, $queue = 'default') : void
+    {
+
+        // 1. Get BatchUpdate Entry
+        $batch_update = BatchUpdate::firstOrCreate([
+            'batchable_id' => $refreshToken->character_id,
+            'batchable_type' => CharacterInfo::class,
+        ]);
+
+        // 2. Check if it is still pending
+        // Discard update if still pending or finished at is younger then 60 minutes
+        if ($batch_update->is_pending && now()->isSameDay($batch_update->started_at)) {
+            return;
+        }
+
+        // reset batch_id, finished_at and started_at
+        $batch_update->finished_at = null;
+        $batch_update->batch_id = null;
+        $batch_update->started_at = now();
+
+        // 3. Dispatch and Return Job
+        $batch = $this->execute($refreshToken, $queue);
+
+        $batch_update->batch_id = $batch->id;
+        $batch_update->save();
+    }
+
+    private function execute(RefreshToken $refresh_token, string $queue = 'default') : Batch
     {
         $job_container = new JobContainer(['refresh_token' => $refresh_token, 'queue' => $queue]);
 
         $character = optional($refresh_token->refresh()->character)->name ?? $refresh_token->character_id;
-        $success_message = sprintf('Character update batch of %s processed!', $character);
         $batch_name = sprintf('%s (character) update batch', $character);
 
         return Bus::batch([
@@ -103,8 +136,13 @@ class UpdateCharacter implements ShouldQueue
             new SkillsHydrateBatch($job_container),
             new MailsHydrateBatch($job_container),
 
-        ])->then(
-            fn (Batch $batch) => logger()->info($success_message)
-        )->name($batch_name)->onQueue($queue)->allowFailures()->dispatch();
+        ])
+            ->finally(function (Batch $batch) {
+                BatchUpdate::where('batch_id', $batch->id)->update(['finished_at' => now()]);
+            })
+            ->name($batch_name)
+            ->onQueue($queue)
+            ->allowFailures()
+            ->dispatch();
     }
 }
