@@ -34,9 +34,7 @@ use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletJournalJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
 use Seatplus\Eveapi\Models\RefreshToken;
 
-
 it('creates BatchUpdate entries', function () {
-
     Bus::fake();
 
     expect(testCharacter())->refresh_token->not()->toBeNull();
@@ -50,8 +48,6 @@ it('creates BatchUpdate entries', function () {
         ->batchable->toBeInstanceOf(\Seatplus\Eveapi\Models\Character\CharacterInfo::class)
         ->finished_at->toBeNull()
         ->started_at->toBeInstanceOf(\Carbon\Carbon::class);
-
-
 });
 
 it('dispatches character info', function () {

@@ -28,7 +28,7 @@ class BatchUpdate extends Model
 
     public function getIsPendingAttribute()
     {
-        return !is_null($this->started_at) && is_null($this->finished_at);
+        return ! is_null($this->started_at) && is_null($this->finished_at);
     }
 
     public function scopePending(Builder $query)
@@ -38,7 +38,6 @@ class BatchUpdate extends Model
 
     public function scopeCharacter(Builder $query)
     {
-        $query->whereMorphedTo('batchable',CharacterInfo::class);
+        $query->whereMorphedTo('batchable', CharacterInfo::class);
     }
-
 }

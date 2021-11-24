@@ -99,7 +99,7 @@ class UpdateCharacter implements ShouldQueue
 
         // 2. Check if it is still pending
         // Discard update if still pending or finished at is younger then 60 minutes
-        if($batch_update->is_pending && now()->isSameDay($batch_update->started_at)) {
+        if ($batch_update->is_pending && now()->isSameDay($batch_update->started_at)) {
             return;
         }
 
@@ -137,8 +137,8 @@ class UpdateCharacter implements ShouldQueue
             new MailsHydrateBatch($job_container),
 
         ])
-            ->finally(function(Batch $batch) {
-               BatchUpdate::where('batch_id', $batch->id)->update(['finished_at' => now()]);
+            ->finally(function (Batch $batch) {
+                BatchUpdate::where('batch_id', $batch->id)->update(['finished_at' => now()]);
             })
             ->name($batch_name)
             ->onQueue($queue)

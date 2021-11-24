@@ -3,23 +3,19 @@
 use Seatplus\Eveapi\Models\BatchUpdate;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
-dataset('batch_update', function() {
-    yield fn() => BatchUpdate::create([
+dataset('batch_update', function () {
+    yield fn () => BatchUpdate::create([
         'batchable_id' => CharacterInfo::first()->character_id,
         'batchable_type' => CharacterInfo::class,
     ]);
 });
 
-it('has has batchable morph to relationship', function ($batch){
-
+it('has has batchable morph to relationship', function ($batch) {
     expect($batch)->batchable->toBeInstanceOf(CharacterInfo::class);
-
 })->with('batch_update');
 
-test('character has batch_update relationship ', function (){
-
+test('character has batch_update relationship ', function () {
     expect($this->test_character)->batch_update->toBeInstanceOf(BatchUpdate::class);
-
 })->with('batch_update');
 
 it('has isPending attribute and scope', function ($batch) {
@@ -52,5 +48,4 @@ it('has isPending attribute and scope', function ($batch) {
     // check the scope, should be 0
     $query_result = BatchUpdate::query()->pending()->get();
     expect($query_result)->toHaveCount(0);
-
 })->with('batch_update');
