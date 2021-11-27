@@ -48,6 +48,10 @@ class RetrieveEsiData
 
     private EsiClientSetup $esi_client;
 
+    /**
+     * @throws \Spatie\DataTransferObject\Exceptions\UnknownProperties
+     * @throws RequestFailedException
+     */
     public function getClient(): EsiClient
     {
         if (! isset($this->client)) {
@@ -58,7 +62,13 @@ class RetrieveEsiData
             }
 
             // retrieve up-to-date token
-            $refresh_token = $this->getUpToDateRefreshToken();
+            try {
+                $refresh_token = $this->getUpToDateRefreshToken();
+            } catch (RequestFailedException $exception) {
+                $this->handleException($exception);
+
+                throw $exception;
+            }
 
             $authentication = new EsiAuthentication([
                 'refresh_token' => $refresh_token->refresh_token,
