@@ -87,7 +87,6 @@ class AllianceInfoJob extends NewEsiBase implements HasPathValuesInterface
      */
     public function handle(): void
     {
-
         $response = $this->retrieve();
 
         if ($response->isCachedLoad()) {

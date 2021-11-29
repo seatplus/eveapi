@@ -33,7 +33,6 @@ use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
 
 class WalletHydrateBatch extends HydrateCharacterBase
 {
-
     public function __construct(JobContainer $job_container)
     {
         parent::__construct($job_container);
@@ -43,7 +42,6 @@ class WalletHydrateBatch extends HydrateCharacterBase
 
     public function handle()
     {
-
         if ($this->hasRequiredScope()) {
             $this->batch()->add([
                 new CharacterWalletJournalJob($this->job_container),
@@ -51,6 +49,5 @@ class WalletHydrateBatch extends HydrateCharacterBase
                 new CharacterBalanceJob($this->job_container),
             ]);
         }
-
     }
 }

@@ -103,7 +103,6 @@ class CharacterAssetsNameJob extends NewEsiBase implements HasPathValuesInterfac
      */
     public function handle(): void
     {
-
         Asset::query()
             ->with('type.group')
             ->whereHas('type.group', function (Builder $query) {

@@ -31,7 +31,6 @@ use Seatplus\Eveapi\Jobs\Contracts\CharacterContractsJob;
 
 class ContractHydrateBatch extends HydrateCharacterBase
 {
-
     private CharacterContractsJob $contracts_job;
 
     public function __construct(JobContainer $job_container)

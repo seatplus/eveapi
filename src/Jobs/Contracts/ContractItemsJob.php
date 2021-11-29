@@ -93,7 +93,6 @@ class ContractItemsJob extends NewEsiBase implements HasPathValuesInterface, Has
 
     public function handle(): void
     {
-
         $response = $this->retrieve();
 
         if ($response->isCachedLoad() && ContractItem::where('contract_id', $this->contract_id)->count() > 0) {

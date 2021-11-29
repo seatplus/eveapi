@@ -28,7 +28,6 @@ namespace Seatplus\Eveapi\Jobs\Hydrate\Character;
 
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Skills\SkillQueueJob;
-use Seatplus\Eveapi\Jobs\Skills\SkillsJob;
 
 class SkillQueueHydrateBatch extends HydrateCharacterBase
 {
@@ -44,7 +43,6 @@ class SkillQueueHydrateBatch extends HydrateCharacterBase
 
     public function handle()
     {
-
         if ($this->hasRequiredScope()) {
             $this->batch()->add([$this->skill_queue_job]);
         }
