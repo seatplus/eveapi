@@ -27,30 +27,26 @@
 namespace Seatplus\Eveapi\Jobs\Hydrate\Character;
 
 use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Jobs\Wallet\CharacterBalanceJob;
-use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletJournalJob;
-use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
+use Seatplus\Eveapi\Jobs\Skills\SkillQueueJob;
+use Seatplus\Eveapi\Jobs\Skills\SkillsJob;
 
-class WalletHydrateBatch extends HydrateCharacterBase
+class SkillQueueHydrateBatch extends HydrateCharacterBase
 {
+    private SkillQueueJob $skill_queue_job;
 
     public function __construct(JobContainer $job_container)
     {
         parent::__construct($job_container);
 
-        parent::setRequiredScope('esi-wallet.read_character_wallet.v1');
+        $this->skill_queue_job = new SkillQueueJob($this->job_container);
+        parent::setRequiredScope($this->skill_queue_job->getRequiredScope());
     }
 
     public function handle()
     {
 
         if ($this->hasRequiredScope()) {
-            $this->batch()->add([
-                new CharacterWalletJournalJob($this->job_container),
-                new CharacterWalletTransactionJob($this->job_container),
-                new CharacterBalanceJob($this->job_container),
-            ]);
+            $this->batch()->add([$this->skill_queue_job]);
         }
-
     }
 }

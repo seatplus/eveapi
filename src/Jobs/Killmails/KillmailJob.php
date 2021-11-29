@@ -103,9 +103,7 @@ class KillmailJob extends NewEsiBase implements HasPathValuesInterface
 
             $this->cleanUp($killmail);
 
-            $this->batching()
-                ? $this->batch()->add([new ResolveUniverseSystemBySystemIdJob(data_get($response, 'solar_system_id'))])
-                : ResolveUniverseSystemBySystemIdJob::dispatch(data_get($response, 'solar_system_id'))->onQueue($this->queue);
+            ResolveUniverseSystemBySystemIdJob::dispatch(data_get($response, 'solar_system_id'))->onQueue($this->queue);
 
             if (is_null($killmail->ship)) {
                 $this->getMissingTypeIds(collect(data_get($response, 'victim.ship_type_id')));
@@ -169,9 +167,7 @@ class KillmailJob extends NewEsiBase implements HasPathValuesInterface
 
     private function getMissingTypeIds(Collection $type_ids)
     {
-        $this->batching()
-            ? $this->batch()->add($type_ids->map(fn ($type_id) => new ResolveUniverseTypeByIdJob($type_id))->toArray())
-            : $type_ids->each(fn ($type_id) => ResolveUniverseTypeByIdJob::dispatch($type_id)->onQueue($this->queue));
+        $type_ids->each(fn ($type_id) => ResolveUniverseTypeByIdJob::dispatch($type_id)->onQueue($this->queue));
     }
 
     private function cleanUp(Killmail $killmail)

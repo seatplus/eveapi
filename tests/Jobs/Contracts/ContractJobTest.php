@@ -49,22 +49,11 @@ it('creates contract job', function () {
 
     expect($this->test_character->refresh()->contracts)->toHaveCount(0);
 
-    Event::fakeFor(fn () => dispatch_now($job));
+    Queue::fake();
+    Event::fakeFor(fn () => $job->handle());
 
     expect(Contract::all())->toHaveCount(5);
     expect($this->test_character->refresh()->contracts)->toHaveCount(5);
-});
-
-it('creates contract job other way', function () {
-    $mock_data = buildContractJobMockEsiData();
-
-    $job_container = new JobContainer([
-        'refresh_token' => $this->test_character->refresh_token,
-    ]);
-
-    Event::fakeFor(fn () => CharacterContractsJob::dispatchNow($job_container));
-
-    expect(Contract::all())->toHaveCount(5);
 });
 
 // Helpers

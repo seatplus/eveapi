@@ -103,11 +103,6 @@ class CharacterAssetsNameJob extends NewEsiBase implements HasPathValuesInterfac
      */
     public function handle(): void
     {
-        if ($this->batching() && $this->batch()->cancelled()) {
-            // Determine if the batch has been cancelled...
-
-            return;
-        }
 
         Asset::query()
             ->with('type.group')

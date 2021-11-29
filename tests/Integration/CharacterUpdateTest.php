@@ -363,7 +363,7 @@ test('skills hydration adds skill queue jobs to batch', function () {
 
     $job_container = new JobContainer(['refresh_token' => $refresh_token]);
 
-    $job = Mockery::mock(SkillsHydrateBatch::class . '[batch]', [$job_container]);
+    $job = Mockery::mock(\Seatplus\Eveapi\Jobs\Hydrate\Character\SkillQueueHydrateBatch::class . '[batch]', [$job_container]);
 
     $batch = Mockery::mock(Batch::class)->makePartial();
 

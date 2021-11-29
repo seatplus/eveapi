@@ -26,39 +26,28 @@
 
 namespace Seatplus\Eveapi\Jobs\Hydrate\Character;
 
+use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Skills\SkillQueueJob;
 use Seatplus\Eveapi\Jobs\Skills\SkillsJob;
 
+
 class SkillsHydrateBatch extends HydrateCharacterBase
 {
+    private SkillsJob $skills_job;
+
+    public function __construct(JobContainer $job_container)
+    {
+        parent::__construct($job_container);
+
+        $this->skills_job = new SkillsJob($this->job_container);
+        parent::setRequiredScope($this->skills_job->getRequiredScope());
+    }
+
     public function handle()
     {
-        $this->hydrateSkill();
-        $this->hydrateSkillQueue();
-    }
 
-    private function hydrateSkill()
-    {
-        $job = new SkillsJob($this->job_container);
-
-        parent::setRequiredScope($job->getRequiredScope());
-
-        $this->hydrate([$job]);
-    }
-
-    private function hydrateSkillQueue()
-    {
-        $job = new SkillQueueJob($this->job_container);
-
-        parent::setRequiredScope($job->getRequiredScope());
-
-        $this->hydrate([$job]);
-    }
-
-    private function hydrate(array $array)
-    {
         if ($this->hasRequiredScope()) {
-            $this->batch()->add($array);
+            $this->batch()->add([$this->skills_job]);
         }
     }
 }

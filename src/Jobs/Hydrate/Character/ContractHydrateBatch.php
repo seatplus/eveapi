@@ -26,23 +26,27 @@
 
 namespace Seatplus\Eveapi\Jobs\Hydrate\Character;
 
+use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Contracts\CharacterContractsJob;
 
 class ContractHydrateBatch extends HydrateCharacterBase
 {
-    public function handle()
+
+    private CharacterContractsJob $contracts_job;
+
+    public function __construct(JobContainer $job_container)
     {
-        $job = new CharacterContractsJob($this->job_container);
+        parent::__construct($job_container);
 
-        parent::setRequiredScope($job->getRequiredScope());
+        $this->contracts_job = new CharacterContractsJob($this->job_container);
 
-        $this->hydrate([$job]);
+        parent::setRequiredScope($this->contracts_job->getRequiredScope());
     }
 
-    private function hydrate(array $array)
+    public function handle()
     {
         if ($this->hasRequiredScope()) {
-            $this->batch()->add($array);
+            $this->batch()->add([$this->contracts_job]);
         }
     }
 }

@@ -128,9 +128,7 @@ class MailHeaderJob extends NewEsiBase implements HasPathValuesInterface, HasReq
                 }
 
                 // Get Mail Body
-                $this->batching()
-                    ? $this->batch()->add([new MailBodyJob($this->job_container, data_get($mail, 'mail_id'))])
-                    : MailBodyJob::dispatch($this->job_container, data_get($mail, 'mail_id'))->onQueue($this->queue);
+                MailBodyJob::dispatch($this->job_container, data_get($mail, 'mail_id'))->onQueue($this->queue);
             });
 
         // see https://divinglaravel.com/avoiding-memory-leaks-when-running-laravel-queue-workers

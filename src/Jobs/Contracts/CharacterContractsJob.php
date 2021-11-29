@@ -127,18 +127,14 @@ class CharacterContractsJob extends NewEsiBase implements HasPathValuesInterface
                 $character->contracts()->syncWithoutDetaching($contract_ids);
             }
 
-            $location_job_array = Contract::query()
+            Contract::query()
                 ->whereIn('contract_id', $contract_ids)
                 ->doesntHave('items')
                 ->where('volume', '>', 0)
                 ->where('status', '<>', 'deleted')
                 ->where('type', '<>', 'courier')
                 ->get()
-                ->map(fn ($contract) => new ContractItemsJob($contract->contract_id, $this->job_container, 'character'));
-
-            if ($this->batching()) {
-                $this->batch()->add($location_job_array);
-            }
+                ->each(fn ($contract) => ContractItemsJob::dispatch($contract->contract_id, $this->job_container, 'character')->onQueue($this->queue));
 
             // Lastly if more pages are present load next page
             if ($page >= $response->pages) {

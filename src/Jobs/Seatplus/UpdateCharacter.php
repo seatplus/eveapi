@@ -43,6 +43,7 @@ use Seatplus\Eveapi\Jobs\Hydrate\Character\CharacterRolesHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\ContactHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\ContractHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\MailsHydrateBatch;
+use Seatplus\Eveapi\Jobs\Hydrate\Character\SkillQueueHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\SkillsHydrateBatch;
 use Seatplus\Eveapi\Jobs\Hydrate\Character\WalletHydrateBatch;
 use Seatplus\Eveapi\Models\BatchUpdate;
@@ -134,6 +135,7 @@ class UpdateCharacter implements ShouldQueue
             new WalletHydrateBatch($job_container),
             new ContractHydrateBatch($job_container),
             new SkillsHydrateBatch($job_container),
+            new SkillQueueHydrateBatch($job_container),
             new MailsHydrateBatch($job_container),
 
         ])

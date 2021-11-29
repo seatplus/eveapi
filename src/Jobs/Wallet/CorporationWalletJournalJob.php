@@ -101,28 +101,6 @@ class CorporationWalletJournalJob implements ShouldQueue, ShouldBeUnique
                 fn (Builder $query) => $query->where('corporation_id', $this->corporation_id)
             )
             ->get()
-            ->each(
-                fn ($wallet) => $this->batching()
-                ? $this->handleBatching($wallet->division)
-                : $this->handleNonBatching($wallet->division)
-            );
-    }
-
-    private function handleBatching(int $division): void
-    {
-        if ($this->batch()->cancelled()) {
-            // Determine if the batch has been cancelled...
-
-            return;
-        }
-
-        $this->batch()->add([
-            new CorporationWalletJournalByDivisionJob($this->job_container, $division),
-        ]);
-    }
-
-    private function handleNonBatching(int $division): void
-    {
-        CorporationWalletJournalByDivisionJob::dispatch($this->job_container, $division)->onQueue($this->queue);
+            ->each(fn ($wallet) => CorporationWalletJournalByDivisionJob::dispatch($this->job_container, $wallet->division)->onQueue($this->queue));
     }
 }

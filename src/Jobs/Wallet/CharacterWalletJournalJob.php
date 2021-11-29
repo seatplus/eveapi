@@ -101,7 +101,7 @@ class CharacterWalletJournalJob extends NewEsiBase implements HasPathValuesInter
             $response = $this->retrieve($this->getPage());
 
             if ($response->isCachedLoad()) {
-                return;
+                continue;
             }
 
             $processor->execute($response);

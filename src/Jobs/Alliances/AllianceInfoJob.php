@@ -87,11 +87,6 @@ class AllianceInfoJob extends NewEsiBase implements HasPathValuesInterface
      */
     public function handle(): void
     {
-        if ($this->batching() && $this->batch()->cancelled()) {
-            // Determine if the batch has been cancelled...
-
-            return;
-        }
 
         $response = $this->retrieve();
 

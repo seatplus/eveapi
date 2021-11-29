@@ -93,11 +93,6 @@ class ContractItemsJob extends NewEsiBase implements HasPathValuesInterface, Has
 
     public function handle(): void
     {
-        if ($this->batching() && $this->batch()->cancelled()) {
-            // Determine if the batch has been cancelled...
-
-            return;
-        }
 
         $response = $this->retrieve();
 
