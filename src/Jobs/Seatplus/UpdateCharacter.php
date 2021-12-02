@@ -26,7 +26,6 @@
 
 namespace Seatplus\Eveapi\Jobs\Seatplus;
 
-use Illuminate\Bus\Batch;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -34,20 +33,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\RateLimitedWithRedis;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Bus;
-use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
-use Seatplus\Eveapi\Jobs\Character\CorporationHistoryJob;
-use Seatplus\Eveapi\Jobs\Hydrate\Character\CharacterAssetsHydrateBatch;
-use Seatplus\Eveapi\Jobs\Hydrate\Character\CharacterRolesHydrateBatch;
-use Seatplus\Eveapi\Jobs\Hydrate\Character\ContactHydrateBatch;
-use Seatplus\Eveapi\Jobs\Hydrate\Character\ContractHydrateBatch;
-use Seatplus\Eveapi\Jobs\Hydrate\Character\MailsHydrateBatch;
-use Seatplus\Eveapi\Jobs\Hydrate\Character\SkillsHydrateBatch;
-use Seatplus\Eveapi\Jobs\Hydrate\Character\WalletHydrateBatch;
 use Seatplus\Eveapi\Jobs\Seatplus\Batch\CharacterBatchJob;
-use Seatplus\Eveapi\Models\BatchUpdate;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 class UpdateCharacter implements ShouldQueue
@@ -77,8 +63,6 @@ class UpdateCharacter implements ShouldQueue
     {
         $this->refresh_token
             ? CharacterBatchJob::dispatch($this->refresh_token->character_id)->onQueue('high')
-            : RefreshToken::cursor()->each(fn ($token, $key) => CharacterBatchJob::dispatch($token->character_id)->delay(now()->addSeconds($key*10))->onQueue('default'));
+            : RefreshToken::cursor()->each(fn ($token, $key) => CharacterBatchJob::dispatch($token->character_id)->delay(now()->addSeconds($key * 10))->onQueue('default'));
     }
-
-
 }

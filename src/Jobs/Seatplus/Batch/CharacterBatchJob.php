@@ -50,11 +50,10 @@ class CharacterBatchJob implements ShouldQueue, ShouldBeUnique
 
     public function handle()
     {
-
         Redis::throttle($this->character_id . ":" . $this->queue)
             ->block(0)
             ->allow(1)
-            ->every(60*60)
+            ->every(60 * 60)
             ->then(function () {
                 BatchUpdate::query()
                     ->where('batchable_id', $this->character_id)
@@ -85,12 +84,10 @@ class CharacterBatchJob implements ShouldQueue, ShouldBeUnique
             }, function () {
                 $this->delete();
             });
-
     }
 
     private function execute() : Batch
     {
-
         $character = $this->refresh_token?->character?->name ?? $this->character_id;
         $batch_name = sprintf('%s (character) update batch', $character);
 
@@ -117,5 +114,4 @@ class CharacterBatchJob implements ShouldQueue, ShouldBeUnique
             ->allowFailures()
             ->dispatch();
     }
-
 }

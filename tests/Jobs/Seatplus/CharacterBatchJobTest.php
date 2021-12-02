@@ -57,7 +57,7 @@ it('dispatches job', function (string $hydrateJob) {
 })->with([
     SkillsHydrateBatch::class,
     CorporationHistoryJob::class,
-    CharacterRolesHydrateBatch::class
+    CharacterRolesHydrateBatch::class,
 ]);
 
 test('hydration test adds no jobs to batch if scopes are missing', function (string $hydrateBatchJob) {
@@ -78,12 +78,11 @@ test('hydration test adds no jobs to batch if scopes are missing', function (str
     ContactHydrateBatch::class,
     CharacterRolesHydrateBatch::class,
     CharacterAssetsHydrateBatch::class,
-    CharacterInfoJob::class
+    CharacterInfoJob::class,
 ]);
 
 test('hydrationJob adds jobs to batch', function (array $scopes, string $hydrateBatchJob, array $addedJobs) {
-
-    $refresh_token = Event::fakeFor(fn() => RefreshToken::factory()->scopes($scopes)->create());
+    $refresh_token = Event::fakeFor(fn () => RefreshToken::factory()->scopes($scopes)->create());
 
     $job_container = new JobContainer(['refresh_token' => $refresh_token]);
 
@@ -104,53 +103,53 @@ test('hydrationJob adds jobs to batch', function (array $scopes, string $hydrate
     [
         ['esi-wallet.read_character_wallet.v1'],
         WalletHydrateBatch::class,
-        [CharacterWalletJournalJob::class, CharacterWalletTransactionJob::class, CharacterBalanceJob::class]
+        [CharacterWalletJournalJob::class, CharacterWalletTransactionJob::class, CharacterBalanceJob::class],
     ],
     [
         ['esi-alliances.read_contacts.v1'],
         ContactHydrateBatch::class,
-        [[AllianceContactJob::class, AllianceContactLabelJob::class]]
+        [[AllianceContactJob::class, AllianceContactLabelJob::class]],
     ],
     [
         ['esi-corporations.read_contacts.v1'],
         ContactHydrateBatch::class,
-        [[CorporationContactJob::class, CorporationContactLabelJob::class]]
+        [[CorporationContactJob::class, CorporationContactLabelJob::class]],
     ],
     [
         ['esi-characters.read_contacts.v1'],
         ContactHydrateBatch::class,
-        [[CharacterContactJob::class, CharacterContactLabelJob::class]]
+        [[CharacterContactJob::class, CharacterContactLabelJob::class]],
     ],
     [
         ['esi-characters.read_corporation_roles.v1'],
         CharacterRolesHydrateBatch::class,
-        [CharacterRoleJob::class]
+        [CharacterRoleJob::class],
     ],
     [
         ['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1'],
         CharacterAssetsHydrateBatch::class,
-        [[CharacterAssetJob::class, CharacterAssetsNameJob::class]]
+        [[CharacterAssetJob::class, CharacterAssetsNameJob::class]],
     ],
     [
         ['esi-mail.read_mail.v1'],
         MailsHydrateBatch::class,
-        [MailHeaderJob::class]
+        [MailHeaderJob::class],
     ],
     [
         ['esi-skills.read_skillqueue.v1'],
         SkillsHydrateBatch::class,
-        [SkillQueueJob::class]
+        [SkillQueueJob::class],
     ],
     [
         ['esi-skills.read_skills.v1'],
         SkillsHydrateBatch::class,
-        [SkillsJob::class]
+        [SkillsJob::class],
     ],
 ]);
 
 function buildAddedJobsArray(array $jobs, JobContainer $job_container) : array
 {
     return collect($jobs)
-        ->map(fn($job) => is_array($job) ? buildAddedJobsArray($job, $job_container) : new $job($job_container))
+        ->map(fn ($job) => is_array($job) ? buildAddedJobsArray($job, $job_container) : new $job($job_container))
         ->toArray();
 }
