@@ -77,7 +77,6 @@ abstract class TestCase extends OrchestraTestCase
     protected function getEnvironmentSetUp($app)
     {
 
-        // Use memory SQLite, cleans it self up
         config(['database.default' => 'mysql']);
 
         config(['app.debug' => true]);
