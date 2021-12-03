@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Seatplus;
 
+use Cron\CronExpression;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -35,6 +36,7 @@ use Illuminate\Queue\Middleware\RateLimitedWithRedis;
 use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Jobs\Seatplus\Batch\CharacterBatchJob;
 use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Models\Schedules;
 
 class UpdateCharacter implements ShouldQueue
 {
@@ -44,10 +46,9 @@ class UpdateCharacter implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
+    private int $delaySeconds;
+
     public function __construct(
-        /**
-         * @var \Seatplus\Eveapi\Models\RefreshToken|null
-         */
         public ?RefreshToken $refresh_token = null
     ) {
     }
@@ -61,8 +62,45 @@ class UpdateCharacter implements ShouldQueue
 
     public function handle()
     {
+
         $this->refresh_token
             ? CharacterBatchJob::dispatch($this->refresh_token->character_id)->onQueue('high')
-            : RefreshToken::cursor()->each(fn ($token, $key) => CharacterBatchJob::dispatch($token->character_id)->delay(now()->addSeconds($key * 10))->onQueue('default'));
+            : RefreshToken::cursor()->each(fn ($token, $key) => CharacterBatchJob::dispatch($token->character_id)->delay(now()->addSeconds($key*$this->getDelaySeconds()))->onQueue('default'));
     }
+
+    private function getDelaySeconds() : int
+    {
+        if(!isset($this->delaySeconds)) {
+            $expression = Schedules::firstWhere('job', UpdateCharacter::class)?->expression;
+
+            $this->delaySeconds = match ($expression) {
+                is_string($expression) => call_user_func(function ($expression) {
+
+                    $cron = new CronExpression($expression);
+                    $seconds = carbon($cron->getPreviousRunDate())->diffInSeconds($cron->getNextRunDate(null));
+                    $tokens = RefreshToken::count();
+
+                   if($tokens>=$seconds) {
+                       return 1;
+                   }
+
+                   return $seconds/$tokens <=10 ?: 10;
+
+                }, $expression),
+                default => 10,
+            };
+
+            if(is_null($expression)) {
+
+                $this->delaySeconds = 10;
+                return $this->delaySeconds;
+            }
+
+        }
+
+        return 0;
+    }
+
+
+
 }
