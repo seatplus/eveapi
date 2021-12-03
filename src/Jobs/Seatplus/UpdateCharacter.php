@@ -86,14 +86,8 @@ class UpdateCharacter implements ShouldQueue
                 }, $expression),
                 default => 10,
             };
-
-            if (is_null($expression)) {
-                $this->delaySeconds = 10;
-
-                return $this->delaySeconds;
-            }
         }
 
-        return 0;
+        return $this->delaySeconds;
     }
 }
