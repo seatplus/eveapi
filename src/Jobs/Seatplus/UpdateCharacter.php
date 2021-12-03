@@ -90,7 +90,4 @@ class UpdateCharacter implements ShouldQueue
 
         return $this->delaySeconds;
     }
-
-
-
 }
