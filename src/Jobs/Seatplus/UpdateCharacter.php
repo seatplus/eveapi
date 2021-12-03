@@ -62,30 +62,27 @@ class UpdateCharacter implements ShouldQueue
 
     public function handle()
     {
-
         $this->refresh_token
             ? CharacterBatchJob::dispatch($this->refresh_token->character_id)->onQueue('high')
-            : RefreshToken::cursor()->each(fn ($token, $key) => CharacterBatchJob::dispatch($token->character_id)->delay(now()->addSeconds($key*$this->getDelaySeconds()))->onQueue('default'));
+            : RefreshToken::cursor()->each(fn ($token, $key) => CharacterBatchJob::dispatch($token->character_id)->delay(now()->addSeconds($key * $this->getDelaySeconds()))->onQueue('default'));
     }
 
     private function getDelaySeconds() : int
     {
-        if(!isset($this->delaySeconds)) {
+        if (! isset($this->delaySeconds)) {
             $expression = Schedules::firstWhere('job', UpdateCharacter::class)?->expression;
 
             $this->delaySeconds = match ($expression) {
                 is_string($expression) => call_user_func(function ($expression) {
-
                     $cron = new CronExpression($expression);
                     $seconds = carbon($cron->getPreviousRunDate())->diffInSeconds($cron->getNextRunDate(null));
                     $tokens = RefreshToken::count();
 
-                   if($tokens>=$seconds) {
-                       return 1;
-                   }
+                    if ($tokens >= $seconds) {
+                        return 1;
+                    }
 
-                   return $seconds/$tokens <=10 ?: 10;
-
+                    return $seconds / $tokens <= 10 ?: 10;
                 }, $expression),
                 default => 10,
             };
@@ -93,7 +90,4 @@ class UpdateCharacter implements ShouldQueue
 
         return $this->delaySeconds;
     }
-
-
-
 }
