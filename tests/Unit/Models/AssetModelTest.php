@@ -8,11 +8,14 @@ use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Events\AssetUpdating;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\Universe\Category;
 use Seatplus\Eveapi\Models\Universe\Constellation;
+use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Region;
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\System;
+use Seatplus\Eveapi\Models\Universe\Type;
 
 beforeEach(function () {
     Queue::fake();
@@ -312,3 +315,50 @@ it('has in system scope', function () {
     expect(Asset::inSystems($system_id)->get())->toHaveCount(1);
     expect(Asset::inSystems($system_id + 1)->get())->toHaveCount(0);
 });
+
+it('has in ofTypes, ofGroups and ofCategories scope', function () {
+    expect(Asset::all())->toHaveCount(0);
+
+    Event::fake();
+
+    $type1 = Type::factory()->create([
+        'group_id' => Group::factory()->create(['category_id' => Category::factory()]),
+    ]);
+
+    $asset = Asset::factory()->create([
+        'location_flag' => 'Hangar',
+        'type_id' => $type1,
+    ]);
+
+    $type2 = Type::factory()->create([
+        'group_id' => Group::factory()->create(['category_id' => Category::factory()]),
+    ]);
+
+    $content = Asset::factory()->create([
+        'type_id' => $type2,
+        'location_id' => $asset->item_id,
+        'location_flag' => 'ShipHangar',
+    ]);
+
+    $type3 = Type::factory()->create([
+        'group_id' => Group::factory()->create(['category_id' => Category::factory()]),
+    ]);
+
+    $content_content = Asset::factory()->create([
+        'type_id' => $type3,
+        'location_id' => $content->item_id,
+        'location_flag' => 'Hangar',
+    ]);
+
+    expect(Asset::query())
+        ->count()->toBeInt()->toBe(3)
+        ->ofTypes($type1->type_id)->get()->toHaveCount(1)
+        ->ofTypes($type2->type_id)->where('location_flag', 'Hangar')->get()->toHaveCount(1)
+        ->ofTypes($type3->type_id)->where('location_flag', 'Hangar')->get()->toHaveCount(1)
+        ->ofGroups($type1->group_id)->get()->toHaveCount(1)
+        ->ofGroups($type2->group_id)->where('location_flag', 'Hangar')->get()->toHaveCount(1)
+        ->ofGroups($type3->group_id)->where('location_flag', 'Hangar')->get()->toHaveCount(1)
+        ->ofCategories($type1->group->category_id)->get()->toHaveCount(1)
+        ->ofCategories($type2->group->category_id)->where('location_flag', 'Hangar')->get()->toHaveCount(1)
+        ->ofCategories($type3->group->category_id)->where('location_flag', 'Hangar')->get()->toHaveCount(1);
+})->only();
