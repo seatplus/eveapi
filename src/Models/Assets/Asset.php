@@ -187,9 +187,11 @@ class Asset extends Model
     {
         $type_ids = is_array($types) ? $types : [$types];
 
-        return $query->whereIn('item_id', fn ($query) => $query
+        return $query->whereIn(
+            'item_id',
+            fn ($query) => $query
             ->select('item_id')
-            ->from(fn($query) => $query
+            ->from(fn ($query) => $query
                 ->select('item_id')
                 ->from('assets')
                 ->whereIn('type_id', $type_ids)
@@ -207,8 +209,7 @@ class Asset extends Model
                         ->join('assets as content', 'content.location_id', '=', 'assets.item_id')
                         ->join('assets as content_content', 'content_content.location_id', '=', 'content.item_id')
                         ->whereIn('content_content.type_id', $type_ids)
-                )
-                , 'matches')
+                ), 'matches')
         );
     }
 
@@ -217,7 +218,6 @@ class Asset extends Model
         $group_ids = is_array($groups) ? $groups : [$groups];
 
         return $query->whereIn('item_id', function ($query) use ($group_ids) {
-
             $this->queryForGroupOrCategory($query, $group_ids, []);
         });
     }
@@ -227,7 +227,6 @@ class Asset extends Model
         $category_ids = is_array($categories) ? $categories : [$categories];
 
         return $query->whereIn('item_id', function ($query) use ($category_ids) {
-
             $this->queryForGroupOrCategory($query, [], $category_ids);
         });
     }
@@ -303,7 +302,9 @@ class Asset extends Model
     private function queryForGroupOrCategory(Builder | \Illuminate\Database\Query\Builder $query, array $group_ids, array $category_ids)
     {
         // Use CTE Table for type search
-        $query->withExpression('type_matches', fn ($query) => $query
+        $query->withExpression(
+            'type_matches',
+            fn ($query) => $query
             ->select('type_id')
             ->from('universe_types')
             ->join('universe_groups', 'universe_groups.group_id', '=', 'universe_types.group_id')
@@ -312,7 +313,7 @@ class Asset extends Model
         );
 
         $query->select('item_id')
-            ->from(fn($query) => $query
+            ->from(fn ($query) => $query
                 ->select('item_id')
                 ->from('assets')
                 ->whereIn('type_id', fn ($query) => $query
@@ -336,7 +337,6 @@ class Asset extends Model
                         ->whereIn('content_content.type_id', fn ($query) => $query
                             ->select('type_id')
                             ->from('type_matches'))
-                )
-                , 'matches');
+                ), 'matches');
     }
 }

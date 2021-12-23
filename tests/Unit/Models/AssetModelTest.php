@@ -322,32 +322,32 @@ it('has in ofTypes, ofGroups and ofCategories scope', function () {
     Event::fake();
 
     $type1 = Type::factory()->create([
-        'group_id' => Group::factory()->create(['category_id' => Category::factory()])
+        'group_id' => Group::factory()->create(['category_id' => Category::factory()]),
     ]);
 
     $asset = Asset::factory()->create([
         'location_flag' => 'Hangar',
-        'type_id' => $type1
+        'type_id' => $type1,
     ]);
 
     $type2 = Type::factory()->create([
-        'group_id' => Group::factory()->create(['category_id' => Category::factory()])
+        'group_id' => Group::factory()->create(['category_id' => Category::factory()]),
     ]);
 
     $content = Asset::factory()->create([
         'type_id' => $type2,
         'location_id' => $asset->item_id,
-        'location_flag' => 'ShipHangar'
+        'location_flag' => 'ShipHangar',
     ]);
 
     $type3 = Type::factory()->create([
-        'group_id' => Group::factory()->create(['category_id' => Category::factory()])
+        'group_id' => Group::factory()->create(['category_id' => Category::factory()]),
     ]);
 
     $content_content = Asset::factory()->create([
         'type_id' => $type3,
         'location_id' => $content->item_id,
-        'location_flag' => 'Hangar'
+        'location_flag' => 'Hangar',
     ]);
 
     expect(Asset::query())
@@ -361,5 +361,4 @@ it('has in ofTypes, ofGroups and ofCategories scope', function () {
         ->ofCategories($type1->group->category_id)->get()->toHaveCount(1)
         ->ofCategories($type2->group->category_id)->where('location_flag', 'Hangar')->get()->toHaveCount(1)
         ->ofCategories($type3->group->category_id)->where('location_flag', 'Hangar')->get()->toHaveCount(1);
-
 })->only();
