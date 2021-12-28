@@ -553,7 +553,7 @@ it('dispatches resolve universe constellation by constellation id job for missin
     $mock->handle();
 });
 
-it('dispatches resolve universe region by region id job for missing regionss', function () {
+it('dispatches resolve universe region by region id job for missing regions', function () {
     $constellation = Event::fakeFor(fn () => Constellation::factory()->noRegion()->create());
 
     $mock = Mockery::mock(GetMissingRegions::class)->makePartial();

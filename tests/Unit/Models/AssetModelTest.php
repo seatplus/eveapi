@@ -361,4 +361,4 @@ it('has in ofTypes, ofGroups and ofCategories scope', function () {
         ->ofCategories($type1->group->category_id)->get()->toHaveCount(1)
         ->ofCategories($type2->group->category_id)->where('location_flag', 'Hangar')->get()->toHaveCount(1)
         ->ofCategories($type3->group->category_id)->where('location_flag', 'Hangar')->get()->toHaveCount(1);
-})->only();
+});
