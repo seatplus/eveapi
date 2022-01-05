@@ -175,6 +175,7 @@ class EveapiServiceProvider extends ServiceProvider
                     'processes' => (int) env(self::QUEUE_BALANCING_WORKERS, 4),
                     'block_for' => 5,
                     'timeout' => 120, // 2 minutes
+                    'nice' => 10, //Allowed values are between 0 and 19
                     'maxTime' => 3600,
                     'maxJobs' => 1000,
                 ],
@@ -187,6 +188,7 @@ class EveapiServiceProvider extends ServiceProvider
                     'minProcesses' => 1,
                     'maxProcesses' => (int) env(self::QUEUE_BALANCING_WORKERS, 4),
                     'tries' => 1,
+                    'nice' => 10, //Allowed values are between 0 and 19
                     'timeout' => 900, // 15 minutes
                     'maxTime' => 3600,
                     'maxJobs' => 1000,
