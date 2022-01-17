@@ -14,3 +14,22 @@ test('has corporation relationship', function () {
 
     expect($enlistment->corporation)->toBeInstanceOf(CorporationInfo::class);
 });
+
+it('supports multistep', function () {
+    $enlistment = Enlistments::create([
+        'corporation_id' => $this->test_character->corporation->corporation_id,
+        'type' => 'user',
+    ]);
+
+    expect($enlistment)
+        ->steps->toBeArray()
+        ->steps_count->toBeInt()->toBe(1);
+
+    $enlistment->steps = "One; Two, three but actually two";
+    $enlistment->save();
+
+    expect($enlistment)
+        ->steps->toBeArray()
+        ->steps_count->toBeInt()->toBe(2);
+
+});
