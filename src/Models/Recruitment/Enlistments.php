@@ -66,7 +66,7 @@ class Enlistments extends Model
     {
         $this->attributes['steps'] = collect(explode(';', $value))
             ->filter()
-            ->map(fn($step) => trim($step))
+            ->map(fn ($step) => trim($step))
             ->implode('; ');
     }
 }

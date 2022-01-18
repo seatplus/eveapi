@@ -40,13 +40,11 @@ use Seatplus\Eveapi\Models\Recruitment\Enlistments;
 
 class Application extends Model
 {
-
     use HasFactory;
 
     protected $keyType = 'string';
 
     public $incrementing = false;
-
 
     protected static function newFactory()
     {
@@ -55,7 +53,6 @@ class Application extends Model
 
     protected static function booted()
     {
-
         static::creating(function (Model $model) {
             $model->setAttribute($model->getKeyName(), Str::uuid());
         });
@@ -99,7 +96,7 @@ class Application extends Model
 
     public function getDecisionCountAttribute()
     {
-        return $this->log_entries()->where('type','decision')->count();
+        return $this->log_entries()->where('type', 'decision')->count();
     }
 
     public function scopeOfCorporation(Builder $query, int | array $corporation): Builder

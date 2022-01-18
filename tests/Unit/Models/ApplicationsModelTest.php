@@ -72,14 +72,13 @@ test('it has decision count attribute based on log entries', function () {
     expect($application->refresh())
         ->log_entries->toHaveCount(2)
         ->decision_count->toBe(1);
-
 });
 
 it('has enlistment relationship', function () {
     $enlistment = Enlistments::query()->create([
         'corporation_id' => CorporationInfo::first()->corporation_id,
         'type' => 'user',
-        'steps' => ''
+        'steps' => '',
     ]);
 
     $application = Application::factory()->create([

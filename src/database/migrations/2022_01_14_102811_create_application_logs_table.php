@@ -20,7 +20,7 @@ return new class extends Migration {
 
         Application::query()->whereNotNull('causer_type')
             ->get()
-            ->each(fn(Application $application) => ApplicationLogs::create([
+            ->each(fn (Application $application) => ApplicationLogs::create([
                 'application_id' => $application->id,
                 'causer_type' => $application->causer_type,
                 'causer_id' => $application->causer_id,

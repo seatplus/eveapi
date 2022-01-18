@@ -31,5 +31,4 @@ it('supports multistep', function () {
     expect($enlistment)
         ->steps->toBeArray()
         ->steps_count->toBeInt()->toBe(2);
-
 });
