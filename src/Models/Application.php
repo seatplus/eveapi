@@ -30,18 +30,32 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Str;
 use Seatplus\Auth\Models\User;
 use Seatplus\Eveapi\database\factories\ApplicationFactory;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
+use Seatplus\Eveapi\Models\Recruitment\ApplicationLogs;
+use Seatplus\Eveapi\Models\Recruitment\Enlistments;
 
 class Application extends Model
 {
     use HasFactory;
 
+    protected $keyType = 'string';
+
+    public $incrementing = false;
+
     protected static function newFactory()
     {
         return ApplicationFactory::new();
+    }
+
+    protected static function booted()
+    {
+        static::creating(function (Model $model) {
+            $model->setAttribute($model->getKeyName(), Str::uuid());
+        });
     }
 
     /**
@@ -65,9 +79,24 @@ class Application extends Model
         return $this->belongsTo(CorporationInfo::class, 'corporation_id', 'corporation_id');
     }
 
+    public function enlistment()
+    {
+        return $this->belongsTo(Enlistments::class, 'corporation_id', 'corporation_id');
+    }
+
     public function applicationable()
     {
         return $this->morphTo();
+    }
+
+    public function log_entries()
+    {
+        return $this->hasMany(ApplicationLogs::class);
+    }
+
+    public function getDecisionCountAttribute()
+    {
+        return $this->log_entries()->where('type', 'decision')->count();
     }
 
     public function scopeOfCorporation(Builder $query, int | array $corporation): Builder

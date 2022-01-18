@@ -51,4 +51,22 @@ class Enlistments extends Model
     {
         return $this->belongsTo(CorporationInfo::class, 'corporation_id', 'corporation_id');
     }
+
+    public function getStepsCountAttribute() : int
+    {
+        return count($this->steps);
+    }
+
+    public function getStepsAttribute($value) : array
+    {
+        return explode('; ', $value);
+    }
+
+    public function setStepsAttribute($value)
+    {
+        $this->attributes['steps'] = collect(explode(';', $value))
+            ->filter()
+            ->map(fn ($step) => trim($step))
+            ->implode('; ');
+    }
 }
