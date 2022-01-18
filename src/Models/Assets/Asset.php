@@ -147,18 +147,13 @@ class Asset extends Model
     {
         $region_ids = is_array($regions) ? $regions : [$regions];
 
-        return $query->orWhereHas(
-            'location',
+        return $query->whereHas(
+            'location.locatable',
             fn (Builder $query) => $query
-            ->whereHasMorph(
-                'locatable',
-                '*',
-                fn (Builder $query) => $query
-                    ->whereHas(
-                        'system.region',
-                        fn (Builder $query) => $query
-                        ->whereIn('universe_regions.region_id', $region_ids)
-                    )
+            ->whereHas(
+                'system.region',
+                fn ($query) => $query
+                ->whereIn('universe_regions.region_id', $region_ids)
             )
         );
     }
@@ -167,18 +162,13 @@ class Asset extends Model
     {
         $system_ids = is_array($systems) ? $systems : [$systems];
 
-        return $query->orWhereHas(
-            'location',
+        return $query->whereHas(
+            'location.locatable',
             fn (Builder $query) => $query
-            ->whereHasMorph(
-                'locatable',
-                '*',
-                fn (Builder $query) => $query
-                    ->whereHas(
-                        'system',
-                        fn (Builder $query) => $query
-                        ->whereIn('universe_systems.system_id', $system_ids)
-                    )
+            ->whereHas(
+                'system',
+                fn ($query) => $query
+                ->whereIn('system_id', $system_ids)
             )
         );
     }
@@ -187,48 +177,27 @@ class Asset extends Model
     {
         $type_ids = is_array($types) ? $types : [$types];
 
-        return $query->whereIn(
-            'item_id',
-            fn ($query) => $query
-            ->select('item_id')
-            ->from(fn ($query) => $query
-                ->select('item_id')
-                ->from('assets')
-                ->whereIn('type_id', $type_ids)
-                ->union(
-                    $query->newQuery()
-                        ->from('assets')
-                        ->select('assets.item_id')
-                        ->join('assets as content', 'content.location_id', '=', 'assets.item_id')
-                        ->whereIn('content.type_id', $type_ids)
-                )
-                ->union(
-                    $query->newQuery()
-                        ->from('assets')
-                        ->select('assets.item_id')
-                        ->join('assets as content', 'content.location_id', '=', 'assets.item_id')
-                        ->join('assets as content_content', 'content_content.location_id', '=', 'content.item_id')
-                        ->whereIn('content_content.type_id', $type_ids)
-                ), 'matches')
-        );
+        return $query->whereHas('type', fn (Builder $query) => $query->whereIn('type_id', $type_ids))
+            ->orWhereHas('content.type', fn (Builder $query) => $query->whereIn('type_id', $type_ids))
+            ->orWhereHas('content.content.type', fn (Builder $query) => $query->whereIn('type_id', $type_ids));
     }
 
     public function scopeOfGroups(Builder $query, int | array $groups) : Builder
     {
         $group_ids = is_array($groups) ? $groups : [$groups];
 
-        return $query->whereIn('item_id', function ($query) use ($group_ids) {
-            $this->queryForGroupOrCategory($query, $group_ids, []);
-        });
+        return $query->whereHas('type.group', fn (Builder $query) => $query->whereIn('group_id', $group_ids))
+            ->orWhereHas('content.type.group', fn (Builder $query) => $query->whereIn('group_id', $group_ids))
+            ->orWhereHas('content.content.type.group', fn (Builder $query) => $query->whereIn('group_id', $group_ids));
     }
 
     public function scopeOfCategories(Builder $query, int | array $categories) : Builder
     {
         $category_ids = is_array($categories) ? $categories : [$categories];
 
-        return $query->whereIn('item_id', function ($query) use ($category_ids) {
-            $this->queryForGroupOrCategory($query, [], $category_ids);
-        });
+        return $query->whereHas('type.group', fn (Builder $query) => $query->whereIn('category_id', $category_ids))
+            ->orWhereHas('content.type.group', fn (Builder $query) => $query->whereIn('category_id', $category_ids))
+            ->orWhereHas('content.content.type.group', fn (Builder $query) => $query->whereIn('category_id', $category_ids));
     }
 
     public function scopeSearch(Builder $query, string $terms = null)
@@ -237,106 +206,24 @@ class Asset extends Model
             ->each(function ($term) use ($query) {
                 $term = $term.'%';
 
-                // Use CTE Table for type search
-                $query->withExpression('type_matches', fn ($query) => $query
-                    ->select('type_id')
-                    ->from('universe_types')
+                $query
                     ->where('name_normalized', 'like', $term)
-                    ->union(
-                        $query->newQuery()
-                            ->from('universe_types')
-                            ->select('type_id')
-                            ->join('universe_groups', 'universe_groups.group_id', '=', 'universe_types.group_id')
-                            ->where('universe_groups.name_normalized', 'like', $term)
-                    ));
-
-                // search for item names
-                $query->whereIn('item_id', function ($query) use ($term) {
-                    $query->select('item_id')
-                        ->from(fn ($query) => $query
-                            ->select('item_id')
-                            ->from('assets')
+                    ->orWhereRelation('type', 'name_normalized', 'like', $term)
+                    ->orWhereRelation('type.group', 'name_normalized', 'like', $term)
+                    ->orWhereHas(
+                        'content',
+                        fn ($query) => $query
+                        ->where('name_normalized', 'like', $term)
+                        ->orWhereRelation('type', 'name_normalized', 'like', $term)
+                        ->orWhereRelation('type.group', 'name_normalized', 'like', $term)
+                        ->orWhereHas(
+                            'content',
+                            fn ($query) => $query
                             ->where('name_normalized', 'like', $term)
-                            ->union(
-                                $query->newQuery()
-                                    ->from('assets')
-                                    ->select('assets.item_id')
-                                    ->whereIn(
-                                        'type_id',
-                                        fn ($query) => $query
-                                        ->select('type_id')
-                                        ->from('type_matches')
-                                    )
-                            )
-                            ->union(
-                                $query->newQuery()
-                                    ->from('assets')
-                                    ->select('assets.item_id')
-                                    ->join('assets as content', 'content.location_id', '=', 'assets.item_id')
-                                    ->where('content.name_normalized', 'like', $term)
-                                    ->orWhereIn(
-                                        'content.type_id',
-                                        fn ($query) => $query
-                                        ->select('type_id')
-                                        ->from('type_matches')
-                                    )
-                            )
-                            ->union(
-                                $query->newQuery()
-                                    ->from('assets')
-                                    ->select('assets.item_id')
-                                    ->join('assets as content', 'content.location_id', '=', 'assets.item_id')
-                                    ->join('assets as content_content', 'content_content.location_id', '=', 'content.item_id')
-                                    ->where('content_content.name_normalized', 'like', $term)
-                                    ->orWhereIn(
-                                        'content_content.type_id',
-                                        fn ($query) => $query
-                                        ->select('type_id')
-                                        ->from('type_matches')
-                                    )
-                            ), 'matches');
-                });
+                            ->orWhereRelation('type', 'name_normalized', 'like', $term)
+                            ->orWhereRelation('type.group', 'name_normalized', 'like', $term)
+                        )
+                    );
             });
-    }
-
-    private function queryForGroupOrCategory(Builder | \Illuminate\Database\Query\Builder $query, array $group_ids, array $category_ids)
-    {
-        // Use CTE Table for type search
-        $query->withExpression(
-            'type_matches',
-            fn ($query) => $query
-            ->select('type_id')
-            ->from('universe_types')
-            ->join('universe_groups', 'universe_groups.group_id', '=', 'universe_types.group_id')
-            ->whereIn('universe_groups.group_id', $group_ids)
-            ->orWhereIn('universe_groups.category_id', $category_ids)
-        );
-
-        $query->select('item_id')
-            ->from(fn ($query) => $query
-                ->select('item_id')
-                ->from('assets')
-                ->whereIn('type_id', fn ($query) => $query
-                    ->select('type_id')
-                    ->from('type_matches'))
-                ->union(
-                    $query->newQuery()
-                        ->from('assets')
-                        ->select('assets.item_id')
-                        ->join('assets as content', 'content.location_id', '=', 'assets.item_id')
-                        ->whereIn('content.type_id', fn ($query) => $query
-                            ->select('type_id')
-                            ->from('type_matches'))
-                )
-                ->union(
-                    $query->newQuery()
-                        ->from('assets')
-                        ->select('assets.item_id')
-                        ->join('assets as content', 'content.location_id', '=', 'assets.item_id')
-                        ->join('assets as content_content', 'content_content.location_id', '=', 'content.item_id')
-                        ->whereIn('content_content.type_id', fn ($query) => $query
-                            ->select('type_id')
-                            ->from('type_matches'))
-                ), 'matches');
     }
 }
