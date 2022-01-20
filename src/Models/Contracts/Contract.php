@@ -26,16 +26,19 @@
 
 namespace Seatplus\Eveapi\Models\Contracts;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Seatplus\Eveapi\database\factories\ContractFactory;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Universe\Location;
+use Seatplus\Eveapi\Traits\HasWatchlist;
 
 class Contract extends Model
 {
     use HasFactory;
+    use HasWatchlist;
 
     protected static function newFactory()
     {
@@ -110,5 +113,44 @@ class Contract extends Model
     public function characters()
     {
         return $this->morphedByMany(CharacterInfo::class, 'contractable', null, 'contract_id');
+    }
+
+    public function scopeInRegion(Builder $query, int | array $regions): Builder
+    {
+        $region_ids = is_array($regions) ? $regions : [$regions];
+
+        return $query
+            ->whereHas('start_location.locatable', fn (Builder $query) => $query->whereHas('system.region', fn ($query) => $query->whereIn('universe_regions.region_id', $region_ids)))
+            ->orWhereHas('end_location.locatable', fn (Builder $query) => $query->whereHas('system.region', fn ($query) => $query->whereIn('universe_regions.region_id', $region_ids)));
+    }
+
+    public function scopeInSystems(Builder $query, int | array $systems): Builder
+    {
+        $system_ids = is_array($systems) ? $systems : [$systems];
+
+        return $query
+            ->whereHas('start_location.locatable', fn (Builder $query) => $query->whereHas('system', fn ($query) => $query->whereIn('system_id', $system_ids)))
+            ->orWhereHas('end_location.locatable', fn (Builder $query) => $query->whereHas('system', fn ($query) => $query->whereIn('system_id', $system_ids)));
+    }
+
+    public function scopeOfTypes(Builder $query, int | array $types) : Builder
+    {
+        $type_ids = is_array($types) ? $types : [$types];
+
+        return $query->whereHas('items.type', fn (Builder $query) => $query->whereIn('type_id', $type_ids));
+    }
+
+    public function scopeOfGroups(Builder $query, int | array $groups) : Builder
+    {
+        $group_ids = is_array($groups) ? $groups : [$groups];
+
+        return $query->whereHas('items.type', fn (Builder $query) => $query->whereIn('group_id', $group_ids));
+    }
+
+    public function scopeOfCategories(Builder $query, int | array $categories) : Builder
+    {
+        $category_ids = is_array($categories) ? $categories : [$categories];
+
+        return $query->whereHas('items.type.group', fn (Builder $query) => $query->whereIn('category_id', $category_ids));
     }
 }
