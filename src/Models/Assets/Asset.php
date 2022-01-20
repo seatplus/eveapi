@@ -37,7 +37,8 @@ use Seatplus\Eveapi\Traits\HasWatchlist;
 
 class Asset extends Model
 {
-    use HasFactory, HasWatchlist;
+    use HasFactory;
+    use HasWatchlist;
 
     const ASSET_SAFETY = 2004;
 

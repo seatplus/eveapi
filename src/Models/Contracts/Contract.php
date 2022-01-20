@@ -37,7 +37,8 @@ use Seatplus\Eveapi\Traits\HasWatchlist;
 
 class Contract extends Model
 {
-    use HasFactory, HasWatchlist;
+    use HasFactory;
+    use HasWatchlist;
 
     protected static function newFactory()
     {

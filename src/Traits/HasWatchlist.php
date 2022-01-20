@@ -15,5 +15,4 @@ trait HasWatchlist
     abstract public function scopeOfGroups(Builder $query, int | array $groups) : Builder;
 
     abstract public function scopeOfCategories(Builder $query, int | array $categories) : Builder;
-
 }
