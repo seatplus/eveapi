@@ -33,10 +33,11 @@ use Seatplus\Eveapi\database\factories\AssetFactory;
 use Seatplus\Eveapi\Events\AssetUpdating;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Type;
+use Seatplus\Eveapi\Traits\HasWatchlist;
 
 class Asset extends Model
 {
-    use HasFactory;
+    use HasFactory, HasWatchlist;
 
     const ASSET_SAFETY = 2004;
 
@@ -186,9 +187,9 @@ class Asset extends Model
     {
         $group_ids = is_array($groups) ? $groups : [$groups];
 
-        return $query->whereHas('type.group', fn (Builder $query) => $query->whereIn('group_id', $group_ids))
-            ->orWhereHas('content.type.group', fn (Builder $query) => $query->whereIn('group_id', $group_ids))
-            ->orWhereHas('content.content.type.group', fn (Builder $query) => $query->whereIn('group_id', $group_ids));
+        return $query->whereHas('type', fn (Builder $query) => $query->whereIn('group_id', $group_ids))
+            ->orWhereHas('content.type', fn (Builder $query) => $query->whereIn('group_id', $group_ids))
+            ->orWhereHas('content.content.type', fn (Builder $query) => $query->whereIn('group_id', $group_ids));
     }
 
     public function scopeOfCategories(Builder $query, int | array $categories) : Builder
