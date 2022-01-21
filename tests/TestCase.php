@@ -12,7 +12,7 @@ use Staudenmeir\LaravelCte\DatabaseServiceProvider;
 
 abstract class TestCase extends OrchestraTestCase
 {
-    protected CharacterInfo $test_character;
+    public CharacterInfo $test_character;
 
     protected function setUp(): void
     {
