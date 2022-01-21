@@ -13,4 +13,9 @@ class ApplicationLogs extends Model
     {
         return $this->belongsTo(Application::class);
     }
+
+    public function causer()
+    {
+        return $this->morphTo();
+    }
 }
