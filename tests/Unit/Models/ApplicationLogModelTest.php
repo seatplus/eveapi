@@ -2,7 +2,7 @@
 
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
-it('has causer morph relationshio',function () {
+it('has causer morph relationshio', function () {
     $application = \Seatplus\Eveapi\Models\Application::factory()->create();
 
 
