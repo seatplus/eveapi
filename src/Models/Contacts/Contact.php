@@ -30,6 +30,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Seatplus\Eveapi\database\factories\ContactFactory;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 
@@ -68,7 +69,7 @@ class Contact extends Model
         return $query->whereIn('contactable_id', $contactable_ids);
     }
 
-    public function getAffiliationAttribute()
+    public function getAffiliationAttribute(): ?CharacterAffiliation
     {
         $this->loadMissing([
             'character_affiliation',
@@ -87,22 +88,22 @@ class Contact extends Model
             ->first();
     }
 
-    public function character_affiliation()
+    public function character_affiliation(): HasOne
     {
         return $this->hasOne(CharacterAffiliation::class, 'character_id', 'contact_id');
     }
 
-    public function corporation_affiliation()
+    public function corporation_affiliation(): HasOne
     {
         return $this->hasOne(CharacterAffiliation::class, 'corporation_id', 'contact_id');
     }
 
-    public function alliance_affiliation()
+    public function alliance_affiliation(): HasOne
     {
         return $this->hasOne(CharacterAffiliation::class, 'alliance_id', 'contact_id');
     }
 
-    public function faction_affiliation()
+    public function faction_affiliation(): HasOne
     {
         return $this->hasOne(CharacterAffiliation::class, 'faction_id', 'contact_id');
     }
