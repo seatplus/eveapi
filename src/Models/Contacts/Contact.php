@@ -33,6 +33,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
 use Seatplus\Eveapi\database\factories\ContactFactory;
+use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 
 class Contact extends Model
 {
@@ -69,56 +70,42 @@ class Contact extends Model
         return $query->whereIn('contactable_id', $contactable_ids);
     }
 
-    public function scopeWithStandings(Builder $query, int $corporation_id, ?int $alliance_id = null)
+    public function getAffiliationAttribute()
     {
-        $query->withExpression(
-            'corporation_standings',
-            fn ($query) => $query
-            ->select('standing', 'contact_id', DB::raw('(CASE WHEN contact_type = "character" THEN "1" WHEN contact_type = "faction" THEN "2" WHEN contact_type = "corporation" THEN "3" WHEN contact_type = "alliance" THEN "4" END) as level'))
-            ->from('contacts')
-            ->where('contactable_id', '=', $corporation_id)
-        );
-
-        $query->when(is_integer($alliance_id), fn ($query) => $query
-            ->withExpression(
-                'alliance_standings',
-                fn ($query) => $query
-                ->select('standing', 'contact_id', DB::raw('(CASE WHEN contact_type = "character" THEN "1" WHEN contact_type = "faction" THEN "2" WHEN contact_type = "corporation" THEN "3" WHEN contact_type = "alliance" THEN "4" END) as level'))
-                ->from('contacts')
-                ->where('contactable_id', '=', $alliance_id)
-            ));
-
-        $query->leftJoin('character_affiliations', function (JoinClause $join) {
-            $join->on('contacts.contact_id', '=', 'character_affiliations.character_id')
-                ->orOn('contacts.contact_id', '=', 'character_affiliations.corporation_id')
-                ->orOn('contacts.contact_id', '=', 'character_affiliations.alliance_id')
-                ->orOn('contacts.contact_id', '=', 'character_affiliations.faction_id');
-        });
-
-        $query->addSelect([
-            'corporation_standing' => DB::table('corporation_standings')
-                ->select('standing')
-                ->whereColumn('corporation_standings.contact_id', 'character_affiliations.alliance_id')
-                ->orWhereColumn('corporation_standings.contact_id', 'character_affiliations.corporation_id')
-                ->orWhereColumn('corporation_standings.contact_id', 'character_affiliations.faction_id')
-                ->orWhereColumn('corporation_standings.contact_id', 'character_affiliations.character_id')
-                ->orderByDesc('level')
-                ->take(1),
+        $this->loadMissing([
+            'character_affiliation',
+            'corporation_affiliation',
+            'alliance_affiliation',
+            'faction_affiliation',
         ]);
 
-        $query->when(
-            is_integer($alliance_id),
-            fn ($query) => $query
-            ->addSelect([
-                    'alliance_standing' => DB::table('alliance_standings')
-                        ->select('standing')
-                        ->whereColumn('alliance_standings.contact_id', 'character_affiliations.alliance_id')
-                        ->orWhereColumn('alliance_standings.contact_id', 'character_affiliations.corporation_id')
-                        ->orWhereColumn('alliance_standings.contact_id', 'character_affiliations.faction_id')
-                        ->orWhereColumn('alliance_standings.contact_id', 'character_affiliations.character_id')
-                        ->orderByDesc('level')
-                        ->take(1),
-                    ])
-        );
+        return collect([
+            $this->character_affiliation,
+            $this->corporation_affiliation,
+            $this->alliance_affiliation,
+            $this->faction_affiliation,
+        ])
+            ->filter()
+            ->first();
+    }
+
+    public function character_affiliation()
+    {
+        return $this->hasOne(CharacterAffiliation::class, 'character_id', 'contact_id');
+    }
+
+    public function corporation_affiliation()
+    {
+        return $this->hasOne(CharacterAffiliation::class, 'corporation_id', 'contact_id');
+    }
+
+    public function alliance_affiliation()
+    {
+        return $this->hasOne(CharacterAffiliation::class, 'alliance_id', 'contact_id');
+    }
+
+    public function faction_affiliation()
+    {
+        return $this->hasOne(CharacterAffiliation::class, 'faction_id', 'contact_id');
     }
 }

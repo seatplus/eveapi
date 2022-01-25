@@ -87,6 +87,34 @@ test('contact has label', function () {
     $this->assertNotNull(ContactLabel::first()->label_name);
 });
 
+it('has has affiliation relationship', function (string $contact_type) {
+
+    $affiliation = CharacterAffiliation::factory()->create([
+        'alliance_id' => faker()->numberBetween(99000000, 100000000),
+        'faction_id' => faker()->numberBetween(500000, 1000000),
+    ]);
+
+    $contact_id = match ($contact_type) {
+        'character' => $affiliation->character_id,
+        'corporation' => $affiliation->corporation_id,
+        'alliance' => $affiliation->alliance_id,
+        'faction' => $affiliation->faction_id,
+    };
+
+    Contact::factory()->create([
+        'contact_id' => $contact_id,
+        'contact_type' => $contact_type,
+        'standing' => 10.0,
+        'contactable_id' => $this->test_character->character_id,
+        'contactable_type' => CharacterInfo::class,
+    ]);
+
+    expect(Contact::all())->toHaveCount(1)
+        ->first()->affiliation->toBeInstanceOf(CharacterAffiliation::class);
+
+})->with([
+    'character', 'corporation', 'alliance', 'faction'
+])->only();
 
 test('withStandings scope returns contact with corporation and alliance standing', function ($contactable_id, $contactable_type, $contact_type) {
     Event::fake();
