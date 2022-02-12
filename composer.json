@@ -37,14 +37,13 @@
         "staudenmeir/laravel-cte": "^1.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^6.10",
-        "nunomaduro/collision": "^5.3",
+        "orchestra/testbench": "7.0",
+        "nunomaduro/collision": "^6.1",
         "brianium/paratest": "^6.2",
-        "spatie/phpunit-watcher": "^1.11",
         "itsgoingd/clockwork": "^5.0",
-        "barryvdh/laravel-ide-helper": "^2.6",
-        "pestphp/pest": "^1.20",
-        "pestphp/pest-plugin-laravel": "^1.1"
+        "barryvdh/laravel-ide-helper": "^2.12",
+        "pestphp/pest": "^1.21",
+        "pestphp/pest-plugin-laravel": "^1.2"
     },
     "extra": {
         "laravel": {
@@ -57,5 +56,10 @@
         "test": "vendor/bin/pest",
         "test-coverage": "XDEBUG_MODE=coverage ./vendor/bin/pest --coverage",
         "parallel": "vendor/bin/testbench package:test --parallel --no-coverage"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
     }
 }
