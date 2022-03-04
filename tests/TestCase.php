@@ -79,7 +79,6 @@ abstract class TestCase extends OrchestraTestCase
         config(['database.default' => 'mysql']);
 
         config(['app.debug' => true]);
-        config(['activitylog.table_name' => 'activity_log']);
 
         //$app['router']->aliasMiddleware('auth', Authenticate::class);
     }
