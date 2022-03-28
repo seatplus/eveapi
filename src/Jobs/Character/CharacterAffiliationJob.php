@@ -32,16 +32,17 @@ use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasRequestBodyInterface;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
+use Seatplus\Eveapi\Services\Jobs\CharacterAffiliationService;
 use Seatplus\Eveapi\Traits\HasRequestBody;
 
 class CharacterAffiliationJob extends NewEsiBase implements HasRequestBodyInterface
 {
     use HasRequestBody;
 
-    public function __construct(?JobContainer $job_container = null)
+    public function __construct()
     {
         $this->setJobType('public');
-        parent::__construct($job_container);
+        parent::__construct();
 
         $this->setMethod('post');
         $this->setEndpoint('/characters/affiliation/');
@@ -50,12 +51,10 @@ class CharacterAffiliationJob extends NewEsiBase implements HasRequestBodyInterf
 
     public function tags(): array
     {
-        $tags = [
+        return [
             'character',
             'affiliation',
         ];
-
-        return $this->getCharacterId() ? array_merge($tags, ['character_id:' . $this->getCharacterId()]) : $tags;
     }
 
     /**
@@ -80,57 +79,53 @@ class CharacterAffiliationJob extends NewEsiBase implements HasRequestBodyInterf
      */
     public function handle(): void
     {
-        collect($this?->character_id)
-            ->pipe(fn (Collection $collection) => $collection->isEmpty() ? $collection : $collection->filter(function ($value) {
-
-            // Remove $character_id that is already in DB and younger then 60minutes
-                $db_entry = CharacterAffiliation::find($value);
-
-                return ! $db_entry || $db_entry->last_pulled->diffInMinutes(now()) > 60;
-            }))->pipe(function (Collection $collection) {
-                //Check all other character affiliations present in DB that are younger than 60 minutes
-                $character_affiliations = CharacterAffiliation::cursor()->filter(function ($character_affiliation) {
-                    return $character_affiliation->last_pulled->diffInMinutes(now()) > 60;
-                });
-
-                foreach ($character_affiliations as $character_affiliation) {
-                    $collection->push($character_affiliation->character_id);
-                }
-
-                return $collection;
-            })->unique()
-            ->chunk(1000)
-            ->whenNotEmpty(function ($collection) {
-                $collection->each(function (Collection $chunk) {
-                    $this->setRequestBody($chunk->values()->all());
-
-                    $response = $this->retrieve();
-
-                    if ($response->isCachedLoad()) {
-                        return;
-                    }
-
-                    $timestamp = now();
-
-                    collect($response)->map(fn ($result) => CharacterAffiliation::updateOrCreate(
-                        [
-                            'character_id' => $result->character_id,
-                        ],
-                        [
-                            'corporation_id' => $result->corporation_id,
-                            'alliance_id' => optional($result)->alliance_id,
-                            'faction_id' => optional($result)->faction_id,
-                            'last_pulled' => $timestamp,
-                        ]
-                    ))->each(function (CharacterAffiliation $character_affiliation) use ($timestamp) {
-                        $character_affiliation->last_pulled = $timestamp;
-                        $character_affiliation->save();
-                    });
-                });
-            });
+        $this->updateCachedCharacterAffiliations();
+        $this->updateOutdatedCharacterAffiliations();
 
         // see https://divinglaravel.com/avoiding-memory-leaks-when-running-laravel-queue-workers
         // This job is very memory consuming hence avoiding memory leaks, the worker should restart
         app('queue.worker')->shouldQuit = 1;
+    }
+
+    private function updateCachedCharacterAffiliations()
+    {
+        $ids = CharacterAffiliationService::make()->retrieve()->unique();
+
+        $this->updateOrCreateCharacterAffiliations($ids->toArray());
+    }
+
+    private function updateOrCreateCharacterAffiliations(array $character_ids) : void
+    {
+        $this->setRequestBody($character_ids);
+
+        $response = $this->retrieve();
+
+        $timestamp = now();
+
+        collect($response)
+            ->each(fn ($result) => CharacterAffiliation::updateOrCreate(
+                [
+                    'character_id' => $result->character_id,
+                ],
+                [
+                    'corporation_id' => $result->corporation_id,
+                    'alliance_id' => $result?->alliance_id,
+                    'faction_id' => $result?->faction_id,
+                    'last_pulled' => $timestamp,
+                ]
+            ));
+    }
+
+    private function updateOutdatedCharacterAffiliations()
+    {
+        $ids = CharacterAffiliation::query()
+            // only those who were not pulled within the last hour
+            ->whereColumn('last_pulled', '>=', now()->subHour()->toDateTimeString())
+            // and don't try doomheimed characters
+            ->whereColumn('character_id', '<>', 1_000_001)
+            ->pluck('character_id');
+
+        $ids->chunk(1000)
+            ->each(fn($chunk) => $this->updateOrCreateCharacterAffiliations($chunk->toArray()));
     }
 }
