@@ -27,8 +27,6 @@
 namespace Seatplus\Eveapi\Jobs\Character;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Illuminate\Support\Collection;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasRequestBodyInterface;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
@@ -126,6 +124,6 @@ class CharacterAffiliationJob extends NewEsiBase implements HasRequestBodyInterf
             ->pluck('character_id');
 
         $ids->chunk(1000)
-            ->each(fn($chunk) => $this->updateOrCreateCharacterAffiliations($chunk->toArray()));
+            ->each(fn ($chunk) => $this->updateOrCreateCharacterAffiliations($chunk->toArray()));
     }
 }

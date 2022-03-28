@@ -12,16 +12,16 @@ class CharacterAffiliationService
         return new static();
     }
 
-    public final function queue(int $character_id) : void
+    final public function queue(int $character_id) : void
     {
         Cache::lock('CharacterAffiliationLock')
-            ->get(fn() => Cache::put('CharacterAffiliationIds',$this->getIdsCollection()->push($character_id)));
+            ->get(fn () => Cache::put('CharacterAffiliationIds', $this->getIdsCollection()->push($character_id)));
     }
 
-    public final function retrieve() : Collection
+    final public function retrieve() : Collection
     {
         return Cache::lock('CharacterAffiliationLock')
-            ->get(fn() => Cache::pull('CharacterAffiliationIds', collect()));
+            ->get(fn () => Cache::pull('CharacterAffiliationIds', collect()));
     }
 
     private function getIdsCollection() : Collection
