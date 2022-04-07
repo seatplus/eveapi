@@ -27,6 +27,7 @@
 namespace Seatplus\Eveapi\Jobs\Character;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
+use Illuminate\Support\Facades\Redis;
 use Seatplus\Eveapi\Esi\HasRequestBodyInterface;
 use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
@@ -37,7 +38,9 @@ class CharacterAffiliationJob extends NewEsiBase implements HasRequestBodyInterf
 {
     use HasRequestBody;
 
-    public function __construct()
+    private array $manual_ids = [];
+
+    public function __construct(int|array|null $character_ids = null)
     {
         $this->setJobType('public');
         parent::__construct();
@@ -45,6 +48,8 @@ class CharacterAffiliationJob extends NewEsiBase implements HasRequestBodyInterf
         $this->setMethod('post');
         $this->setEndpoint('/characters/affiliation/');
         $this->setVersion('v2');
+
+        $this->setManualIds($character_ids);
     }
 
     public function tags(): array
@@ -77,19 +82,33 @@ class CharacterAffiliationJob extends NewEsiBase implements HasRequestBodyInterf
      */
     public function handle(): void
     {
-        $this->updateCachedCharacterAffiliations();
-        $this->updateOutdatedCharacterAffiliations();
 
-        // see https://divinglaravel.com/avoiding-memory-leaks-when-running-laravel-queue-workers
-        // This job is very memory consuming hence avoiding memory leaks, the worker should restart
-        app('queue.worker')->shouldQuit = 1;
+        if($this->manual_ids) {
+            $this->updateOrCreateCharacterAffiliations($this->manual_ids);
+        }
+
+
+
+        if(!$this->manual_ids) {
+            Redis::throttle('character_affiliations')
+                // allow one job to process every 5 minutes
+                ->block(0)->allow(1)->every(5*60)
+                ->then(function () {
+                    $this->updateCachedCharacterAffiliations();
+                    $this->updateOutdatedCharacterAffiliations();
+                }, fn() => $this->delete());
+        }
+
+
     }
 
     private function updateCachedCharacterAffiliations()
     {
         $ids = CharacterAffiliationService::make()->retrieve()->unique();
 
-        $this->updateOrCreateCharacterAffiliations($ids->toArray());
+        if($ids->count() > 0) {
+            $this->updateOrCreateCharacterAffiliations($ids->toArray());
+        }
     }
 
     private function updateOrCreateCharacterAffiliations(array $character_ids) : void
@@ -116,14 +135,37 @@ class CharacterAffiliationJob extends NewEsiBase implements HasRequestBodyInterf
 
     private function updateOutdatedCharacterAffiliations()
     {
+
         $ids = CharacterAffiliation::query()
             // only those who were not pulled within the last hour
-            ->whereColumn('last_pulled', '>=', now()->subHour()->toDateTimeString())
+            ->where('last_pulled', '<=', now()->subHour()->toDateTimeString())
             // and don't try doomheimed characters
-            ->whereColumn('character_id', '<>', 1_000_001)
+            ->where('character_id', '<>', 1_000_001)
             ->pluck('character_id');
 
         $ids->chunk(1000)
             ->each(fn ($chunk) => $this->updateOrCreateCharacterAffiliations($chunk->toArray()));
+    }
+
+    /**
+     * @return array
+     */
+    public function getManualIds(): array
+    {
+        return $this->manual_ids;
+    }
+
+    /**
+     * @param int|array|null $manual_ids
+     */
+    public function setManualIds(int|array|null $manual_ids): void
+    {
+
+        if(is_null($manual_ids))
+            return;
+
+        $manual_ids = is_array($manual_ids) ? $manual_ids : [$manual_ids];
+
+        $this->manual_ids = $manual_ids;
     }
 }

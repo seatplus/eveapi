@@ -42,9 +42,8 @@ class CharacterInfoObserver
      */
     public function created(CharacterInfo $character_info)
     {
-        $job = new JobContainer(['character_id' => $character_info->character_id]);
 
-        CharacterAffiliationJob::dispatch($job)->onQueue('high');
+        CharacterAffiliationJob::dispatch($character_info->character_id)->onQueue('high');
     }
 
     /**
@@ -57,8 +56,7 @@ class CharacterInfoObserver
      */
     public function updating(CharacterInfo $character_info)
     {
-        $job = new JobContainer(['character_id' => $character_info->character_id]);
 
-        CharacterAffiliationJob::dispatch($job)->onQueue('high');
+        CharacterAffiliationJob::dispatch($character_info->character_id)->onQueue('high');
     }
 }

@@ -238,9 +238,6 @@ class EveapiServiceProvider extends ServiceProvider
         //Corporation Observers
         CorporationMemberTracking::observe(CorporationMemberTrackingObserver::class);
 
-        //Contact Observers
-        Contact::observe(ContactObserver::class);
-
         //Contract Observer
         Contract::observe(ContractObserver::class);
         ContractItem::observe(ContractItemObserver::class);

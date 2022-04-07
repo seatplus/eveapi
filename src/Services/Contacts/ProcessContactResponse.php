@@ -26,8 +26,10 @@
 
 namespace Seatplus\Eveapi\Services\Contacts;
 
+use Illuminate\Support\Collection;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\Eveapi\Models\Contacts\Contact;
+use Seatplus\Eveapi\Services\Jobs\CharacterAffiliationService;
 
 class ProcessContactResponse
 {
@@ -37,6 +39,7 @@ class ProcessContactResponse
 
     public function execute(EsiResponse $response)
     {
+
         return collect($response)->each(function ($contact) {
             $contact_model = Contact::updateOrCreate([
                 'contact_id' => $contact->contact_id,
@@ -58,6 +61,12 @@ class ProcessContactResponse
 
                 $contact_model->labels()->createMany($labels_to_save->map(fn ($label_id) => ['label_id' => $label_id]));
             }
+        })->pipe(function (Collection $response) {
+
+            CharacterAffiliationService::make()
+                ->queue($response->filter(fn($contact) => $contact->contact_type === 'character')->pluck('contact_id')->toArray());
+
+            return $response;
         })->pluck('contact_id');
     }
 

@@ -25,9 +25,9 @@ test('run character contact', function () {
 
     $job = new CharacterContactJob($this->job_container);
 
-    dispatch_now($job);
+    $job->handle();
 
-    //assertContact($mock_data, $this->test_character->character_id);
+    $cached_ids = \Seatplus\Eveapi\Services\Jobs\CharacterAffiliationService::make()->retrieve();
 
     foreach ($mock_data as $data) {
         //Assert that character asset created
@@ -35,7 +35,13 @@ test('run character contact', function () {
             'contactable_id' => $this->test_character->character_id,
             'contact_id' => $data->contact_id,
         ]);
+
+        if($data->contact_type === 'character') {
+            expect(in_array($data->contact_id, $cached_ids->toArray()))->toBeTrue();
+        }
+
     }
+
 });
 
 test('run corporation contact', function () {
@@ -43,9 +49,9 @@ test('run corporation contact', function () {
 
     $job = new CorporationContactJob($this->job_container);
 
-    dispatch_now($job);
+    $job->handle();
 
-    //assertContact($mock_data, $this->test_character->corporation->corporation_id);
+    $cached_ids = \Seatplus\Eveapi\Services\Jobs\CharacterAffiliationService::make()->retrieve();
 
     foreach ($mock_data as $data) {
         //Assert that character asset created
@@ -53,6 +59,10 @@ test('run corporation contact', function () {
             'contactable_id' => $this->test_character->corporation->corporation_id,
             'contact_id' => $data->contact_id,
         ]);
+
+        if($data->contact_type === 'character') {
+            expect(in_array($data->contact_id, $cached_ids->toArray()))->toBeTrue();
+        }
     }
 });
 
@@ -61,7 +71,7 @@ test('run alliance contact', function () {
 
     $job = new AllianceContactJob($this->job_container);
 
-    dispatch_now($job);
+    $job->handle();
 
     //assertContact($mock_data, $this->test_character->corporation->alliance_id);
     foreach ($mock_data as $data) {
@@ -82,9 +92,9 @@ it('has labels', function () {
 
     expect($this->test_character->contacts)->toHaveCount(0);
 
-    dispatch_now($job);
+    $job->handle();
 
-    //assertContact(collect($mock_data), $this->test_character->character_id);
+
     foreach (collect($mock_data) as $data) {
         //Assert that character asset created
         $this->assertDatabaseHas('contacts', [
@@ -98,18 +108,6 @@ it('has labels', function () {
     $contact = $this->test_character->refresh()->contacts->first();
 
     expect($contact->labels)->toHaveCount(3);
-});
-
-test('contact of type character dispatches affiliation job', function () {
-    Queue::assertNothingPushed();
-
-    $contact = Contact::factory()->create([
-        'contactable_id' => $this->test_character->character_id,
-        'contactable_type' => CharacterInfo::class,
-        'contact_type' => 'character',
-    ]);
-
-    Queue::assertPushedOn('high', CharacterAffiliationJob::class);
 });
 
 // Helpers

@@ -12,10 +12,13 @@ class CharacterAffiliationService
         return new static();
     }
 
-    final public function queue(int $character_id) : void
+    final public function queue(int|array $character_ids) : void
     {
+
+        $character_ids = is_array($character_ids) ? $character_ids : [$character_ids];
+
         Cache::lock('CharacterAffiliationLock')
-            ->get(fn () => Cache::put('CharacterAffiliationIds', $this->getIdsCollection()->push($character_id)));
+            ->get(fn () => Cache::put('CharacterAffiliationIds', $this->getIdsCollection()->merge($character_ids)));
     }
 
     final public function retrieve() : Collection
