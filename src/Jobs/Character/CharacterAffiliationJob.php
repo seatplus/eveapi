@@ -82,31 +82,28 @@ class CharacterAffiliationJob extends NewEsiBase implements HasRequestBodyInterf
      */
     public function handle(): void
     {
-
-        if($this->manual_ids) {
+        if ($this->manual_ids) {
             $this->updateOrCreateCharacterAffiliations($this->manual_ids);
         }
 
 
 
-        if(!$this->manual_ids) {
+        if (! $this->manual_ids) {
             Redis::throttle('character_affiliations')
                 // allow one job to process every 5 minutes
-                ->block(0)->allow(1)->every(5*60)
+                ->block(0)->allow(1)->every(5 * 60)
                 ->then(function () {
                     $this->updateCachedCharacterAffiliations();
                     $this->updateOutdatedCharacterAffiliations();
-                }, fn() => $this->delete());
+                }, fn () => $this->delete());
         }
-
-
     }
 
     private function updateCachedCharacterAffiliations()
     {
         $ids = CharacterAffiliationService::make()->retrieve()->unique();
 
-        if($ids->count() > 0) {
+        if ($ids->count() > 0) {
             $this->updateOrCreateCharacterAffiliations($ids->toArray());
         }
     }
@@ -135,7 +132,6 @@ class CharacterAffiliationJob extends NewEsiBase implements HasRequestBodyInterf
 
     private function updateOutdatedCharacterAffiliations()
     {
-
         $ids = CharacterAffiliation::query()
             // only those who were not pulled within the last hour
             ->where('last_pulled', '<=', now()->subHour()->toDateTimeString())
@@ -160,9 +156,9 @@ class CharacterAffiliationJob extends NewEsiBase implements HasRequestBodyInterf
      */
     public function setManualIds(int|array|null $manual_ids): void
     {
-
-        if(is_null($manual_ids))
+        if (is_null($manual_ids)) {
             return;
+        }
 
         $manual_ids = is_array($manual_ids) ? $manual_ids : [$manual_ids];
 
