@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Redis;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfoJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
@@ -64,7 +64,6 @@ it('does not update affiliation younger then an hours', function () {
         'last_pulled' => $old_data->last_pulled,
         'character_id' => $old_data->character_id,
     ]);
-
 });
 
 it('updates affiliation older then an hours', function () {

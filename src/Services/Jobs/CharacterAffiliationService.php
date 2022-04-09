@@ -14,7 +14,6 @@ class CharacterAffiliationService
 
     final public function queue(int|array $character_ids) : void
     {
-
         $character_ids = is_array($character_ids) ? $character_ids : [$character_ids];
 
         Cache::lock('CharacterAffiliationLock')

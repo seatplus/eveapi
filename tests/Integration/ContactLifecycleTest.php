@@ -3,11 +3,9 @@
 
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
 use Seatplus\Eveapi\Jobs\Contacts\AllianceContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\CharacterContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\CorporationContactJob;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contacts\Contact;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
@@ -36,12 +34,10 @@ test('run character contact', function () {
             'contact_id' => $data->contact_id,
         ]);
 
-        if($data->contact_type === 'character') {
+        if ($data->contact_type === 'character') {
             expect(in_array($data->contact_id, $cached_ids->toArray()))->toBeTrue();
         }
-
     }
-
 });
 
 test('run corporation contact', function () {
@@ -60,7 +56,7 @@ test('run corporation contact', function () {
             'contact_id' => $data->contact_id,
         ]);
 
-        if($data->contact_type === 'character') {
+        if ($data->contact_type === 'character') {
             expect(in_array($data->contact_id, $cached_ids->toArray()))->toBeTrue();
         }
     }
