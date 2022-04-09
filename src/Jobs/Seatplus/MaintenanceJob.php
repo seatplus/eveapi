@@ -94,7 +94,9 @@ class MaintenanceJob implements ShouldQueue
             new GetMissingLocationFromAssets,
             new GetMissingLocationFromContracts,
 
+            // TODO: Missing character_info from character_users
             // TODO: Missing Affiliations from character_users, character_info and contacts
+            // TODO: Update CorporationInfo and AllianceInfo
 
             // Types
             new GetMissingTypesFromContractItem,

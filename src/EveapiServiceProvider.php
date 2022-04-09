@@ -39,6 +39,7 @@ use Seatplus\Eveapi\Events\RefreshTokenCreated;
 use Seatplus\Eveapi\Events\UniverseConstellationCreated;
 use Seatplus\Eveapi\Events\UniverseSystemCreated;
 use Seatplus\Eveapi\Events\UpdatingRefreshTokenEvent;
+use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
 use Seatplus\Eveapi\Listeners\DispatchGetConstellationById;
 use Seatplus\Eveapi\Listeners\DispatchGetRegionById;
 use Seatplus\Eveapi\Listeners\DispatchGetSystemJobSubscriber;
@@ -274,6 +275,9 @@ class EveapiServiceProvider extends ServiceProvider
             Schedules::cursor()->each(function ($entry) use ($schedule) {
                 $schedule->job(new $entry->job)->cron($entry->expression);
             });
+
+            // Run Character Affiliation Job every five minutes to updated outdated affiliations.
+            $schedule->job(new CharacterAffiliationJob)->everyFiveMinutes();
 
             // Cleanup Batches Table
             $schedule->command('queue:prune-batches')->daily();
