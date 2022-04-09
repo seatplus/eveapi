@@ -1,23 +1,11 @@
 <?php
 
-
 use Illuminate\Support\Facades\Queue;
-use Seatplus\Eveapi\Containers\JobContainer;
+use Illuminate\Support\Facades\Redis;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfoJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
-
-uses(MockRetrieveEsiDataAction::class);
-
-beforeEach(function () {
-    $job_container = new JobContainer([
-        'character_id' => $this->test_character->character_id,
-    ]);
-
-    $this->job = new CharacterAffiliationJob($job_container);
-});
 
 it('dispatches alliance job', function () {
     Queue::fake();
@@ -49,60 +37,28 @@ it('dispatches no alliance job if alliance id is null', function () {
     Queue::assertNotPushed(AllianceInfoJob::class);
 });
 
-/**
- * @runTestsInSeparateProcesses
- */
-it('updates affiliation older then an hours', function () {
-    $old_data = CharacterAffiliation::factory()->create([
-        'last_pulled' => now()->subMinutes(61),
-    ]);
 
-    $this->assertDatabaseHas('character_affiliations', [
-        'last_pulled' => $old_data->last_pulled,
-        'character_id' => $old_data->character_id,
-    ]);
-
-    mockRetrieveEsiDataAction([$old_data->toArray()]);
-
-    $job_container = new JobContainer([
-        'character_id' => $old_data->character_id,
-    ]);
-
-    (new CharacterAffiliationJob($job_container))->handle();
-
-    /*(new CharacterAffiliationAction)->execute($old_data->character_id);*/
-
-    $this->assertDatabaseMissing('character_affiliations', [
-        'last_pulled' => $old_data->last_pulled,
-    ]);
-});
-
-/**
- * @runTestsInSeparateProcesses
- */
 it('does not update affiliation younger then an hours', function () {
-    CharacterAffiliation::all()->each(function ($character_affiliation) {
-        $character_affiliation->delete();
-    });
+
+    // expect the test_character entry to exist
+    expect(CharacterAffiliation::all())->toHaveCount(1);
+
+    // delete the entry
+    CharacterAffiliation::query()->delete();
 
     $old_data = CharacterAffiliation::factory()->create([
         'last_pulled' => now()->subMinutes(42),
     ]);
 
+    expect(CharacterAffiliation::all())->toHaveCount(1);
+
     $this->assertDatabaseHas('character_affiliations', [
         'last_pulled' => $old_data->last_pulled,
     ]);
 
-    //mockRetrieveEsiDataAction([$old_data->toArray()]);
-    $this->assertRetrieveEsiDataIsNotCalled();
+    noRetrieveEsiDataAction();
 
-    //(new CharacterAffiliationAction)->execute($old_data->character_id);
-
-    $job_container = new JobContainer([
-        'character_id' => $old_data->character_id,
-    ]);
-
-    (new CharacterAffiliationJob($job_container))->handle();
+    (new CharacterAffiliationJob())->handle();
 
     $this->assertDatabaseHas('character_affiliations', [
         'last_pulled' => $old_data->last_pulled,
@@ -110,54 +66,15 @@ it('does not update affiliation younger then an hours', function () {
     ]);
 });
 
-/**
- * @runTestsInSeparateProcesses
- */
-it('updates other outdated affiliations', function () {
-    CharacterAffiliation::all()->each(function ($character_affiliation) {
-        $character_affiliation->delete();
-    });
+it('updates affiliation older then an hours', function () {
 
-    $old_datas = CharacterAffiliation::factory()->count(3)->create([
-        'last_pulled' => now()->subMinutes(90),
-    ]);
+    // expect the test_character entry to exist
+    expect(CharacterAffiliation::all())->toHaveCount(1);
 
-    //$old_datas = CharacterAffiliation::all();
+    // delete the entry
+    CharacterAffiliation::query()->delete();
 
-    foreach ($old_datas as $old_data) {
-        $this->assertDatabaseHas('character_affiliations', [
-            'last_pulled' => $old_data->last_pulled,
-        ]);
-    }
-
-    mockRetrieveEsiDataAction(
-        $old_datas->toArray()
-    );
-
-    // Only do send first character
-    //(new CharacterAffiliationAction)->execute($old_datas->first()->character_id);
-
-    $job_container = new JobContainer([
-        'character_id' => $old_data->first()->character_id,
-    ]);
-
-    (new CharacterAffiliationJob($job_container))->handle();
-
-    foreach ($old_datas as $old_data) {
-        $this->assertDatabaseMissing('character_affiliations', [
-            'character_id' => $old_data->character_id,
-            'last_pulled' => $old_data->last_pulled,
-        ]);
-    }
-});
-
-/**
- * @runTestsInSeparateProcesses
- */
-it('updates with no id provided', function () {
-    CharacterAffiliation::all()->each(function ($character_affiliation) {
-        $character_affiliation->delete();
-    });
+    expect(CharacterAffiliation::all())->toHaveCount(0);
 
     $old_data = CharacterAffiliation::factory()->create([
         'last_pulled' => now()->subMinutes(61),
@@ -171,12 +88,77 @@ it('updates with no id provided', function () {
         'last_pulled' => $old_data->last_pulled,
     ]);
 
+    Redis::flushall();
     //$return_value = (new CharacterAffiliationAction)->execute();
     (new CharacterAffiliationJob)->handle();
 
     //$this->assertNull($return_value);
 
+    expect(CharacterAffiliation::first())
+        ->last_pulled->not()->toBe($old_data->last_pulled);
+
     $this->assertDatabaseMissing('character_affiliations', [
         'last_pulled' => $old_data->last_pulled,
     ]);
+});
+
+it('updates affiliation by id', function () {
+
+    // expect the test_character entry to exist
+    expect(CharacterAffiliation::all())->toHaveCount(1);
+
+    // delete the entry
+    CharacterAffiliation::query()->delete();
+
+    expect(CharacterAffiliation::all())->toHaveCount(0);
+
+    $old_data = CharacterAffiliation::factory()->create();
+
+    mockRetrieveEsiDataAction([$old_data->toArray()]);
+
+    $this->assertDatabaseHas('character_affiliations', [
+        'last_pulled' => $old_data->last_pulled,
+    ]);
+
+    Redis::flushall();
+
+    (new CharacterAffiliationJob($old_data->character_id))->handle();
+
+    expect(CharacterAffiliation::first())
+        ->last_pulled->not()->toBe($old_data->last_pulled);
+
+    $this->assertDatabaseMissing('character_affiliations', [
+        'last_pulled' => $old_data->last_pulled,
+    ]);
+});
+
+it('updates cached ids', function () {
+
+    // expect the test_character entry to exist
+    expect(CharacterAffiliation::all())->toHaveCount(1);
+
+    // delete the entry
+    CharacterAffiliation::query()->delete();
+
+    expect(CharacterAffiliation::all())->toHaveCount(0);
+
+    $character_affiliation = CharacterAffiliation::factory()->make();
+
+    mockRetrieveEsiDataAction([$character_affiliation->toArray()]);
+
+    $this->assertDatabaseMissing('character_affiliations', [
+        'character_id' => $character_affiliation->character_id,
+    ]);
+
+    Redis::flushall();
+
+    \Seatplus\Eveapi\Services\Jobs\CharacterAffiliationService::make()
+        ->queue($character_affiliation->character_id);
+
+    (new CharacterAffiliationJob)->handle();
+
+    expect(CharacterAffiliation::all())->toHaveCount(1);
+
+    expect(CharacterAffiliation::first())->character_id
+        ->toBe($character_affiliation->character_id);
 });

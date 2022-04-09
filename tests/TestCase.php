@@ -3,6 +3,7 @@
 
 namespace Seatplus\Eveapi\Tests;
 
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Laravel\Horizon\HorizonServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
@@ -12,6 +13,8 @@ use Staudenmeir\LaravelCte\DatabaseServiceProvider;
 
 abstract class TestCase extends OrchestraTestCase
 {
+    use LazilyRefreshDatabase;
+
     public CharacterInfo $test_character;
 
     protected function setUp(): void
@@ -74,11 +77,12 @@ abstract class TestCase extends OrchestraTestCase
      * @param  \Illuminate\Foundation\Application  $app
      * @return void
      */
-    protected function getEnvironmentSetUp($app)
+    protected function defineEnvironment($app)
     {
-        config(['database.default' => 'mysql']);
+        // Setup default database to use sqlite :memory:
+        $app['config']->set('database.default', 'mysql');
 
-        config(['app.debug' => true]);
+        //config(['app.debug' => true]);
 
         //$app['router']->aliasMiddleware('auth', Authenticate::class);
     }

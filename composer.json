@@ -37,7 +37,7 @@
         "staudenmeir/laravel-cte": "^1.0"
     },
     "require-dev": {
-        "orchestra/testbench": "7.0",
+        "orchestra/testbench": "^7.3",
         "nunomaduro/collision": "^6.1",
         "brianium/paratest": "^6.2",
         "itsgoingd/clockwork": "^5.0",

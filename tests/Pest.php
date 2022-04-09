@@ -20,7 +20,7 @@ use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\Eveapi\Services\Facade\RetrieveEsiData;
 
 uses(\Seatplus\Eveapi\Tests\TestCase::class)->in('Unit', 'Integration', 'Jobs');
-uses(\Illuminate\Foundation\Testing\LazilyRefreshDatabase::class)->in('Unit', 'Integration', 'Jobs');
+//uses(\Illuminate\Foundation\Testing\LazilyRefreshDatabase::class)->in('Unit', 'Integration', 'Jobs');
 
 /*
 |--------------------------------------------------------------------------
@@ -60,6 +60,11 @@ function mockRetrieveEsiDataAction(array $body)
     RetrieveEsiData::shouldReceive('execute')
         ->once()
         ->andReturn($response);
+}
+
+function noRetrieveEsiDataAction()
+{
+    RetrieveEsiData::shouldReceive('execute')->never();
 }
 
 function testCharacter()

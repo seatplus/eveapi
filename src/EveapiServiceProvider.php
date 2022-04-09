@@ -39,6 +39,7 @@ use Seatplus\Eveapi\Events\RefreshTokenCreated;
 use Seatplus\Eveapi\Events\UniverseConstellationCreated;
 use Seatplus\Eveapi\Events\UniverseSystemCreated;
 use Seatplus\Eveapi\Events\UpdatingRefreshTokenEvent;
+use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
 use Seatplus\Eveapi\Listeners\DispatchGetConstellationById;
 use Seatplus\Eveapi\Listeners\DispatchGetRegionById;
 use Seatplus\Eveapi\Listeners\DispatchGetSystemJobSubscriber;
@@ -47,7 +48,6 @@ use Seatplus\Eveapi\Listeners\UpdatingRefreshTokenListener;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Seatplus\Eveapi\Models\Contacts\Contact;
 use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\Contracts\ContractItem;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
@@ -62,7 +62,6 @@ use Seatplus\Eveapi\Observers\BalanceObserver;
 use Seatplus\Eveapi\Observers\CharacterAffiliationObserver;
 use Seatplus\Eveapi\Observers\CharacterAssetObserver;
 use Seatplus\Eveapi\Observers\CharacterInfoObserver;
-use Seatplus\Eveapi\Observers\ContactObserver;
 use Seatplus\Eveapi\Observers\ContractItemObserver;
 use Seatplus\Eveapi\Observers\ContractObserver;
 use Seatplus\Eveapi\Observers\CorporationMemberTrackingObserver;
@@ -238,9 +237,6 @@ class EveapiServiceProvider extends ServiceProvider
         //Corporation Observers
         CorporationMemberTracking::observe(CorporationMemberTrackingObserver::class);
 
-        //Contact Observers
-        Contact::observe(ContactObserver::class);
-
         //Contract Observer
         Contract::observe(ContractObserver::class);
         ContractItem::observe(ContractItemObserver::class);
@@ -277,6 +273,9 @@ class EveapiServiceProvider extends ServiceProvider
             Schedules::cursor()->each(function ($entry) use ($schedule) {
                 $schedule->job(new $entry->job)->cron($entry->expression);
             });
+
+            // Run Character Affiliation Job every five minutes to updated outdated affiliations.
+            $schedule->job(new CharacterAffiliationJob)->everyFiveMinutes();
 
             // Cleanup Batches Table
             $schedule->command('queue:prune-batches')->daily();
