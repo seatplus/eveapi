@@ -123,8 +123,8 @@ class CharacterAffiliationJob extends NewEsiBase implements HasRequestBodyInterf
                 ],
                 [
                     'corporation_id' => $result->corporation_id,
-                    'alliance_id' => $result?->alliance_id,
-                    'faction_id' => $result?->faction_id,
+                    'alliance_id' => data_get($result, 'alliance_id'),
+                    'faction_id' => data_get($result, 'faction_id'),
                     'last_pulled' => $timestamp,
                 ]
             ));
