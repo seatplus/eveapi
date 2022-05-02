@@ -31,7 +31,7 @@
         "ext-redis": "*",
         "laravel/framework": "^9.0",
         "laravel/horizon": "^5.0",
-        "seatplus/esi-client": "^0.10.1",
+        "seatplus/esi-client": "^1.0.0",
         "doctrine/dbal": "^3.0",
         "spatie/data-transfer-object": "^3.7",
         "staudenmeir/laravel-cte": "^1.0"
