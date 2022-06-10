@@ -87,10 +87,8 @@ class CharacterRoleJob extends NewEsiBase implements HasPathValuesInterface, Has
     {
         $response = $this->retrieve();
 
-        dd($response);
-
         if ($response->isCachedLoad()) {
-            //return;
+            return;
         }
 
         CharacterRole::updateOrCreate([
