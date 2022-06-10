@@ -96,46 +96,6 @@ it('has scope assets location ids', function () {
     expect($test_asset->location_id)->toEqual($assets->location_id);
 });
 
-it('has scope affiliated without request', function () {
-    $test_asset = Asset::factory()->create([
-        'assetable_id' => $this->test_character->character_id,//CharacterInfo::factory(),
-        'assetable_type' => CharacterInfo::class,
-    ]);
-    ;
-
-    $characters_mock = \Mockery::mock(Collection::class);
-    $characters_mock->shouldReceive('pluck')
-        ->once()
-        ->andReturn(collect($test_asset->assetable_id));
-
-    $user_mock = \Mockery::mock('Seatplus\Auth\Models\User');
-    $user_mock->characters = $characters_mock;
-    $user_mock->characters->shouldReceive('pluck')->andReturn($this->test_character->character_id);
-
-    Auth::shouldReceive('user')
-        ->once()
-        ->andReturn($user_mock);
-
-    //dd(Asset::all(), $this->test_character->character_id, auth()->user()->characters->pluck('character_id')->toArray());
-
-    $asset = Asset::query()->Affiliated([$this->test_character->character_id])->first();
-    ;
-
-    expect($test_asset->item_id)->toEqual($asset->item_id);
-});
-
-it('has scope affiliated with request', function () {
-    $test_asset = Asset::factory()->create([
-        'assetable_id' => $this->test_character->character_id,//CharacterInfo::factory(),
-        'assetable_type' => CharacterInfo::class,
-    ]);
-
-    $asset = Asset::query()->Affiliated([$this->test_character->character_id], [$this->test_character->character_id])->first();
-    ;
-
-    expect($test_asset->item_id)->toEqual($asset->item_id);
-});
-
 it('has assetable relationship', function () {
     $test_asset = Asset::factory()->create([
         'assetable_id' => $this->test_character->character_id,//CharacterInfo::factory(),
@@ -153,10 +113,10 @@ it('has scope affiliated where in', function () {
     expect($test_asset->item_id)->toEqual($assets->item_id);
 });
 
-it('has scope affiliated where', function () {
+it('has scope entityFilter', function () {
     $test_asset = Asset::factory()->create();
 
-    $assets = Asset::query()->entityFilter([$test_asset->assetable_id])->first();
+    $assets = Asset::query()->entityFilter($test_asset->assetable_id)->first();
 
     expect($test_asset->item_id)->toEqual($assets->item_id);
 });

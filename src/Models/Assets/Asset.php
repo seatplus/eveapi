@@ -131,9 +131,12 @@ class Asset extends Model
         return $query->where('location_id', '<>', self::ASSET_SAFETY);
     }
 
-    public function scopeEntityFilter(Builder $query, array $character_ids): Builder
+    public function scopeEntityFilter(Builder $query, array|int $entities): Builder
     {
-        return $query->whereIn('assetable_id', $character_ids);
+
+        $entity_ids = is_array($entities) ? $entities : [$entities];
+
+        return $query->whereIn('assetable_id', $entity_ids);
     }
 
     public function scopeInRegion(Builder $query, int | array $regions): Builder
