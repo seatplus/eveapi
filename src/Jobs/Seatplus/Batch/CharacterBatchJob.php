@@ -47,13 +47,14 @@ class CharacterBatchJob implements ShouldQueue, ShouldBeUnique
 
     public function uniqueId()
     {
+
+        $this->job_container->queue = $this->queue;
+
         return $this->character_id . ':' . $this->queue;
     }
 
     public function handle()
     {
-
-        $this->job_container->queue = $this->queue;
 
         Redis::throttle($this->character_id . ":" . $this->queue)
             ->block(0)
