@@ -40,7 +40,9 @@ class CharacterBatchJob implements ShouldQueue, ShouldBeUnique
     public function __construct(public int $character_id)
     {
         $this->refresh_token = RefreshToken::find($this->character_id);
-        $this->job_container = new JobContainer(['refresh_token' => $this->refresh_token, 'queue' => $this->queue]);
+        $this->job_container = new JobContainer(
+            refresh_token: $this->refresh_token
+        );
     }
 
     public function uniqueId()
@@ -50,6 +52,9 @@ class CharacterBatchJob implements ShouldQueue, ShouldBeUnique
 
     public function handle()
     {
+
+        $this->job_container->queue = $this->queue;
+
         Redis::throttle($this->character_id . ":" . $this->queue)
             ->block(0)
             ->allow(1)
