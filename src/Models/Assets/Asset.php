@@ -133,7 +133,6 @@ class Asset extends Model
 
     public function scopeEntityFilter(Builder $query, array|int $entities): Builder
     {
-
         $entity_ids = is_array($entities) ? $entities : [$entities];
 
         return $query->whereIn('assetable_id', $entity_ids);
