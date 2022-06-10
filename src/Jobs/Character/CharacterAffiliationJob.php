@@ -136,7 +136,7 @@ class CharacterAffiliationJob extends NewEsiBase implements HasRequestBodyInterf
             // only those who were not pulled within the last hour
             ->where('last_pulled', '<=', now()->subHour()->toDateTimeString())
             // and don't try doomheimed characters
-            ->where('character_id', '<>', 1_000_001)
+            ->where('corporation_id', '<>', 1_000_001)
             ->pluck('character_id');
 
         $ids->chunk(1000)
