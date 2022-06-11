@@ -22,5 +22,5 @@ it('it dispatches character batch job', function () {
 
     (new UpdateCharacter)->handle();
 
-    Queue::assertPushed(CharacterBatchJob::class);
+    Queue::assertPushedOn('default', CharacterBatchJob::class);
 });

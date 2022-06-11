@@ -126,23 +126,16 @@ class Asset extends Model
             ->addSelect('location_id');
     }
 
-    public function scopeAffiliated(Builder $query, array $affiliated_ids, ?array $character_ids = null): Builder
-    {
-        return $query->when($character_ids, function ($query, $character_ids) use ($affiliated_ids) {
-            return $query->entityFilter(collect($character_ids)->map(fn ($character_id) => intval($character_id))->intersect($affiliated_ids)->toArray());
-        }, function ($query) {
-            return $query->entityFilter(auth()->user()->characters->pluck('character_id')->toArray());
-        });
-    }
-
     public function scopeWithoutAssetSafety(Builder $query): Builder
     {
         return $query->where('location_id', '<>', self::ASSET_SAFETY);
     }
 
-    public function scopeEntityFilter(Builder $query, array $character_ids): Builder
+    public function scopeEntityFilter(Builder $query, array|int $entities): Builder
     {
-        return $query->whereIn('assetable_id', $character_ids);
+        $entity_ids = is_array($entities) ? $entities : [$entities];
+
+        return $query->whereIn('assetable_id', $entity_ids);
     }
 
     public function scopeInRegion(Builder $query, int | array $regions): Builder

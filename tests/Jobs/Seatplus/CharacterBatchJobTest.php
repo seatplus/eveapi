@@ -39,8 +39,8 @@ it('creates BatchUpdate entries', function () {
 
     (new CharacterBatchJob(testCharacter()->character_id))->handle();
 
-    expect(\Seatplus\Eveapi\Models\BatchUpdate::all())->toHaveCount(RefreshToken::count());
-    expect(\Seatplus\Eveapi\Models\BatchUpdate::first())
+    expect(\Seatplus\Eveapi\Models\BatchUpdate::all())->toHaveCount(RefreshToken::count())
+        ->and(\Seatplus\Eveapi\Models\BatchUpdate::first())
         ->batchable_id->toBe(testCharacter()->character_id)
         ->batchable_type->toBe(\Seatplus\Eveapi\Models\Character\CharacterInfo::class)
         ->batchable->toBeInstanceOf(\Seatplus\Eveapi\Models\Character\CharacterInfo::class)
