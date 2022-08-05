@@ -156,16 +156,17 @@ class Asset extends Model
         $query->with(['type', 'content.type', 'content.content.type']);
 
         return $query
-            ->whereRelation('type', fn(Builder $query) => $query->whereIn('type_id', $type_ids))
+            ->whereRelation('type', fn (Builder $query) => $query->whereIn('type_id', $type_ids))
             ->orWhereRelation(
                 'content',
-                fn(Builder $query) => $query
-                    ->whereRelation('type', fn(Builder $query) => $query->whereIn('type_id', $type_ids))
+                fn (Builder $query) => $query
+                    ->whereRelation('type', fn (Builder $query) => $query->whereIn('type_id', $type_ids))
                     // content.content
                     ->orWhereRelation(
                         'content',
-                        fn(Builder $query) => $query
-                            ->whereRelation('type', fn(Builder $query) => $query->whereIn('type_id', $type_ids)))
+                        fn (Builder $query) => $query
+                            ->whereRelation('type', fn (Builder $query) => $query->whereIn('type_id', $type_ids))
+                    )
             );
     }
 
@@ -176,16 +177,17 @@ class Asset extends Model
         $query->with(['type.group', 'content.type.group', 'content.content.type.group']);
 
         return $query
-            ->whereRelation('type.group', fn(Builder $query) => $query->whereIn('group_id', $group_ids))
+            ->whereRelation('type.group', fn (Builder $query) => $query->whereIn('group_id', $group_ids))
             ->orWhereRelation(
                 'content',
-                fn(Builder $query) => $query
-                    ->whereRelation('type.group', fn(Builder $query) => $query->whereIn('group_id', $group_ids))
+                fn (Builder $query) => $query
+                    ->whereRelation('type.group', fn (Builder $query) => $query->whereIn('group_id', $group_ids))
                     // content.content
                     ->orWhereRelation(
                         'content',
-                        fn(Builder $query) => $query
-                            ->whereRelation('type.group', fn(Builder $query) => $query->whereIn('group_id', $group_ids)))
+                        fn (Builder $query) => $query
+                            ->whereRelation('type.group', fn (Builder $query) => $query->whereIn('group_id', $group_ids))
+                    )
             );
     }
 
@@ -196,24 +198,23 @@ class Asset extends Model
         $query->with(['type.group', 'content.type.group', 'content.content.type.group']);
 
         return $query
-            ->whereRelation('type.group', fn(Builder $query) => $query->whereIn('category_id', $category_ids))
+            ->whereRelation('type.group', fn (Builder $query) => $query->whereIn('category_id', $category_ids))
             // content
             ->orWhereRelation(
                 'content',
-                fn(Builder $query) => $query
-                    ->whereRelation('type.group', fn(Builder $query) => $query->whereIn('category_id', $category_ids))
+                fn (Builder $query) => $query
+                    ->whereRelation('type.group', fn (Builder $query) => $query->whereIn('category_id', $category_ids))
                     // content.content
                     ->orWhereRelation(
                         'content',
-                        fn(Builder $query) => $query
-                            ->whereRelation('type.group', fn(Builder $query) => $query->whereIn('category_id', $category_ids)))
+                        fn (Builder $query) => $query
+                            ->whereRelation('type.group', fn (Builder $query) => $query->whereIn('category_id', $category_ids))
+                    )
             );
-
     }
 
     public function scopeSearch(Builder $query, string $terms = null)
     {
-
         $query->with(['type.group', 'content.type.group', 'content.content.type.group']);
 
         collect(str_getcsv($terms, ' ', '"'))->filter()
@@ -236,7 +237,7 @@ class Asset extends Model
                                     ->where('name_normalized', 'like', $term)
                                     ->orWhereRelation('type', 'name_normalized', 'like', $term)
                                     ->orWhereRelation('type.group', 'name_normalized', 'like', $term)
-                        )
+                            )
                     );
             });
     }
