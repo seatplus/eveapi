@@ -103,22 +103,6 @@ it('has assetable relationship', function () {
     expect($test_asset->assetable)->toBeInstanceOf(CharacterInfo::class);
 });
 
-it('has scope affiliated where in', function () {
-    $test_asset = Asset::factory()->create();
-
-    $assets = Asset::query()->entityFilter([$test_asset->assetable_id])->first();
-
-    expect($test_asset->item_id)->toEqual($assets->item_id);
-});
-
-it('has scope entityFilter', function () {
-    $test_asset = Asset::factory()->create();
-
-    $assets = Asset::query()->entityFilter($test_asset->assetable_id)->first();
-
-    expect($test_asset->item_id)->toEqual($assets->item_id);
-});
-
 it('has scope search asset name', function () {
     $test_asset = Asset::factory()->withName()->create();
 
