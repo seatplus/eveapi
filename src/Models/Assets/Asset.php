@@ -32,6 +32,7 @@ use Illuminate\Database\Eloquent\Model;
 use Seatplus\Eveapi\database\factories\AssetFactory;
 use Seatplus\Eveapi\Events\AssetUpdating;
 use Seatplus\Eveapi\Models\Universe\Location;
+use Seatplus\Eveapi\Models\Universe\System;
 use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Traits\HasWatchlist;
 
@@ -137,6 +138,12 @@ class Asset extends Model
 
         $query->with('location.locatable.system.region');
 
+        return $query->whereHas('location', fn (Builder $query) => $query
+            ->whereHasMorph('locatable', System::class, fn (Builder $query) => $query
+                ->whereRelation('region', 'universe_regions.region_id', 'IN', $region_ids)
+            )
+        );
+
         return $query->whereRelation('location.locatable.system.region', fn (Builder $query) => $query->whereIn('universe_regions.region_id', $region_ids));
     }
 
@@ -146,7 +153,15 @@ class Asset extends Model
 
         $query->with('location.locatable.system');
 
-        return $query->whereRelation('location.locatable.system', fn (Builder $query) => $query->whereIn('universe_systems.system_id', $system_ids));
+        return $query->whereHas('location', fn (Builder $query) => $query
+            ->whereHasMorph('locatable', System::class, fn (Builder $query) => $query
+                ->whereIn('universe_systems.system_id', $system_ids)
+            )
+        );
+
+        return $query->whereHasMorph('location.locatable', System::class, fn (Builder $query) => $query
+            ->whereIn('universe_systems.system_id', $system_ids)
+        );
     }
 
     public function scopeOfTypes(Builder $query, int | array $types) : Builder
