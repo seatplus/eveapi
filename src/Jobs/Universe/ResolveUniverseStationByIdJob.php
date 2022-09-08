@@ -75,7 +75,6 @@ class ResolveUniverseStationByIdJob extends NewEsiBase implements HasPathValuesI
 
     public function handle(): void
     {
-
         // If rate limited or not within ids range skip execution
         if (($this->location_id < head(self::STATION_IDS_RANGE) || $this->location_id > last(self::STATION_IDS_RANGE))) {
             return;

@@ -146,7 +146,6 @@ class EveapiServiceProvider extends ServiceProvider
      */
     public function configureHorizon()
     {
-
         // Require the queue_manager role to view the dashboard
         Horizon::auth(function ($request) {
             if (is_null($request->user())) {

@@ -31,7 +31,6 @@ use Seatplus\Eveapi\Models\Universe\Type;
 
 class KillmailAttacker extends Model
 {
-
     /**
      * The attributes that aren't mass assignable.
      *

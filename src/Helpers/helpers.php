@@ -28,7 +28,6 @@ use Seatplus\Eveapi\Exceptions\SettingException;
 use Seatplus\Eveapi\Models\Settings\GlobalSettings;
 
 if (! function_exists('setting')) {
-
     /**
      * Work with settings.
      *
@@ -44,10 +43,8 @@ if (! function_exists('setting')) {
      */
     function setting($name)
     {
-
         // If we received an array, it means we want to set.
         if (is_array($name)) {
-
             // Check that we have at least 2 keys.
             if (count($name) < 2) {
                 throw new SettingException('Must provide a name and value when setting a setting.');
@@ -70,7 +67,6 @@ if (! function_exists('setting')) {
 }
 
 if (! function_exists('carbon')) {
-
     /**
      * A helper to get a fresh instance of Carbon.
      *

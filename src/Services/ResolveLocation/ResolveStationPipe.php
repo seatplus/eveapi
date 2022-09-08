@@ -40,7 +40,6 @@ class ResolveStationPipe
 
     public function handle(ResolveLocationDTO $payload, Closure $next)
     {
-
         // if structure just return early
         if (is_a($payload->location->locatable, Structure::class)) {
             return $next($payload);

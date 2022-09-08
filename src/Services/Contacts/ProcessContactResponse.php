@@ -70,7 +70,6 @@ class ProcessContactResponse
 
     public function remove_old_contacts(array $known_ids)
     {
-
         // Cleanup
         Contact::where('contactable_id', $this->contactable_id)
             ->where('contactable_type', $this->contactable_type)

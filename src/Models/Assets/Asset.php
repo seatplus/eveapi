@@ -138,8 +138,13 @@ class Asset extends Model
 
         $query->with('location.locatable.system.region');
 
-        return $query->whereHas('location', fn (Builder $query) => $query
-            ->whereHasMorph('locatable', System::class, fn (Builder $query) => $query
+        return $query->whereHas(
+            'location',
+            fn (Builder $query) => $query
+            ->whereHasMorph(
+                'locatable',
+                System::class,
+                fn (Builder $query) => $query
                 ->whereRelation('region', 'universe_regions.region_id', 'IN', $region_ids)
             )
         );
@@ -153,13 +158,21 @@ class Asset extends Model
 
         $query->with('location.locatable.system');
 
-        return $query->whereHas('location', fn (Builder $query) => $query
-            ->whereHasMorph('locatable', System::class, fn (Builder $query) => $query
+        return $query->whereHas(
+            'location',
+            fn (Builder $query) => $query
+            ->whereHasMorph(
+                'locatable',
+                System::class,
+                fn (Builder $query) => $query
                 ->whereIn('universe_systems.system_id', $system_ids)
             )
         );
 
-        return $query->whereHasMorph('location.locatable', System::class, fn (Builder $query) => $query
+        return $query->whereHasMorph(
+            'location.locatable',
+            System::class,
+            fn (Builder $query) => $query
             ->whereIn('universe_systems.system_id', $system_ids)
         );
     }

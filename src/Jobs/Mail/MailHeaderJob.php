@@ -100,7 +100,6 @@ class MailHeaderJob extends NewEsiBase implements HasPathValuesInterface, HasReq
 
         collect($response)
             ->each(function ($mail) {
-
                 // create recipients
                 $recipients = collect(data_get($mail, 'recipients'))
                     ->map(fn ($recipient) => [

@@ -48,7 +48,6 @@ class ProcessContactLabelsResponse
 
     public function remove_old_contacts(array $known_ids)
     {
-
         // Cleanup
         Label::where('labelable_id', $this->labelable_id)
             ->where('labelable_type', $this->labelable_type)
