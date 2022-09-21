@@ -34,7 +34,6 @@ use Seatplus\Eveapi\Events\AssetUpdating;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\Structure;
-use Seatplus\Eveapi\Models\Universe\System;
 use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Traits\HasWatchlist;
 
@@ -147,7 +146,6 @@ class Asset extends Model
                     'locatable',
                     [Station::class, Structure::class],
                     function (Builder $query) use ($region_ids) {
-
                         $query->whereRelation('system.region', fn (Builder $query) => $query->whereIn('universe_regions.region_id', $region_ids));
                     }
                 )
@@ -167,14 +165,12 @@ class Asset extends Model
                 'locatable',
                 [Station::class, Structure::class],
                 function (Builder $query, $type) use ($system_ids) {
-
                     $column = $type === Station::class ? 'universe_stations.system_id' : 'universe_structures.solar_system_id';
 
                     $query->whereIn($column, $system_ids);
                 }
             )
         );
-
     }
 
     public function scopeOfTypes(Builder $query, int | array $types) : Builder
