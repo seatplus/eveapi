@@ -31,7 +31,6 @@ use Seatplus\Eveapi\Models\Universe\Type;
 
 class KillmailItem extends Model
 {
-
     /**
      * The accessors to append to the model's array form.
      *

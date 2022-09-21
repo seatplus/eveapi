@@ -37,7 +37,6 @@ use Seatplus\Eveapi\Models\Universe\Group;
 
 class GroupObserver
 {
-
     /**
      * @var \Seatplus\Eveapi\Models\Universe\Group|null
      */

@@ -34,7 +34,6 @@ use Illuminate\Support\Facades\Redis;
  */
 trait RateLimitsEsiCalls
 {
-
     /**
      * @var string
      */

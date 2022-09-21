@@ -39,7 +39,6 @@ it('dispatches no alliance job if alliance id is null', function () {
 
 
 it('does not update affiliation younger then an hours', function () {
-
     // expect the test_character entry to exist
     expect(CharacterAffiliation::all())->toHaveCount(1);
 
@@ -67,7 +66,6 @@ it('does not update affiliation younger then an hours', function () {
 });
 
 it('updates affiliation older then an hours', function () {
-
     // expect the test_character entry to exist
     expect(CharacterAffiliation::all())->toHaveCount(1);
 
@@ -103,7 +101,6 @@ it('updates affiliation older then an hours', function () {
 });
 
 it('updates affiliation by id', function () {
-
     // expect the test_character entry to exist
     expect(CharacterAffiliation::all())->toHaveCount(1);
 
@@ -133,7 +130,6 @@ it('updates affiliation by id', function () {
 });
 
 it('updates cached ids', function () {
-
     // expect the test_character entry to exist
     expect(CharacterAffiliation::all())->toHaveCount(1);
 
