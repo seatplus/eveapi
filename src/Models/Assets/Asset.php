@@ -199,7 +199,6 @@ class Asset extends Model
 
     public function scopeSearch(Builder $query, string $terms = null)
     {
-
         collect(str_getcsv($terms, ' ', '"'))->filter()
             ->each(function ($term) use ($query) {
                 $term = $term.'%';
@@ -213,7 +212,6 @@ class Asset extends Model
 
     public function scopeWithRecursiveContent(Builder $query): Builder
     {
-
         $sub_query = $query
             ->unionAll(
                 $this->newQuery()->select('assets.*')->join('tree', 'tree.location_id', '=', 'assets.item_id')

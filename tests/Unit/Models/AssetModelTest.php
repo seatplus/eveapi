@@ -116,7 +116,6 @@ it('has scope search asset name', function () {
 });
 
 it('has asset search scope by', function ($type) {
-
     $test_asset = Asset::factory()->create([
         'type_id' => Type::factory()->create([
             'group_id' => Group::factory()->create(['category_id' => Category::factory()]),
@@ -139,7 +138,6 @@ it('has asset search scope by', function ($type) {
 })->with(['name', 'type', 'group']);
 
 it('has withRecursiveContent scope for Level', function ($level) {
-
     $test_asset = Asset::factory()->withName()->create();
 
     //Create Content
@@ -166,7 +164,6 @@ it('has withRecursiveContent scope for Level', function ($level) {
         ->get();
 
     expect($assets)->toHaveCount($level + 1);
-
 })->with([0,1,2]);
 
 it('has content relationship', function () {
@@ -264,5 +261,4 @@ it('has in scope', function (string $scope) {
     };
 
     expect($query->get())->toHaveCount(1);
-
 })->with(['ofTypes', 'ofGroups', 'ofCategories']);
