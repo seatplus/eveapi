@@ -115,76 +115,56 @@ it('has scope search asset name', function () {
         ->item_id->toBeInt()->toBe($test_asset->item_id);
 });
 
-it('has scope search asset type', function () {
-    $test_asset = Asset::factory()->withType()->create();
+it('has asset search scope by', function ($type) {
+    $test_asset = Asset::factory()->create([
+        'type_id' => Type::factory()->create([
+            'group_id' => Group::factory()->create(['category_id' => Category::factory()]),
+        ]),
+    ]);
 
-    $search_string = substr($test_asset->type->name, 0, 3);
+
+    $name = match ($type) {
+        'name' => $test_asset->name,
+        'type' => $test_asset->type->name,
+        'group' => $test_asset->type->group->name
+    };
+
+    $search_string = substr($name, 0, 3);
 
     $assets = Asset::query()->search($search_string)->first();
 
     expect($assets)
         ->item_id->toBeInt()->toBe($test_asset->item_id);
-});
+})->with(['name', 'type', 'group']);
 
-it('has scope search asset content', function () {
-    $test_asset = Asset::factory()->create([
-        'location_flag' => 'Hangar',
-    ]);
+it('has withRecursiveContent scope for Level', function ($level) {
+    $test_asset = Asset::factory()->withName()->create();
 
     //Create Content
     $test_asset->content()->save(Asset::factory()->withName()->create([
         'location_flag' => 'cargo',
     ]));
 
-    $search_string = substr($test_asset->content->first()->name, 0, 3);
-
-    $assets = Asset::query()
-        ->Search($search_string)
-        ->whereIn('location_flag', ['Hangar', 'AssetSafety', 'Deliveries'])
-        ->first();
-
-    expect($test_asset->item_id)->toEqual($assets->item_id);
-});
-
-it('has scope search asset content content', function () {
-    $test_asset = Asset::factory()->withName()->create([
-        'location_flag' => 'Hangar',
-    ]);
-
-    //Create Content
-    $test_asset->content()->save(Asset::factory()->create([
-        'location_flag' => 'cargo',
-    ]));
-
-    $content = $test_asset->content->first();
-
     //Create Content Content
-    $content->content()->save(Asset::factory()->withName()->withType()->create());
+    $test_asset->content->first()->content()->save(Asset::factory()->withName()->withType()->create());
 
-    $search_string = substr($content->content->first()->name, 0, 3);
+    expect(Asset::query()->count())->toBe(3);
+
+    $name = match ($level) {
+        0 => $test_asset->name,
+        1 => $test_asset->content->first()->name,
+        2 => $test_asset->content->first()->content->first()->name,
+    };
+
+    $search_string = substr($name, 0, 3);
 
     $assets = Asset::query()
         ->Search($search_string)
-        ->whereIn('location_flag', ['Hangar', 'AssetSafety', 'Deliveries'])
-        ->first();
+        ->withRecursiveContent()
+        ->get();
 
-    expect($test_asset->item_id)
-        ->toEqual($assets->item_id);
-
-    // Search for type of content_content
-    $search_string = substr($content->content->first()->type->name, 0, 3);
-
-    expect($search_string)->toBeString()->toHaveLength(3);
-
-    $assets = Asset::query()
-        ->search($search_string)
-        ->whereIn('location_flag', ['Hangar', 'AssetSafety', 'Deliveries'])
-        ->first();
-
-    expect($assets)
-        ->name->toBeString()->toBe($test_asset->name)
-        ->item_id->toBeInt()->toBe($test_asset->item_id);
-});
+    expect($assets)->toHaveCount($level + 1);
+})->with([0,1,2]);
 
 it('has content relationship', function () {
     $test_asset = Asset::factory()->create([
@@ -258,49 +238,27 @@ it('has in system scope', function () {
     expect(Asset::inSystems($system_id + 1)->get())->toHaveCount(0);
 });
 
-it('has in ofTypes, ofGroups and ofCategories scope', function () {
+it('has in scope', function (string $scope) {
     expect(Asset::all())->toHaveCount(0);
 
     Event::fake();
 
-    $type1 = Type::factory()->create([
+    $type = Type::factory()->create([
         'group_id' => Group::factory()->create(['category_id' => Category::factory()]),
     ]);
 
-    $asset = Asset::factory()->create([
+    Asset::factory()->create([
         'location_flag' => 'Hangar',
-        'type_id' => $type1,
+        'type_id' => $type,
     ]);
 
-    $type2 = Type::factory()->create([
-        'group_id' => Group::factory()->create(['category_id' => Category::factory()]),
-    ]);
+    $query = Asset::query();
 
-    $content = Asset::factory()->create([
-        'type_id' => $type2,
-        'location_id' => $asset->item_id,
-        'location_flag' => 'ShipHangar',
-    ]);
+    match ($scope) {
+        'ofTypes' => $query->ofTypes($type->type_id),
+        'ofGroups' => $query->ofGroups($type->group->group_id),
+        'ofCategories' => $query->ofCategories($type->group->category->category_id),
+    };
 
-    $type3 = Type::factory()->create([
-        'group_id' => Group::factory()->create(['category_id' => Category::factory()]),
-    ]);
-
-    $content_content = Asset::factory()->create([
-        'type_id' => $type3,
-        'location_id' => $content->item_id,
-        'location_flag' => 'Hangar',
-    ]);
-
-    expect(Asset::query())
-        ->count()->toBeInt()->toBe(3)
-        ->ofTypes($type1->type_id)->get()->toHaveCount(1)
-        ->ofTypes($type2->type_id)->where('location_flag', 'Hangar')->get()->toHaveCount(1)
-        ->ofTypes($type3->type_id)->where('location_flag', 'Hangar')->get()->toHaveCount(1)
-        ->ofGroups($type1->group_id)->get()->toHaveCount(1)
-        ->ofGroups($type2->group_id)->where('location_flag', 'Hangar')->get()->toHaveCount(1)
-        ->ofGroups($type3->group_id)->where('location_flag', 'Hangar')->get()->toHaveCount(1)
-        ->ofCategories($type1->group->category_id)->get()->toHaveCount(1)
-        ->ofCategories($type2->group->category_id)->where('location_flag', 'Hangar')->get()->toHaveCount(1)
-        ->ofCategories($type3->group->category_id)->where('location_flag', 'Hangar')->get()->toHaveCount(1);
-});
+    expect($query->get())->toHaveCount(1);
+})->with(['ofTypes', 'ofGroups', 'ofCategories']);

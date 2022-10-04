@@ -177,70 +177,28 @@ class Asset extends Model
     {
         $type_ids = is_array($types) ? $types : [$types];
 
-        $query->with(['type', 'content.type', 'content.content.type']);
-
         return $query
-            ->whereRelation('type', fn (Builder $query) => $query->whereIn('type_id', $type_ids))
-            ->orWhereRelation(
-                'content',
-                fn (Builder $query) => $query
-                    ->whereRelation('type', fn (Builder $query) => $query->whereIn('type_id', $type_ids))
-                    // content.content
-                    ->orWhereRelation(
-                        'content',
-                        fn (Builder $query) => $query
-                            ->whereRelation('type', fn (Builder $query) => $query->whereIn('type_id', $type_ids))
-                    )
-            );
+            ->whereRelation('type', fn (Builder $query) => $query->whereIn('type_id', $type_ids));
     }
 
     public function scopeOfGroups(Builder $query, int | array $groups) : Builder
     {
         $group_ids = is_array($groups) ? $groups : [$groups];
 
-        $query->with(['type.group', 'content.type.group', 'content.content.type.group']);
-
         return $query
-            ->whereRelation('type.group', fn (Builder $query) => $query->whereIn('group_id', $group_ids))
-            ->orWhereRelation(
-                'content',
-                fn (Builder $query) => $query
-                    ->whereRelation('type.group', fn (Builder $query) => $query->whereIn('group_id', $group_ids))
-                    // content.content
-                    ->orWhereRelation(
-                        'content',
-                        fn (Builder $query) => $query
-                            ->whereRelation('type.group', fn (Builder $query) => $query->whereIn('group_id', $group_ids))
-                    )
-            );
+            ->whereRelation('type.group', fn (Builder $query) => $query->whereIn('group_id', $group_ids));
     }
 
     public function scopeOfCategories(Builder $query, int | array $categories) : Builder
     {
         $category_ids = is_array($categories) ? $categories : [$categories];
 
-        $query->with(['type.group', 'content.type.group', 'content.content.type.group']);
-
         return $query
-            ->whereRelation('type.group', fn (Builder $query) => $query->whereIn('category_id', $category_ids))
-            // content
-            ->orWhereRelation(
-                'content',
-                fn (Builder $query) => $query
-                    ->whereRelation('type.group', fn (Builder $query) => $query->whereIn('category_id', $category_ids))
-                    // content.content
-                    ->orWhereRelation(
-                        'content',
-                        fn (Builder $query) => $query
-                            ->whereRelation('type.group', fn (Builder $query) => $query->whereIn('category_id', $category_ids))
-                    )
-            );
+            ->whereRelation('type.group', fn (Builder $query) => $query->whereIn('category_id', $category_ids));
     }
 
     public function scopeSearch(Builder $query, string $terms = null)
     {
-        $query->with(['type.group', 'content.type.group', 'content.content.type.group']);
-
         collect(str_getcsv($terms, ' ', '"'))->filter()
             ->each(function ($term) use ($query) {
                 $term = $term.'%';
@@ -248,21 +206,17 @@ class Asset extends Model
                 $query
                     ->where('name_normalized', 'like', $term)
                     ->orWhereRelation('type', 'name_normalized', 'like', $term)
-                    ->orWhereRelation('type.group', 'name_normalized', 'like', $term)
-                    ->orWhereHas(
-                        'content',
-                        fn ($query) => $query
-                            ->where('name_normalized', 'like', $term)
-                            ->orWhereRelation('type', 'name_normalized', 'like', $term)
-                            ->orWhereRelation('type.group', 'name_normalized', 'like', $term)
-                            ->orWhereHas(
-                                'content',
-                                fn ($query) => $query
-                                    ->where('name_normalized', 'like', $term)
-                                    ->orWhereRelation('type', 'name_normalized', 'like', $term)
-                                    ->orWhereRelation('type.group', 'name_normalized', 'like', $term)
-                            )
-                    );
+                    ->orWhereRelation('type.group', 'name_normalized', 'like', $term);
             });
+    }
+
+    public function scopeWithRecursiveContent(Builder $query): Builder
+    {
+        $sub_query = $query
+            ->unionAll(
+                $this->newQuery()->select('assets.*')->join('tree', 'tree.location_id', '=', 'assets.item_id')
+            );
+
+        return $this->newQuery()->from('tree')->withRecursiveExpression('tree', $sub_query);
     }
 }
