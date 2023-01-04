@@ -29,11 +29,11 @@ namespace Seatplus\Eveapi\Jobs\Character;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Traits\HasPathValues;
 
-class CharacterInfoJob extends NewEsiBase implements HasPathValuesInterface
+class CharacterInfoJob extends EsiBase implements HasPathValuesInterface
 {
     use HasPathValues;
 
@@ -80,7 +80,7 @@ class CharacterInfoJob extends NewEsiBase implements HasPathValuesInterface
      * @return void
      * @throws \Exception
      */
-    public function handle(): void
+    public function executeJob(): void
     {
         $response = $this->retrieve();
 

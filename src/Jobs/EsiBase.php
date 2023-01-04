@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs;
 
+use Exception;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -45,7 +46,7 @@ use Seatplus\Eveapi\Services\MinutesUntilNextSchedule;
 use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 use Throwable;
 
-abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, NewBaseJobInterface, ShouldBeUnique
+abstract class EsiBase extends RetrieveFromEsiBase implements ShouldQueue, NewBaseJobInterface, ShouldBeUnique
 {
     use Batchable;
     use Dispatchable;
@@ -136,8 +137,27 @@ abstract class NewEsiBase extends RetrieveFromEsiBase implements ShouldQueue, Ne
      * Execute the job.
      *
      * @return void
+     * @throws Exception
      */
-    abstract public function handle(): void;
+    final public function handle(): void
+    {
+        try {
+
+            $this->executeJob();
+
+        } catch (Exception $exception) {
+
+            report($exception);
+            throw $exception;
+        }
+    }
+
+    /**
+     * Execute the job.
+     *
+     * @return void
+     */
+    abstract public function executeJob(): void;
 
     // TODO Remove methode and setJobType
     final public function getMinutesUntilTimeout(): int

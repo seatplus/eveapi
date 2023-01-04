@@ -47,5 +47,5 @@ interface NewBaseJobInterface
      *
      * @return void
      */
-    public function handle(): void;
+    public function executeJob(): void;
 }

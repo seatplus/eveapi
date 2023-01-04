@@ -32,14 +32,14 @@ use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Wallet\Balance;
 use Seatplus\Eveapi\Traits\HasPages;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CharacterBalanceJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+class CharacterBalanceJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
     use HasPathValues;
     use HasRequiredScopes;
@@ -93,7 +93,7 @@ class CharacterBalanceJob extends NewEsiBase implements HasPathValuesInterface, 
      * @return void
      * @throws \Exception
      */
-    public function handle(): void
+    public function executeJob(): void
     {
         $response = $this->retrieve($this->getPage());
 

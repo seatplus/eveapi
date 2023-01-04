@@ -32,14 +32,14 @@ use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Services\Wallet\ProcessWalletTransactionResponse;
 use Seatplus\Eveapi\Traits\HasPages;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CorporationWalletTransactionByDivisionJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+class CorporationWalletTransactionByDivisionJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
     use HasPathValues;
     use HasRequiredScopes;
@@ -95,7 +95,7 @@ class CorporationWalletTransactionByDivisionJob extends NewEsiBase implements Ha
      * @return void
      * @throws \Exception
      */
-    public function handle(): void
+    public function executeJob(): void
     {
         $processor = new ProcessWalletTransactionResponse($this->getCorporationId(), CorporationInfo::class, $this->division);
 

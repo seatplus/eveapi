@@ -30,7 +30,7 @@ use Exception;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseSystemBySystemIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Killmails\Killmail;
@@ -39,7 +39,7 @@ use Seatplus\Eveapi\Models\Killmails\KillmailItem;
 use Seatplus\Eveapi\Services\Jobs\GetLocationFlagNameService;
 use Seatplus\Eveapi\Traits\HasPathValues;
 
-class KillmailJob extends NewEsiBase implements HasPathValuesInterface
+class KillmailJob extends EsiBase implements HasPathValuesInterface
 {
     use HasPathValues;
 
@@ -75,7 +75,7 @@ class KillmailJob extends NewEsiBase implements HasPathValuesInterface
         ];
     }
 
-    public function handle(): void
+    public function executeJob(): void
     {
         $response = $this->retrieve();
 

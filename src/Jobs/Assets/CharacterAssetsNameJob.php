@@ -34,13 +34,13 @@ use Seatplus\Eveapi\Esi\HasRequestBodyInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequestBody;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CharacterAssetsNameJob extends NewEsiBase implements HasPathValuesInterface, HasRequestBodyInterface, HasRequiredScopeInterface
+class CharacterAssetsNameJob extends EsiBase implements HasPathValuesInterface, HasRequestBodyInterface, HasRequiredScopeInterface
 {
     use HasRequiredScopes;
     use HasPathValues;
@@ -101,7 +101,7 @@ class CharacterAssetsNameJob extends NewEsiBase implements HasPathValuesInterfac
      *
      * @return void
      */
-    public function handle(): void
+    public function executeJob(): void
     {
         if ($this->batching() && $this->batch()->cancelled()) {
             // Determine if the batch has been cancelled...

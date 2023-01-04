@@ -28,12 +28,12 @@ namespace Seatplus\Eveapi\Jobs\Universe;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Traits\HasPathValues;
 
-class ResolveUniverseStationByIdJob extends NewEsiBase implements HasPathValuesInterface
+class ResolveUniverseStationByIdJob extends EsiBase implements HasPathValuesInterface
 {
     use HasPathValues;
 
@@ -73,7 +73,7 @@ class ResolveUniverseStationByIdJob extends NewEsiBase implements HasPathValuesI
         ];
     }
 
-    public function handle(): void
+    public function executeJob(): void
     {
         // If rate limited or not within ids range skip execution
         if (($this->location_id < head(self::STATION_IDS_RANGE) || $this->location_id > last(self::STATION_IDS_RANGE))) {

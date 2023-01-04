@@ -1,7 +1,7 @@
 <?php
 
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 beforeEach(function () {
@@ -9,7 +9,7 @@ beforeEach(function () {
 });
 
 it('fails without required scope on new esi base jobs', function () {
-    $this->job = Mockery::mock(NewEsiBase::class);
+    $this->job = Mockery::mock(EsiBase::class);
 
     $this->next = function ($job) {
         $job->fire();

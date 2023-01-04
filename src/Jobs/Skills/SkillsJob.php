@@ -30,13 +30,13 @@ use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Skills\Skill;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class SkillsJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+class SkillsJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
     use HasPathValues;
     use HasRequiredScopes;
@@ -74,7 +74,7 @@ class SkillsJob extends NewEsiBase implements HasPathValuesInterface, HasRequire
         ];
     }
 
-    public function handle(): void
+    public function executeJob(): void
     {
         $response = $this->retrieve();
 

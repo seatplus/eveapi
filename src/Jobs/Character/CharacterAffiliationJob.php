@@ -29,12 +29,12 @@ namespace Seatplus\Eveapi\Jobs\Character;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Support\Facades\Redis;
 use Seatplus\Eveapi\Esi\HasRequestBodyInterface;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Services\Jobs\CharacterAffiliationService;
 use Seatplus\Eveapi\Traits\HasRequestBody;
 
-class CharacterAffiliationJob extends NewEsiBase implements HasRequestBodyInterface
+class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
 {
     use HasRequestBody;
 
@@ -80,7 +80,7 @@ class CharacterAffiliationJob extends NewEsiBase implements HasRequestBodyInterf
      * @return void
      * @throws \Exception
      */
-    public function handle(): void
+    public function executeJob(): void
     {
         if ($this->manual_ids) {
             $this->updateOrCreateCharacterAffiliations($this->manual_ids);
