@@ -46,7 +46,7 @@ use Seatplus\Eveapi\Services\MinutesUntilNextSchedule;
 use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 use Throwable;
 
-abstract class EsiBase extends RetrieveFromEsiBase implements ShouldQueue, NewBaseJobInterface, ShouldBeUnique
+abstract class EsiBase extends RetrieveFromEsiBase implements ShouldQueue, BaseJobInterface, ShouldBeUnique
 {
     use Batchable;
     use Dispatchable;
