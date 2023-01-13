@@ -26,7 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs;
 
-interface NewBaseJobInterface
+interface BaseJobInterface
 {
     /**
      * Get the middleware the job should pass through.
@@ -47,5 +47,5 @@ interface NewBaseJobInterface
      *
      * @return void
      */
-    public function handle(): void;
+    public function executeJob(): void;
 }

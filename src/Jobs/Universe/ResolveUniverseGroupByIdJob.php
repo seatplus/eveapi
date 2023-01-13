@@ -28,12 +28,12 @@ namespace Seatplus\Eveapi\Jobs\Universe;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequestBody;
 
-class ResolveUniverseGroupByIdJob extends NewEsiBase implements HasPathValuesInterface
+class ResolveUniverseGroupByIdJob extends EsiBase implements HasPathValuesInterface
 {
     use HasPathValues;
     use HasRequestBody;
@@ -80,7 +80,7 @@ class ResolveUniverseGroupByIdJob extends NewEsiBase implements HasPathValuesInt
      *
      * @return void
      */
-    public function handle(): void
+    public function executeJob(): void
     {
         $response = $this->retrieve();
 

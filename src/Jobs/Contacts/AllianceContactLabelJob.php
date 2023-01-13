@@ -31,15 +31,15 @@ use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Services\Contacts\ProcessContactLabelsResponse;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class AllianceContactLabelJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+class AllianceContactLabelJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
     use HasPathValues;
     use HasRequiredScopes;
@@ -98,7 +98,7 @@ class AllianceContactLabelJob extends NewEsiBase implements HasPathValuesInterfa
      * @return void
      * @throws \Exception
      */
-    public function handle(): void
+    public function executeJob(): void
     {
         if (is_null($this->alliance_id)) {
             return;

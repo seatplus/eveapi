@@ -29,11 +29,11 @@ namespace Seatplus\Eveapi\Jobs\Alliances;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Traits\HasPathValues;
 
-class AllianceInfoJob extends NewEsiBase implements HasPathValuesInterface
+class AllianceInfoJob extends EsiBase implements HasPathValuesInterface
 {
     use HasPathValues;
 
@@ -79,13 +79,9 @@ class AllianceInfoJob extends NewEsiBase implements HasPathValuesInterface
      * Execute the job.
      *
      * @return void
-     * @throws \Seat\Eseye\Exceptions\EsiScopeAccessDeniedException
-     * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
-     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
-     * @throws \Seat\Eseye\Exceptions\RequestFailedException
-     * @throws \Seat\Eseye\Exceptions\UriDataMissingException
+     * @throws \Seatplus\EsiClient\Exceptions\RequestFailedException
      */
-    public function handle(): void
+    public function executeJob(): void
     {
         if ($this->batching() && $this->batch()->cancelled()) {
             // Determine if the batch has been cancelled...

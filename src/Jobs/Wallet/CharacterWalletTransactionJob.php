@@ -31,9 +31,9 @@ use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasQueryStringInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 use Seatplus\Eveapi\Services\Wallet\ProcessWalletTransactionResponse;
@@ -41,7 +41,7 @@ use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasQueryValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CharacterWalletTransactionJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, HasQueryStringInterface
+class CharacterWalletTransactionJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, HasQueryStringInterface
 {
     use HasPathValues;
     use HasRequiredScopes;
@@ -97,7 +97,7 @@ class CharacterWalletTransactionJob extends NewEsiBase implements HasPathValuesI
      * @return void
      * @throws \Exception
      */
-    public function handle(): void
+    public function executeJob(): void
     {
         $processor = new ProcessWalletTransactionResponse(
             $this->getCharacterId(),

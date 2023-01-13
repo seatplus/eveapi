@@ -30,12 +30,12 @@ use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Mail\Mail;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class MailBodyJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+class MailBodyJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
     use HasPathValues;
     use HasRequiredScopes;
@@ -76,7 +76,7 @@ class MailBodyJob extends NewEsiBase implements HasPathValuesInterface, HasRequi
         ];
     }
 
-    public function handle(): void
+    public function executeJob(): void
     {
         $response = $this->retrieve();
 

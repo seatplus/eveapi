@@ -31,7 +31,7 @@ use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
@@ -40,7 +40,7 @@ use Seatplus\Eveapi\Models\Mail\MailRecipients;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class MailHeaderJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+class MailHeaderJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
     use HasPathValues;
     use HasRequiredScopes;
@@ -79,7 +79,7 @@ class MailHeaderJob extends NewEsiBase implements HasPathValuesInterface, HasReq
         ];
     }
 
-    public function handle(): void
+    public function executeJob(): void
     {
         $response = $this->retrieve();
 

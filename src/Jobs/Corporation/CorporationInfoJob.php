@@ -29,11 +29,11 @@ namespace Seatplus\Eveapi\Jobs\Corporation;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Traits\HasPathValues;
 
-class CorporationInfoJob extends NewEsiBase implements HasPathValuesInterface
+class CorporationInfoJob extends EsiBase implements HasPathValuesInterface
 {
     use HasPathValues;
 
@@ -77,7 +77,7 @@ class CorporationInfoJob extends NewEsiBase implements HasPathValuesInterface
     /**
      * Execute the job.
      */
-    public function handle(): void
+    public function executeJob(): void
     {
         $response = $this->retrieve();
 

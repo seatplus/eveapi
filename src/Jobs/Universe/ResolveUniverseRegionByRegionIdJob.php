@@ -28,11 +28,11 @@ namespace Seatplus\Eveapi\Jobs\Universe;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Universe\Region;
 use Seatplus\Eveapi\Traits\HasPathValues;
 
-class ResolveUniverseRegionByRegionIdJob extends NewEsiBase implements HasPathValuesInterface
+class ResolveUniverseRegionByRegionIdJob extends EsiBase implements HasPathValuesInterface
 {
     use HasPathValues;
 
@@ -77,7 +77,7 @@ class ResolveUniverseRegionByRegionIdJob extends NewEsiBase implements HasPathVa
      *
      * @return void
      */
-    public function handle(): void
+    public function executeJob(): void
     {
         $response = $this->retrieve();
 

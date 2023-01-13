@@ -31,12 +31,12 @@ use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Contracts\ContractItem;
 
-class ContractItemsJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, ShouldBeUnique
+class ContractItemsJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, ShouldBeUnique
 {
     public array $path_values;
 
@@ -91,7 +91,7 @@ class ContractItemsJob extends NewEsiBase implements HasPathValuesInterface, Has
         ];
     }
 
-    public function handle(): void
+    public function executeJob(): void
     {
         if ($this->batching() && $this->batch()->cancelled()) {
             // Determine if the batch has been cancelled...

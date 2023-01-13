@@ -28,7 +28,7 @@ namespace Seatplus\Eveapi\Jobs\Middleware;
 
 use Exception;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Jobs\EsiBase;
 
 class HasRequiredScopeMiddleware
 {
@@ -39,7 +39,7 @@ class HasRequiredScopeMiddleware
      * @param  callable  $next
      * @return mixed
      */
-    public function handle(NewEsiBase $job, $next)
+    public function handle(EsiBase $job, $next)
     {
         if ($job instanceof HasRequiredScopeInterface && $job->refresh_token->hasScope($job->getRequiredScope())) {
             return $next($job);

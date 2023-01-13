@@ -28,11 +28,11 @@ namespace Seatplus\Eveapi\Jobs\Universe;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Universe\Constellation;
 use Seatplus\Eveapi\Traits\HasPathValues;
 
-class ResolveUniverseConstellationByConstellationIdJob extends NewEsiBase implements HasPathValuesInterface
+class ResolveUniverseConstellationByConstellationIdJob extends EsiBase implements HasPathValuesInterface
 {
     use HasPathValues;
 
@@ -77,7 +77,7 @@ class ResolveUniverseConstellationByConstellationIdJob extends NewEsiBase implem
      *
      * @return void
      */
-    public function handle(): void
+    public function executeJob(): void
     {
         $response = $this->retrieve();
 
