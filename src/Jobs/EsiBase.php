@@ -142,12 +142,10 @@ abstract class EsiBase extends RetrieveFromEsiBase implements ShouldQueue, BaseJ
     final public function handle(): void
     {
         try {
-
             $this->executeJob();
-
         } catch (Exception $exception) {
-
             report($exception);
+
             throw $exception;
         }
     }
