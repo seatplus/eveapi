@@ -16,7 +16,7 @@ beforeEach(function () {
 it('runs with refresh token', function () {
     $this->job->shouldReceive('fire')->times(1);
 
-    $this->job->refresh_token = RefreshToken::factory()->make();
+    $this->job->shouldReceive('getRefreshToken')->andReturn(RefreshToken::factory()->make());
 
     $this->middleware->handle($this->job, $this->next);
 });
@@ -24,7 +24,7 @@ it('runs with refresh token', function () {
 it('fails without refresh token', function () {
     $this->job->shouldReceive('fail')->times(1);
 
-    $this->job->refresh_token = null;
+    $this->job->shouldReceive('getRefreshToken')->andReturn(null);
 
     $this->middleware->handle($this->job, $this->next);
 });

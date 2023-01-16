@@ -40,12 +40,12 @@ class ResolveUniverseTypeByIdJob extends EsiBase implements HasPathValuesInterfa
 
     public function __construct(private int $type_id)
     {
-        //$this->setJobType('public');
-        parent::__construct(null, 'public');
 
-        $this->setMethod('get');
-        $this->setEndpoint('/universe/types/{type_id}/');
-        $this->setVersion('v3');
+        parent::__construct(
+            method: 'get',
+            endpoint: '/universe/types/{type_id}/',
+            version: 'v3',
+        );
 
         $this->setPathValues([
             'type_id' => $type_id,
@@ -60,6 +60,7 @@ class ResolveUniverseTypeByIdJob extends EsiBase implements HasPathValuesInterfa
     public function middleware(): array
     {
         return [
+            ...parent::middleware(),
             (new ThrottlesExceptionsWithRedis(80, 5))
                 ->by('esiratelimit')
                 ->backoff(5),

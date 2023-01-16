@@ -44,17 +44,16 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
     use HasRequiredScopes;
 
     public function __construct(
-        public JobContainer $job_container
+        public int $character_id,
     ) {
-        $this->setJobType('character');
-        parent::__construct($job_container);
-
-        $this->setMethod('get');
-        $this->setEndpoint('/characters/{character_id}/contracts/');
-        $this->setVersion('v1');
+        parent::__construct(
+            method: 'get',
+            endpoint: '/characters/{character_id}/contracts/',
+            version: 'v1',
+        );
 
         $this->setPathValues([
-            'character_id' => $job_container->getCharacterId(),
+            'character_id' => $this->character_id,
         ]);
 
         $this->setRequiredScope(head(config('eveapi.scopes.character.contracts')));
@@ -75,7 +74,7 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
     {
         return [
             'character',
-            'character_id: ' . $this->getCharacterId(),
+            'character_id: ' . $this->character_id,
             'contracts',
         ];
     }
@@ -121,7 +120,7 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
 
             $contract_ids = collect($response)->pluck('contract_id')->toArray();
 
-            $character = CharacterInfo::find($this->job_container->getCharacterId());
+            $character = CharacterInfo::find($this->character_id);
 
             if ($character) {
                 $character->contracts()->syncWithoutDetaching($contract_ids);
@@ -134,7 +133,7 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
                 ->where('status', '<>', 'deleted')
                 ->where('type', '<>', 'courier')
                 ->get()
-                ->map(fn ($contract) => new ContractItemsJob($contract->contract_id, $this->job_container, 'character'));
+                ->map(fn ($contract) => new CharacterContractItemsJob($this->character_id, $contract->contract_id));
 
             if ($this->batching()) {
                 $this->batch()->add($location_job_array);

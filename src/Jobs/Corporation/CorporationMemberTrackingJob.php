@@ -28,30 +28,34 @@ namespace Seatplus\Eveapi\Jobs\Corporation;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
+use Seatplus\Eveapi\Traits\HasCorporationRole;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CorporationMemberTrackingJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+class CorporationMemberTrackingJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, HasCorporationRoleInterface
 {
-    use HasPathValues;
-    use HasRequiredScopes;
+    use HasPathValues, HasRequiredScopes, HasCorporationRole;
 
-    public function __construct(JobContainer $job_container)
+    public function __construct(
+        public int $corporation_id
+    )
     {
-        $this->setJobType('corporation');
-        parent::__construct($job_container);
-
-        $this->setMethod('get');
-        $this->setEndpoint('/corporations/{corporation_id}/membertracking/');
-        $this->setVersion('v1');
+        parent::__construct(
+            method: 'get',
+            endpoint: '/corporations/{corporation_id}/membertracking/',
+            version: 'v1',
+        );
 
         $this->setRequiredScope('esi-corporations.track_members.v1');
+
+        $this->setCorporationRole('Director');
 
         $this->setPathValues([
             'corporation_id' => $this->corporation_id,

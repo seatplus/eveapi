@@ -39,7 +39,7 @@ class HasRefreshTokenMiddleware
      */
     public function handle($job, $next)
     {
-        if ($job->refresh_token) {
+        if ($job->getRefreshToken()) {
             return $next($job);
         }
 

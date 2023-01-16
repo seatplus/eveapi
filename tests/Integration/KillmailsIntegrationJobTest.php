@@ -28,12 +28,6 @@ it('dispatches killmail job', function () {
     Queue::assertPushed(KillmailJob::class);
 });
 
-it('runs the job', function () {
-    RetrieveEsiData::shouldReceive('execute');
-
-    KillmailJob::dispatch(123, 'asd');
-});
-
 it('creates killmail', function () {
     buildKillmailMockEsiData();
 

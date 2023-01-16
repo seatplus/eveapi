@@ -10,6 +10,13 @@ use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 uses(MockRetrieveEsiDataAction::class);
 
+beforeEach(function () {
+    Queue::fake();
+
+    $refresh_token = updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-contracts.read_character_contracts.v1']);
+    $refresh_token->save();
+});
+
 test('job is being dispatched', function () {
     Queue::fake();
 
@@ -20,7 +27,7 @@ test('job is being dispatched', function () {
         'refresh_token' => $this->test_character->refresh_token,
     ]);
 
-    CharacterContractsJob::dispatch($job_container)->onQueue('default');
+    CharacterContractsJob::dispatch(testCharacter()->character_id)->onQueue('default');
 
     // Assert a job was pushed to a given queue...
     Queue::assertPushedOn('default', CharacterContractsJob::class);
@@ -29,27 +36,19 @@ test('job is being dispatched', function () {
 it('runs with empty response', function () {
     mockRetrieveEsiDataAction([]);
 
-    $job_container = new JobContainer([
-        'refresh_token' => $this->test_character->refresh_token,
-    ]);
+    $job = new CharacterContractsJob(testCharacter()->character_id);
 
-    $job = new CharacterContractsJob($job_container);
-
-    dispatch_now($job);
+    $job->handle();
 });
 
 it('creates contract job', function () {
     $mock_data = buildContractJobMockEsiData();
 
-    $job_container = new JobContainer([
-        'refresh_token' => $this->test_character->refresh_token,
-    ]);
-
-    $job = new CharacterContractsJob($job_container);
+    $job = new CharacterContractsJob(testCharacter()->character_id);
 
     expect($this->test_character->refresh()->contracts)->toHaveCount(0);
 
-    Event::fakeFor(fn () => dispatch_now($job));
+    Event::fakeFor(fn () => $job->handle());
 
     expect(Contract::all())->toHaveCount(5);
     expect($this->test_character->refresh()->contracts)->toHaveCount(5);
@@ -58,11 +57,8 @@ it('creates contract job', function () {
 it('creates contract job other way', function () {
     $mock_data = buildContractJobMockEsiData();
 
-    $job_container = new JobContainer([
-        'refresh_token' => $this->test_character->refresh_token,
-    ]);
 
-    Event::fakeFor(fn () => CharacterContractsJob::dispatchNow($job_container));
+    Event::fakeFor(fn () => (new CharacterContractsJob(testCharacter()->character_id))->handle());
 
     expect(Contract::all())->toHaveCount(5);
 });

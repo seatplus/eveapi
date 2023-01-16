@@ -54,11 +54,6 @@ class CharacterAffiliationObserver
 
     private function handle(CharacterAffiliation $character_affiliation)
     {
-        $job = new JobContainer([
-            'character_id' => $character_affiliation->character_id,
-            'corporation_id' => $character_affiliation->corporation_id,
-            'alliance_id' => $character_affiliation->alliance_id,
-        ]);
 
         // if character is not present in db don't even bother about corporation or alliance
         if (! $character_affiliation->character) {
@@ -66,11 +61,11 @@ class CharacterAffiliationObserver
         }
 
         if (! $character_affiliation->corporation) {
-            CorporationInfoJob::dispatch($job)->onQueue('high');
+            CorporationInfoJob::dispatch($character_affiliation->corporation_id)->onQueue('high');
         }
 
         if ($character_affiliation->alliance_id && ! $character_affiliation->alliance) {
-            AllianceInfoJob::dispatch($job)->onQueue('high');
+            AllianceInfoJob::dispatch($character_affiliation->alliance_id)->onQueue('high');
         }
     }
 }

@@ -28,34 +28,41 @@ namespace Seatplus\Eveapi\Jobs\Corporation;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationDivision;
+use Seatplus\Eveapi\Traits\HasCorporationRole;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CorporationDivisionsJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+class CorporationDivisionsJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, HasCorporationRoleInterface
 {
-    use HasPathValues;
-    use HasRequiredScopes;
+    use HasPathValues, HasCorporationRole, HasRequiredScopes;
 
-    public function __construct(JobContainer $job_container)
+    public function __construct(
+        public int $corporation_id,
+    )
     {
-        $this->setJobType('corporation');
-        parent::__construct($job_container);
 
-        $this->setMethod('get');
-        $this->setEndpoint('/corporations/{corporation_id}/divisions/');
-        $this->setVersion('v1');
+        parent::__construct(
+            method: 'get',
+            endpoint: '/corporations/{corporation_id}/divisions/',
+            version: 'v1',
+        );
+
+        $this->setPathValues([
+            'corporation_id' => $corporation_id,
+        ]);
 
         $this->setRequiredScope('esi-corporations.read_divisions.v1');
 
-        $this->setPathValues([
-            'corporation_id' => $this->getCorporationId(),
-        ]);
+        $this->setCorporationRole('Director');
+
     }
 
     /**
@@ -66,6 +73,7 @@ class CorporationDivisionsJob extends EsiBase implements HasPathValuesInterface,
     public function middleware(): array
     {
         return [
+            ...parent::middleware(),
             new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
             (new ThrottlesExceptionsWithRedis(80, 5))
@@ -78,7 +86,7 @@ class CorporationDivisionsJob extends EsiBase implements HasPathValuesInterface,
     {
         return [
             'corporation',
-            'corporation_id: ' . $this->getCorporationId(),
+            'corporation_id: ' . $this->corporation_id,
             'divisions',
         ];
     }
@@ -100,7 +108,7 @@ class CorporationDivisionsJob extends EsiBase implements HasPathValuesInterface,
         collect($response)->each(fn (array $entries, string $division_type) => collect($entries)
             ->each(fn ($entry) => CorporationDivision::updateOrCreate(
                 [
-                    'corporation_id' => $this->getCorporationId(),
+                    'corporation_id' => $this->corporation_id,
                     'division_type' => $division_type,
                     'division_id' => $entry->division,
                 ],

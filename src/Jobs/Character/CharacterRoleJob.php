@@ -42,14 +42,16 @@ class CharacterRoleJob extends EsiBase implements HasPathValuesInterface, HasReq
     use HasPathValues;
     use HasRequiredScopes;
 
-    public function __construct(JobContainer $job_container)
+    public function __construct(
+        public int $character_id
+    )
     {
-        $this->setJobType('character');
-        parent::__construct($job_container);
 
-        $this->setMethod('get');
-        $this->setEndpoint('/characters/{character_id}/roles/');
-        $this->setVersion('v3');
+        parent::__construct(
+            method: 'get',
+            endpoint: '/characters/{character_id}/roles/',
+            version: 'v3',
+        );
 
         $this->setRequiredScope('esi-characters.read_corporation_roles.v1');
 
@@ -66,6 +68,7 @@ class CharacterRoleJob extends EsiBase implements HasPathValuesInterface, HasReq
     public function middleware(): array
     {
         return [
+            ...parent::middleware(),
             new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
             (new ThrottlesExceptionsWithRedis(80, 5))

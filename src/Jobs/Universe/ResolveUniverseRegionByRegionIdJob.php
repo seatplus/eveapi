@@ -36,14 +36,15 @@ class ResolveUniverseRegionByRegionIdJob extends EsiBase implements HasPathValue
 {
     use HasPathValues;
 
-    public function __construct(int $region_id)
+    public function __construct(
+        public int $region_id
+    )
     {
-        $this->setJobType('public');
-        parent::__construct();
-
-        $this->setMethod('get');
-        $this->setEndpoint('/universe/regions/{region_id}/');
-        $this->setVersion('v1');
+        parent::__construct(
+            method: 'get',
+            endpoint: '/universe/regions/{region_id}/',
+            version: 'v1',
+        );
 
         $this->setPathValues([
             'region_id' => $region_id,
@@ -68,7 +69,7 @@ class ResolveUniverseRegionByRegionIdJob extends EsiBase implements HasPathValue
     {
         return [
             'region_resolver',
-            'region_id:' . data_get($this->getPathValues(), 'region_id'),
+            'region_id:' . $this->region_id,
         ];
     }
 

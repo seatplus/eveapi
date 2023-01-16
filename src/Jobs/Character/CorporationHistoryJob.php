@@ -37,17 +37,19 @@ class CorporationHistoryJob extends EsiBase implements HasPathValuesInterface
 {
     use HasPathValues;
 
-    public function __construct(?JobContainer $job_container = null)
+    public function __construct(
+        public int $character_id
+    )
     {
-        $this->setJobType('character');
-        parent::__construct($job_container);
 
-        $this->setMethod('get');
-        $this->setEndpoint('/characters/{character_id}/corporationhistory/');
-        $this->setVersion('v2');
+        parent::__construct(
+            method: 'get',
+            endpoint: '/characters/{character_id}/corporationhistory/',
+            version: 'v2',
+        );
 
         $this->setPathValues([
-            'character_id' => $this->getCharacterId(),
+            'character_id' => $character_id,
         ]);
     }
 

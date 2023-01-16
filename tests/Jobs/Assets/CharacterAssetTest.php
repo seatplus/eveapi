@@ -11,9 +11,9 @@ uses(MockRetrieveEsiDataAction::class);
 beforeEach(function () {
     Queue::fake();
 
-    $this->job_container = new JobContainer([
-        'refresh_token' => $this->test_character->refresh_token,
-    ]);
+    $refresh_token = updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-assets.read_assets.v1']);
+    $refresh_token->save();
+
 });
 
 /**
@@ -25,7 +25,7 @@ test('if job is queued', function () {
     // Assert that no jobs were pushed...
     Queue::assertNothingPushed();
 
-    CharacterAssetJob::dispatch($this->job_container)->onQueue('default');
+    CharacterAssetJob::dispatch($this->test_character->character_id)->onQueue('default');
 
     // Assert a job was pushed to a given queue...
     Queue::assertPushedOn('default', CharacterAssetJob::class);
@@ -38,7 +38,7 @@ test('retrieve test', function () {
     $mock_data = buildAssetMockEsiData();
 
     // Run job
-    (new CharacterAssetJob($this->job_container))->handle();
+    (new CharacterAssetJob($this->test_character->character_id))->handle();
 
     foreach ($mock_data as $data) {
         //Assert that character asset created
@@ -70,7 +70,7 @@ it('cleans up assets', function () {
     $mock_data = buildAssetMockEsiData();
 
     // Run CharacterAssetsAction
-    (new CharacterAssetJob($this->job_container))->handle();
+    (new CharacterAssetJob($this->test_character->character_id))->handle();
 
 
     foreach ($mock_data as $data) {

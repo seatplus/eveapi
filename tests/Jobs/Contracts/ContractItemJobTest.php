@@ -3,6 +3,7 @@
 
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Jobs\Contracts\CharacterContractItemsJob;
 use Seatplus\Eveapi\Jobs\Contracts\ContractItemsJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Contracts\Contract;
@@ -19,13 +20,9 @@ test('job is being dispatched', function () {
 
     $mock_data = ContractItem::factory()->count(1)->make();
 
-    $job_container = new JobContainer([
-        'refresh_token' => $this->test_character->refresh_token,
-    ]);
-
     $this->assertRetrieveEsiDataIsNotCalled();
 
-    ContractItemsJob::dispatch($mock_data->first()->contract_id, $job_container, 'character');
+    CharacterContractItemsJob::dispatch(testCharacter()->character_id, $mock_data->first()->contract_id);
 
     // Assert no
     Queue::assertNotPushed(ResolveUniverseTypeByIdJob::class);
@@ -42,11 +39,10 @@ it('dispatches resolve universe type job if type is unknown', function () {
 
     mockRetrieveEsiDataAction($mock_data->toArray());
 
-    $job_container = new JobContainer([
-        'refresh_token' => $this->test_character->refresh_token,
-    ]);
+    $job = new CharacterContractItemsJob(testCharacter()->character_id,$contract->contract_id);
 
-    $job = new ContractItemsJob($contract->contract_id, $job_container);
+    $refresh_token = updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-contracts.read_character_contracts.v1']);
+    $refresh_token->save();
 
     $job->handle();
 

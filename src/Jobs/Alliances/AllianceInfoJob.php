@@ -31,6 +31,7 @@ use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Traits\HasPathValues;
 
 class AllianceInfoJob extends EsiBase implements HasPathValuesInterface
@@ -38,17 +39,18 @@ class AllianceInfoJob extends EsiBase implements HasPathValuesInterface
     use HasPathValues;
 
     public function __construct(
-        public JobContainer $job_container
+        public int $alliance_id
     ) {
-        $this->setJobType('public');
-        parent::__construct($job_container);
 
-        $this->setMethod('get');
-        $this->setEndpoint('/alliances/{alliance_id}/');
-        $this->setVersion('v3');
+        parent::__construct(
+            method: 'get',
+            endpoint: '/alliances/{alliance_id}/',
+            version: 'v3',
+        );
+
 
         $this->setPathValues([
-            'alliance_id' => $job_container->getAllianceId(),
+            'alliance_id' => $this->alliance_id,
         ]);
     }
 
@@ -60,6 +62,7 @@ class AllianceInfoJob extends EsiBase implements HasPathValuesInterface
     public function middleware(): array
     {
         return [
+            ...parent::middleware(),
             (new ThrottlesExceptionsWithRedis(80, 5))
                 ->by('esiratelimit')
                 ->backoff(5),
@@ -70,7 +73,7 @@ class AllianceInfoJob extends EsiBase implements HasPathValuesInterface
     {
         return [
             'alliance',
-            'alliance_id: ' . $this->getAllianceId(),
+            'alliance_id: ' . $this->alliance_id,
             'info',
         ];
     }
@@ -95,7 +98,7 @@ class AllianceInfoJob extends EsiBase implements HasPathValuesInterface
             return;
         }
 
-        AllianceInfo::firstOrNew(['alliance_id' => $this->getAllianceId()])->fill([
+        AllianceInfo::firstOrNew(['alliance_id' => $this->alliance_id])->fill([
             'creator_corporation_id' => $response->creator_corporation_id,
             'creator_id' => $response->creator_id,
             'date_founded' => carbon($response->date_founded),

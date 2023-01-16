@@ -24,7 +24,9 @@ test('it returns client for an authenticated request', function () {
     ];
 
     config()->set('eveapi.config.esi', $esi_array);
-    $refresh_token = RefreshToken::factory()->create();
+    $refresh_token = Event::fakeFor(function () {
+        return RefreshToken::factory()->create();
+    });
 
     $retrieve = new RetrieveEsiData();
 

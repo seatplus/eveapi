@@ -10,14 +10,11 @@ use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 uses(MockRetrieveEsiDataAction::class);
 
 beforeEach(function () {
-    $refresh_token = Event::fakeFor(function () {
+    Event::fakeFor(function () {
         updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-corporations.read_divisions.v1'])->save();
         $this->test_character->roles()->update(['roles' => ['Director']]);
-
-        return $this->test_character->refresh()->refresh_token;
+        updateCharacterRoles(['Director']);
     });
-
-    $this->job_container = new JobContainer(['refresh_token' => $refresh_token]);
 });
 
 it('runs the job', function () {
@@ -25,7 +22,9 @@ it('runs the job', function () {
 
     expect(CorporationDivision::all())->toHaveCount(0);
 
-    CorporationDivisionsJob::dispatchSync($this->job_container);
+    //dd($this->test_character->refresh_token->scopes, 'esi-corporations.read_divisions.v1', $this->test_character->roles);
+
+    (new CorporationDivisionsJob(testCharacter()->corporation->corporation_id))->handle();
 
     expect(CorporationDivision::all())->toHaveCount(14);
 

@@ -10,6 +10,13 @@ use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 uses(MockRetrieveEsiDataAction::class);
 
+beforeEach(function () {
+    Queue::fake();
+
+    $refresh_token = updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-characters.read_corporation_roles.v1']);
+    $refresh_token->save();
+});
+
 /**
  * @runTestsInSeparateProcesses
  */
@@ -23,7 +30,7 @@ test('if job is queued', function () {
         'refresh_token' => $this->test_character->refresh_token,
     ]);
 
-    CharacterRoleJob::dispatch($job_container)->onQueue('default');
+    CharacterRoleJob::dispatch($this->test_character->character_id)->onQueue('default');
 
     // Assert a job was pushed to a given queue...
     Queue::assertPushedOn('default', CharacterRoleJob::class);
@@ -35,18 +42,7 @@ test('if job is queued', function () {
 test('retrieve test', function () {
     $mock_data = buildCharacterRoleMockEsiData();
 
-    $refresh_token = RefreshToken::factory()->make([
-        'character_id' => $mock_data->character_id,
-        'scopes' => ['esi-characters.read_corporation_roles.v1'],
-    ]);
-
-
-    // Run CharacterRoleAction
-    $job_container = new JobContainer([
-        'refresh_token' => $this->test_character->refresh_token,
-    ]);
-
-    (new CharacterRoleJob($job_container))->handle();
+    (new CharacterRoleJob($this->test_character->character_id))->handle();
 
     //Assert that test character is now created
     $this->assertDatabaseHas('character_roles', [

@@ -14,14 +14,14 @@ uses(MockRetrieveEsiDataAction::class);
 beforeEach(function () {
     // Prevent any auto dispatching of jobs
     Queue::fake();
-
-    $this->job_container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]);
 });
 
 test('run character contact', function () {
     $mock_data = buildContactLifecycleMockEsiData();
 
-    $job = new CharacterContactJob($this->job_container);
+    $job = new CharacterContactJob(testCharacter()->character_id);
+
+    updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-characters.read_contacts.v1'])->save();
 
     $job->handle();
 
@@ -43,7 +43,9 @@ test('run character contact', function () {
 test('run corporation contact', function () {
     $mock_data = buildContactLifecycleMockEsiData();
 
-    $job = new CorporationContactJob($this->job_container);
+    $job = new CorporationContactJob(testCharacter()->corporation->corporation_id);
+
+    updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-corporations.read_contacts.v1'])->save();
 
     $job->handle();
 
@@ -65,7 +67,9 @@ test('run corporation contact', function () {
 test('run alliance contact', function () {
     $mock_data = buildContactLifecycleMockEsiData();
 
-    $job = new AllianceContactJob($this->job_container);
+    $job = new AllianceContactJob(testCharacter()->corporation->alliance_id);
+
+    updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-alliances.read_contacts.v1'])->save();
 
     $job->handle();
 
@@ -84,7 +88,9 @@ it('has labels', function () {
 
     $mock_data = mockRetrieveEsiDataAction([$mock_data->toArray()]);
 
-    $job = new CharacterContactJob($this->job_container);
+    $job = new CharacterContactJob(testCharacter()->character_id);
+
+    updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-characters.read_contacts.v1'])->save();
 
     expect($this->test_character->contacts)->toHaveCount(0);
 

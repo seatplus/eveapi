@@ -40,27 +40,28 @@ class SkillQueueJob extends EsiBase implements HasPathValuesInterface, HasRequir
     use HasPathValues;
     use HasRequiredScopes;
 
-    public function __construct(?JobContainer $job_container = null)
+    public function __construct(
+        public int $character_id
+    )
     {
-        $this->setJobType('character');
-        parent::__construct($job_container);
-
-        $this->setMethod('get');
-        $this->setEndpoint('/characters/{character_id}/skillqueue/');
-        $this->setVersion('v2');
-
-        $this->setRequiredScope('esi-skills.read_skillqueue.v1');
+        parent::__construct(
+            method: 'get',
+            endpoint: '/characters/{character_id}/skillqueue/',
+            version: 'v2',
+        );
 
         $this->setPathValues([
-            'character_id' => $this->getCharacterId(),
+            'character_id' => $character_id,
         ]);
+
+        $this->setRequiredScope('esi-skills.read_skillqueue.v1');
     }
 
     public function tags(): array
     {
         return [
             'skill queue',
-            sprintf('character_id:%s', data_get($this->getPathValues(), 'character_id')),
+            sprintf('character_id:%s',$this->character_id),
         ];
     }
 
@@ -83,7 +84,7 @@ class SkillQueueJob extends EsiBase implements HasPathValuesInterface, HasRequir
 
         $skill_queue_ids = collect($response)->map(function ($queue_item) {
             $entry = SkillQueue::updateOrCreate([
-                'character_id' => $this->getCharacterId(),
+                'character_id' => $this->character_id,
                 'skill_id' => data_get($queue_item, 'skill_id'),
                 'queue_position' => data_get($queue_item, 'queue_position'),
                 'finished_level' => data_get($queue_item, 'finished_level'),
@@ -99,7 +100,7 @@ class SkillQueueJob extends EsiBase implements HasPathValuesInterface, HasRequir
         });
 
         SkillQueue::query()
-            ->where('character_id', $this->getCharacterId())
+            ->where('character_id', $this->character_id)
             ->whereNotIn('id', $skill_queue_ids->toArray())
             ->delete();
     }

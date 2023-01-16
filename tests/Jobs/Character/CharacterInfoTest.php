@@ -15,19 +15,7 @@ it('dispatches job on default queue by character_id', function () {
     // Assert that no jobs were pushed...
     Queue::assertNothingPushed();
 
-    CharacterInfoJob::dispatch(new JobContainer(['character_id' => 123]))->onQueue('default');
-
-    // Assert a job was pushed to a given queue...
-    Queue::assertPushedOn('default', CharacterInfoJob::class);
-});
-
-it('dispatches job on default queue by refresh_token', function () {
-    Queue::fake();
-
-    // Assert that no jobs were pushed...
-    Queue::assertNothingPushed();
-
-    CharacterInfoJob::dispatch(new JobContainer(['refresh_token' => testCharacter()->refresh_token]))->onQueue('default');
+    CharacterInfoJob::dispatch(character_id: 123)->onQueue('default');
 
     // Assert a job was pushed to a given queue...
     Queue::assertPushedOn('default', CharacterInfoJob::class);
@@ -43,11 +31,8 @@ test('retrieve test', function () {
     Bus::fake();
 
     // Run InfoAction
-    $job_container = new JobContainer([
-        'character_id' => $mock_data['character_id'],
-    ]);
 
-    $job = new CharacterInfoJob($job_container);
+    $job = new CharacterInfoJob($mock_data['character_id']);
 
     $job->handle();
 

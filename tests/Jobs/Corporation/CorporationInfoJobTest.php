@@ -11,9 +11,7 @@ use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 uses(MockRetrieveEsiDataAction::class);
 
 beforeEach(function () {
-    $this->job_container = new JobContainer([
-        'corporation_id' => $this->test_character->character_id,
-    ]);
+    $this->corporation_id = testCharacter()->corporation->corporation_id;
 });
 
 /**
@@ -27,7 +25,7 @@ test('retrieve test', function () {
 
     // Run InfoAction
     //(new CorporationInfoAction)->execute($mock_data->corporation_id);
-    (new CorporationInfoJob($this->job_container))->handle();
+    (new CorporationInfoJob($this->corporation_id))->handle();
 
     //Assert that test character is now created
     $this->assertDatabaseHas('corporation_infos', [

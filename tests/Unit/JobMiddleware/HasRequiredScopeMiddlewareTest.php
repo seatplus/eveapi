@@ -18,9 +18,9 @@ it('fails without required scope on new esi base jobs', function () {
     $this->job->shouldReceive('fail')->times(1);
     $this->job->shouldReceive('getRequiredScope')->andReturn('someScope');
 
-    $this->job->refresh_token = RefreshToken::factory()->make([
+    $this->job->shouldReceive('getRefreshToken')->andReturn(RefreshToken::factory()->make([
         'scopes' => ['someDifferentScope'],
-    ]);
+    ]));
 
     $this->middleware->handle($this->job, $this->next);
 });

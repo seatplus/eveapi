@@ -45,19 +45,20 @@ class CorporationBalanceJob extends EsiBase implements HasPathValuesInterface, H
     use HasRequiredScopes;
     use HasPages;
 
-    public function __construct(JobContainer $job_container)
+    public function __construct(
+        public int $corporation_id,
+    )
     {
-        $this->setJobType('corporation');
-        parent::__construct($job_container);
-
-        $this->setMethod('get');
-        $this->setEndpoint('/corporations/{corporation_id}/wallets/');
-        $this->setVersion('v1');
+        parent::__construct(
+            method: 'get',
+            endpoint: '/corporations/{corporation_id}/wallets/',
+            version: 'v1',
+        );
 
         $this->setRequiredScope(head(config('eveapi.scopes.corporation.wallet')));
 
         $this->setPathValues([
-            'corporation_id' => $this->getCorporationId(),
+            'corporation_id' => $this->corporation_id,
         ]);
     }
 
@@ -81,7 +82,7 @@ class CorporationBalanceJob extends EsiBase implements HasPathValuesInterface, H
     {
         return [
             'corporation',
-            'corporation_id: ' . $this->getCorporationId(),
+            'corporation_id: ' . $this->corporation_id,
             'balances',
         ];
     }
@@ -102,7 +103,7 @@ class CorporationBalanceJob extends EsiBase implements HasPathValuesInterface, H
 
         collect($response)->each(fn ($wallet) => Balance::updateOrCreate(
             [
-                'balanceable_id' => $this->getCorporationId(),
+                'balanceable_id' => $this->corporation_id,
                 'balanceable_type' => CorporationInfo::class,
                 'division' => data_get($wallet, 'division'),
             ],

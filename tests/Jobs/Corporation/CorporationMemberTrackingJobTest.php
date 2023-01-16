@@ -10,6 +10,14 @@ use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 uses(MockRetrieveEsiDataAction::class);
 
+beforeEach(function () {
+    Event::fakeFor(function () {
+        updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-corporations.track_members.v1'])->save();
+        $this->test_character->roles()->update(['roles' => ['Director']]);
+        updateCharacterRoles(['Director']);
+    });
+});
+
 /**
  * @runTestsInSeparateProcesses
  */
@@ -19,11 +27,7 @@ test('if job is queued', function () {
     // Assert that no jobs were pushed...
     Queue::assertNothingPushed();
 
-    $job_container = new JobContainer([
-        'refresh_token' => $this->test_character->refresh_token,
-    ]);
-
-    CorporationMemberTrackingJob::dispatch($job_container)->onQueue('default');
+    CorporationMemberTrackingJob::dispatch(testCharacter()->corporation->corporation_id)->onQueue('default');
 
     // Assert a job was pushed to a given queue...
     Queue::assertPushedOn('default', CorporationMemberTrackingJob::class);
@@ -33,19 +37,21 @@ test('if job is queued', function () {
  * @runTestsInSeparateProcesses
  */
 test('retrieve test', function () {
-    $mock_data = buildCorporationMemberMockEsiData();
+    buildCorporationMemberMockEsiData();
 
     // Stop Action dispatching a new job
     Bus::fake();
 
     $this->assertDatabaseMissing('corporation_member_trackings', [
-        'corporation_id' => $this->test_character->corporation->corporation_id,
+        'corporation_id' => testCharacter()->corporation->corporation_id,
     ]);
 
+    // expect testCharater to have director role and to have a refresh token with the correct scope
+    expect(testCharacter()->roles->hasRole('roles', 'Director'))->toBeTrue()
+        ->and(testCharacter()->refresh_token->hasScope('esi-corporations.track_members.v1'))->toBeTrue();
+
     // Run Action
-    //(new CorporationMemberTrackingAction)->execute($this->test_character->refresh_token);
-    $job_container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]);
-    (new CorporationMemberTrackingJob($job_container))->handle();
+    (new CorporationMemberTrackingJob(testCharacter()->corporation->corporation_id))->handle();
 
     //Assert that test character is now created
     $this->assertDatabaseHas('corporation_member_trackings', [

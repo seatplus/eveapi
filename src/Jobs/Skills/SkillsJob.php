@@ -41,27 +41,29 @@ class SkillsJob extends EsiBase implements HasPathValuesInterface, HasRequiredSc
     use HasPathValues;
     use HasRequiredScopes;
 
-    public function __construct(?JobContainer $job_container = null)
+    public function __construct(
+        public int $character_id
+    )
     {
-        $this->setJobType('character');
-        parent::__construct($job_container);
 
-        $this->setMethod('get');
-        $this->setEndpoint('/characters/{character_id}/skills/');
-        $this->setVersion('v4');
-
-        $this->setRequiredScope('esi-skills.read_skills.v1');
+        parent::__construct(
+            method: 'get',
+            endpoint: '/characters/{character_id}/skills/',
+            version: 'v4',
+        );
 
         $this->setPathValues([
-            'character_id' => $this->getCharacterId(),
+            'character_id' => $character_id,
         ]);
+
+        $this->setRequiredScope('esi-skills.read_skills.v1');
     }
 
     public function tags(): array
     {
         return [
             'skills',
-            sprintf('character_id:%s', data_get($this->getPathValues(), 'character_id')),
+            sprintf('character_id:%s', $this->character_id),
         ];
     }
 
@@ -85,7 +87,7 @@ class SkillsJob extends EsiBase implements HasPathValuesInterface, HasRequiredSc
         $skills = data_get($response, 'skills');
 
         collect($skills)->each(fn ($skill) => Skill::updateOrCreate([
-            'character_id' => $this->getCharacterId(),
+            'character_id' => $this->character_id,
             'skill_id' => data_get($skill, 'skill_id'),
         ], [
             'active_skill_level' => data_get($skill, 'active_skill_level'),
@@ -93,7 +95,7 @@ class SkillsJob extends EsiBase implements HasPathValuesInterface, HasRequiredSc
             'trained_skill_level' => data_get($skill, 'trained_skill_level'),
         ]));
 
-        CharacterInfo::where('character_id', $this->getCharacterId())
+        CharacterInfo::where('character_id', $this->character_id)
             ->update([
                 'total_sp' => data_get($response, 'total_sp'),
                 'unallocated_sp' => data_get($response, 'unallocated_sp'),

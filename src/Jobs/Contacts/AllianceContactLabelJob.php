@@ -48,14 +48,15 @@ class AllianceContactLabelJob extends EsiBase implements HasPathValuesInterface,
 
     private Collection $known_ids;
 
-    public function __construct(?JobContainer $job_container = null)
+    public function __construct(
+        public int $alliance_id,
+    )
     {
-        $this->setJobType('character');
-        parent::__construct($job_container);
-
-        $this->setMethod('get');
-        $this->setEndpoint('/alliances/{alliance_id}/contacts/labels/');
-        $this->setVersion('v1');
+        parent::__construct(
+            method: 'get',
+            endpoint: '/alliances/{alliance_id}/contacts/labels/',
+            version: 'v1',
+        );
 
         $this->setRequiredScope('esi-alliances.read_contacts.v1');
 
@@ -74,6 +75,7 @@ class AllianceContactLabelJob extends EsiBase implements HasPathValuesInterface,
     public function middleware(): array
     {
         return [
+            ...parent::middleware(),
             new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
             (new ThrottlesExceptionsWithRedis(80, 5))
@@ -100,9 +102,6 @@ class AllianceContactLabelJob extends EsiBase implements HasPathValuesInterface,
      */
     public function executeJob(): void
     {
-        if (is_null($this->alliance_id)) {
-            return;
-        }
 
         $processor = new ProcessContactLabelsResponse($this->alliance_id, AllianceInfo::class);
 

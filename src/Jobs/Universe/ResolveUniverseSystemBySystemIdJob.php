@@ -36,14 +36,16 @@ class ResolveUniverseSystemBySystemIdJob extends EsiBase implements HasPathValue
 {
     use HasPathValues;
 
-    public function __construct(int $system_id)
+    public function __construct(
+        private int $system_id
+    )
     {
-        $this->setJobType('public');
-        parent::__construct();
+        parent::__construct(
+            method: 'get',
+            endpoint: '/universe/systems/{system_id}/',
+            version: 'v4',
+        );
 
-        $this->setMethod('get');
-        $this->setEndpoint('/universe/systems/{system_id}/');
-        $this->setVersion('v4');
 
         $this->setPathValues([
             'system_id' => $system_id,
@@ -68,7 +70,7 @@ class ResolveUniverseSystemBySystemIdJob extends EsiBase implements HasPathValue
     {
         return [
             'system_resolve',
-            'system_id:' . data_get($this->getPathValues(), 'system_id'),
+            'system_id:' . $this->system_id,
         ];
     }
 

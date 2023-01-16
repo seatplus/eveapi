@@ -48,14 +48,15 @@ class CorporationContactJob extends EsiBase implements HasPathValuesInterface, H
 
     private Collection $known_ids;
 
-    public function __construct(?JobContainer $job_container = null)
+    public function __construct(
+        public int $corporation_id,
+    )
     {
-        $this->setJobType('character');
-        parent::__construct($job_container);
-
-        $this->setMethod('get');
-        $this->setEndpoint('/corporations/{corporation_id}/contacts/');
-        $this->setVersion('v2');
+        parent::__construct(
+            method: 'get',
+            endpoint: '/corporations/{corporation_id}/contacts/',
+            version: 'v2',
+        );
 
         $this->setRequiredScope('esi-corporations.read_contacts.v1');
 
@@ -74,6 +75,7 @@ class CorporationContactJob extends EsiBase implements HasPathValuesInterface, H
     public function middleware(): array
     {
         return [
+            ...parent::middleware(),
             new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
             (new ThrottlesExceptionsWithRedis(80, 5))

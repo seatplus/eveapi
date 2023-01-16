@@ -48,14 +48,15 @@ class CharacterContactJob extends EsiBase implements HasPathValuesInterface, Has
 
     private Collection $known_ids;
 
-    public function __construct(?JobContainer $job_container = null)
+    public function __construct(
+        public int $character_id,
+    )
     {
-        $this->setJobType('character');
-        parent::__construct($job_container);
-
-        $this->setMethod('get');
-        $this->setEndpoint('/characters/{character_id}/contacts/');
-        $this->setVersion('v2');
+        parent::__construct(
+            method: 'get',
+            endpoint: '/characters/{character_id}/contacts/',
+            version: 'v2',
+        );
 
         $this->setRequiredScope('esi-characters.read_contacts.v1');
 
@@ -74,6 +75,7 @@ class CharacterContactJob extends EsiBase implements HasPathValuesInterface, Has
     public function middleware(): array
     {
         return [
+            ...parent::middleware(),
             new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
             (new ThrottlesExceptionsWithRedis(80, 5))

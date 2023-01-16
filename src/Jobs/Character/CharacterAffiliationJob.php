@@ -42,12 +42,11 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
 
     public function __construct(int|array|null $character_ids = null)
     {
-        $this->setJobType('public');
-        parent::__construct();
-
-        $this->setMethod('post');
-        $this->setEndpoint('/characters/affiliation/');
-        $this->setVersion('v2');
+        parent::__construct(
+            method: 'post',
+            endpoint: '/characters/affiliation/',
+            version: 'v2',
+        );
 
         $this->setManualIds($character_ids);
     }
@@ -68,6 +67,7 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
     public function middleware(): array
     {
         return [
+            ...parent::middleware(),
             (new ThrottlesExceptionsWithRedis(80, 5))
                 ->by('esiratelimit')
                 ->backoff(5),

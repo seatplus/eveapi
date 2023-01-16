@@ -24,7 +24,7 @@ it('runs mail header job', function () {
 
     buildHeaderMockEsiData();
 
-    (new MailHeaderJob($this->job_container))->handle();
+    (new MailHeaderJob(testCharacter()->character_id))->handle();
 
     expect(Mail::all())->toHaveCount(5);
     expect(MailRecipients::all())->toHaveCount(15);
@@ -40,7 +40,7 @@ it('runs mail body job', function () {
 
     expect($mail->body)->toBeNull();
 
-    (new MailBodyJob($this->job_container, $mail->id))->handle();
+    (new MailBodyJob(testCharacter()->character_id, $mail->id))->handle();
 
     $this->assertNotNull($mail->refresh()->body);
 });

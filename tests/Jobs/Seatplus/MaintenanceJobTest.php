@@ -219,20 +219,16 @@ it('dispatch get missing assets names job', function () {
     Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingAssetsNames));
 });
 
-it('dispatch resolve missing assets name jog', function () {
+it('dispatch resolve missing assets name job', function () {
     $asset = Event::fakeFor(fn () => Asset::factory()->create([
         'assetable_id' => $this->test_character->character_id,
         'location_flag' => 'Hangar',
     ]));
 
-    $type = Event::fakeFor(fn () => Type::factory()->create([
+    Event::fakeFor(fn () => Type::factory()->create([
         'type_id' => $asset->type_id,
         'group_id' => Group::factory()->create(['category_id' => 2]),
     ]));
-
-    $job_container = new JobContainer([
-        'refresh_token' => RefreshToken::find($this->test_character->character_id),
-    ]);
 
     $mock = Mockery::mock(GetMissingAssetsNames::class)->makePartial();
 
@@ -240,7 +236,7 @@ it('dispatch resolve missing assets name jog', function () {
     $mock->shouldReceive('batch->add')
         ->once()
         ->with([
-            new CharacterAssetsNameJob($job_container),
+            new CharacterAssetsNameJob($this->test_character->character_id),
         ]);
 
     $mock->handle();
@@ -433,7 +429,7 @@ it('dispatches character info job for missing member tracking characters', funct
     $mock->shouldReceive('batch->add')
         ->once()
         ->with([
-            new CharacterInfoJob($jobContainer),
+            new CharacterInfoJob($corporation_member_tracking->character_id),
         ]);
 
     $mock->handle();
