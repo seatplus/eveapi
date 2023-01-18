@@ -3,7 +3,6 @@
 
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingAssetsNames;
@@ -418,10 +417,6 @@ it('dispatches character info job for missing member tracking characters', funct
     $corporation_member_tracking = Event::fakeFor(fn () => CorporationMemberTracking::factory()->create([
         'character_id' => CharacterInfo::factory()->make(),
     ]));
-
-    $jobContainer = new JobContainer([
-        'character_id' => $corporation_member_tracking->character_id,
-    ]);
 
     $mock = Mockery::mock(GetMissingCharacterInfosFromCorporationMemberTracking::class)->makePartial();
 

@@ -26,7 +26,6 @@
 
 namespace Seatplus\Eveapi\Jobs\Hydrate\Maintenance;
 
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Mail\MailBodyJob;
 use Seatplus\Eveapi\Models\Mail\Mail;
 use Seatplus\Eveapi\Models\RefreshToken;

@@ -12,7 +12,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Redis;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
@@ -44,7 +43,6 @@ class CharacterBatchJob implements ShouldQueue, ShouldBeUnique
     use SerializesModels;
 
     private RefreshToken $refresh_token;
-    private JobContainer $job_container;
     private array $batch_jobs;
 
     public function __construct(

@@ -3,7 +3,6 @@
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Contracts\CharacterContractsJob;
 use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
@@ -22,10 +21,6 @@ test('job is being dispatched', function () {
 
     // Assert that no jobs were pushed...
     Queue::assertNothingPushed();
-
-    $job_container = new JobContainer([
-        'refresh_token' => $this->test_character->refresh_token,
-    ]);
 
     CharacterContractsJob::dispatch(testCharacter()->character_id)->onQueue('default');
 

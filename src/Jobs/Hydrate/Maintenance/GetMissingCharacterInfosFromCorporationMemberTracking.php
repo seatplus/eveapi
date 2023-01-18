@@ -26,7 +26,6 @@
 
 namespace Seatplus\Eveapi\Jobs\Hydrate\Maintenance;
 
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 

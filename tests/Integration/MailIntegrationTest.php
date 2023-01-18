@@ -3,7 +3,6 @@
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Mail\MailBodyJob;
 use Seatplus\Eveapi\Jobs\Mail\MailHeaderJob;
 use Seatplus\Eveapi\Models\Mail\Mail;
@@ -15,8 +14,6 @@ uses(MockRetrieveEsiDataAction::class);
 beforeEach(function () {
     // Prevent any auto dispatching of jobs
     Queue::fake();
-
-    $this->job_container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]);
 });
 
 it('runs mail header job', function () {

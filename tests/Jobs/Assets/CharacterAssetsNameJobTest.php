@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\RefreshToken;

@@ -26,7 +26,6 @@
 
 namespace Seatplus\Eveapi\Observers;
 
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletJournalByDivisionJob;
 use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletTransactionByDivisionJob;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;

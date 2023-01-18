@@ -3,7 +3,6 @@
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Skills\SkillsJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Skills\Skill;

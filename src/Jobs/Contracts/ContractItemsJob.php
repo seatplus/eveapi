@@ -28,7 +28,6 @@ namespace Seatplus\Eveapi\Jobs\Contracts;
 
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;

@@ -2,7 +2,6 @@
 
 
 use Illuminate\Support\Facades\Queue;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterBalanceJob;
 use Seatplus\Eveapi\Models\Wallet\Balance;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;

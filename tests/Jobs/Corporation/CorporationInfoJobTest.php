@@ -2,8 +2,6 @@
 
 
 use Illuminate\Support\Facades\Bus;
-use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Esi\Jobs\Corporation\CorporationInfoAction;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationInfoJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
@@ -24,7 +22,6 @@ test('retrieve test', function () {
     Bus::fake();
 
     // Run InfoAction
-    //(new CorporationInfoAction)->execute($mock_data->corporation_id);
     (new CorporationInfoJob($this->corporation_id))->handle();
 
     //Assert that test character is now created

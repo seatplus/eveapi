@@ -27,7 +27,6 @@
 namespace Seatplus\Eveapi\Services;
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 class DispatchIndividualUpdate

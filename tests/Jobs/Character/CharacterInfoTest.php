@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Queue;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;

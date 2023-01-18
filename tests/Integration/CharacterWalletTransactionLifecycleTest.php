@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
@@ -16,8 +15,6 @@ use Seatplus\Eveapi\Services\Facade\RetrieveEsiData;
 beforeEach(function () {
     // Prevent any auto dispatching of jobs
     Queue::fake();
-
-    $this->job_container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]);
 });
 
 test('run wallet transaction action', function () {

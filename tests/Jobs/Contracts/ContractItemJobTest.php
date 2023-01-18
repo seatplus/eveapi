@@ -2,9 +2,7 @@
 
 
 use Illuminate\Support\Facades\Queue;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Contracts\CharacterContractItemsJob;
-use Seatplus\Eveapi\Jobs\Contracts\ContractItemsJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\Contracts\ContractItem;

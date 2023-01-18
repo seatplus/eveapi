@@ -2,7 +2,6 @@
 
 
 use Illuminate\Support\Facades\Queue;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Contacts\AllianceContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\CharacterContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\CorporationContactJob;

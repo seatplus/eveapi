@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Event;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationDivisionsJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationDivision;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;

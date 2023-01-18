@@ -26,7 +26,6 @@
 
 namespace Seatplus\Eveapi\Observers;
 
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfoJob;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationInfoJob;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;

@@ -2,7 +2,6 @@
 
 
 use Illuminate\Support\Facades\Event;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Contacts\AllianceContactLabelJob;
 use Seatplus\Eveapi\Jobs\Contacts\CharacterContactLabelJob;
 use Seatplus\Eveapi\Jobs\Contacts\CorporationContactLabelJob;

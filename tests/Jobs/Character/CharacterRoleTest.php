@@ -1,11 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Queue;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\Jobs\Character\CharacterRoleAction;
 use Seatplus\Eveapi\Jobs\Character\CharacterRoleJob;
 use Seatplus\Eveapi\Models\Character\CharacterRole;
-use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 uses(MockRetrieveEsiDataAction::class);
@@ -25,10 +23,6 @@ test('if job is queued', function () {
 
     // Assert that no jobs were pushed...
     Queue::assertNothingPushed();
-
-    $job_container = new JobContainer([
-        'refresh_token' => $this->test_character->refresh_token,
-    ]);
 
     CharacterRoleJob::dispatch($this->test_character->character_id)->onQueue('default');
 

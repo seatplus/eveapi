@@ -27,14 +27,12 @@
 namespace Seatplus\Eveapi\Jobs\Corporation;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationDivision;
 use Seatplus\Eveapi\Traits\HasCorporationRole;
 use Seatplus\Eveapi\Traits\HasPathValues;

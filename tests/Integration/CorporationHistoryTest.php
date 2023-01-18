@@ -1,7 +1,6 @@
 <?php
 
 
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Character\CorporationHistoryJob;
 use Seatplus\Eveapi\Models\Character\CorporationHistory;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
