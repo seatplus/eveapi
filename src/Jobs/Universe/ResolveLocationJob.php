@@ -102,10 +102,10 @@ class ResolveLocationJob implements ShouldQueue, ShouldBeUnique
 
     public function handle(): void
     {
-        $payload = new ResolveLocationDTO([
-            'location' => Location::with('locatable')->findOrNew($this->location_id),
-            'log_message' => '',
-        ]);
+        $payload = new ResolveLocationDTO(
+            location: Location::with('locatable')->findOrNew($this->location_id),
+            log_message: '',
+        );
 
         app(Pipeline::class)
             ->send($payload)

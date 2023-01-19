@@ -17,12 +17,12 @@ class UpdateRefreshTokenService
 
     public function update(RefreshToken $refreshToken): RefreshToken
     {
-        $authentication = new EsiAuthentication([
-            'client_id' => config('eveapi.config.esi.eve_client_id'),
-            'secret' => config('eveapi.config.esi.eve_client_secret'),
-            'access_token' => $refreshToken->getRawOriginal('token'),
-            'refresh_token' => $refreshToken->refresh_token,
-        ]);
+        $authentication = new EsiAuthentication(
+            client_id: config('eveapi.config.esi.eve_client_id'),
+            secret: config('eveapi.config.esi.eve_client_secret'),
+            access_token: $refreshToken->getRawOriginal('token'),
+            refresh_token: $refreshToken->refresh_token,
+        );
 
 
         // Values are access_token // expires_in // token_type // refresh_token

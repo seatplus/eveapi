@@ -70,11 +70,11 @@ class RetrieveEsiData
                 throw $exception;
             }
 
-            $authentication = new EsiAuthentication([
-                'refresh_token' => $refresh_token->refresh_token,
-                'access_token' => $refresh_token->getRawOriginal('token'),
-                'token_expires' => $refresh_token->expires_on,
-            ]);
+            $authentication = new EsiAuthentication(
+                refresh_token: $refresh_token->refresh_token,
+                access_token: $refresh_token->getRawOriginal('token'),
+                token_expires: $refresh_token->expires_on,
+            );
 
             $this->client = $this->esi_client->get($authentication);
         }
