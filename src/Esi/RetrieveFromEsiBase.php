@@ -59,11 +59,11 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
 
     private function getBaseEsiReuestContainer(): EsiRequestContainer
     {
-        return new EsiRequestContainer([
-            'method' => $this->getMethod(),
-            'version' => $this->getVersion(),
-            'endpoint' => $this->getEndpoint(),
-        ]);
+        return new EsiRequestContainer(
+            method: $this->getMethod(),
+            version: $this->getVersion(),
+            endpoint: $this->getEndpoint(),
+        );
     }
 
     private function builldEsiRequestContainer(?int $page)
