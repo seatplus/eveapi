@@ -40,12 +40,11 @@ class ResolveUniverseGroupByIdJob extends EsiBase implements HasPathValuesInterf
 
     public function __construct(private int $group_id)
     {
-        $this->setJobType('public');
-        parent::__construct();
-
-        $this->setMethod('get');
-        $this->setEndpoint('/universe/groups/{group_id}/');
-        $this->setVersion('v1');
+        parent::__construct(
+            method: 'get',
+            endpoint: '/universe/groups/{group_id}/',
+            version: 'v1',
+        );
 
         $this->setPathValues([
             'group_id' => $group_id,
@@ -60,6 +59,7 @@ class ResolveUniverseGroupByIdJob extends EsiBase implements HasPathValuesInterf
     public function middleware(): array
     {
         return [
+            ...parent::middleware(),
             (new ThrottlesExceptionsWithRedis(80, 5))
                 ->by('esiratelimit')
                 ->backoff(5),

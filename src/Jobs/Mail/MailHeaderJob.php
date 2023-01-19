@@ -28,7 +28,6 @@ namespace Seatplus\Eveapi\Jobs\Mail;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Support\Collection;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -45,19 +44,18 @@ class MailHeaderJob extends EsiBase implements HasPathValuesInterface, HasRequir
     use HasPathValues;
     use HasRequiredScopes;
 
-    public function __construct(protected JobContainer $job_container)
+    public function __construct(public int $character_id)
     {
-        $this->setJobType('character');
-        parent::__construct($job_container);
-
-        $this->setMethod('get');
-        $this->setEndpoint('/characters/{character_id}/mail/');
-        $this->setVersion('v1');
+        parent::__construct(
+            method: 'get',
+            endpoint: '/characters/{character_id}/mail/',
+            version: 'v1',
+        );
 
         $this->setRequiredScope('esi-mail.read_mail.v1');
 
         $this->setPathValues([
-            'character_id' => $this->getCharacterId(),
+            'character_id' => $this->character_id,
         ]);
     }
 
@@ -66,7 +64,7 @@ class MailHeaderJob extends EsiBase implements HasPathValuesInterface, HasRequir
         return [
             'mail',
             'header',
-            sprintf('character_id:%s', data_get($this->getPathValues(), 'character_id')),
+            sprintf('character_id:%s', $this->character_id),
         ];
     }
 
@@ -128,8 +126,8 @@ class MailHeaderJob extends EsiBase implements HasPathValuesInterface, HasRequir
 
                 // Get Mail Body
                 $this->batching()
-                    ? $this->batch()->add([new MailBodyJob($this->job_container, data_get($mail, 'mail_id'))])
-                    : MailBodyJob::dispatch($this->job_container, data_get($mail, 'mail_id'))->onQueue($this->queue);
+                    ? $this->batch()->add([new MailBodyJob($this->character_id, data_get($mail, 'mail_id'))])
+                    : MailBodyJob::dispatch($this->character_id, data_get($mail, 'mail_id'))->onQueue($this->queue);
             });
 
         // see https://divinglaravel.com/avoiding-memory-leaks-when-running-laravel-queue-workers

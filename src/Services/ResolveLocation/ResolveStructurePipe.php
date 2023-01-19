@@ -47,7 +47,7 @@ class ResolveStructurePipe
             return $next($payload);
         }
 
-        // if location is structure and last update is greater then a week don't bother no longer
+        // if location is structure and last update is greater than a week don't bother no longer
         if (is_a($payload->location->locatable, Structure::class) && $payload->location->locatable->updated_at > carbon()->subWeek()) {
             return $next($payload);
         }
@@ -67,6 +67,6 @@ class ResolveStructurePipe
 
     private function getStructure()
     {
-        ResolveUniverseStructureByIdJob::dispatch($this->refreshToken, $this->location_id)->onQueue('low');
+        ResolveUniverseStructureByIdJob::dispatch($this->refreshToken->character_id, $this->location_id)->onQueue('low');
     }
 }

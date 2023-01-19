@@ -3,7 +3,6 @@
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Mail\MailBodyJob;
 use Seatplus\Eveapi\Jobs\Mail\MailHeaderJob;
 use Seatplus\Eveapi\Models\Mail\Mail;
@@ -15,8 +14,6 @@ uses(MockRetrieveEsiDataAction::class);
 beforeEach(function () {
     // Prevent any auto dispatching of jobs
     Queue::fake();
-
-    $this->job_container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]);
 });
 
 it('runs mail header job', function () {
@@ -24,7 +21,7 @@ it('runs mail header job', function () {
 
     buildHeaderMockEsiData();
 
-    (new MailHeaderJob($this->job_container))->handle();
+    (new MailHeaderJob(testCharacter()->character_id))->handle();
 
     expect(Mail::all())->toHaveCount(5);
     expect(MailRecipients::all())->toHaveCount(15);
@@ -40,7 +37,7 @@ it('runs mail body job', function () {
 
     expect($mail->body)->toBeNull();
 
-    (new MailBodyJob($this->job_container, $mail->id))->handle();
+    (new MailBodyJob(testCharacter()->character_id, $mail->id))->handle();
 
     $this->assertNotNull($mail->refresh()->body);
 });

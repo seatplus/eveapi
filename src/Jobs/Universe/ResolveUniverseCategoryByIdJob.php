@@ -40,12 +40,11 @@ class ResolveUniverseCategoryByIdJob extends EsiBase implements HasPathValuesInt
 
     public function __construct(private int $category_id)
     {
-        $this->setJobType('public');
-        parent::__construct();
-
-        $this->setMethod('get');
-        $this->setEndpoint('/universe/categories/{category_id}/');
-        $this->setVersion('v1');
+        parent::__construct(
+            method: 'get',
+            endpoint: '/universe/categories/{category_id}/',
+            version: 'v1',
+        );
 
         $this->setPathValues([
             'category_id' => $category_id,

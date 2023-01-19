@@ -28,7 +28,6 @@ namespace Seatplus\Eveapi\Jobs\Assets;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequestBodyInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
@@ -54,19 +53,18 @@ class CharacterAssetsNameJob extends EsiBase implements HasPathValuesInterface, 
     const STRUCTURE_CATEGORY = 65;
 
     public function __construct(
-        JobContainer $job_container
+        public int $character_id,
     ) {
-        $this->setJobType('character');
-        parent::__construct($job_container);
-
-        $this->setMethod('post');
-        $this->setEndpoint('/characters/{character_id}/assets/names/');
-        $this->setVersion('v1');
+        parent::__construct(
+            method: 'post',
+            endpoint: '/characters/{character_id}/assets/names/',
+            version: 'v1',
+        );
 
         $this->setRequiredScope('esi-assets.read_assets.v1');
 
         $this->setPathValues([
-            'character_id' => $this->getCharacterId(),
+            'character_id' => $character_id,
         ]);
     }
 
@@ -78,6 +76,7 @@ class CharacterAssetsNameJob extends EsiBase implements HasPathValuesInterface, 
     public function middleware(): array
     {
         return [
+            ...parent::middleware(),
             new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
             (new ThrottlesExceptionsWithRedis(80, 5))
@@ -118,7 +117,7 @@ class CharacterAssetsNameJob extends EsiBase implements HasPathValuesInterface, 
                     self::STARBASE_CATEGORY, self::ORBITALS_CATEGORY, self::STRUCTURE_CATEGORY,
                 ]);
             })
-            ->where('assetable_id', $this->getCharacterId())
+            ->where('assetable_id', $this->character_id)
             ->select('item_id')
             ->where('is_singleton', true)
             ->pluck('item_id')
@@ -135,7 +134,7 @@ class CharacterAssetsNameJob extends EsiBase implements HasPathValuesInterface, 
                         return;
                     }
 
-                    Asset::where('assetable_id', $this->refresh_token->character_id)
+                    Asset::where('assetable_id', $this->character_id)
                         ->where('item_id', $response->item_id)
                         ->update(['name' => $response->name]);
                 });

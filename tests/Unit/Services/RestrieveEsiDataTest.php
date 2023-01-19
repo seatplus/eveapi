@@ -7,11 +7,11 @@ use Seatplus\Eveapi\Services\Esi\RetrieveEsiData;
 test('it returns client for an unauthenticated request', function () {
     $retrieve = new RetrieveEsiData();
 
-    $request_container = new EsiRequestContainer([
-        'method' => 'get',
-        'version' => 'v4',
-        'endpoint' => 'foo/bar',
-    ]);
+    $request_container = new EsiRequestContainer(
+        method: 'get',
+        version: 'v4',
+        endpoint: 'foo/bar',
+    );
 
     $retrieve->setRequest($request_container);
     expect($retrieve->getClient())->toBeInstanceOf(\Seatplus\EsiClient\EsiClient::class);
@@ -24,16 +24,18 @@ test('it returns client for an authenticated request', function () {
     ];
 
     config()->set('eveapi.config.esi', $esi_array);
-    $refresh_token = RefreshToken::factory()->create();
+    $refresh_token = Event::fakeFor(function () {
+        return RefreshToken::factory()->create();
+    });
 
     $retrieve = new RetrieveEsiData();
 
-    $request_container = new EsiRequestContainer([
-        'method' => 'get',
-        'version' => 'v4',
-        'endpoint' => 'foo/bar',
-        'refresh_token' => $refresh_token,
-    ]);
+    $request_container = new EsiRequestContainer(
+        method: 'get',
+        version: 'v4',
+        endpoint: 'foo/bar',
+        refresh_token: $refresh_token
+    );
 
     $retrieve->setRequest($request_container);
 
@@ -58,12 +60,12 @@ it('updates outdated refresh_tokens', function () {
 
     $retrieve = new RetrieveEsiData();
 
-    $request_container = new EsiRequestContainer([
-        'method' => 'get',
-        'version' => 'v4',
-        'endpoint' => 'foo/bar',
-        'refresh_token' => $refresh_token,
-    ]);
+    $request_container = new EsiRequestContainer(
+        method: 'get',
+        version: 'v4',
+        endpoint: 'foo/bar',
+        refresh_token: $refresh_token
+    );
 
     $retrieve->setRequest($request_container);
 

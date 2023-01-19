@@ -26,7 +26,6 @@
 
 namespace Seatplus\Eveapi\Observers;
 
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
@@ -110,11 +109,6 @@ class CorporationMemberTrackingObserver
             return;
         }
 
-        $job_container = new JobContainer([
-            'character_id' => $this->corporation_member_tracking->character_id,
-            'queue' => 'high',
-        ]);
-
-        CharacterInfoJob::dispatch($job_container)->onQueue('high');
+        CharacterInfoJob::dispatch($this->corporation_member_tracking->character_id)->onQueue('high');
     }
 }

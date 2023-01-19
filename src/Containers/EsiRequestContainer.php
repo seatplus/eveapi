@@ -27,20 +27,20 @@
 namespace Seatplus\Eveapi\Containers;
 
 use Seatplus\Eveapi\Models\RefreshToken;
-use Spatie\DataTransferObject\DataTransferObject;
 
-class EsiRequestContainer extends DataTransferObject
+class EsiRequestContainer
 {
-    public string $method;
-    public string $version;
-    public string $endpoint;
-    public ?int $page = null;
-
-    public ?RefreshToken $refresh_token = null;
-
-    public array $path_values = [];
-    public array $request_body = [];
-    public array $query_parameters = [];
+    public function __construct(
+        public string $method,
+        public string $version,
+        public string $endpoint,
+        public ?int $page = null,
+        public ?RefreshToken $refresh_token = null,
+        public array $path_values = [],
+        public array $request_body = [],
+        public array $query_parameters = [],
+    ) {
+    }
 
     public function isPublic(): bool
     {

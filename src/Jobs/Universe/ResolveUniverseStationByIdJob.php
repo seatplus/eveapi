@@ -42,12 +42,11 @@ class ResolveUniverseStationByIdJob extends EsiBase implements HasPathValuesInte
     public function __construct(
         public int $location_id
     ) {
-        $this->setJobType('public');
-        parent::__construct();
-
-        $this->setMethod('get');
-        $this->setEndpoint('/universe/stations/{station_id}/');
-        $this->setVersion('v2');
+        parent::__construct(
+            method: 'get',
+            endpoint: '/universe/stations/{station_id}/',
+            version: 'v2',
+        );
 
         $this->setPathValues([
             'station_id' => $this->location_id,

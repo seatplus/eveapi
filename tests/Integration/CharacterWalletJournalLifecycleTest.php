@@ -2,7 +2,6 @@
 
 
 use Illuminate\Support\Facades\Queue;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletJournalJob;
 use Seatplus\Eveapi\Models\Wallet\WalletJournal;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
@@ -12,16 +11,14 @@ uses(MockRetrieveEsiDataAction::class);
 beforeEach(function () {
     // Prevent any auto dispatching of jobs
     Queue::fake();
-
-    $this->job_container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]);
 });
 
 test('run wallet journal job', function () {
     $mock_data = buildWalletJournalMockEsiData();
 
-    $job = new CharacterWalletJournalJob($this->job_container);
+    $job = new CharacterWalletJournalJob(testCharacter()->character_id);
 
-    dispatch_now($job);
+    $job->handle();
 
     //assertWalletJournal($mock_data, $this->test_character->character_id);
     foreach ($mock_data as $data) {

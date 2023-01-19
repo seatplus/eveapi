@@ -28,7 +28,6 @@ namespace Seatplus\Eveapi\Jobs\Contacts;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Support\Collection;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -48,14 +47,14 @@ class CharacterContactLabelJob extends EsiBase implements HasPathValuesInterface
 
     private Collection $known_ids;
 
-    public function __construct(?JobContainer $job_container = null)
-    {
-        $this->setJobType('character');
-        parent::__construct($job_container);
-
-        $this->setMethod('get');
-        $this->setEndpoint('/characters/{character_id}/contacts/labels/');
-        $this->setVersion('v1');
+    public function __construct(
+        public int $character_id,
+    ) {
+        parent::__construct(
+            method: 'get',
+            endpoint: '/characters/{character_id}/contacts/labels/',
+            version: 'v1',
+        );
 
         $this->setRequiredScope('esi-characters.read_contacts.v1');
 
@@ -74,6 +73,7 @@ class CharacterContactLabelJob extends EsiBase implements HasPathValuesInterface
     public function middleware(): array
     {
         return [
+            ...parent::middleware(),
             new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
             (new ThrottlesExceptionsWithRedis(80, 5))

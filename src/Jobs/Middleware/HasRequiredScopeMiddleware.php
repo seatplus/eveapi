@@ -37,14 +37,14 @@ class HasRequiredScopeMiddleware
      *
      * @param  mixed  $job
      * @param  callable  $next
-     * @return mixed
+     * @return mixed|void
      */
     public function handle(EsiBase $job, $next)
     {
-        if ($job instanceof HasRequiredScopeInterface && $job->refresh_token->hasScope($job->getRequiredScope())) {
+        if ($job instanceof HasRequiredScopeInterface && $job->getRefreshToken()->hasScope($job->getRequiredScope())) {
             return $next($job);
         }
 
-        return $job->fail(new Exception('refresh_token misses required scope: ' . $job->getRequiredScope()));
+        $job->fail(new Exception('refresh_token misses required scope: ' . $job->getRequiredScope()));
     }
 }

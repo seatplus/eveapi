@@ -15,23 +15,23 @@ class EsiClientSetup
     {
         $config = Configuration::getInstance();
 
-        $esi_configuration = new EsiConfiguration([
-            'http_user_agent' => 'SeAT plus v' . InstalledVersions::getPrettyVersion('seatplus/eveapi'),
+        $esi_configuration = new EsiConfiguration(
+            http_user_agent: 'SeAT plus v' . InstalledVersions::getPrettyVersion('seatplus/eveapi'),
             // ESI
-            'datasource' => config('eveapi.config.esi-client.datasource'),
-            'esi_scheme' => config('eveapi.config.esi-client.esi_scheme'),
-            'esi_host' => config('eveapi.config.esi-client.esi_host'),
-            'esi_port' => config('eveapi.config.esi-client.esi_port'),
+            datasource: config('eveapi.config.esi-client.datasource'),
+            esi_scheme: config('eveapi.config.esi-client.esi_scheme'),
+            esi_host: config('eveapi.config.esi-client.esi_host'),
+            esi_port: config('eveapi.config.esi-client.esi_port'),
             // SSO
-            'sso_scheme' => config('eveapi.config.esi-client.sso_scheme'),
-            'sso_host' => config('eveapi.config.esi-client.sso_host'),
-            'sso_port' => config('eveapi.config.esi-client.sso_port'),
+            sso_scheme: config('eveapi.config.esi-client.sso_scheme'),
+            sso_host: config('eveapi.config.esi-client.sso_host'),
+            sso_port: config('eveapi.config.esi-client.sso_port'),
             // Logging
-            'logger_level' => config('eveapi.config.esi-client.logger_level'),
-            'logfile_location' => config('eveapi.config.esi-client.logfile_location'),
+            logger_level: config('eveapi.config.esi-client.logger_level'),
+            logfile_location: config('eveapi.config.esi-client.logfile_location'),
             // Cache
-            'cache_middleware' => LaravelFileCacheMiddleware::class,
-        ]);
+            cache_middleware: LaravelFileCacheMiddleware::class,
+        );
 
         $config->setConfiguration($esi_configuration);
     }

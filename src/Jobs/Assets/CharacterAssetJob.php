@@ -28,7 +28,6 @@ namespace Seatplus\Eveapi\Jobs\Assets;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Support\Collection;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -49,20 +48,19 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
     private int $page = 1;
 
     public function __construct(
-        public JobContainer $job_container
+        public int $character_id
     ) {
-        $this->setJobType('character');
-        parent::__construct($job_container);
-
-        $this->setMethod('get');
-        $this->setEndpoint('/characters/{character_id}/assets/');
-        $this->setVersion('v5');
-
-        $this->setPathValues([
-            'character_id' => $job_container->getCharacterId(),
-        ]);
+        parent::__construct(
+            method: 'get',
+            endpoint: '/characters/{character_id}/assets/',
+            version: 'v5',
+        );
 
         $this->setRequiredScope('esi-assets.read_assets.v1');
+
+        $this->setPathValues([
+            'character_id' => $character_id,
+        ]);
 
         $this->known_assets = collect();
     }
@@ -75,6 +73,7 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
     public function middleware(): array
     {
         return [
+            ...parent::middleware(),
             new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
             (new ThrottlesExceptionsWithRedis(80, 5))
@@ -110,7 +109,7 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
             collect($response)->each(fn ($asset) => Asset::updateOrCreate([
                 'item_id' => $asset->item_id,
             ], [
-                'assetable_id' => $this->refresh_token->character_id,
+                'assetable_id' => $this->character_id,
                 'assetable_type' => CharacterInfo::class,
                 'is_blueprint_copy' => optional($asset)->is_blueprint_copy ?? false,
                 'is_singleton' => $asset->is_singleton,
@@ -140,7 +139,7 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
     private function cleanup()
     {
         Asset::query()
-            ->where('assetable_id', $this->getCharacterId())
+            ->where('assetable_id', $this->character_id)
             ->whereNotIn('item_id', $this->known_assets->toArray())
             ->delete();
     }

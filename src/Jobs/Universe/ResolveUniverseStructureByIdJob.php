@@ -33,7 +33,6 @@ use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Structure;
 use Seatplus\Eveapi\Traits\HasPathValues;
@@ -47,14 +46,14 @@ class ResolveUniverseStructureByIdJob extends EsiBase implements HasPathValuesIn
     public int $maxExceptions = 1;
 
     public function __construct(
-        RefreshToken $refresh_token,
+        public int $character_id,
         public int $location_id
     ) {
-        $this->setRefreshToken($refresh_token);
-
-        $this->setMethod('get');
-        $this->setEndpoint('/universe/structures/{structure_id}/');
-        $this->setVersion('v2');
+        parent::__construct(
+            method: 'get',
+            endpoint: '/universe/structures/{structure_id}/',
+            version: 'v2',
+        );
 
         $this->setRequiredScope('esi-universe.read_structures.v1');
 
@@ -116,7 +115,7 @@ class ResolveUniverseStructureByIdJob extends EsiBase implements HasPathValuesIn
         ]);
     }
 
-    public function failed($exception)
+    public function failed($exception): void
     {
         if ($exception instanceof MaxAttemptsExceededException) {
             $this->delete();

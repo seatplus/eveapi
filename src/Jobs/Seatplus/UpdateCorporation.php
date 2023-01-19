@@ -34,12 +34,13 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\RateLimitedWithRedis;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Bus;
-use Seatplus\Eveapi\Containers\JobContainer;
-use Seatplus\Eveapi\Jobs\Hydrate\Corporation\CorporationDivisionHydrateBatch;
-use Seatplus\Eveapi\Jobs\Hydrate\Corporation\CorporationMemberTrackingHydrateBatch;
-use Seatplus\Eveapi\Jobs\Hydrate\Corporation\CorporationWalletHydrateBatch;
+use Seatplus\Eveapi\Jobs\Corporation\CorporationDivisionsJob;
+use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
+use Seatplus\Eveapi\Jobs\Wallet\CorporationBalanceJob;
+use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletJournalJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 
 class UpdateCorporation implements ShouldQueue
 {
@@ -48,8 +49,12 @@ class UpdateCorporation implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    public function __construct(public ?int $corporation_id = null)
-    {
+    private FindCorporationRefreshToken $findCorporationRefreshToken;
+
+    public function __construct(
+        public ?int $corporation_id = null,
+    ) {
+        $this->findCorporationRefreshToken = new FindCorporationRefreshToken();
     }
 
     public function middleware()
@@ -62,40 +67,74 @@ class UpdateCorporation implements ShouldQueue
     public function handle()
     {
         if ($this->corporation_id) {
-            $this->dispatchUpdate($this->corporation_id, 'high');
+            $this->execute($this->corporation_id, 'high');
         } else {
             RefreshToken::with('corporation', 'character.roles')
                 ->cursor()
                 ->map(fn ($token) => $token->corporation->corporation_id)
                 ->unique()
-                ->each(fn ($corporation_id) => $this->dispatchUpdate($corporation_id));
+                ->each(fn ($corporation_id) => $this->execute($corporation_id));
         }
     }
 
-    private function execute(JobContainer $job_container, int $corporation_id)
+    private function execute(int $corporation_id, string $queue = 'default')
     {
         $corporation = optional(CorporationInfo::find($corporation_id))->name ?? $corporation_id;
 
         $success_message = sprintf('%s (corporation) updated.', $corporation);
         $batch_name = sprintf('%s (corporation) update batch', $corporation);
 
-        $batch = Bus::batch([
-            new CorporationDivisionHydrateBatch($job_container),
-            new CorporationMemberTrackingHydrateBatch($job_container),
-            new CorporationWalletHydrateBatch($job_container),
-
-        ])
+        $batch = Bus::batch($this->getBatchJobs($corporation_id))
             ->then(fn (Batch $batch) => logger()->info($success_message))
             ->name($batch_name)
-            ->onQueue($job_container->queue)
+            ->onQueue($queue)
             ->allowFailures()
             ->dispatch();
     }
 
-    private function dispatchUpdate(int $corporation_id, string $queue = 'default')
+    private function getBatchJobs(int $corporation_id): array
     {
-        $job_container = new JobContainer(['corporation_id' => $corporation_id, 'queue' => $queue]);
+        return collect()
+            ->merge($this->addCorporationDivisionsJobs($corporation_id))
+            ->merge($this->addCorporationMemberTrackingJobs($corporation_id))
+            ->merge($this->addCorporationWalletHydrateBatch($corporation_id))
+            ->values()
+            ->toArray();
+    }
 
-        $this->execute($job_container, $corporation_id);
+    private function addCorporationDivisionsJobs(int $corporation_id): array
+    {
+        if (! call_user_func_array($this->findCorporationRefreshToken, [$corporation_id, 'esi-corporations.read_divisions.v1', 'Director'])) {
+            return [];
+        }
+
+        return [
+            new CorporationDivisionsJob($corporation_id),
+        ];
+    }
+
+    private function addCorporationMemberTrackingJobs(int $corporation_id): array
+    {
+        if (! call_user_func_array($this->findCorporationRefreshToken, [$corporation_id, 'esi-corporations.track_members.v1', 'Director'])) {
+            return [];
+        }
+
+        return [
+            new CorporationMemberTrackingJob($corporation_id),
+        ];
+    }
+
+    private function addCorporationWalletHydrateBatch(int $corporation_id): array
+    {
+        if (! call_user_func_array($this->findCorporationRefreshToken, [$corporation_id, head(config('eveapi.scopes.corporation.wallet')), ['Accountant', 'Junior_Accountant']])) {
+            return [];
+        }
+
+        return [
+            [
+                new CorporationBalanceJob($corporation_id),
+                new CorporationWalletJournalJob($corporation_id),
+            ],
+        ];
     }
 }

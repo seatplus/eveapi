@@ -27,7 +27,6 @@
 namespace Seatplus\Eveapi\Jobs\Character;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
@@ -37,17 +36,17 @@ class CharacterInfoJob extends EsiBase implements HasPathValuesInterface
 {
     use HasPathValues;
 
-    public function __construct(?JobContainer $job_container = null)
-    {
-        $this->setJobType('character');
-        parent::__construct($job_container);
-
-        $this->setMethod('get');
-        $this->setEndpoint('/characters/{character_id}/');
-        $this->setVersion('v5');
+    public function __construct(
+        public int $character_id
+    ) {
+        parent::__construct(
+            method: 'get',
+            endpoint: '/characters/{character_id}/',
+            version: 'v5',
+        );
 
         $this->setPathValues([
-            'character_id' => $this->getCharacterId(),
+            'character_id' => $character_id,
         ]);
     }
 
@@ -56,7 +55,7 @@ class CharacterInfoJob extends EsiBase implements HasPathValuesInterface
         return [
             'character',
             'info',
-            'character_id:' . $this->getCharacterId(),
+            'character_id:' . $this->character_id,
         ];
     }
 
@@ -68,6 +67,7 @@ class CharacterInfoJob extends EsiBase implements HasPathValuesInterface
     public function middleware(): array
     {
         return [
+            ...parent::middleware(),
             (new ThrottlesExceptionsWithRedis(80, 5))
                 ->by('esiratelimit')
                 ->backoff(5),
@@ -89,7 +89,7 @@ class CharacterInfoJob extends EsiBase implements HasPathValuesInterface
         }
 
         CharacterInfo::updateOrCreate([
-            'character_id' => $this->getCharacterId(),
+            'character_id' => $this->character_id,
         ], [
             'name' => $response->name,
             'description' => data_get($response, 'description'),

@@ -3,7 +3,6 @@
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Wallet\CorporationBalanceJob;
 use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletJournalByDivisionJob;
 use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletJournalJob;
@@ -17,14 +16,7 @@ use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 uses(MockRetrieveEsiDataAction::class);
 
 beforeEach(function () {
-    $refresh_token = Event::fakeFor(function () {
-        $token = updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-wallet.read_corporation_wallets.v1']);
-        $token->save();
-
-        return $token;
-    });
-
-    $this->job_container = new JobContainer(['refresh_token' => $refresh_token]);
+    updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-wallet.read_corporation_wallets.v1'])->save();
 });
 
 it('runs the job', function () {
@@ -35,7 +27,7 @@ it('runs the job', function () {
     // Prevent Observer from picking up the jobs
     Event::fake();
 
-    (new CorporationBalanceJob($this->job_container))->handle();
+    (new CorporationBalanceJob(testCharacter()->corporation->corporation_id))->handle();
 
     expect(Balance::all())->toHaveCount(7);
 });
@@ -71,7 +63,7 @@ it('spawns a job for every wallet division', function () {
         'balanceable_type' => CorporationInfo::class,
     ]));
 
-    (new CorporationWalletJournalJob($this->job_container))->handle();
+    (new CorporationWalletJournalJob(testCharacter()->corporation->corporation_id))->handle();
 
     expect(Balance::all())->toHaveCount(7);
 
@@ -88,7 +80,7 @@ it('creates wallet journal entries', function () {
 
     $mock_data = buildCorporationWalletJournaltEsiMockData();
 
-    CorporationWalletJournalByDivisionJob::dispatchSync($this->job_container, $mock_data->first()->division);
+    CorporationWalletJournalByDivisionJob::dispatchSync(testCharacter()->corporation->corporation_id, $mock_data->first()->division);
 
     $corporation = $corporation->refresh();
     expect($corporation->wallet_journals)->toHaveCount($mock_data->count());
@@ -108,7 +100,7 @@ it('creates wallet transaction entries', function () {
     // Prevent Observers to pickup any new jobs
     Event::fake();
 
-    CorporationWalletTransactionByDivisionJob::dispatchSync($this->job_container, $mock_data->first()->division);
+    CorporationWalletTransactionByDivisionJob::dispatchSync(testCharacter()->corporation->corporation_id, $mock_data->first()->division);
 
     $corporation = $corporation->refresh();
     expect($corporation->wallet_transactions)->toHaveCount($mock_data->count());

@@ -101,3 +101,11 @@ function updateRefreshTokenScopes(\Seatplus\Eveapi\Models\RefreshToken $refreshT
 
     return $refreshToken;
 }
+
+function updateCharacterRoles(array $roles)
+{
+    $character_roles = testCharacter()->roles;
+
+    $character_roles->roles = $roles;
+    $character_roles->save();
+}

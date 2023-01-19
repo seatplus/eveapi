@@ -26,6 +26,11 @@
 
 namespace Seatplus\Eveapi\Traits;
 
+use Exception;
+use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
+use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
+
 trait HasRequiredScopes
 {
     public string $required_scope;
@@ -41,5 +46,69 @@ trait HasRequiredScopes
     public function setRequiredScope(string $required_scope): void
     {
         $this->required_scope = $required_scope;
+    }
+
+    public function getRefreshToken(): RefreshToken
+    {
+        throw_unless($this->getRequiredScope(), new Exception('required scope is not set'));
+
+        // create collection of potentially public properties of character_id, corporation_id and alliance_id
+        $refresh_tokens = collect(get_object_vars($this))
+            ->filter(fn ($value, $key) => in_array($key, ['character_id', 'corporation_id', 'alliance_id']))
+            ->filter(fn ($value, $key) => $value !== null)
+            // get refresh token for character_id, corporation_id or alliance_id
+            ->map(function ($value, $key) {
+                return match ($key) {
+                    'character_id' => RefreshToken::firstWhere('character_id', $value),
+                    'corporation_id' => $this->getCorporateRefreshToken($value),
+                    'alliance_id' => $this->getAllianceRefreshToken($value),
+                };
+            });
+
+        // throw error if length of collection is not 1
+        if ($refresh_tokens->count() !== 1) {
+            throw new Exception('Could not find refresh token for character_id, corporation_id or alliance_id');
+        }
+
+        $refresh_token = $refresh_tokens->first();
+
+        #check if the refresh token has the required scope
+        throw_unless($refresh_token->hasScope($this->getRequiredScope()), new Exception('refresh token does not have the required scope'));
+
+        return $refresh_token;
+    }
+
+    private function getCorporateRefreshToken(int $corporation_id): RefreshToken
+    {
+        $role = [];
+
+        // if HasCorporationRoleInterface is implemented, get the role
+        if (method_exists($this, 'getCorporationRole')) {
+            $role = $this->getCorporationRole();
+        }
+
+        $invoke = new FindCorporationRefreshToken;
+
+        $refresh_token = $invoke($corporation_id, $this->getRequiredScope(), $role);
+
+        throw_unless($refresh_token, new Exception('Could not find refresh token for corporation_id'));
+
+        return $refresh_token;
+    }
+
+    private function getAllianceRefreshToken(int $alliance_id): RefreshToken
+    {
+        // get all corporation_ids for the alliance
+        $corporation_ids = CorporationInfo::query()->where('alliance_id', $alliance_id)->pluck('corporation_id');
+
+        foreach ($corporation_ids as $corporation_id) {
+            $refresh_token = $this->getCorporateRefreshToken($corporation_id);
+
+            if ($refresh_token) {
+                return $refresh_token;
+            }
+        }
+
+        throw new Exception('Could not find refresh token for alliance_id');
     }
 }

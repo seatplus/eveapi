@@ -3,7 +3,6 @@
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Skills\SkillsJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Skills\Skill;
@@ -16,8 +15,6 @@ uses(\Illuminate\Foundation\Testing\LazilyRefreshDatabase::class);
 beforeEach(function () {
     // Prevent any auto dispatching of jobs
     Queue::fake();
-
-    $this->job_container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]);
 });
 
 it('runs skill job', function () {
@@ -27,7 +24,7 @@ it('runs skill job', function () {
 
     expect($this->test_character->total_sp)->toBeNull();
 
-    (new SkillsJob($this->job_container))->handle();
+    (new SkillsJob(testCharacter()->character_id))->handle();
 
     expect(Skill::all())->toHaveCount(5);
     expect(Skill::first()->type)->toBeInstanceOf(Type::class);

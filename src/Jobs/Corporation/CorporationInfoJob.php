@@ -27,7 +27,6 @@
 namespace Seatplus\Eveapi\Jobs\Corporation;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
@@ -37,14 +36,14 @@ class CorporationInfoJob extends EsiBase implements HasPathValuesInterface
 {
     use HasPathValues;
 
-    public function __construct(?JobContainer $job_container = null)
-    {
-        $this->setJobType('public');
-        parent::__construct($job_container);
-
-        $this->setMethod('get');
-        $this->setEndpoint('/corporations/{corporation_id}/');
-        $this->setVersion('v5');
+    public function __construct(
+        public int $corporation_id
+    ) {
+        parent::__construct(
+            method: 'get',
+            endpoint: '/corporations/{corporation_id}/',
+            version: 'v5',
+        );
 
         $this->setPathValues([
             'corporation_id' => $this->corporation_id,

@@ -43,14 +43,15 @@ class KillmailJob extends EsiBase implements HasPathValuesInterface
 {
     use HasPathValues;
 
-    public function __construct(int $killmail_id, string $killmail_hash)
-    {
-        $this->setJobType('public');
-        parent::__construct();
-
-        $this->setMethod('get');
-        $this->setEndpoint('/killmails/{killmail_id}/{killmail_hash}/');
-        $this->setVersion('v1');
+    public function __construct(
+        private int $killmail_id,
+        private string $killmail_hash
+    ) {
+        parent::__construct(
+            method: 'get',
+            endpoint: '/killmails/{killmail_id}/{killmail_hash}/',
+            version: 'v1',
+        );
 
         $this->setPathValues([
             'killmail_id' => $killmail_id,
@@ -62,7 +63,7 @@ class KillmailJob extends EsiBase implements HasPathValuesInterface
     {
         return [
             'killmails',
-            sprintf('killmail_id:%s', data_get($this->getPathValues(), 'killmail_id')),
+            sprintf('killmail_id:%s', $this->killmail_id),
         ];
     }
 
@@ -85,9 +86,9 @@ class KillmailJob extends EsiBase implements HasPathValuesInterface
 
         try {
             $killmail = Killmail::firstOrCreate([
-                'killmail_id' => data_get($this->getPathValues(), 'killmail_id'),
+                'killmail_id' => $this->killmail_id,
             ], [
-                'killmail_hash' => data_get($this->getPathValues(), 'killmail_hash'),
+                'killmail_hash' => $this->killmail_hash,
                 'solar_system_id' => data_get($response, 'solar_system_id'),
                 'victim_character_id' => data_get($response, 'victim.character_id'),
                 'victim_corporation_id' => data_get($response, 'victim.corporation_id'),
@@ -126,7 +127,7 @@ class KillmailJob extends EsiBase implements HasPathValuesInterface
     {
         collect($items)->each(function ($item) use ($location_id) {
             $killmail_item = KillmailItem::create([
-                'location_id' => $location_id ?? data_get($this->getPathValues(), 'killmail_id'),
+                'location_id' => $location_id ?? $this->killmail_id,
                 'location_flag' => GetLocationFlagNameService::make()->get(data_get($item, 'flag')),
                 'quantity' => data_get($item, 'quantity_dropped') ?? data_get($item, 'quantity_destroyed'),
                 'type_id' => data_get($item, 'item_type_id'),
@@ -148,7 +149,7 @@ class KillmailJob extends EsiBase implements HasPathValuesInterface
     private function createKillmailAttackers(array $attackers)
     {
         collect($attackers)->each(fn ($attacker) => KillmailAttacker::create([
-            'killmail_id' => data_get($this->getPathValues(), 'killmail_id'),
+            'killmail_id' => $this->killmail_id,
             'character_id' => data_get($attacker, 'character_id'),
             'corporation_id' => data_get($attacker, 'corporation_id'),
             'alliance_id' => data_get($attacker, 'alliance_id'),

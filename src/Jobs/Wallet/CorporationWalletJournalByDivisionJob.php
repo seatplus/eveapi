@@ -27,7 +27,6 @@
 namespace Seatplus\Eveapi\Jobs\Wallet;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -45,19 +44,20 @@ class CorporationWalletJournalByDivisionJob extends EsiBase implements HasPathVa
     use HasRequiredScopes;
     use HasPages;
 
-    public function __construct(JobContainer $job_container, private int $division)
-    {
-        $this->setJobType('corporation');
-        parent::__construct($job_container);
-
-        $this->setMethod('get');
-        $this->setEndpoint('/corporations/{corporation_id}/wallets/{division}/journal/');
-        $this->setVersion('v4');
+    public function __construct(
+        public int $corporation_id,
+        private int $division
+    ) {
+        parent::__construct(
+            method: 'get',
+            endpoint: '/corporations/{corporation_id}/wallets/{division}/journal/',
+            version: 'v4',
+        );
 
         $this->setRequiredScope(head(config('eveapi.scopes.corporation.wallet')));
 
         $this->setPathValues([
-            'corporation_id' => $this->getCorporationId(),
+            'corporation_id' => $this->corporation_id,
             'division' => $this->division,
         ]);
     }
@@ -82,7 +82,7 @@ class CorporationWalletJournalByDivisionJob extends EsiBase implements HasPathVa
     {
         return [
             'corporation',
-            'corporation_id: ' . $this->getCorporationId(),
+            'corporation_id: ' . $this->corporation_id,
             'wallet',
             'journal',
             'division: ' . $this->division,
@@ -97,7 +97,7 @@ class CorporationWalletJournalByDivisionJob extends EsiBase implements HasPathVa
      */
     public function executeJob(): void
     {
-        $processor = new ProcessWalletJournalResponse($this->getCorporationId(), CorporationInfo::class, $this->division);
+        $processor = new ProcessWalletJournalResponse($this->corporation_id, CorporationInfo::class, $this->division);
 
         while (true) {
             $response = $this->retrieve($this->getPage());

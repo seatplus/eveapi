@@ -32,7 +32,7 @@ it('creates structure', function () {
         'structure_id' => $mock_data->structure_id,
     ]);
 
-    (new ResolveUniverseStructureByIdJob($this->refresh_token, $mock_data->structure_id))->handle();
+    (new ResolveUniverseStructureByIdJob($this->refresh_token->character_id, $mock_data->structure_id))->handle();
 
     //Assert that structure is created
     $this->assertDatabaseHas('universe_structures', [
@@ -51,7 +51,7 @@ it('creates location', function () {
         'location_id' => $mock_data->structure_id,
     ]);
 
-    (new ResolveUniverseStructureByIdJob($this->refresh_token, $mock_data->structure_id))->handle();
+    (new ResolveUniverseStructureByIdJob($this->refresh_token->character_id, $mock_data->structure_id))->handle();
 
     //Assert that structure is created
     $this->assertDatabaseHas('universe_locations', [
@@ -65,7 +65,7 @@ it('creates location', function () {
 it('creates polymorphic relationship', function () {
     $mock_data = buildStructureMockEsiData();
 
-    (new ResolveUniverseStructureByIdJob($this->refresh_token, $mock_data->structure_id))->handle();
+    (new ResolveUniverseStructureByIdJob($this->refresh_token->character_id, $mock_data->structure_id))->handle();
 
     $location = Location::find($mock_data->structure_id);
 

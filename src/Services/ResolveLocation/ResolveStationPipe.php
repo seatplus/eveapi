@@ -45,7 +45,7 @@ class ResolveStationPipe
             return $next($payload);
         }
 
-        // if location is station and last update is greater then a week don't bother no longer
+        // if location is station and last update is greater than a week don't bother no longer
         if (is_a($payload->location->locatable, Station::class) && $payload->location->locatable->updated_at > carbon()->subWeek()) {
             return $next($payload);
         }
@@ -61,6 +61,5 @@ class ResolveStationPipe
     private function getStation()
     {
         ResolveUniverseStationByIdJob::dispatch($this->location_id)->onQueue('high');
-        //(new ResolveUniverseStationByIdAction)->execute($this->location_id);
     }
 }

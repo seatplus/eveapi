@@ -36,14 +36,14 @@ class ResolveUniverseConstellationByConstellationIdJob extends EsiBase implement
 {
     use HasPathValues;
 
-    public function __construct(int $constellation_id)
-    {
-        $this->setJobType('public');
-        parent::__construct();
-
-        $this->setMethod('get');
-        $this->setEndpoint('/universe/constellations/{constellation_id}/');
-        $this->setVersion('v1');
+    public function __construct(
+        public int $constellation_id
+    ) {
+        parent::__construct(
+            method: 'get',
+            endpoint: '/universe/constellations/{constellation_id}/',
+            version: 'v1',
+        );
 
         $this->setPathValues([
             'constellation_id' => $constellation_id,
@@ -68,7 +68,7 @@ class ResolveUniverseConstellationByConstellationIdJob extends EsiBase implement
     {
         return [
             'constellation_resolver',
-            'constellation_id:' . data_get($this->getPathValues(), 'constellation_id'),
+            'constellation_id:' . $this->constellation_id,
         ];
     }
 

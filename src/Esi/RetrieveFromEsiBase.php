@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Esi;
 
+use Exception;
 use Illuminate\Queue\InteractsWithQueue;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
@@ -58,31 +59,36 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
 
     private function getBaseEsiReuestContainer(): EsiRequestContainer
     {
-        return new EsiRequestContainer([
-            'method' => $this->getMethod(),
-            'version' => $this->getVersion(),
-            'endpoint' => $this->getEndpoint(),
-        ]);
+        return new EsiRequestContainer(
+            method: $this->getMethod(),
+            version: $this->getVersion(),
+            endpoint: $this->getEndpoint(),
+        );
     }
 
     private function builldEsiRequestContainer(?int $page)
     {
         $this->esi_request_container = $this->getBaseEsiReuestContainer();
 
-        if ($this instanceof HasPathValuesInterface) {
-            $this->esi_request_container->path_values = $this->getPathValues();
-        }
+        try {
+            if ($this instanceof HasRequiredScopeInterface) {
+                $this->esi_request_container->refresh_token = $this->getRefreshToken();
+            }
 
-        if ($this instanceof HasRequestBodyInterface) {
-            $this->esi_request_container->request_body = $this->getRequestBody();
-        }
+            if ($this instanceof HasPathValuesInterface) {
+                $this->esi_request_container->path_values = $this->getPathValues();
+            }
 
-        if ($this instanceof HasRequiredScopeInterface) {
-            $this->esi_request_container->refresh_token = $this->getRefreshToken();
-        }
+            if ($this instanceof HasRequestBodyInterface) {
+                $this->esi_request_container->request_body = $this->getRequestBody();
+            }
 
-        if ($this instanceof HasQueryStringInterface) {
-            $this->esi_request_container->query_string = $this->getQueryString();
+            if ($this instanceof HasQueryStringInterface) {
+                $this->esi_request_container->query_string = $this->getQueryString();
+            }
+        } catch (Exception $exception) {
+            // fail job
+            $this->fail($exception);
         }
 
         $this->esi_request_container->page = $page;
