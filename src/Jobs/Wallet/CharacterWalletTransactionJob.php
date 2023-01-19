@@ -50,9 +50,7 @@ class CharacterWalletTransactionJob extends EsiBase implements HasPathValuesInte
 
     public function __construct(
         public int $character_id,
-    )
-    {
-
+    ) {
         parent::__construct(
             method: 'get',
             endpoint: '/characters/{character_id}/wallet/transactions/',
@@ -65,7 +63,6 @@ class CharacterWalletTransactionJob extends EsiBase implements HasPathValuesInte
 
         $this->setRequiredScope('esi-wallet.read_character_wallet.v1');
     }
-
 
     /**
      * Get the middleware the job should pass through.

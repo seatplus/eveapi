@@ -53,7 +53,6 @@ class CharacterAffiliationObserver
 
     private function handle(CharacterAffiliation $character_affiliation)
     {
-
         // if character is not present in db don't even bother about corporation or alliance
         if (! $character_affiliation->character) {
             return;

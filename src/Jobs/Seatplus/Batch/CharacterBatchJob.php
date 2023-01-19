@@ -48,15 +48,13 @@ class CharacterBatchJob implements ShouldQueue, ShouldBeUnique
     public function __construct(
         public int $character_id,
         public $queue = 'default'
-    )
-    {
+    ) {
         $this->refresh_token = RefreshToken::find($this->character_id);
         $this->createBatchJobs();
     }
 
     public function uniqueId()
     {
-
         return $this->character_id . ':' . $this->queue;
     }
 
@@ -136,7 +134,6 @@ class CharacterBatchJob implements ShouldQueue, ShouldBeUnique
 
     private function addAssetsJobs() : array
     {
-
         // Return empty array if required scopes are not present
         if (! $this->refresh_token->hasScope('esi-assets.read_assets.v1')) {
             return [];
@@ -147,13 +144,12 @@ class CharacterBatchJob implements ShouldQueue, ShouldBeUnique
             [
                 new CharacterAssetJob($this->character_id),
                 new CharacterAssetsNameJob($this->character_id),
-            ]
+            ],
         ];
     }
 
     private function addCharacterRolesJobs() : array
     {
-
         // Return empty array if required scopes are not present
         if (! $this->refresh_token->hasScope('esi-characters.read_corporation_roles.v1')) {
             return [];
@@ -166,7 +162,6 @@ class CharacterBatchJob implements ShouldQueue, ShouldBeUnique
 
     private function addContactsJobs() : array
     {
-
         return collect()
             ->merge($this->addCharacterContactsJobs())
             ->merge($this->addCorporationContactsJobs())
@@ -177,7 +172,6 @@ class CharacterBatchJob implements ShouldQueue, ShouldBeUnique
 
     private function addCharacterContactsJobs() : array
     {
-
         // Return empty array if required scopes are not present
         if (! $this->refresh_token->hasScope('esi-characters.read_contacts.v1')) {
             return [];
@@ -193,7 +187,6 @@ class CharacterBatchJob implements ShouldQueue, ShouldBeUnique
 
     private function addCorporationContactsJobs() : array
     {
-
         // Return empty array if required scopes are not present
         if (! $this->refresh_token->hasScope('esi-corporations.read_contacts.v1')) {
             return [];
@@ -209,7 +202,6 @@ class CharacterBatchJob implements ShouldQueue, ShouldBeUnique
 
     private function addAllianceContactsJobs() : array
     {
-
         // Return empty array if required scopes are not present
         if (! $this->refresh_token->hasScope('esi-alliances.read_contacts.v1')) {
             return [];
@@ -225,7 +217,6 @@ class CharacterBatchJob implements ShouldQueue, ShouldBeUnique
 
     private function addWalletJobs() : array
     {
-
         // Return empty array if required scopes are not present
         if (! $this->refresh_token->hasScope('esi-wallet.read_character_wallet.v1')) {
             return [];
@@ -240,46 +231,42 @@ class CharacterBatchJob implements ShouldQueue, ShouldBeUnique
 
     private function addContractJobs() : array
     {
-
         // Return empty array if required scopes are not present
         if (! $this->refresh_token->hasScope('esi-contracts.read_character_contracts.v1')) {
             return [];
         }
 
         return [
-            new CharacterContractsJob($this->character_id)
+            new CharacterContractsJob($this->character_id),
         ];
     }
 
     private function addSkillsJobs() : array
     {
-
         // Return empty array if required scopes are not present
         if (! $this->refresh_token->hasScope('esi-skills.read_skills.v1')) {
             return [];
         }
 
         return [
-            new SkillsJob($this->character_id)
+            new SkillsJob($this->character_id),
         ];
     }
 
     private function addSkillQueueJobs() : array
     {
-
         // Return empty array if required scopes are not present
         if (! $this->refresh_token->hasScope('esi-skills.read_skillqueue.v1')) {
             return [];
         }
 
         return [
-            new SkillQueueJob($this->character_id)
+            new SkillQueueJob($this->character_id),
         ];
     }
 
     private function addMailsJobs() : array
     {
-
         // Return empty array if required scopes are not present
         if (! $this->refresh_token->hasScope('esi-mail.read_mail.v1')) {
             return [];

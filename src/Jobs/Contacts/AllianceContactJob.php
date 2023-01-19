@@ -49,8 +49,7 @@ class AllianceContactJob extends EsiBase implements HasPathValuesInterface, HasR
 
     public function __construct(
         public int $alliance_id,
-    )
-    {
+    ) {
         parent::__construct(
             method: 'get',
             endpoint: '/alliances/{alliance_id}/contacts/',
@@ -100,7 +99,6 @@ class AllianceContactJob extends EsiBase implements HasPathValuesInterface, HasR
      */
     public function executeJob(): void
     {
-
         $processor = new ProcessContactResponse($this->alliance_id, AllianceInfo::class);
 
         while (true) {

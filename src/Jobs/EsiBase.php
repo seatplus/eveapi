@@ -34,7 +34,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\MaxAttemptsExceededException;
-use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Esi\RetrieveFromEsiBase;
 use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
@@ -83,10 +82,8 @@ abstract class EsiBase extends RetrieveFromEsiBase implements ShouldQueue, BaseJ
         public string $method,
         public string $endpoint,
         public string $version,
-    )
-    {
+    ) {
     }
-
 
     abstract public function tags(): array;
 
@@ -125,7 +122,6 @@ abstract class EsiBase extends RetrieveFromEsiBase implements ShouldQueue, BaseJ
         return $this->endpoint;
     }
 
-
     /**
      * Handle a job failure.
      *
@@ -139,11 +135,10 @@ abstract class EsiBase extends RetrieveFromEsiBase implements ShouldQueue, BaseJ
         }
 
         // if exception has getOriginalException Method
-        if(method_exists($exception, 'getOriginalException')) {
+        if (method_exists($exception, 'getOriginalException')) {
             if ($exception->getOriginalException()?->getResponse()?->getReasonPhrase() === 'Forbidden') {
                 $this->fail($exception);
             }
         }
-
     }
 }

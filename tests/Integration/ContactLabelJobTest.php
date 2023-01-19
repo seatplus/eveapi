@@ -13,7 +13,6 @@ uses(MockRetrieveEsiDataAction::class);
 beforeEach(function () {
     // Prevent any auto dispatching of jobs
     Event::fake();
-
 });
 
 test('run character contact label', function () {

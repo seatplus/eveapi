@@ -38,8 +38,7 @@ class ResolveUniverseSystemBySystemIdJob extends EsiBase implements HasPathValue
 
     public function __construct(
         private int $system_id
-    )
-    {
+    ) {
         parent::__construct(
             method: 'get',
             endpoint: '/universe/systems/{system_id}/',

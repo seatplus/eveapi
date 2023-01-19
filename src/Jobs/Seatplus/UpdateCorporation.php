@@ -53,8 +53,7 @@ class UpdateCorporation implements ShouldQueue
 
     public function __construct(
         public ?int $corporation_id = null,
-    )
-    {
+    ) {
         $this->findCorporationRefreshToken = new FindCorporationRefreshToken();
     }
 
@@ -105,9 +104,10 @@ class UpdateCorporation implements ShouldQueue
 
     private function addCorporationDivisionsJobs(int $corporation_id): array
     {
-        if(! call_user_func_array($this->findCorporationRefreshToken, [$corporation_id, 'esi-corporations.read_divisions.v1', 'Director'])) {
+        if (! call_user_func_array($this->findCorporationRefreshToken, [$corporation_id, 'esi-corporations.read_divisions.v1', 'Director'])) {
             return [];
         }
+
         return [
             new CorporationDivisionsJob($corporation_id),
         ];
@@ -115,9 +115,10 @@ class UpdateCorporation implements ShouldQueue
 
     private function addCorporationMemberTrackingJobs(int $corporation_id): array
     {
-        if(! call_user_func_array($this->findCorporationRefreshToken, [$corporation_id, 'esi-corporations.track_members.v1', 'Director'])) {
+        if (! call_user_func_array($this->findCorporationRefreshToken, [$corporation_id, 'esi-corporations.track_members.v1', 'Director'])) {
             return [];
         }
+
         return [
             new CorporationMemberTrackingJob($corporation_id),
         ];
@@ -125,14 +126,15 @@ class UpdateCorporation implements ShouldQueue
 
     private function addCorporationWalletHydrateBatch(int $corporation_id): array
     {
-        if(! call_user_func_array($this->findCorporationRefreshToken, [$corporation_id, head(config('eveapi.scopes.corporation.wallet')), ['Accountant', 'Junior_Accountant']])) {
+        if (! call_user_func_array($this->findCorporationRefreshToken, [$corporation_id, head(config('eveapi.scopes.corporation.wallet')), ['Accountant', 'Junior_Accountant']])) {
             return [];
         }
+
         return [
             [
                 new CorporationBalanceJob($corporation_id),
                 new CorporationWalletJournalJob($corporation_id),
-            ]
+            ],
         ];
     }
 }

@@ -30,7 +30,6 @@ use Exception;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
-use function _PHPStan_9a6ded56a\React\Promise\map;
 
 trait HasRequiredScopes
 {
@@ -51,7 +50,6 @@ trait HasRequiredScopes
 
     public function getRefreshToken(): RefreshToken
     {
-
         throw_unless($this->getRequiredScope(), new Exception('required scope is not set'));
 
         // create collection of potentially public properties of character_id, corporation_id and alliance_id
@@ -60,8 +58,7 @@ trait HasRequiredScopes
             ->filter(fn ($value, $key) => $value !== null)
             // get refresh token for character_id, corporation_id or alliance_id
             ->map(function ($value, $key) {
-
-                return match($key) {
+                return match ($key) {
                     'character_id' => RefreshToken::firstWhere('character_id', $value),
                     'corporation_id' => $this->getCorporateRefreshToken($value),
                     'alliance_id' => $this->getAllianceRefreshToken($value),

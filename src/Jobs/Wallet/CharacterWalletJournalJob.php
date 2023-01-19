@@ -46,8 +46,7 @@ class CharacterWalletJournalJob extends EsiBase implements HasPathValuesInterfac
 
     public function __construct(
         public int $character_id
-    )
-    {
+    ) {
         parent::__construct(
             method: 'get',
             endpoint: '/characters/{character_id}/wallet/journal/',

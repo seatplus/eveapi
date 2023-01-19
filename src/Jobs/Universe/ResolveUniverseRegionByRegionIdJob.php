@@ -38,8 +38,7 @@ class ResolveUniverseRegionByRegionIdJob extends EsiBase implements HasPathValue
 
     public function __construct(
         public int $region_id
-    )
-    {
+    ) {
         parent::__construct(
             method: 'get',
             endpoint: '/universe/regions/{region_id}/',

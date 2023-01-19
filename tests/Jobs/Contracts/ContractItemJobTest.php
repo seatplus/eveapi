@@ -37,7 +37,7 @@ it('dispatches resolve universe type job if type is unknown', function () {
 
     mockRetrieveEsiDataAction($mock_data->toArray());
 
-    $job = new CharacterContractItemsJob(testCharacter()->character_id,$contract->contract_id);
+    $job = new CharacterContractItemsJob(testCharacter()->character_id, $contract->contract_id);
 
     $refresh_token = updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-contracts.read_character_contracts.v1']);
     $refresh_token->save();

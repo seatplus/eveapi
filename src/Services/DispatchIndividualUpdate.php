@@ -35,8 +35,7 @@ class DispatchIndividualUpdate
 
     public function __construct(
         private RefreshToken $refresh_token
-    )
-    {
+    ) {
     }
 
     public function execute(string $job_name)

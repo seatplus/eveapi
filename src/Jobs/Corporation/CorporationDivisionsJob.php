@@ -40,13 +40,13 @@ use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
 class CorporationDivisionsJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, HasCorporationRoleInterface
 {
-    use HasPathValues, HasCorporationRole, HasRequiredScopes;
+    use HasPathValues;
+    use HasCorporationRole;
+    use HasRequiredScopes;
 
     public function __construct(
         public int $corporation_id,
-    )
-    {
-
+    ) {
         parent::__construct(
             method: 'get',
             endpoint: '/corporations/{corporation_id}/divisions/',
@@ -60,7 +60,6 @@ class CorporationDivisionsJob extends EsiBase implements HasPathValuesInterface,
         $this->setRequiredScope('esi-corporations.read_divisions.v1');
 
         $this->setCorporationRole('Director');
-
     }
 
     /**

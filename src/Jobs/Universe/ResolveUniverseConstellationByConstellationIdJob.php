@@ -38,8 +38,7 @@ class ResolveUniverseConstellationByConstellationIdJob extends EsiBase implement
 
     public function __construct(
         public int $constellation_id
-    )
-    {
+    ) {
         parent::__construct(
             method: 'get',
             endpoint: '/universe/constellations/{constellation_id}/',

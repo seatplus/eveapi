@@ -78,7 +78,6 @@ class GroupObserver
             ->unique('assetable_id')
             ->whenNotEmpty(function ($assets) {
                 $assets->each(function ($asset) {
-
                     CharacterAssetsNameJob::dispatch($asset->assetable_id)->onQueue('high');
                 });
             });

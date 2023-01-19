@@ -40,7 +40,6 @@ class ResolveUniverseTypeByIdJob extends EsiBase implements HasPathValuesInterfa
 
     public function __construct(private int $type_id)
     {
-
         parent::__construct(
             method: 'get',
             endpoint: '/universe/types/{type_id}/',

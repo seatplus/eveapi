@@ -56,7 +56,6 @@ class FindCorporationRefreshToken
                 return false;
             })
             ->first(function ($token) use ($roles) {
-
                 // if no roles are given, return the first token with the correct scope
                 if (empty($roles)) {
                     return true;

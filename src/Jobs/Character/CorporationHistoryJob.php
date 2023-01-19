@@ -38,9 +38,7 @@ class CorporationHistoryJob extends EsiBase implements HasPathValuesInterface
 
     public function __construct(
         public int $character_id
-    )
-    {
-
+    ) {
         parent::__construct(
             method: 'get',
             endpoint: '/characters/{character_id}/corporationhistory/',

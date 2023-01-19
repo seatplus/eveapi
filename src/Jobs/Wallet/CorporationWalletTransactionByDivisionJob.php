@@ -47,8 +47,7 @@ class CorporationWalletTransactionByDivisionJob extends EsiBase implements HasPa
     public function __construct(
         public int $corporation_id,
         private int $division
-    )
-    {
+    ) {
         parent::__construct(
             method: 'get',
             endpoint: '/corporations/{corporation_id}/wallets/{division}/transactions/',

@@ -71,7 +71,6 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
         $this->esi_request_container = $this->getBaseEsiReuestContainer();
 
         try {
-
             if ($this instanceof HasRequiredScopeInterface) {
                 $this->esi_request_container->refresh_token = $this->getRefreshToken();
             }
@@ -87,7 +86,6 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
             if ($this instanceof HasQueryStringInterface) {
                 $this->esi_request_container->query_string = $this->getQueryString();
             }
-
         } catch (Exception $exception) {
             // fail job
             $this->fail($exception);

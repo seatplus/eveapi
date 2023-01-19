@@ -36,7 +36,6 @@ class WalletTransactionFactory extends Factory
 
     public function definition()
     {
-
         return [
             'transaction_id' => $this->faker->unique()->randomNumber + 1,
             'wallet_transactionable_id' => $this->faker->numberBetween(90_000_000, 98_000_000),

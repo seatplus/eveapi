@@ -16,7 +16,6 @@ use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 uses(MockRetrieveEsiDataAction::class);
 
 beforeEach(function () {
-
     updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-wallet.read_corporation_wallets.v1'])->save();
 });
 

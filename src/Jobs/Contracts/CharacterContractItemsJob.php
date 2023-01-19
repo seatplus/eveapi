@@ -34,5 +34,4 @@ class CharacterContractItemsJob extends ContractItemsJob
     }
 }
 {
-
 }

@@ -30,7 +30,6 @@ use Seatplus\Eveapi\Models\RefreshToken;
 
 class EsiRequestContainer
 {
-
     public function __construct(
         public string $method,
         public string $version,
@@ -40,11 +39,8 @@ class EsiRequestContainer
         public array $path_values = [],
         public array $request_body = [],
         public array $query_parameters = [],
-    )
-    {
+    ) {
     }
-
-
 
     public function isPublic(): bool
     {

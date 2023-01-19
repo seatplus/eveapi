@@ -33,7 +33,6 @@ use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Structure;
 use Seatplus\Eveapi\Traits\HasPathValues;
@@ -50,7 +49,6 @@ class ResolveUniverseStructureByIdJob extends EsiBase implements HasPathValuesIn
         public int $character_id,
         public int $location_id
     ) {
-
         parent::__construct(
             method: 'get',
             endpoint: '/universe/structures/{structure_id}/',

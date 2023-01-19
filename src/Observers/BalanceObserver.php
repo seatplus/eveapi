@@ -52,7 +52,6 @@ class BalanceObserver
         $refresh_token = $find_corporation_refresh_token($balance->balanceable_id, head(config('eveapi.scopes.corporation.wallet')), ['Accountant', 'Junior_Accountant']);
 
         if ($refresh_token) {
-
             CorporationWalletJournalByDivisionJob::dispatch($balance->balanceable_id, $balance->division)->onQueue('high');
             CorporationWalletTransactionByDivisionJob::dispatch($balance->balanceable_id, $balance->division)->onQueue('high');
         }

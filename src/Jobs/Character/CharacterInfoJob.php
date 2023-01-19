@@ -38,9 +38,7 @@ class CharacterInfoJob extends EsiBase implements HasPathValuesInterface
 
     public function __construct(
         public int $character_id
-    )
-    {
-
+    ) {
         parent::__construct(
             method: 'get',
             endpoint: '/characters/{character_id}/',
@@ -68,7 +66,6 @@ class CharacterInfoJob extends EsiBase implements HasPathValuesInterface
      */
     public function middleware(): array
     {
-
         return [
             ...parent::middleware(),
             (new ThrottlesExceptionsWithRedis(80, 5))

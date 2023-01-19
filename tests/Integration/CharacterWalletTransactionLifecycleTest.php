@@ -57,4 +57,3 @@ test('creation of corporation wallet transaction dispatches jobs', function () {
     Queue::assertPushedOn('high', ResolveLocationJob::class);
     Queue::assertPushedOn('high', ResolveUniverseTypeByIdJob::class);
 });
-

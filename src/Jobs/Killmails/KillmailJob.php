@@ -46,8 +46,7 @@ class KillmailJob extends EsiBase implements HasPathValuesInterface
     public function __construct(
         private int $killmail_id,
         private string $killmail_hash
-    )
-    {
+    ) {
         parent::__construct(
             method: 'get',
             endpoint: '/killmails/{killmail_id}/{killmail_hash}/',

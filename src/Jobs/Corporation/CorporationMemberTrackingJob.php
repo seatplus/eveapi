@@ -40,12 +40,13 @@ use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
 class CorporationMemberTrackingJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, HasCorporationRoleInterface
 {
-    use HasPathValues, HasRequiredScopes, HasCorporationRole;
+    use HasPathValues;
+    use HasRequiredScopes;
+    use HasCorporationRole;
 
     public function __construct(
         public int $corporation_id
-    )
-    {
+    ) {
         parent::__construct(
             method: 'get',
             endpoint: '/corporations/{corporation_id}/membertracking/',

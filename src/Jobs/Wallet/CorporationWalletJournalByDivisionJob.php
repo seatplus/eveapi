@@ -45,10 +45,9 @@ class CorporationWalletJournalByDivisionJob extends EsiBase implements HasPathVa
     use HasPages;
 
     public function __construct(
-        public int $corporation_id, 
+        public int $corporation_id,
         private int $division
-    )
-    {
+    ) {
         parent::__construct(
             method: 'get',
             endpoint: '/corporations/{corporation_id}/wallets/{division}/journal/',

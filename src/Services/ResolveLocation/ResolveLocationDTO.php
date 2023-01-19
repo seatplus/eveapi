@@ -33,7 +33,6 @@ class ResolveLocationDTO
     public function __construct(
         public Location $location,
         public string $log_message
-    )
-    {
+    ) {
     }
 }

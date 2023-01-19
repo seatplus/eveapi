@@ -47,8 +47,7 @@ class CorporationWalletJournalJob implements ShouldQueue, ShouldBeUnique
 
     public function __construct(
         private int $corporation_id
-    )
-    {
+    ) {
     }
 
     /**

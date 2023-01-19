@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Queue;
-use Seatplus\Eveapi\Esi\Jobs\Character\CharacterRoleAction;
 use Seatplus\Eveapi\Jobs\Character\CharacterRoleJob;
 use Seatplus\Eveapi\Models\Character\CharacterRole;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;

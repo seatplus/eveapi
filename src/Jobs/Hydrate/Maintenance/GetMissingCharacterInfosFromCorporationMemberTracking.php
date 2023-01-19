@@ -42,7 +42,6 @@ class GetMissingCharacterInfosFromCorporationMemberTracking extends HydrateMaint
         $character_ids = CorporationMemberTracking::doesntHave('character')->pluck('character_id')->unique()->values();
 
         $jobs = $character_ids->map(function ($character_id) {
-
             return new CharacterInfoJob($character_id);
         });
 

@@ -42,7 +42,6 @@ class ResolveUniverseStationByIdJob extends EsiBase implements HasPathValuesInte
     public function __construct(
         public int $location_id
     ) {
-
         parent::__construct(
             method: 'get',
             endpoint: '/universe/stations/{station_id}/',

@@ -49,8 +49,7 @@ class CorporationContactLabelJob extends EsiBase implements HasPathValuesInterfa
 
     public function __construct(
         public int $corporation_id
-    )
-    {
+    ) {
         parent::__construct(
             method: 'get',
             endpoint: '/corporations/{corporation_id}/contacts/labels/',

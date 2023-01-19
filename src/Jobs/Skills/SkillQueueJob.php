@@ -41,8 +41,7 @@ class SkillQueueJob extends EsiBase implements HasPathValuesInterface, HasRequir
 
     public function __construct(
         public int $character_id
-    )
-    {
+    ) {
         parent::__construct(
             method: 'get',
             endpoint: '/characters/{character_id}/skillqueue/',
@@ -60,7 +59,7 @@ class SkillQueueJob extends EsiBase implements HasPathValuesInterface, HasRequir
     {
         return [
             'skill queue',
-            sprintf('character_id:%s',$this->character_id),
+            sprintf('character_id:%s', $this->character_id),
         ];
     }
 

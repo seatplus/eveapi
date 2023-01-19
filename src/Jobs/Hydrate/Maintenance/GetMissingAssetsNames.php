@@ -48,7 +48,6 @@ class GetMissingAssetsNames extends HydrateMaintenanceBase
             ->unique()
             ->whenNotEmpty(function ($collection) {
                 return $collection->each(function ($assetable_id) {
-
                     $this->batch()->add([
                         new CharacterAssetsNameJob($assetable_id),
                     ]);

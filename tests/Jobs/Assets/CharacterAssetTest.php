@@ -12,7 +12,6 @@ beforeEach(function () {
 
     $refresh_token = updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-assets.read_assets.v1']);
     $refresh_token->save();
-
 });
 
 /**

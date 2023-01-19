@@ -30,7 +30,7 @@ test('it returns client for an authenticated request', function () {
 
     $retrieve = new RetrieveEsiData();
 
-    $request_container= new EsiRequestContainer(
+    $request_container = new EsiRequestContainer(
         method: 'get',
         version: 'v4',
         endpoint: 'foo/bar',
@@ -60,7 +60,7 @@ it('updates outdated refresh_tokens', function () {
 
     $retrieve = new RetrieveEsiData();
 
-    $request_container= new EsiRequestContainer(
+    $request_container = new EsiRequestContainer(
         method: 'get',
         version: 'v4',
         endpoint: 'foo/bar',

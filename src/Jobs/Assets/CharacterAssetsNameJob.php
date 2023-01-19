@@ -54,8 +54,7 @@ class CharacterAssetsNameJob extends EsiBase implements HasPathValuesInterface, 
 
     public function __construct(
         public int $character_id,
-    )
-    {
+    ) {
         parent::__construct(
             method: 'post',
             endpoint: '/characters/{character_id}/assets/names/',

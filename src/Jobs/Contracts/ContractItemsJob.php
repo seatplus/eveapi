@@ -39,7 +39,8 @@ use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
 class ContractItemsJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, ShouldBeUnique
 {
-    use HasPathValues, HasRequiredScopes;
+    use HasPathValues;
+    use HasRequiredScopes;
 
     public function middleware(): array
     {
