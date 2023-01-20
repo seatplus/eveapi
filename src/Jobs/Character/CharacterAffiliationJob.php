@@ -128,7 +128,6 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
 
         // try to get the character affiliations from the esi endpoint
         try {
-
             $response = $this->retrieve();
 
             collect($response)
@@ -143,14 +142,10 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
                         'last_pulled' => $timestamp,
                     ]
                 ));
-
-
         } catch (RequestFailedException $exception) {
-
             // if the request fails, we perform a binary search to find the character ids that are not valid
             // if the request fails and the character ids are less than 2, we can assume that the character id is invalid
             if (count($character_ids) === 1) {
-
                 // dispatch a new character_info job to update the character info if it is member of doomheim
                 CharacterInfoJob::dispatch($character_ids[0])->onQueue('low');
 
@@ -161,6 +156,7 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
                 $invalid_character_ids[] = $character_ids[0];
                 // cache the array
                 Cache::put('invalid_character_ids', $invalid_character_ids, 60 * 24);
+
                 return;
             }
 
@@ -172,7 +168,6 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
             $this->updateOrCreateCharacterAffiliations($first_half);
             $this->updateOrCreateCharacterAffiliations($second_half);
         }
-
     }
 
     /**

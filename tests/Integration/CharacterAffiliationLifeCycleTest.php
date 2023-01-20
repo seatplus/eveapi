@@ -163,7 +163,6 @@ it('updates cached ids', function () {
 });
 
 it('applies binary search and chaches it if one id is invalid', function () {
-
     Queue::fake();
 
     CharacterAffiliation::query()->delete();
@@ -206,5 +205,4 @@ it('applies binary search and chaches it if one id is invalid', function () {
         ->and(CharacterAffiliation::all())->toHaveCount(1)
         ->and(CharacterAffiliation::first())->character_id
         ->toBe($mock_data->character_id);
-
 });

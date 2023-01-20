@@ -96,7 +96,6 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
 
     private function handleException(RequestFailedException $exception)
     {
-
         // if access is forbidden
         if ($exception->getOriginalException()?->getResponse()?->getReasonPhrase() === 'Forbidden') {
             match ($this->esi_request_container->endpoint) {
