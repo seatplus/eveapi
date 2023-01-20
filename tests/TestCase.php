@@ -87,4 +87,10 @@ abstract class TestCase extends OrchestraTestCase
 
         //$app['router']->aliasMiddleware('auth', Authenticate::class);
     }
+
+    protected function tearDown(): void
+    {
+        \Mockery::close();
+        parent::tearDown();
+    }
 }
