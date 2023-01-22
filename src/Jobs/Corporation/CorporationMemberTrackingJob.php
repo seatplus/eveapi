@@ -50,7 +50,7 @@ class CorporationMemberTrackingJob extends EsiBase implements HasPathValuesInter
         parent::__construct(
             method: 'get',
             endpoint: '/corporations/{corporation_id}/membertracking/',
-            version: 'v1',
+            version: 'v2',
         );
 
         $this->setRequiredScope('esi-corporations.track_members.v1');

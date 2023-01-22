@@ -42,7 +42,7 @@ class AllianceInfoJob extends EsiBase implements HasPathValuesInterface
         parent::__construct(
             method: 'get',
             endpoint: '/alliances/{alliance_id}/',
-            version: 'v3',
+            version: 'v4',
         );
 
 

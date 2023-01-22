@@ -50,7 +50,7 @@ class CorporationDivisionsJob extends EsiBase implements HasPathValuesInterface,
         parent::__construct(
             method: 'get',
             endpoint: '/corporations/{corporation_id}/divisions/',
-            version: 'v1',
+            version: 'v2',
         );
 
         $this->setPathValues([
