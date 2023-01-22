@@ -286,7 +286,7 @@ class EveapiServiceProvider extends ServiceProvider
     {
         $this->commands([
             ClearCache::class,
-            CheckJobsCommand::class
+            CheckJobsCommand::class,
         ]);
     }
 }

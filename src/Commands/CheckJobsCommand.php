@@ -37,7 +37,6 @@ use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use function Termwind\render;
 
-
 class CheckJobsCommand extends Command
 {
     /**
@@ -77,10 +76,8 @@ class CheckJobsCommand extends Command
 
     public function handle()
     {
-
         $this->jobs
             ->map(function ($job) {
-
                 $assertions = $this->checkJob($job);
 
                 $has_errors = $assertions->contains(fn ($assertion) => $assertion['status'] === 'error');
@@ -95,19 +92,14 @@ class CheckJobsCommand extends Command
             // sort by status, pass first, warning second, error last
             ->sortBy(fn ($job) => $job['status'] === 'error' ? 2 : ($job['status'] === 'warning' ? 1 : 0))
             ->each(function ($job) {
-
                 // check if any assertion failed
                 if ($job['status'] === 'error') {
-
                     //$this->writeAssertionOutput(get_class($job), 'px-2', '<span class="px-2 bg-red text-gray-400 uppercase">error</span>');
-                    $this->writeAssertionHeader($job['class'],'px-2 bg-red text-gray-400 uppercase', 'error');
+                    $this->writeAssertionHeader($job['class'], 'px-2 bg-red text-gray-400 uppercase', 'error');
                 } elseif ($job['status'] === 'warning') {
-
-                    $this->writeAssertionHeader($job['class'],'px-2 bg-yellow text-gray-400 uppercase', 'warning');
-
+                    $this->writeAssertionHeader($job['class'], 'px-2 bg-yellow text-gray-400 uppercase', 'warning');
                 } else {
-
-                    $this->writeAssertionHeader($job['class'],'px-2 bg-green text-black uppercase', 'pass');
+                    $this->writeAssertionHeader($job['class'], 'px-2 bg-green text-black uppercase', 'pass');
                 }
 
                 $job['assertions']->each(function ($assertion) {
@@ -120,17 +112,14 @@ class CheckJobsCommand extends Command
 
                 $this->writeNewLine();
             });
-
     }
 
     private function getAllJobs() : Collection
     {
-
         $jobs = glob(__DIR__ . '/../Jobs/*/*.php');
 
         return collect($jobs)
             ->map(function ($job) {
-
                 $job = str_replace(__DIR__ . '/../Jobs/', '', $job);
                 $job = str_replace('.php', '', $job);
                 $job = str_replace('/', '\\', $job);
@@ -141,12 +130,10 @@ class CheckJobsCommand extends Command
             ->filter(fn ($job) => is_subclass_of($job, EsiBase::class))
             // filter out abstract classes
             ->filter(fn ($job) => ! (new \ReflectionClass($job))->isAbstract())
-            ->map(function($job) {
-
+            ->map(function ($job) {
                 $constructor_parameters = (new \ReflectionClass($job))->getConstructor()?->getParameters();
                 $constructor_parameters = collect($constructor_parameters)
                     ->map(function (\ReflectionParameter $parameter) use ($job) {
-
                         $type = 'unknown';
 
                         if ($parameter->getType() instanceof \ReflectionUnionType) {
@@ -160,7 +147,7 @@ class CheckJobsCommand extends Command
                             $type = $parameter->getType()->getName();
                         }
 
-                        return match($type) {
+                        return match ($type) {
                             'int' => $this->faker->numberBetween(1, 1000000),
                             'string' => $this->faker->word,
                             default => throw new Exception('Unknown type'),
@@ -173,12 +160,11 @@ class CheckJobsCommand extends Command
 
     private function checkJob($job): Collection
     {
-         return collect([])
-             ->push($this->checkVersion($job))
-             ->push($this->checkRequiredScope($job))
-             ->push($this->checkPathValues($job))
-             ->push($this->checkMiddleware($job));
-
+        return collect([])
+            ->push($this->checkVersion($job))
+            ->push($this->checkRequiredScope($job))
+            ->push($this->checkPathValues($job))
+            ->push($this->checkMiddleware($job));
     }
 
     private function checkVersion(EsiBase $job): array
@@ -190,8 +176,7 @@ class CheckJobsCommand extends Command
 
         $alternative_versions = $this->esi_paths[$job->getEndpoint()][$job->getMethod()]['x-alternate-versions'];
 
-        if(! in_array($version_string, $alternative_versions)) {
-
+        if (! in_array($version_string, $alternative_versions)) {
             $available_versions = implode(', ', $alternative_versions);
 
             return [
@@ -202,7 +187,7 @@ class CheckJobsCommand extends Command
 
         // check if version+1 is available
         $next_version = $version + 1;
-        if(in_array('v' . $next_version, $alternative_versions)) {
+        if (in_array('v' . $next_version, $alternative_versions)) {
             return [
                 'status' => 'warning',
                 'message' => "new version is available. Using $version_string but v$next_version is available",
@@ -213,7 +198,6 @@ class CheckJobsCommand extends Command
             'status' => 'success',
             'message' => 'version is up to date',
         ];
-
     }
 
     private function checkRequiredScope(EsiBase $job): array
@@ -221,85 +205,77 @@ class CheckJobsCommand extends Command
         // check if esi-path of job has security parameter
         $security = $this->esi_paths[$job->getEndpoint()][$job->getMethod()]['security'] ?? null;
 
-        if(is_null($security)) {
-
-            if($job instanceof HasRequiredScopeInterface) {
+        if (is_null($security)) {
+            if ($job instanceof HasRequiredScopeInterface) {
                 return $this->assertionResult('error', 'job requires authentication but endpoint does not have security parameter');
             }
 
-            return $this->assertionResult('success','no security scope required');
+            return $this->assertionResult('success', 'no security scope required');
         }
 
         // now we know the endpoint requires authentication we must check if the job sets the required scope correctly
 
         // check if job implements HasRequiredScopeInterface
-        if(! $job instanceof HasRequiredScopeInterface) {
+        if (! $job instanceof HasRequiredScopeInterface) {
             return $this->assertionResult('error', 'job requires authentication but does not implement HasRequiredScopeInterface');
         }
 
         $job_required_scope = $job->getRequiredScope();
         $endpoint_required_scope = $security[0]['evesso'][0];
 
-        if($job_required_scope !== $endpoint_required_scope) {
+        if ($job_required_scope !== $endpoint_required_scope) {
             return $this->assertionResult('error', "job requires scope $job_required_scope but endpoint requires $endpoint_required_scope");
         }
 
-        return $this->assertionResult('success','security scope required');
-
+        return $this->assertionResult('success', 'security scope required');
     }
 
     private function checkPathValues(EsiBase $job): array
     {
-
-        if(! $job instanceof HasPathValuesInterface) {
-
+        if (! $job instanceof HasPathValuesInterface) {
             // Check if any mustache syntax is used in path
-            if(str_contains($job->getEndpoint(), '{')) {
+            if (str_contains($job->getEndpoint(), '{')) {
                 return $this->assertionResult('error', 'path values are required but job does not implement HasPathValuesInterface');
             }
 
-            return $this->assertionResult('success','no path values required');
+            return $this->assertionResult('success', 'no path values required');
         }
 
         $path_values = $job->getPathValues();
 
-        if(empty($path_values)) {
-            return $this->assertionResult('error','no path values set even though job requires path values');
+        if (empty($path_values)) {
+            return $this->assertionResult('error', 'no path values set even though job requires path values');
         }
 
         $path = $job->getEndpoint();
 
-        foreach($path_values as $key => $value) {
-            if(! str_contains($path, $key)) {
+        foreach ($path_values as $key => $value) {
+            if (! str_contains($path, $key)) {
                 return $this->assertionResult('error', "path value $key is not used in path");
             }
         }
 
-        return $this->assertionResult('success','path values all set');
+        return $this->assertionResult('success', 'path values all set');
     }
 
     private function checkMiddleware(EsiBase $job): array
     {
-
         $used_middlewares = collect($job->middleware());
 
         // first we check if ThrottlesExceptionsWithRedis Middleware is used
-        if(! $used_middlewares->first(fn ($middleware) => get_class($middleware) === ThrottlesExceptionsWithRedis::class)) {
+        if (! $used_middlewares->first(fn ($middleware) => get_class($middleware) === ThrottlesExceptionsWithRedis::class)) {
             return $this->assertionResult('error', 'ThrottlesExceptionsWithRedis Middleware is not used');
         }
 
         // now check all jobs that require authentication implementing HasRequiredScopeMiddleware
-        if($job instanceof HasRequiredScopeInterface) {
-
+        if ($job instanceof HasRequiredScopeInterface) {
             // check if the required scope middleware is used
-            if (!$used_middlewares->first(fn($middleware) => get_class($middleware) === HasRequiredScopeMiddleware::class)) {
+            if (! $used_middlewares->first(fn ($middleware) => get_class($middleware) === HasRequiredScopeMiddleware::class)) {
                 return $this->assertionResult('error', 'HasRequiredScopeMiddleware is not used even though job requires authentication');
             }
         }
 
-        return $this->assertionResult('success','All required middlewares are used');
-
-
+        return $this->assertionResult('success', 'All required middlewares are used');
     }
 
     private function assertionResult(string $status, string $message): array
@@ -327,7 +303,6 @@ class CheckJobsCommand extends Command
 
     private function writeAssertionOutput(string $message, string $symbol_class, string $symbol): void
     {
-
         $output = sprintf('<div class="text-gray-800"><span class="%s">%s</span>%s</div>', $symbol_class, $symbol, $message);
 
         render($output);
@@ -335,7 +310,6 @@ class CheckJobsCommand extends Command
 
     private function writeAssertionHeader(string $job, string $status_class, string $status): void
     {
-
         $output = sprintf('<div><div class="px-2"><span class="%s">%s</span></div>%s</div>', $status_class, $status, $job);
 
         render($output);
@@ -345,6 +319,4 @@ class CheckJobsCommand extends Command
     {
         render(PHP_EOL);
     }
-
-
 }

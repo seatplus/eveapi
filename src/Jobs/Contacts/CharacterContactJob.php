@@ -26,7 +26,6 @@
 
 namespace Seatplus\Eveapi\Jobs\Contacts;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;

@@ -27,7 +27,6 @@
 namespace Seatplus\Eveapi\Jobs\Killmails;
 
 use Exception;
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;

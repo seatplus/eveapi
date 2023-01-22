@@ -5,7 +5,6 @@ use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 it('passes the middleware if HasRequiredScopeInterface is not implemented', function () {
-
     $middleware = new HasRequiredScopeMiddleware();
 
     $job = Mockery::mock(EsiBase::class);
@@ -21,7 +20,6 @@ it('passes the middleware if HasRequiredScopeInterface is not implemented', func
 });
 
 it('fails the job if required scope is not set', function () {
-
     [$this->middleware, $this->job, $this->next] = prepareJobMiddleware();
 
     $this->job->shouldReceive('getRequiredScope')->andThrow(new Exception);
@@ -31,7 +29,6 @@ it('fails the job if required scope is not set', function () {
 });
 
 it('fails the job if refresh_token for required scope is not found', function () {
-
     [$this->middleware, $this->job, $this->next] = prepareJobMiddleware();
 
     $this->job->shouldReceive('getRequiredScope')->andReturn('some_scope');
@@ -40,7 +37,6 @@ it('fails the job if refresh_token for required scope is not found', function ()
 });
 
 it('passes the job if refresh_token for required scope is found', function () {
-
     [$this->middleware, $this->job, $this->next] = prepareJobMiddleware(false);
 
     $this->job->shouldReceive('getRefreshToken')->andReturn(RefreshToken::factory()->make());
@@ -48,7 +44,8 @@ it('passes the job if refresh_token for required scope is found', function () {
     $this->middleware->handle($this->job, $this->next);
 });
 
-function prepareJobMiddleware(bool $should_fail=true) {
+function prepareJobMiddleware(bool $should_fail = true)
+{
     $middleware = new HasRequiredScopeMiddleware();
 
     $job = Mockery::mock(EsiBase::class, \Seatplus\Eveapi\Esi\HasRequiredScopeInterface::class);

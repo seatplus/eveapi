@@ -26,7 +26,6 @@
 
 namespace Seatplus\Eveapi\Jobs\Character;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;

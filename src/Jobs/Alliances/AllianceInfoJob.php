@@ -26,7 +26,6 @@
 
 namespace Seatplus\Eveapi\Jobs\Alliances;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;

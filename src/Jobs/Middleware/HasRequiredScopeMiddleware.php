@@ -41,7 +41,6 @@ class HasRequiredScopeMiddleware
      */
     public function handle(EsiBase $job, $next)
     {
-
         // if job does not extend HasRequiredScopeInterface, continue
         if (! $job instanceof HasRequiredScopeInterface) {
             return $next($job);
@@ -49,14 +48,11 @@ class HasRequiredScopeMiddleware
 
         // try to get refresh token
         try {
-
             // getting the refresh token from the job checks first the scopes and then the token
             $job->getRefreshToken();
 
             return $next($job);
-
         } catch (Exception $exception) {
-
             // if the refresh token is not found, the getRefreshToken method throws an exception,
             // use the fail method to mark the job as failed with the exception
             $job->fail($exception);

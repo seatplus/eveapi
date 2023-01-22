@@ -93,7 +93,7 @@ abstract class EsiBase extends RetrieveFromEsiBase implements ShouldQueue, BaseJ
         return [
             (new ThrottlesExceptionsWithRedis(80, 5))
                 ->by('esiratelimit')
-                ->backoff(5)
+                ->backoff(5),
         ];
     }
 
