@@ -26,7 +26,6 @@
 
 namespace Seatplus\Eveapi\Jobs\Character;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Character\CorporationHistory;
@@ -68,9 +67,7 @@ class CorporationHistoryJob extends EsiBase implements HasPathValuesInterface
     public function middleware(): array
     {
         return [
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
+            ...parent::middleware(),
         ];
     }
 

@@ -26,7 +26,6 @@
 
 namespace Seatplus\Eveapi\Jobs\Universe;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Universe\Group;
@@ -60,9 +59,6 @@ class ResolveUniverseGroupByIdJob extends EsiBase implements HasPathValuesInterf
     {
         return [
             ...parent::middleware(),
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
         ];
     }
 

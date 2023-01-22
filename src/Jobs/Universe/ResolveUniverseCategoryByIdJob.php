@@ -26,7 +26,6 @@
 
 namespace Seatplus\Eveapi\Jobs\Universe;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Universe\Category;
@@ -49,20 +48,6 @@ class ResolveUniverseCategoryByIdJob extends EsiBase implements HasPathValuesInt
         $this->setPathValues([
             'category_id' => $category_id,
         ]);
-    }
-
-    /**
-     * Get the middleware the job should pass through.
-     *
-     * @return array
-     */
-    public function middleware(): array
-    {
-        return [
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
-        ];
     }
 
     public function tags(): array

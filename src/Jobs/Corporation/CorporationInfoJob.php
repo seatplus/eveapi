@@ -26,7 +26,6 @@
 
 namespace Seatplus\Eveapi\Jobs\Corporation;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
@@ -48,20 +47,6 @@ class CorporationInfoJob extends EsiBase implements HasPathValuesInterface
         $this->setPathValues([
             'corporation_id' => $this->corporation_id,
         ]);
-    }
-
-    /**
-     * Get the middleware the job should pass through.
-     *
-     * @return array
-     */
-    public function middleware(): array
-    {
-        return [
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
-        ];
     }
 
     public function tags(): array

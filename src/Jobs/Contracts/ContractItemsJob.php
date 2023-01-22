@@ -27,17 +27,16 @@
 namespace Seatplus\Eveapi\Jobs\Contracts;
 
 use Illuminate\Contracts\Queue\ShouldBeUnique;
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
-use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
+
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Models\Contracts\ContractItem;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class ContractItemsJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, ShouldBeUnique
+abstract class ContractItemsJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, ShouldBeUnique
 {
     use HasPathValues;
     use HasRequiredScopes;
@@ -45,12 +44,8 @@ class ContractItemsJob extends EsiBase implements HasPathValuesInterface, HasReq
     public function middleware(): array
     {
         return [
-            ...parent::middleware(),
-            new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
+            ...parent::middleware(),
         ];
     }
 

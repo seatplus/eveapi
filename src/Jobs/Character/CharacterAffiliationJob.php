@@ -26,7 +26,6 @@
 
 namespace Seatplus\Eveapi\Jobs\Character;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
@@ -71,9 +70,6 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
     {
         return [
             ...parent::middleware(),
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
         ];
     }
 

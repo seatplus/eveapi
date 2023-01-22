@@ -26,7 +26,6 @@
 
 namespace Seatplus\Eveapi\Jobs\Alliances;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
@@ -42,7 +41,7 @@ class AllianceInfoJob extends EsiBase implements HasPathValuesInterface
         parent::__construct(
             method: 'get',
             endpoint: '/alliances/{alliance_id}/',
-            version: 'v3',
+            version: 'v4',
         );
 
 
@@ -60,9 +59,6 @@ class AllianceInfoJob extends EsiBase implements HasPathValuesInterface
     {
         return [
             ...parent::middleware(),
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
         ];
     }
 

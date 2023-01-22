@@ -26,12 +26,11 @@
 
 namespace Seatplus\Eveapi\Jobs\Corporation;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
-use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
+
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Traits\HasCorporationRole;
@@ -50,7 +49,7 @@ class CorporationMemberTrackingJob extends EsiBase implements HasPathValuesInter
         parent::__construct(
             method: 'get',
             endpoint: '/corporations/{corporation_id}/membertracking/',
-            version: 'v1',
+            version: 'v2',
         );
 
         $this->setRequiredScope('esi-corporations.track_members.v1');
@@ -70,11 +69,8 @@ class CorporationMemberTrackingJob extends EsiBase implements HasPathValuesInter
     public function middleware(): array
     {
         return [
-            new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
+            ...parent::middleware(),
         ];
     }
 

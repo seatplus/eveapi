@@ -26,12 +26,11 @@
 
 namespace Seatplus\Eveapi\Jobs\Corporation;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
-use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
+
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Models\Corporation\CorporationDivision;
 use Seatplus\Eveapi\Traits\HasCorporationRole;
@@ -50,7 +49,7 @@ class CorporationDivisionsJob extends EsiBase implements HasPathValuesInterface,
         parent::__construct(
             method: 'get',
             endpoint: '/corporations/{corporation_id}/divisions/',
-            version: 'v1',
+            version: 'v2',
         );
 
         $this->setPathValues([
@@ -70,12 +69,8 @@ class CorporationDivisionsJob extends EsiBase implements HasPathValuesInterface,
     public function middleware(): array
     {
         return [
-            ...parent::middleware(),
-            new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
+            ...parent::middleware(),
         ];
     }
 

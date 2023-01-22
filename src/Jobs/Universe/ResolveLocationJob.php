@@ -34,7 +34,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Services\ResolveLocation\ResolveLocationDTO;
@@ -55,13 +54,6 @@ class ResolveLocationJob implements ShouldQueue, ShouldBeUnique
      * @var int
      */
     public $tries = 1;
-
-    public function middleware(): array
-    {
-        return [
-            new HasRefreshTokenMiddleware,
-        ];
-    }
 
     /**
      * The number of seconds after which the job's unique lock will be released.
@@ -102,6 +94,7 @@ class ResolveLocationJob implements ShouldQueue, ShouldBeUnique
 
     public function handle(): void
     {
+        /** @noinspection PhpParamsInspection */
         $payload = new ResolveLocationDTO(
             location: Location::with('locatable')->findOrNew($this->location_id),
             log_message: '',

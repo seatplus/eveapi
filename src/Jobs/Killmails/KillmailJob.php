@@ -27,7 +27,6 @@
 namespace Seatplus\Eveapi\Jobs\Killmails;
 
 use Exception;
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -70,9 +69,7 @@ class KillmailJob extends EsiBase implements HasPathValuesInterface
     public function middleware(): array
     {
         return [
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
+            ...parent::middleware(),
         ];
     }
 
