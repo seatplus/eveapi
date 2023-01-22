@@ -34,6 +34,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Horizon\Horizon;
+use Seatplus\Eveapi\Commands\CheckJobsCommand;
 use Seatplus\Eveapi\Commands\ClearCache;
 use Seatplus\Eveapi\Events\RefreshTokenCreated;
 use Seatplus\Eveapi\Events\UniverseConstellationCreated;
@@ -285,6 +286,7 @@ class EveapiServiceProvider extends ServiceProvider
     {
         $this->commands([
             ClearCache::class,
+            CheckJobsCommand::class
         ]);
     }
 }
