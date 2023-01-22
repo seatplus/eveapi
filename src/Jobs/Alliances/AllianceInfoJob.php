@@ -60,9 +60,6 @@ class AllianceInfoJob extends EsiBase implements HasPathValuesInterface
     {
         return [
             ...parent::middleware(),
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
         ];
     }
 

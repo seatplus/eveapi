@@ -30,7 +30,6 @@ use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
-use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Services\Wallet\ProcessWalletTransactionResponse;
@@ -70,11 +69,8 @@ class CorporationWalletTransactionByDivisionJob extends EsiBase implements HasPa
     public function middleware(): array
     {
         return [
-            new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
+            ...parent::middleware(),
         ];
     }
 

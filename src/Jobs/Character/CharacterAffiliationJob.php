@@ -71,9 +71,6 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
     {
         return [
             ...parent::middleware(),
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
         ];
     }
 

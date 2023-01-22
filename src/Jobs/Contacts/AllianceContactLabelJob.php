@@ -31,7 +31,7 @@ use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
-use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
+
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Services\Contacts\ProcessContactLabelsResponse;
@@ -73,12 +73,8 @@ class AllianceContactLabelJob extends EsiBase implements HasPathValuesInterface,
     public function middleware(): array
     {
         return [
-            ...parent::middleware(),
-            new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
+            ...parent::middleware(),
         ];
     }
 

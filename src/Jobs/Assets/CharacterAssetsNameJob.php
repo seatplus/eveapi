@@ -27,12 +27,10 @@
 namespace Seatplus\Eveapi\Jobs\Assets;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequestBodyInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
-use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Traits\HasPathValues;
@@ -76,12 +74,8 @@ class CharacterAssetsNameJob extends EsiBase implements HasPathValuesInterface, 
     public function middleware(): array
     {
         return [
-            ...parent::middleware(),
-            new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
+            ...parent::middleware(),
         ];
     }
 

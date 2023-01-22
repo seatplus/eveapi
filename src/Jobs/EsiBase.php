@@ -34,6 +34,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\MaxAttemptsExceededException;
+use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Esi\RetrieveFromEsiBase;
 use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
@@ -90,7 +91,9 @@ abstract class EsiBase extends RetrieveFromEsiBase implements ShouldQueue, BaseJ
     public function middleware(): array
     {
         return [
-            // TODO Add ESI Rate Limiting Middleware
+            (new ThrottlesExceptionsWithRedis(80, 5))
+                ->by('esiratelimit')
+                ->backoff(5)
         ];
     }
 

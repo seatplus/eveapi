@@ -30,6 +30,7 @@ use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
+use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Skills\Skill;
 use Seatplus\Eveapi\Traits\HasPathValues;
@@ -67,9 +68,8 @@ class SkillsJob extends EsiBase implements HasPathValuesInterface, HasRequiredSc
     public function middleware(): array
     {
         return [
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
+            new HasRequiredScopeMiddleware,
+            ...parent::middleware(),
         ];
     }
 

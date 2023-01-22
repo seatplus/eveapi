@@ -50,20 +50,6 @@ class ResolveUniverseConstellationByConstellationIdJob extends EsiBase implement
         ]);
     }
 
-    /**
-     * Get the middleware the job should pass through.
-     *
-     * @return array
-     */
-    public function middleware(): array
-    {
-        return [
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
-        ];
-    }
-
     public function tags(): array
     {
         return [

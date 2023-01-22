@@ -58,9 +58,7 @@ class ResolveUniverseRegionByRegionIdJob extends EsiBase implements HasPathValue
     public function middleware(): array
     {
         return [
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
+            ...parent::middleware(),
         ];
     }
 
