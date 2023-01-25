@@ -308,7 +308,6 @@ class CheckJobsCommand extends Command
         // check if job has all required roles set
         foreach ($required_roles as $required_role) {
             if (! in_array($required_role, $job_required_roles)) {
-
                 $required_roles_string = implode(', ', $required_roles);
 
                 return $this->assertionResult('error', "job requires corporate roles ($required_roles_string) but $required_role is not set");
@@ -316,18 +315,15 @@ class CheckJobsCommand extends Command
         }
 
         return $this->assertionResult('success', 'all required corporate roles are set');
-
     }
 
     private function checkIsCheckingCache(EsiBase $job): array
     {
-
         $cached_seconds = $this->esi_paths[$job->getEndpoint()][$job->getMethod()]['x-cached-seconds'] ?? null;
         $has_cached_seconds = ! is_null($cached_seconds);
 
         // if method is post and has cached seconds, return warning
         if ($job->getMethod() === 'post' && $has_cached_seconds) {
-
             // if job is CharacterAffiliationJob, return success
             if (get_class($job) === CharacterAffiliationJob::class) {
                 return $this->assertionResult('success', 'CharacterAffiliationJob is a post request but has cached seconds');
@@ -363,7 +359,6 @@ class CheckJobsCommand extends Command
         }
 
         return $this->assertionResult('success', 'job checks if response is cached');
-
     }
 
     private function assertionResult(string $status, string $message): array

@@ -41,7 +41,10 @@ use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
 class CorporationWalletJournalByDivisionJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, HasCorporationRoleInterface
 {
-    use HasPathValues, HasRequiredScopes, HasPages, HasCorporationRole;
+    use HasPathValues;
+    use HasRequiredScopes;
+    use HasPages;
+    use HasCorporationRole;
 
     public function __construct(
         public int $corporation_id,

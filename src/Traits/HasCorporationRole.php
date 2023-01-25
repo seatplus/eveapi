@@ -13,8 +13,7 @@ trait HasCorporationRole
 
     public function setCorporationRoles(string|array $roles): void
     {
-
-        if(is_string($roles)) {
+        if (is_string($roles)) {
             $roles = [$roles];
         }
 
