@@ -75,10 +75,6 @@ class ResolveUniverseTypeByIdJob extends EsiBase implements HasPathValuesInterfa
     {
         $response = $this->retrieve();
 
-        if ($response->isCachedLoad()) {
-            return;
-        }
-
         Type::firstOrCreate(
             ['type_id' => $response->type_id],
             [

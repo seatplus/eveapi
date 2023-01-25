@@ -78,10 +78,6 @@ class ResolveUniverseRegionByRegionIdJob extends EsiBase implements HasPathValue
     {
         $response = $this->retrieve();
 
-        if ($response->isCachedLoad()) {
-            return;
-        }
-
         Region::firstOrCreate(
             ['region_id' => $response->region_id],
             [

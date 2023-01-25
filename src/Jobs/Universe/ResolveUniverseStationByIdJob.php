@@ -78,10 +78,6 @@ class ResolveUniverseStationByIdJob extends EsiBase implements HasPathValuesInte
 
         $result = $this->retrieve();
 
-        if ($result->isCachedLoad()) {
-            return;
-        }
-
         Station::updateOrCreate([
             'station_id' => $this->location_id,
         ], [
