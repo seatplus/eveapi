@@ -31,6 +31,7 @@ use Illuminate\Console\Command;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
+use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -164,7 +165,8 @@ class CheckJobsCommand extends Command
             ->push($this->checkVersion($job))
             ->push($this->checkRequiredScope($job))
             ->push($this->checkPathValues($job))
-            ->push($this->checkMiddleware($job));
+            ->push($this->checkMiddleware($job))
+            ->push($this->checkCorporationRoles($job));
     }
 
     private function checkVersion(EsiBase $job): array
@@ -276,6 +278,41 @@ class CheckJobsCommand extends Command
         }
 
         return $this->assertionResult('success', 'All required middlewares are used');
+    }
+
+    private function checkCorporationRoles(EsiBase $job): array
+    {
+        $required_roles = $this->esi_paths[$job->getEndpoint()][$job->getMethod()]['x-required-roles'] ?? [];
+
+        // if no roles are required, return success
+        if (empty($required_roles)) {
+            return $this->assertionResult('success', 'no corporate roles required');
+        }
+
+        // check if job implements HasCorporationRolesInterface
+        if (! $job instanceof HasCorporationRoleInterface) {
+            return $this->assertionResult('error', 'job requires corporation roles but does not implement HasCorporationRoleInterface');
+        }
+
+        $job_required_roles = $job->getCorporationRoles();
+
+        // check if job has required roles set
+        if (empty($job_required_roles)) {
+            return $this->assertionResult('error', 'job requires corporation roles but does not set them');
+        }
+
+        // check if job has all required roles set
+        foreach ($required_roles as $required_role) {
+            if (! in_array($required_role, $job_required_roles)) {
+
+                $required_roles_string = implode(', ', $required_roles);
+
+                return $this->assertionResult('error', "job requires corporate roles ($required_roles_string) but $required_role is not set");
+            }
+        }
+
+        return $this->assertionResult('success', 'all required corporate roles are set');
+
     }
 
     private function assertionResult(string $status, string $message): array
