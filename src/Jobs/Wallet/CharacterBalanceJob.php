@@ -38,9 +38,7 @@ use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
 class CharacterBalanceJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
-    use HasPathValues;
-    use HasRequiredScopes;
-    use HasPages;
+    use HasPathValues, HasRequiredScopes, HasPages;
 
     public function __construct(public int $character_id)
     {
