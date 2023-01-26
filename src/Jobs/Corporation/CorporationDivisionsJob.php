@@ -58,7 +58,7 @@ class CorporationDivisionsJob extends EsiBase implements HasPathValuesInterface,
 
         $this->setRequiredScope('esi-corporations.read_divisions.v1');
 
-        $this->setCorporationRole('Director');
+        $this->setCorporationRoles('Director');
     }
 
     /**

@@ -63,10 +63,6 @@ class ResolveUniverseCategoryByIdJob extends EsiBase implements HasPathValuesInt
     {
         $response = $this->retrieve();
 
-        if ($response->isCachedLoad()) {
-            return;
-        }
-
         Category::firstOrCreate(
             [
                 'category_id' => $response->category_id,

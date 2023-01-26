@@ -133,7 +133,9 @@ class KillmailJob extends EsiBase implements HasPathValuesInterface
                 'destroyed' => (bool) data_get($item, 'quantity_destroyed'),
             ]);
 
-            if ($contents = data_get($item, 'items')) {
+            $contents = data_get($item, 'items');
+
+            if ($contents) {
                 $this->createKillmailItems($contents, $killmail_item->id);
             }
         });

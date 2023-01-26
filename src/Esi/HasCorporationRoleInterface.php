@@ -4,7 +4,7 @@ namespace Seatplus\Eveapi\Esi;
 
 interface HasCorporationRoleInterface
 {
-    public function getCorporationRole(): string;
+    public function getCorporationRoles(): array;
 
-    public function setCorporationRole(string $role): void;
+    public function setCorporationRoles(string|array $roles): void;
 }

@@ -80,16 +80,16 @@ trait HasRequiredScopes
 
     private function getCorporateRefreshToken(int $corporation_id): RefreshToken
     {
-        $role = [];
+        $roles = [];
 
         // if HasCorporationRoleInterface is implemented, get the role
-        if (method_exists($this, 'getCorporationRole')) {
-            $role = $this->getCorporationRole();
+        if (method_exists($this, 'getCorporationRoles')) {
+            $roles = $this->getCorporationRoles();
         }
 
         $invoke = new FindCorporationRefreshToken;
 
-        $refresh_token = $invoke($corporation_id, $this->getRequiredScope(), $role);
+        $refresh_token = $invoke($corporation_id, $this->getRequiredScope(), $roles);
 
         throw_unless($refresh_token, new Exception('Could not find refresh token for corporation_id'));
 

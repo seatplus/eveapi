@@ -79,10 +79,6 @@ class ResolveUniverseSystemBySystemIdJob extends EsiBase implements HasPathValue
     {
         $response = $this->retrieve();
 
-        if ($response->isCachedLoad()) {
-            return;
-        }
-
         System::firstOrCreate(
             ['system_id' => $response->system_id],
             [

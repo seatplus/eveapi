@@ -26,21 +26,24 @@
 
 namespace Seatplus\Eveapi\Jobs\Wallet;
 
+use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Wallet\Balance;
+use Seatplus\Eveapi\Traits\HasCorporationRole;
 use Seatplus\Eveapi\Traits\HasPages;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CorporationBalanceJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+class CorporationBalanceJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, HasCorporationRoleInterface
 {
     use HasPathValues;
     use HasRequiredScopes;
     use HasPages;
+    use HasCorporationRole;
 
     public function __construct(
         public int $corporation_id,
@@ -56,6 +59,8 @@ class CorporationBalanceJob extends EsiBase implements HasPathValuesInterface, H
         $this->setPathValues([
             'corporation_id' => $this->corporation_id,
         ]);
+
+        $this->setCorporationRoles(['Accountant', 'Junior_Accountant']);
     }
 
     /**

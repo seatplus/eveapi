@@ -90,6 +90,10 @@ class CharacterBalanceJob extends EsiBase implements HasPathValuesInterface, Has
     {
         $response = $this->retrieve($this->getPage());
 
+        if ($response->isCachedLoad()) {
+            return;
+        }
+
         Balance::updateOrCreate([
             'balanceable_id' => $this->character_id,
             'balanceable_type' => CharacterInfo::class,

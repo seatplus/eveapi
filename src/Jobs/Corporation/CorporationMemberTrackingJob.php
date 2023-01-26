@@ -54,7 +54,7 @@ class CorporationMemberTrackingJob extends EsiBase implements HasPathValuesInter
 
         $this->setRequiredScope('esi-corporations.track_members.v1');
 
-        $this->setCorporationRole('Director');
+        $this->setCorporationRoles('Director');
 
         $this->setPathValues([
             'corporation_id' => $this->corporation_id,

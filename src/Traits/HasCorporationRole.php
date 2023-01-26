@@ -4,15 +4,19 @@ namespace Seatplus\Eveapi\Traits;
 
 trait HasCorporationRole
 {
-    public string $corporation_role;
+    public array $corporation_roles;
 
-    public function getCorporationRole(): string
+    public function getCorporationRoles(): array
     {
-        return $this->corporation_role;
+        return $this->corporation_roles;
     }
 
-    public function setCorporationRole(string $role): void
+    public function setCorporationRoles(string|array $roles): void
     {
-        $this->corporation_role = $role;
+        if (is_string($roles)) {
+            $roles = [$roles];
+        }
+
+        $this->corporation_roles = $roles;
     }
 }

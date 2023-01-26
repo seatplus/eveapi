@@ -31,8 +31,12 @@ use Illuminate\Console\Command;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
+use ReflectionClass;
+use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
+use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
+use Seatplus\Eveapi\Jobs\Contracts\ContractItemsJob;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use function Termwind\render;
@@ -129,9 +133,9 @@ class CheckJobsCommand extends Command
             })
             ->filter(fn ($job) => is_subclass_of($job, EsiBase::class))
             // filter out abstract classes
-            ->filter(fn ($job) => ! (new \ReflectionClass($job))->isAbstract())
+            ->filter(fn ($job) => ! (new ReflectionClass($job))->isAbstract())
             ->map(function ($job) {
-                $constructor_parameters = (new \ReflectionClass($job))->getConstructor()?->getParameters();
+                $constructor_parameters = (new ReflectionClass($job))->getConstructor()?->getParameters();
                 $constructor_parameters = collect($constructor_parameters)
                     ->map(function (\ReflectionParameter $parameter) use ($job) {
                         $type = 'unknown';
@@ -164,7 +168,9 @@ class CheckJobsCommand extends Command
             ->push($this->checkVersion($job))
             ->push($this->checkRequiredScope($job))
             ->push($this->checkPathValues($job))
-            ->push($this->checkMiddleware($job));
+            ->push($this->checkMiddleware($job))
+            ->push($this->checkCorporationRoles($job))
+            ->push($this->checkIsCheckingCache($job));
     }
 
     private function checkVersion(EsiBase $job): array
@@ -276,6 +282,83 @@ class CheckJobsCommand extends Command
         }
 
         return $this->assertionResult('success', 'All required middlewares are used');
+    }
+
+    private function checkCorporationRoles(EsiBase $job): array
+    {
+        $required_roles = $this->esi_paths[$job->getEndpoint()][$job->getMethod()]['x-required-roles'] ?? [];
+
+        // if no roles are required, return success
+        if (empty($required_roles)) {
+            return $this->assertionResult('success', 'no corporate roles required');
+        }
+
+        // check if job implements HasCorporationRolesInterface
+        if (! $job instanceof HasCorporationRoleInterface) {
+            return $this->assertionResult('error', 'job requires corporation roles but does not implement HasCorporationRoleInterface');
+        }
+
+        $job_required_roles = $job->getCorporationRoles();
+
+        // check if job has required roles set
+        if (empty($job_required_roles)) {
+            return $this->assertionResult('error', 'job requires corporation roles but does not set them');
+        }
+
+        // check if job has all required roles set
+        foreach ($required_roles as $required_role) {
+            if (! in_array($required_role, $job_required_roles)) {
+                $required_roles_string = implode(', ', $required_roles);
+
+                return $this->assertionResult('error', "job requires corporate roles ($required_roles_string) but $required_role is not set");
+            }
+        }
+
+        return $this->assertionResult('success', 'all required corporate roles are set');
+    }
+
+    private function checkIsCheckingCache(EsiBase $job): array
+    {
+        $cached_seconds = $this->esi_paths[$job->getEndpoint()][$job->getMethod()]['x-cached-seconds'] ?? null;
+        $has_cached_seconds = ! is_null($cached_seconds);
+
+        // if method is post and has cached seconds, return warning
+        if ($job->getMethod() === 'post' && $has_cached_seconds) {
+            // if job is CharacterAffiliationJob, return success
+            if (get_class($job) === CharacterAffiliationJob::class) {
+                return $this->assertionResult('success', 'CharacterAffiliationJob is a post request but has cached seconds');
+            }
+
+            return $this->assertionResult('warning', 'job is a post request but has cached seconds');
+        }
+
+        // get filename of job class
+        $job_class = get_class($job);
+        $reflection_class = new ReflectionClass($job_class);
+        $job_filename = $reflection_class->getFileName();
+
+        // if job is extending ContractItemsJob
+        if (is_subclass_of($job_class, ContractItemsJob::class)) {
+            $reflection_class = new ReflectionClass(ContractItemsJob::class);
+            $job_filename = $reflection_class->getFileName();
+        }
+
+        // check if job isCachedLoad() is called somewhere in the job
+        $job_source = file_get_contents($job_filename);
+
+        $has_is_cached_load = str_contains($job_source, 'isCachedLoad()');
+
+        // if the endpoint is not cached but the job checks if the response is cached, return error
+        if (! $has_cached_seconds && $has_is_cached_load) {
+            return $this->assertionResult('error', 'job checks if response is cached but endpoint is not cached');
+        }
+
+        // if the endpoint is cached but the job does not check if the response is cached, return error
+        if ($has_cached_seconds && ! $has_is_cached_load) {
+            return $this->assertionResult('error', 'job does not check if response is cached but endpoint is cached');
+        }
+
+        return $this->assertionResult('success', 'job checks if response is cached');
     }
 
     private function assertionResult(string $status, string $message): array
