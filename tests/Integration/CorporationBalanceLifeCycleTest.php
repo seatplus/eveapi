@@ -16,7 +16,7 @@ use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 uses(MockRetrieveEsiDataAction::class);
 
 beforeEach(function () {
-    updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-wallet.read_corporation_wallets.v1'])->save();
+    Event::fakeFor(fn () => updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-wallet.read_corporation_wallets.v1'])->save());
 });
 
 it('runs the job', function () {
@@ -78,9 +78,9 @@ it('creates wallet journal entries', function () {
 
     expect($corporation->wallet_journals)->toHaveCount(0);
 
-    $mock_data = buildCorporationWalletJournaltEsiMockData();
+    $mock_data = buildCorporationWalletJournalEsiMockData();
 
-    CorporationWalletJournalByDivisionJob::dispatchSync(testCharacter()->corporation->corporation_id, $mock_data->first()->division);
+    (new CorporationWalletJournalByDivisionJob(testCharacter()->corporation->corporation_id, $mock_data->first()->division))->handle();
 
     $corporation = $corporation->refresh();
     expect($corporation->wallet_journals)->toHaveCount($mock_data->count());
@@ -100,7 +100,7 @@ it('creates wallet transaction entries', function () {
     // Prevent Observers to pickup any new jobs
     Event::fake();
 
-    CorporationWalletTransactionByDivisionJob::dispatchSync(testCharacter()->corporation->corporation_id, $mock_data->first()->division);
+    (new CorporationWalletTransactionByDivisionJob(testCharacter()->corporation->corporation_id, $mock_data->first()->division))->handle();
 
     $corporation = $corporation->refresh();
     expect($corporation->wallet_transactions)->toHaveCount($mock_data->count());
@@ -120,7 +120,7 @@ function buildCorpWalletEsiMockData()
     return $mock_data;
 }
 
-function buildCorporationWalletJournaltEsiMockData()
+function buildCorporationWalletJournalEsiMockData()
 {
     $mock_data = WalletJournal::factory()->count(7)->make([
         'wallet_journable_id' => testCharacter()->corporation->corporation_id,
