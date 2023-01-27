@@ -26,20 +26,17 @@
 
 namespace Seatplus\Eveapi\Jobs\Assets;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Support\Collection;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CharacterAssetJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
     use HasPathValues;
     use HasRequiredScopes;
@@ -49,20 +46,19 @@ class CharacterAssetJob extends NewEsiBase implements HasPathValuesInterface, Ha
     private int $page = 1;
 
     public function __construct(
-        public JobContainer $job_container
+        public int $character_id
     ) {
-        $this->setJobType('character');
-        parent::__construct($job_container);
-
-        $this->setMethod('get');
-        $this->setEndpoint('/characters/{character_id}/assets/');
-        $this->setVersion('v5');
-
-        $this->setPathValues([
-            'character_id' => $job_container->getCharacterId(),
-        ]);
+        parent::__construct(
+            method: 'get',
+            endpoint: '/characters/{character_id}/assets/',
+            version: 'v5',
+        );
 
         $this->setRequiredScope('esi-assets.read_assets.v1');
+
+        $this->setPathValues([
+            'character_id' => $character_id,
+        ]);
 
         $this->known_assets = collect();
     }
@@ -75,11 +71,8 @@ class CharacterAssetJob extends NewEsiBase implements HasPathValuesInterface, Ha
     public function middleware(): array
     {
         return [
-            new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
+            ...parent::middleware(),
         ];
     }
 
@@ -97,7 +90,7 @@ class CharacterAssetJob extends NewEsiBase implements HasPathValuesInterface, Ha
      *
      * @return void
      */
-    public function handle(): void
+    public function executeJob(): void
     {
         while (true) {
             $response = $this->retrieve($this->page);
@@ -110,7 +103,7 @@ class CharacterAssetJob extends NewEsiBase implements HasPathValuesInterface, Ha
             collect($response)->each(fn ($asset) => Asset::updateOrCreate([
                 'item_id' => $asset->item_id,
             ], [
-                'assetable_id' => $this->refresh_token->character_id,
+                'assetable_id' => $this->character_id,
                 'assetable_type' => CharacterInfo::class,
                 'is_blueprint_copy' => optional($asset)->is_blueprint_copy ?? false,
                 'is_singleton' => $asset->is_singleton,
@@ -140,7 +133,7 @@ class CharacterAssetJob extends NewEsiBase implements HasPathValuesInterface, Ha
     private function cleanup()
     {
         Asset::query()
-            ->where('assetable_id', $this->getCharacterId())
+            ->where('assetable_id', $this->character_id)
             ->whereNotIn('item_id', $this->known_assets->toArray())
             ->delete();
     }

@@ -26,7 +26,6 @@
 
 namespace Seatplus\Eveapi\Jobs\Hydrate\Maintenance;
 
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Mail\MailBodyJob;
 use Seatplus\Eveapi\Models\Mail\Mail;
 use Seatplus\Eveapi\Models\RefreshToken;
@@ -49,9 +48,7 @@ class GetMissingBodysFromMails extends HydrateMaintenanceBase
                     ->filter(fn (RefreshToken $token) => $token->hasScope('esi-mail.read_mail.v1'))
                     ->random();
 
-                $job_container = new JobContainer(['refresh_token' => $refresh_token]);
-
-                return new MailBodyJob($job_container, $mail_id);
+                return new MailBodyJob($refresh_token->character_id, $mail_id);
             });
 
         $this->batch()->add(

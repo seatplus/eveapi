@@ -26,29 +26,27 @@
 
 namespace Seatplus\Eveapi\Jobs\Alliances;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Traits\HasPathValues;
 
-class AllianceInfoJob extends NewEsiBase implements HasPathValuesInterface
+class AllianceInfoJob extends EsiBase implements HasPathValuesInterface
 {
     use HasPathValues;
 
     public function __construct(
-        public JobContainer $job_container
+        public int $alliance_id
     ) {
-        $this->setJobType('public');
-        parent::__construct($job_container);
+        parent::__construct(
+            method: 'get',
+            endpoint: '/alliances/{alliance_id}/',
+            version: 'v4',
+        );
 
-        $this->setMethod('get');
-        $this->setEndpoint('/alliances/{alliance_id}/');
-        $this->setVersion('v3');
 
         $this->setPathValues([
-            'alliance_id' => $job_container->getAllianceId(),
+            'alliance_id' => $this->alliance_id,
         ]);
     }
 
@@ -60,9 +58,7 @@ class AllianceInfoJob extends NewEsiBase implements HasPathValuesInterface
     public function middleware(): array
     {
         return [
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
+            ...parent::middleware(),
         ];
     }
 
@@ -70,7 +66,7 @@ class AllianceInfoJob extends NewEsiBase implements HasPathValuesInterface
     {
         return [
             'alliance',
-            'alliance_id: ' . $this->getAllianceId(),
+            'alliance_id: ' . $this->alliance_id,
             'info',
         ];
     }
@@ -79,13 +75,9 @@ class AllianceInfoJob extends NewEsiBase implements HasPathValuesInterface
      * Execute the job.
      *
      * @return void
-     * @throws \Seat\Eseye\Exceptions\EsiScopeAccessDeniedException
-     * @throws \Seat\Eseye\Exceptions\InvalidAuthenticationException
-     * @throws \Seat\Eseye\Exceptions\InvalidContainerDataException
-     * @throws \Seat\Eseye\Exceptions\RequestFailedException
-     * @throws \Seat\Eseye\Exceptions\UriDataMissingException
+     * @throws \Seatplus\EsiClient\Exceptions\RequestFailedException
      */
-    public function handle(): void
+    public function executeJob(): void
     {
         if ($this->batching() && $this->batch()->cancelled()) {
             // Determine if the batch has been cancelled...
@@ -99,7 +91,7 @@ class AllianceInfoJob extends NewEsiBase implements HasPathValuesInterface
             return;
         }
 
-        AllianceInfo::firstOrNew(['alliance_id' => $this->getAllianceId()])->fill([
+        AllianceInfo::firstOrNew(['alliance_id' => $this->alliance_id])->fill([
             'creator_corporation_id' => $response->creator_corporation_id,
             'creator_id' => $response->creator_id,
             'date_founded' => carbon($response->date_founded),

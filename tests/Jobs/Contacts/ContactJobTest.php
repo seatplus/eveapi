@@ -15,7 +15,7 @@ test('alliance contact job', function () {
     // Assert that no jobs were pushed...
     Queue::assertNothingPushed();
 
-    AllianceContactJob::dispatch()->onQueue('default');
+    AllianceContactJob::dispatch(testCharacter()->corporation->alliance->alliance_id)->onQueue('default');
 
     // Assert a job was pushed to a given queue...
     Queue::assertPushedOn('default', AllianceContactJob::class);
@@ -27,7 +27,7 @@ test('alliance contact label job', function () {
     // Assert that no jobs were pushed...
     Queue::assertNothingPushed();
 
-    AllianceContactLabelJob::dispatch()->onQueue('default');
+    AllianceContactLabelJob::dispatch(testCharacter()->corporation->alliance->alliance_id)->onQueue('default');
 
     // Assert a job was pushed to a given queue...
     Queue::assertPushedOn('default', AllianceContactLabelJob::class);
@@ -39,7 +39,7 @@ test('corporation contact job', function () {
     // Assert that no jobs were pushed...
     Queue::assertNothingPushed();
 
-    CorporationContactJob::dispatch()->onQueue('default');
+    CorporationContactJob::dispatch(testCharacter()->corporation->corporation_id)->onQueue('default');
 
     // Assert a job was pushed to a given queue...
     Queue::assertPushedOn('default', CorporationContactJob::class);
@@ -51,7 +51,7 @@ test('corporation contact label job', function () {
     // Assert that no jobs were pushed...
     Queue::assertNothingPushed();
 
-    CorporationContactLabelJob::dispatch()->onQueue('default');
+    CorporationContactLabelJob::dispatch(testCharacter()->corporation->corporation_id)->onQueue('default');
 
     // Assert a job was pushed to a given queue...
     Queue::assertPushedOn('default', CorporationContactLabelJob::class);
@@ -63,7 +63,7 @@ test('character contact job', function () {
     // Assert that no jobs were pushed...
     Queue::assertNothingPushed();
 
-    CharacterContactJob::dispatch()->onQueue('default');
+    CharacterContactJob::dispatch(testCharacter()->character_id)->onQueue('default');
 
     // Assert a job was pushed to a given queue...
     Queue::assertPushedOn('default', CharacterContactJob::class);
@@ -75,7 +75,7 @@ test('character contact label job', function () {
     // Assert that no jobs were pushed...
     Queue::assertNothingPushed();
 
-    CharacterContactLabelJob::dispatch()->onQueue('default');
+    CharacterContactLabelJob::dispatch(testCharacter()->character_id)->onQueue('default');
 
     // Assert a job was pushed to a given queue...
     Queue::assertPushedOn('default', CharacterContactLabelJob::class);

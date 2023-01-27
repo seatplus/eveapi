@@ -26,24 +26,24 @@
 
 namespace Seatplus\Eveapi\Jobs\Universe;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Universe\System;
 use Seatplus\Eveapi\Traits\HasPathValues;
 
-class ResolveUniverseSystemBySystemIdJob extends NewEsiBase implements HasPathValuesInterface
+class ResolveUniverseSystemBySystemIdJob extends EsiBase implements HasPathValuesInterface
 {
     use HasPathValues;
 
-    public function __construct(int $system_id)
-    {
-        $this->setJobType('public');
-        parent::__construct();
+    public function __construct(
+        private int $system_id
+    ) {
+        parent::__construct(
+            method: 'get',
+            endpoint: '/universe/systems/{system_id}/',
+            version: 'v4',
+        );
 
-        $this->setMethod('get');
-        $this->setEndpoint('/universe/systems/{system_id}/');
-        $this->setVersion('v4');
 
         $this->setPathValues([
             'system_id' => $system_id,
@@ -58,9 +58,7 @@ class ResolveUniverseSystemBySystemIdJob extends NewEsiBase implements HasPathVa
     public function middleware(): array
     {
         return [
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
+            ...parent::middleware(),
         ];
     }
 
@@ -68,7 +66,7 @@ class ResolveUniverseSystemBySystemIdJob extends NewEsiBase implements HasPathVa
     {
         return [
             'system_resolve',
-            'system_id:' . data_get($this->getPathValues(), 'system_id'),
+            'system_id:' . $this->system_id,
         ];
     }
 
@@ -77,13 +75,9 @@ class ResolveUniverseSystemBySystemIdJob extends NewEsiBase implements HasPathVa
      *
      * @return void
      */
-    public function handle(): void
+    public function executeJob(): void
     {
         $response = $this->retrieve();
-
-        if ($response->isCachedLoad()) {
-            return;
-        }
 
         System::firstOrCreate(
             ['system_id' => $response->system_id],

@@ -4,11 +4,11 @@ use Seatplus\Eveapi\Containers\EsiRequestContainer;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 test('setRequestBody method', function () {
-    $esi_request = new EsiRequestContainer([
-        'method' => '-',
-        'version' => '-',
-        'endpoint' => '-',
-    ]);
+    $esi_request = new EsiRequestContainer(
+        method: '-',
+        version: '-',
+        endpoint: '-',
+    );
 
     expect($esi_request->request_body)->toBeArray()->toBeEmpty();
 
@@ -19,12 +19,12 @@ test('setRequestBody method', function () {
 
 
 test('isPublic method', function () {
-    $esi_request = new EsiRequestContainer([
-        'method' => '-',
-        'version' => '-',
-        'endpoint' => '-',
-        'refresh_token' => RefreshToken::factory()->make(),
-    ]);
+    $esi_request = new EsiRequestContainer(
+        method: '-',
+        version: '-',
+        endpoint: '-',
+        refresh_token: RefreshToken::factory()->make()
+    );
 
     expect($esi_request->isPublic())->toBeFalse();
 });

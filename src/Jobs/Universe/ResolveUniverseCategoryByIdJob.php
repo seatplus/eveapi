@@ -26,44 +26,28 @@
 
 namespace Seatplus\Eveapi\Jobs\Universe;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Universe\Category;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequestBody;
 
-class ResolveUniverseCategoryByIdJob extends NewEsiBase implements HasPathValuesInterface
+class ResolveUniverseCategoryByIdJob extends EsiBase implements HasPathValuesInterface
 {
     use HasPathValues;
     use HasRequestBody;
 
     public function __construct(private int $category_id)
     {
-        $this->setJobType('public');
-        parent::__construct();
-
-        $this->setMethod('get');
-        $this->setEndpoint('/universe/categories/{category_id}/');
-        $this->setVersion('v1');
+        parent::__construct(
+            method: 'get',
+            endpoint: '/universe/categories/{category_id}/',
+            version: 'v1',
+        );
 
         $this->setPathValues([
             'category_id' => $category_id,
         ]);
-    }
-
-    /**
-     * Get the middleware the job should pass through.
-     *
-     * @return array
-     */
-    public function middleware(): array
-    {
-        return [
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
-        ];
     }
 
     public function tags(): array
@@ -75,13 +59,9 @@ class ResolveUniverseCategoryByIdJob extends NewEsiBase implements HasPathValues
         ];
     }
 
-    public function handle(): void
+    public function executeJob(): void
     {
         $response = $this->retrieve();
-
-        if ($response->isCachedLoad()) {
-            return;
-        }
 
         Category::firstOrCreate(
             [

@@ -26,35 +26,32 @@
 
 namespace Seatplus\Eveapi\Jobs\Contracts;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
+use Seatplus\Eveapi\Jobs\EsiBase;
+
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CharacterContractsJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
     use HasPathValues;
     use HasRequiredScopes;
 
     public function __construct(
-        public JobContainer $job_container
+        public int $character_id,
     ) {
-        $this->setJobType('character');
-        parent::__construct($job_container);
-
-        $this->setMethod('get');
-        $this->setEndpoint('/characters/{character_id}/contracts/');
-        $this->setVersion('v1');
+        parent::__construct(
+            method: 'get',
+            endpoint: '/characters/{character_id}/contracts/',
+            version: 'v1',
+        );
 
         $this->setPathValues([
-            'character_id' => $job_container->getCharacterId(),
+            'character_id' => $this->character_id,
         ]);
 
         $this->setRequiredScope(head(config('eveapi.scopes.character.contracts')));
@@ -63,11 +60,8 @@ class CharacterContractsJob extends NewEsiBase implements HasPathValuesInterface
     public function middleware(): array
     {
         return [
-            new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
+            ...parent::middleware(),
         ];
     }
 
@@ -75,12 +69,12 @@ class CharacterContractsJob extends NewEsiBase implements HasPathValuesInterface
     {
         return [
             'character',
-            'character_id: ' . $this->getCharacterId(),
+            'character_id: ' . $this->character_id,
             'contracts',
         ];
     }
 
-    public function handle(): void
+    public function executeJob(): void
     {
         $page = 1;
 
@@ -121,7 +115,7 @@ class CharacterContractsJob extends NewEsiBase implements HasPathValuesInterface
 
             $contract_ids = collect($response)->pluck('contract_id')->toArray();
 
-            $character = CharacterInfo::find($this->job_container->getCharacterId());
+            $character = CharacterInfo::find($this->character_id);
 
             if ($character) {
                 $character->contracts()->syncWithoutDetaching($contract_ids);
@@ -134,7 +128,7 @@ class CharacterContractsJob extends NewEsiBase implements HasPathValuesInterface
                 ->where('status', '<>', 'deleted')
                 ->where('type', '<>', 'courier')
                 ->get()
-                ->map(fn ($contract) => new ContractItemsJob($contract->contract_id, $this->job_container, 'character'));
+                ->map(fn ($contract) => new CharacterContractItemsJob($this->character_id, $contract->contract_id));
 
             if ($this->batching()) {
                 $this->batch()->add($location_job_array);

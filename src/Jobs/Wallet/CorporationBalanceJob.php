@@ -26,39 +26,41 @@
 
 namespace Seatplus\Eveapi\Jobs\Wallet;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Wallet\Balance;
+use Seatplus\Eveapi\Traits\HasCorporationRole;
 use Seatplus\Eveapi\Traits\HasPages;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CorporationBalanceJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+class CorporationBalanceJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, HasCorporationRoleInterface
 {
     use HasPathValues;
     use HasRequiredScopes;
     use HasPages;
+    use HasCorporationRole;
 
-    public function __construct(JobContainer $job_container)
-    {
-        $this->setJobType('corporation');
-        parent::__construct($job_container);
-
-        $this->setMethod('get');
-        $this->setEndpoint('/corporations/{corporation_id}/wallets/');
-        $this->setVersion('v1');
+    public function __construct(
+        public int $corporation_id,
+    ) {
+        parent::__construct(
+            method: 'get',
+            endpoint: '/corporations/{corporation_id}/wallets/',
+            version: 'v1',
+        );
 
         $this->setRequiredScope(head(config('eveapi.scopes.corporation.wallet')));
 
         $this->setPathValues([
-            'corporation_id' => $this->getCorporationId(),
+            'corporation_id' => $this->corporation_id,
         ]);
+
+        $this->setCorporationRoles(['Accountant', 'Junior_Accountant']);
     }
 
     /**
@@ -69,11 +71,8 @@ class CorporationBalanceJob extends NewEsiBase implements HasPathValuesInterface
     public function middleware(): array
     {
         return [
-            new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
+            ...parent::middleware(),
         ];
     }
 
@@ -81,7 +80,7 @@ class CorporationBalanceJob extends NewEsiBase implements HasPathValuesInterface
     {
         return [
             'corporation',
-            'corporation_id: ' . $this->getCorporationId(),
+            'corporation_id: ' . $this->corporation_id,
             'balances',
         ];
     }
@@ -92,7 +91,7 @@ class CorporationBalanceJob extends NewEsiBase implements HasPathValuesInterface
      * @return void
      * @throws \Exception
      */
-    public function handle(): void
+    public function executeJob(): void
     {
         $response = $this->retrieve();
 
@@ -102,7 +101,7 @@ class CorporationBalanceJob extends NewEsiBase implements HasPathValuesInterface
 
         collect($response)->each(fn ($wallet) => Balance::updateOrCreate(
             [
-                'balanceable_id' => $this->getCorporationId(),
+                'balanceable_id' => $this->corporation_id,
                 'balanceable_type' => CorporationInfo::class,
                 'division' => data_get($wallet, 'division'),
             ],

@@ -26,20 +26,18 @@
 
 namespace Seatplus\Eveapi\Jobs\Contacts;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Support\Collection;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
+use Seatplus\Eveapi\Jobs\EsiBase;
+
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Services\Contacts\ProcessContactResponse;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class AllianceContactJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+class AllianceContactJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
     use HasRequiredScopes;
     use HasPathValues;
@@ -48,14 +46,14 @@ class AllianceContactJob extends NewEsiBase implements HasPathValuesInterface, H
 
     private Collection $known_ids;
 
-    public function __construct(?JobContainer $job_container = null)
-    {
-        $this->setJobType('character');
-        parent::__construct($job_container);
-
-        $this->setMethod('get');
-        $this->setEndpoint('/alliances/{alliance_id}/contacts/');
-        $this->setVersion('v2');
+    public function __construct(
+        public int $alliance_id,
+    ) {
+        parent::__construct(
+            method: 'get',
+            endpoint: '/alliances/{alliance_id}/contacts/',
+            version: 'v2',
+        );
 
         $this->setRequiredScope('esi-alliances.read_contacts.v1');
 
@@ -74,11 +72,8 @@ class AllianceContactJob extends NewEsiBase implements HasPathValuesInterface, H
     public function middleware(): array
     {
         return [
-            new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
+            ...parent::middleware(),
         ];
     }
 
@@ -97,12 +92,8 @@ class AllianceContactJob extends NewEsiBase implements HasPathValuesInterface, H
      * @return void
      * @throws \Exception
      */
-    public function handle(): void
+    public function executeJob(): void
     {
-        if (is_null($this->alliance_id)) {
-            return;
-        }
-
         $processor = new ProcessContactResponse($this->alliance_id, AllianceInfo::class);
 
         while (true) {

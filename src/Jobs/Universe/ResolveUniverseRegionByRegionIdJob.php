@@ -26,24 +26,23 @@
 
 namespace Seatplus\Eveapi\Jobs\Universe;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Universe\Region;
 use Seatplus\Eveapi\Traits\HasPathValues;
 
-class ResolveUniverseRegionByRegionIdJob extends NewEsiBase implements HasPathValuesInterface
+class ResolveUniverseRegionByRegionIdJob extends EsiBase implements HasPathValuesInterface
 {
     use HasPathValues;
 
-    public function __construct(int $region_id)
-    {
-        $this->setJobType('public');
-        parent::__construct();
-
-        $this->setMethod('get');
-        $this->setEndpoint('/universe/regions/{region_id}/');
-        $this->setVersion('v1');
+    public function __construct(
+        public int $region_id
+    ) {
+        parent::__construct(
+            method: 'get',
+            endpoint: '/universe/regions/{region_id}/',
+            version: 'v1',
+        );
 
         $this->setPathValues([
             'region_id' => $region_id,
@@ -58,9 +57,7 @@ class ResolveUniverseRegionByRegionIdJob extends NewEsiBase implements HasPathVa
     public function middleware(): array
     {
         return [
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
+            ...parent::middleware(),
         ];
     }
 
@@ -68,7 +65,7 @@ class ResolveUniverseRegionByRegionIdJob extends NewEsiBase implements HasPathVa
     {
         return [
             'region_resolver',
-            'region_id:' . data_get($this->getPathValues(), 'region_id'),
+            'region_id:' . $this->region_id,
         ];
     }
 
@@ -77,13 +74,9 @@ class ResolveUniverseRegionByRegionIdJob extends NewEsiBase implements HasPathVa
      *
      * @return void
      */
-    public function handle(): void
+    public function executeJob(): void
     {
         $response = $this->retrieve();
-
-        if ($response->isCachedLoad()) {
-            return;
-        }
 
         Region::firstOrCreate(
             ['region_id' => $response->region_id],

@@ -26,49 +26,34 @@
 
 namespace Seatplus\Eveapi\Jobs\Universe;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Universe\Constellation;
 use Seatplus\Eveapi\Traits\HasPathValues;
 
-class ResolveUniverseConstellationByConstellationIdJob extends NewEsiBase implements HasPathValuesInterface
+class ResolveUniverseConstellationByConstellationIdJob extends EsiBase implements HasPathValuesInterface
 {
     use HasPathValues;
 
-    public function __construct(int $constellation_id)
-    {
-        $this->setJobType('public');
-        parent::__construct();
-
-        $this->setMethod('get');
-        $this->setEndpoint('/universe/constellations/{constellation_id}/');
-        $this->setVersion('v1');
+    public function __construct(
+        public int $constellation_id
+    ) {
+        parent::__construct(
+            method: 'get',
+            endpoint: '/universe/constellations/{constellation_id}/',
+            version: 'v1',
+        );
 
         $this->setPathValues([
             'constellation_id' => $constellation_id,
         ]);
     }
 
-    /**
-     * Get the middleware the job should pass through.
-     *
-     * @return array
-     */
-    public function middleware(): array
-    {
-        return [
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
-        ];
-    }
-
     public function tags(): array
     {
         return [
             'constellation_resolver',
-            'constellation_id:' . data_get($this->getPathValues(), 'constellation_id'),
+            'constellation_id:' . $this->constellation_id,
         ];
     }
 
@@ -77,13 +62,9 @@ class ResolveUniverseConstellationByConstellationIdJob extends NewEsiBase implem
      *
      * @return void
      */
-    public function handle(): void
+    public function executeJob(): void
     {
         $response = $this->retrieve();
-
-        if ($response->isCachedLoad()) {
-            return;
-        }
 
         Constellation::firstOrCreate(
             ['constellation_id' => $response->constellation_id],

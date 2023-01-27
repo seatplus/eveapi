@@ -34,7 +34,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Wallet\Balance;
 
@@ -46,12 +45,9 @@ class CorporationWalletJournalJob implements ShouldQueue, ShouldBeUnique
     use Queueable;
     use SerializesModels;
 
-    private int $corporation_id;
-
     public function __construct(
-        private JobContainer $job_container
+        private int $corporation_id
     ) {
-        $this->corporation_id = $this->job_container->getCorporationId();
     }
 
     /**
@@ -69,10 +65,8 @@ class CorporationWalletJournalJob implements ShouldQueue, ShouldBeUnique
     public function uniqueId()
     {
         return sprintf(
-            'Corporation wallet journal dispatcher for corpoation %s via %s (%s)',
-            $this->job_container->getRefreshToken()->corporation->name,
-            $this->job_container->getRefreshToken()->character->name,
-            $this->job_container->getRefreshToken()->character_id
+            'Corporation wallet journal dispatcher for corporation_id %s ',
+            $this->corporation_id
         );
     }
 
@@ -102,9 +96,11 @@ class CorporationWalletJournalJob implements ShouldQueue, ShouldBeUnique
             )
             ->get()
             ->each(
-                fn ($wallet) => $this->batching()
-                ? $this->handleBatching($wallet->division)
-                : $this->handleNonBatching($wallet->division)
+                function ($wallet) {
+                    $this->batching()
+                        ? $this->handleBatching($wallet->division)
+                        : $this->handleNonBatching($wallet->division);
+                }
             );
     }
 
@@ -117,12 +113,12 @@ class CorporationWalletJournalJob implements ShouldQueue, ShouldBeUnique
         }
 
         $this->batch()->add([
-            new CorporationWalletJournalByDivisionJob($this->job_container, $division),
+            new CorporationWalletJournalByDivisionJob($this->corporation_id, $division),
         ]);
     }
 
     private function handleNonBatching(int $division): void
     {
-        CorporationWalletJournalByDivisionJob::dispatch($this->job_container, $division)->onQueue($this->queue);
+        CorporationWalletJournalByDivisionJob::dispatch($this->corporation_id, $division)->onQueue($this->queue);
     }
 }

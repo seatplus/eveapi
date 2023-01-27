@@ -26,33 +26,31 @@
 
 namespace Seatplus\Eveapi\Jobs\Mail;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Jobs\EsiBase;
+use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Models\Mail\Mail;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class MailBodyJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+class MailBodyJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
     use HasPathValues;
     use HasRequiredScopes;
 
-    public function __construct(JobContainer $job_container, int $mail_id)
+    public function __construct(public int $character_id, public int $mail_id)
     {
-        $this->setJobType('character');
-        parent::__construct($job_container);
-
-        $this->setMethod('get');
-        $this->setEndpoint('/characters/{character_id}/mail/{mail_id}/');
-        $this->setVersion('v1');
+        parent::__construct(
+            method: 'get',
+            endpoint: '/characters/{character_id}/mail/{mail_id}/',
+            version: 'v1',
+        );
 
         $this->setRequiredScope('esi-mail.read_mail.v1');
 
         $this->setPathValues([
-            'character_id' => $this->getCharacterId(),
+            'character_id' => $this->character_id,
             'mail_id' => $mail_id,
         ]);
     }
@@ -62,21 +60,20 @@ class MailBodyJob extends NewEsiBase implements HasPathValuesInterface, HasRequi
         return [
             'mail',
             'body',
-            sprintf('character_id:%s', data_get($this->getPathValues(), 'character_id')),
-            sprintf('mail_id:%s', data_get($this->getPathValues(), 'mail_id')),
+            sprintf('character_id:%s', $this->character_id),
+            sprintf('mail_id:%s', $this->mail_id),
         ];
     }
 
     public function middleware(): array
     {
         return [
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
+            new HasRequiredScopeMiddleware,
+            ...parent::middleware(),
         ];
     }
 
-    public function handle(): void
+    public function executeJob(): void
     {
         $response = $this->retrieve();
 
@@ -84,7 +81,7 @@ class MailBodyJob extends NewEsiBase implements HasPathValuesInterface, HasRequi
             return;
         }
 
-        Mail::where('id', data_get($this->getPathValues(), 'mail_id'))
+        Mail::where('id', $this->mail_id)
             ->update(['body' => data_get($response, 'body')]);
     }
 }

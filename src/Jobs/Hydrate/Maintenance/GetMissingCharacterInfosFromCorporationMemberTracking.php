@@ -26,7 +26,6 @@
 
 namespace Seatplus\Eveapi\Jobs\Hydrate\Maintenance;
 
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 
@@ -43,11 +42,7 @@ class GetMissingCharacterInfosFromCorporationMemberTracking extends HydrateMaint
         $character_ids = CorporationMemberTracking::doesntHave('character')->pluck('character_id')->unique()->values();
 
         $jobs = $character_ids->map(function ($character_id) {
-            $jobContainer = new JobContainer([
-                'character_id' => $character_id,
-            ]);
-
-            return new CharacterInfoJob($jobContainer);
+            return new CharacterInfoJob($character_id);
         });
 
         $this->batch()->add(

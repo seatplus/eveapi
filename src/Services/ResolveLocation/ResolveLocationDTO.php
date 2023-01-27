@@ -27,11 +27,12 @@
 namespace Seatplus\Eveapi\Services\ResolveLocation;
 
 use Seatplus\Eveapi\Models\Universe\Location;
-use Spatie\DataTransferObject\DataTransferObject;
 
-class ResolveLocationDTO extends DataTransferObject
+class ResolveLocationDTO
 {
-    public Location $location;
-
-    public string $log_message;
+    public function __construct(
+        public Location $location,
+        public string $log_message
+    ) {
+    }
 }

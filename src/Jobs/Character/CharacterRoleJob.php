@@ -26,30 +26,28 @@
 
 namespace Seatplus\Eveapi\Jobs\Character;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
+use Seatplus\Eveapi\Jobs\EsiBase;
+
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Character\CharacterRole;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CharacterRoleJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+class CharacterRoleJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
     use HasPathValues;
     use HasRequiredScopes;
 
-    public function __construct(JobContainer $job_container)
-    {
-        $this->setJobType('character');
-        parent::__construct($job_container);
-
-        $this->setMethod('get');
-        $this->setEndpoint('/characters/{character_id}/roles/');
-        $this->setVersion('v3');
+    public function __construct(
+        public int $character_id
+    ) {
+        parent::__construct(
+            method: 'get',
+            endpoint: '/characters/{character_id}/roles/',
+            version: 'v3',
+        );
 
         $this->setRequiredScope('esi-characters.read_corporation_roles.v1');
 
@@ -66,11 +64,8 @@ class CharacterRoleJob extends NewEsiBase implements HasPathValuesInterface, Has
     public function middleware(): array
     {
         return [
-            new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
+            ...parent::middleware(),
         ];
     }
 
@@ -83,7 +78,7 @@ class CharacterRoleJob extends NewEsiBase implements HasPathValuesInterface, Has
         ];
     }
 
-    public function handle(): void
+    public function executeJob(): void
     {
         $response = $this->retrieve();
 

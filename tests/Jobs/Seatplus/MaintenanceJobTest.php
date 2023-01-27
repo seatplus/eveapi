@@ -3,7 +3,6 @@
 
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingAssetsNames;
@@ -39,7 +38,6 @@ use Seatplus\Eveapi\Models\Contracts\ContractItem;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Models\Mail\Mail;
 use Seatplus\Eveapi\Models\Mail\MailRecipients;
-use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Skills\Skill;
 use Seatplus\Eveapi\Models\Skills\SkillQueue;
 use Seatplus\Eveapi\Models\Universe\Constellation;
@@ -219,20 +217,16 @@ it('dispatch get missing assets names job', function () {
     Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingAssetsNames));
 });
 
-it('dispatch resolve missing assets name jog', function () {
+it('dispatch resolve missing assets name job', function () {
     $asset = Event::fakeFor(fn () => Asset::factory()->create([
         'assetable_id' => $this->test_character->character_id,
         'location_flag' => 'Hangar',
     ]));
 
-    $type = Event::fakeFor(fn () => Type::factory()->create([
+    Event::fakeFor(fn () => Type::factory()->create([
         'type_id' => $asset->type_id,
         'group_id' => Group::factory()->create(['category_id' => 2]),
     ]));
-
-    $job_container = new JobContainer([
-        'refresh_token' => RefreshToken::find($this->test_character->character_id),
-    ]);
 
     $mock = Mockery::mock(GetMissingAssetsNames::class)->makePartial();
 
@@ -240,7 +234,7 @@ it('dispatch resolve missing assets name jog', function () {
     $mock->shouldReceive('batch->add')
         ->once()
         ->with([
-            new CharacterAssetsNameJob($job_container),
+            new CharacterAssetsNameJob($this->test_character->character_id),
         ]);
 
     $mock->handle();
@@ -423,17 +417,13 @@ it('dispatches character info job for missing member tracking characters', funct
         'character_id' => CharacterInfo::factory()->make(),
     ]));
 
-    $jobContainer = new JobContainer([
-        'character_id' => $corporation_member_tracking->character_id,
-    ]);
-
     $mock = Mockery::mock(GetMissingCharacterInfosFromCorporationMemberTracking::class)->makePartial();
 
     $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
     $mock->shouldReceive('batch->add')
         ->once()
         ->with([
-            new CharacterInfoJob($jobContainer),
+            new CharacterInfoJob($corporation_member_tracking->character_id),
         ]);
 
     $mock->handle();

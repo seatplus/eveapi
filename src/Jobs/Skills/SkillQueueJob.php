@@ -26,54 +26,52 @@
 
 namespace Seatplus\Eveapi\Jobs\Skills;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Jobs\EsiBase;
+use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Models\Skills\SkillQueue;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class SkillQueueJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+class SkillQueueJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
     use HasPathValues;
     use HasRequiredScopes;
 
-    public function __construct(?JobContainer $job_container = null)
-    {
-        $this->setJobType('character');
-        parent::__construct($job_container);
-
-        $this->setMethod('get');
-        $this->setEndpoint('/characters/{character_id}/skillqueue/');
-        $this->setVersion('v2');
-
-        $this->setRequiredScope('esi-skills.read_skillqueue.v1');
+    public function __construct(
+        public int $character_id
+    ) {
+        parent::__construct(
+            method: 'get',
+            endpoint: '/characters/{character_id}/skillqueue/',
+            version: 'v2',
+        );
 
         $this->setPathValues([
-            'character_id' => $this->getCharacterId(),
+            'character_id' => $character_id,
         ]);
+
+        $this->setRequiredScope('esi-skills.read_skillqueue.v1');
     }
 
     public function tags(): array
     {
         return [
             'skill queue',
-            sprintf('character_id:%s', data_get($this->getPathValues(), 'character_id')),
+            sprintf('character_id:%s', $this->character_id),
         ];
     }
 
     public function middleware(): array
     {
         return [
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
+            new HasRequiredScopeMiddleware,
+            ...parent::middleware(),
         ];
     }
 
-    public function handle(): void
+    public function executeJob(): void
     {
         $response = $this->retrieve();
 
@@ -83,7 +81,7 @@ class SkillQueueJob extends NewEsiBase implements HasPathValuesInterface, HasReq
 
         $skill_queue_ids = collect($response)->map(function ($queue_item) {
             $entry = SkillQueue::updateOrCreate([
-                'character_id' => $this->getCharacterId(),
+                'character_id' => $this->character_id,
                 'skill_id' => data_get($queue_item, 'skill_id'),
                 'queue_position' => data_get($queue_item, 'queue_position'),
                 'finished_level' => data_get($queue_item, 'finished_level'),
@@ -99,7 +97,7 @@ class SkillQueueJob extends NewEsiBase implements HasPathValuesInterface, HasReq
         });
 
         SkillQueue::query()
-            ->where('character_id', $this->getCharacterId())
+            ->where('character_id', $this->character_id)
             ->whereNotIn('id', $skill_queue_ids->toArray())
             ->delete();
     }

@@ -2,7 +2,6 @@
 
 
 use Illuminate\Support\Facades\Event;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Contacts\AllianceContactLabelJob;
 use Seatplus\Eveapi\Jobs\Contacts\CharacterContactLabelJob;
 use Seatplus\Eveapi\Jobs\Contacts\CorporationContactLabelJob;
@@ -14,16 +13,16 @@ uses(MockRetrieveEsiDataAction::class);
 beforeEach(function () {
     // Prevent any auto dispatching of jobs
     Event::fake();
-
-    $this->job_container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]);
 });
 
 test('run character contact label', function () {
     $mock_data = buildContactLabelMockEsiData();
 
-    $job = new CharacterContactLabelJob($this->job_container);
+    updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-characters.read_contacts.v1'])->save();
 
-    dispatch_now($job);
+    $job = new CharacterContactLabelJob(testCharacter()->character_id);
+
+    dispatch_sync($job);
 
     //assertContactLabel($mock_data, $this->test_character->character_id);
     foreach ($mock_data as $data) {
@@ -38,9 +37,11 @@ test('run character contact label', function () {
 test('run corporation contact label', function () {
     $mock_data = buildContactLabelMockEsiData();
 
-    $job = new CorporationContactLabelJob($this->job_container);
+    updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-corporations.read_contacts.v1'])->save();
 
-    dispatch_now($job);
+    $job = new CorporationContactLabelJob(testCharacter()->corporation->corporation_id);
+
+    dispatch_sync($job);
 
     //assertContactLabel($mock_data, $this->test_character->corporation->corporation_id);
     foreach ($mock_data as $data) {
@@ -55,9 +56,11 @@ test('run corporation contact label', function () {
 test('run alliance contact label', function () {
     $mock_data = buildContactLabelMockEsiData();
 
-    $job = new AllianceContactLabelJob($this->job_container);
+    updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-alliances.read_contacts.v1'])->save();
 
-    dispatch_now($job);
+    $job = new AllianceContactLabelJob(testCharacter()->corporation->alliance_id);
+
+    dispatch_sync($job);
 
     //assertContactLabel($mock_data, $this->test_character->corporation->alliance_id);
     foreach ($mock_data as $data) {

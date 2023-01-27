@@ -3,7 +3,6 @@
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Skills\SkillQueueJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Skills\SkillQueue;
@@ -15,8 +14,6 @@ uses(MockRetrieveEsiDataAction::class);
 beforeEach(function () {
     // Prevent any auto dispatching of jobs
     Queue::fake();
-
-    $this->job_container = new JobContainer(['refresh_token' => $this->test_character->refresh_token]);
 });
 
 it('runs skill job', function () {
@@ -26,7 +23,7 @@ it('runs skill job', function () {
 
     expect($this->test_character->total_sp)->toBeNull();
 
-    (new SkillQueueJob($this->job_container))->handle();
+    (new SkillQueueJob(testCharacter()->character_id))->handle();
 
     expect(SkillQueue::all())->toHaveCount(5);
     expect(SkillQueue::first()->type)->toBeInstanceOf(Type::class);
@@ -52,7 +49,7 @@ it('deletes old queue items', function () {
 
     expect($this->test_character->total_sp)->toBeNull();
 
-    (new SkillQueueJob($this->job_container))->handle();
+    (new SkillQueueJob(testCharacter()->character_id))->handle();
 
     expect(SkillQueue::all())->toHaveCount(5);
     $this->assertNotCount(6, SkillQueue::all());

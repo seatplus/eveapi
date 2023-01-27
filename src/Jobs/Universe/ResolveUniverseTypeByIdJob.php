@@ -26,26 +26,24 @@
 
 namespace Seatplus\Eveapi\Jobs\Universe;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequestBody;
 
-class ResolveUniverseTypeByIdJob extends NewEsiBase implements HasPathValuesInterface
+class ResolveUniverseTypeByIdJob extends EsiBase implements HasPathValuesInterface
 {
     use HasPathValues;
     use HasRequestBody;
 
     public function __construct(private int $type_id)
     {
-        //$this->setJobType('public');
-        parent::__construct(null, 'public');
-
-        $this->setMethod('get');
-        $this->setEndpoint('/universe/types/{type_id}/');
-        $this->setVersion('v3');
+        parent::__construct(
+            method: 'get',
+            endpoint: '/universe/types/{type_id}/',
+            version: 'v3',
+        );
 
         $this->setPathValues([
             'type_id' => $type_id,
@@ -60,9 +58,7 @@ class ResolveUniverseTypeByIdJob extends NewEsiBase implements HasPathValuesInte
     public function middleware(): array
     {
         return [
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
+            ...parent::middleware(),
         ];
     }
 
@@ -75,13 +71,9 @@ class ResolveUniverseTypeByIdJob extends NewEsiBase implements HasPathValuesInte
         ];
     }
 
-    public function handle(): void
+    public function executeJob(): void
     {
         $response = $this->retrieve();
-
-        if ($response->isCachedLoad()) {
-            return;
-        }
 
         Type::firstOrCreate(
             ['type_id' => $response->type_id],

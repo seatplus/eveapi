@@ -26,14 +26,12 @@
 
 namespace Seatplus\Eveapi\Jobs\Wallet;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasQueryStringInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
+use Seatplus\Eveapi\Jobs\EsiBase;
+
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 use Seatplus\Eveapi\Services\Wallet\ProcessWalletTransactionResponse;
@@ -41,7 +39,7 @@ use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasQueryValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CharacterWalletTransactionJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, HasQueryStringInterface
+class CharacterWalletTransactionJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, HasQueryStringInterface
 {
     use HasPathValues;
     use HasRequiredScopes;
@@ -49,20 +47,20 @@ class CharacterWalletTransactionJob extends NewEsiBase implements HasPathValuesI
 
     private int $from_id = PHP_INT_MAX;
 
-    public function __construct(JobContainer $job_container)
-    {
-        $this->setJobType('character');
-        parent::__construct($job_container);
-
-        $this->setMethod('get');
-        $this->setEndpoint('/characters/{character_id}/wallet/transactions/');
-        $this->setVersion('v1');
-
-        $this->setRequiredScope('esi-wallet.read_character_wallet.v1');
+    public function __construct(
+        public int $character_id,
+    ) {
+        parent::__construct(
+            method: 'get',
+            endpoint: '/characters/{character_id}/wallet/transactions/',
+            version: 'v1',
+        );
 
         $this->setPathValues([
-            'character_id' => $this->getCharacterId(),
+            'character_id' => $character_id,
         ]);
+
+        $this->setRequiredScope('esi-wallet.read_character_wallet.v1');
     }
 
     /**
@@ -73,11 +71,8 @@ class CharacterWalletTransactionJob extends NewEsiBase implements HasPathValuesI
     public function middleware(): array
     {
         return [
-            new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
+            ...parent::middleware(),
         ];
     }
 
@@ -97,14 +92,14 @@ class CharacterWalletTransactionJob extends NewEsiBase implements HasPathValuesI
      * @return void
      * @throws \Exception
      */
-    public function handle(): void
+    public function executeJob(): void
     {
         $processor = new ProcessWalletTransactionResponse(
-            $this->getCharacterId(),
+            $this->character_id,
             CharacterInfo::class
         );
 
-        $latest_transaction = WalletTransaction::where('wallet_transactionable_id', $this->getCharacterId())
+        $latest_transaction = WalletTransaction::where('wallet_transactionable_id', $this->character_id)
             ->latest()->first();
 
         if ($latest_transaction) {

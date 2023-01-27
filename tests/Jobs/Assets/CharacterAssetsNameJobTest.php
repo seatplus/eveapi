@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\RefreshToken;
@@ -16,9 +15,8 @@ uses(MockRetrieveEsiDataAction::class);
 beforeEach(function () {
     Queue::fake();
 
-    $this->job_container = $job_container = new JobContainer([
-        'refresh_token' => $this->test_character->refresh_token,
-    ]);
+    $refresh_token = updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-assets.read_assets.v1']);
+    $refresh_token->save();
 
     //$this->job = new CharacterAssetsNameJob($job_container);
     $this->name_to_create = 'TestName';
@@ -33,7 +31,7 @@ test('if job is queued', function () {
     // Assert that no jobs were pushed...
     Queue::assertNothingPushed();
 
-    CharacterAssetsNameJob::dispatch($this->job_container, [1])->onQueue('default');
+    CharacterAssetsNameJob::dispatch($this->test_character->character_id)->onQueue('default');
 
     // Assert a job was pushed to a given queue...
     Queue::assertPushedOn('default', CharacterAssetsNameJob::class);
@@ -71,7 +69,7 @@ it('updates a name', function () {
         ],
     ]);
 
-    (new CharacterAssetsNameJob($this->job_container))->handle();
+    (new CharacterAssetsNameJob($this->test_character->character_id))->handle();
 
     //Assert that character asset created has name
     $this->assertDatabaseHas('assets', [
@@ -172,9 +170,6 @@ it('does not run if group is missing', function () {
         'name' => null,
     ]);
 
-    /*$refresh_token = RefreshToken::factory()->create([
-        'character_id' => $asset->character_id
-    ]);*/
     $refresh_token = RefreshToken::factory()->make(['character_id' => $asset->assetable_id]);
 
     $this->assertRetrieveEsiDataIsNotCalled();
@@ -199,6 +194,7 @@ it('runs the job', function () {
     ]));
 
     $asset = Event::fakeFor(fn () => Asset::factory()->create([
+        'assetable_id' => $this->test_character->character_id,
         'type_id' => $type->type_id,
         'is_singleton' => true,
     ]));
@@ -211,8 +207,6 @@ it('runs the job', function () {
         'name' => null,
     ]);
 
-    $refresh_token = RefreshToken::factory()->make(['character_id' => $asset->assetable_id]);
-
     mockRetrieveEsiDataAction([
         [
             'item_id' => $asset->item_id,
@@ -220,9 +214,7 @@ it('runs the job', function () {
         ],
     ]);
 
-    $job_container = new JobContainer(['refresh_token' => $refresh_token]);
-
-    CharacterAssetsNameJob::dispatchNow($job_container, [$asset->item_id]);
+    (new CharacterAssetsNameJob($asset->assetable_id))->handle();
 
     //Assert that character asset created has name
     $this->assertCount(

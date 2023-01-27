@@ -26,43 +26,27 @@
 
 namespace Seatplus\Eveapi\Jobs\Corporation;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Traits\HasPathValues;
 
-class CorporationInfoJob extends NewEsiBase implements HasPathValuesInterface
+class CorporationInfoJob extends EsiBase implements HasPathValuesInterface
 {
     use HasPathValues;
 
-    public function __construct(?JobContainer $job_container = null)
-    {
-        $this->setJobType('public');
-        parent::__construct($job_container);
-
-        $this->setMethod('get');
-        $this->setEndpoint('/corporations/{corporation_id}/');
-        $this->setVersion('v5');
+    public function __construct(
+        public int $corporation_id
+    ) {
+        parent::__construct(
+            method: 'get',
+            endpoint: '/corporations/{corporation_id}/',
+            version: 'v5',
+        );
 
         $this->setPathValues([
             'corporation_id' => $this->corporation_id,
         ]);
-    }
-
-    /**
-     * Get the middleware the job should pass through.
-     *
-     * @return array
-     */
-    public function middleware(): array
-    {
-        return [
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
-        ];
     }
 
     public function tags(): array
@@ -77,7 +61,7 @@ class CorporationInfoJob extends NewEsiBase implements HasPathValuesInterface
     /**
      * Execute the job.
      */
-    public function handle(): void
+    public function executeJob(): void
     {
         $response = $this->retrieve();
 

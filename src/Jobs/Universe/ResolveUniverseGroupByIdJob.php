@@ -26,26 +26,24 @@
 
 namespace Seatplus\Eveapi\Jobs\Universe;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequestBody;
 
-class ResolveUniverseGroupByIdJob extends NewEsiBase implements HasPathValuesInterface
+class ResolveUniverseGroupByIdJob extends EsiBase implements HasPathValuesInterface
 {
     use HasPathValues;
     use HasRequestBody;
 
     public function __construct(private int $group_id)
     {
-        $this->setJobType('public');
-        parent::__construct();
-
-        $this->setMethod('get');
-        $this->setEndpoint('/universe/groups/{group_id}/');
-        $this->setVersion('v1');
+        parent::__construct(
+            method: 'get',
+            endpoint: '/universe/groups/{group_id}/',
+            version: 'v1',
+        );
 
         $this->setPathValues([
             'group_id' => $group_id,
@@ -60,9 +58,7 @@ class ResolveUniverseGroupByIdJob extends NewEsiBase implements HasPathValuesInt
     public function middleware(): array
     {
         return [
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
+            ...parent::middleware(),
         ];
     }
 
@@ -80,13 +76,9 @@ class ResolveUniverseGroupByIdJob extends NewEsiBase implements HasPathValuesInt
      *
      * @return void
      */
-    public function handle(): void
+    public function executeJob(): void
     {
         $response = $this->retrieve();
-
-        if ($response->isCachedLoad()) {
-            return;
-        }
 
         Group::firstOrCreate(
             ['group_id' => $response->group_id],

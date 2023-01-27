@@ -26,20 +26,18 @@
 
 namespace Seatplus\Eveapi\Jobs\Contacts;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Support\Collection;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
+use Seatplus\Eveapi\Jobs\EsiBase;
+
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Services\Contacts\ProcessContactResponse;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CorporationContactJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+class CorporationContactJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
     use HasRequiredScopes;
     use HasPathValues;
@@ -48,14 +46,14 @@ class CorporationContactJob extends NewEsiBase implements HasPathValuesInterface
 
     private Collection $known_ids;
 
-    public function __construct(?JobContainer $job_container = null)
-    {
-        $this->setJobType('character');
-        parent::__construct($job_container);
-
-        $this->setMethod('get');
-        $this->setEndpoint('/corporations/{corporation_id}/contacts/');
-        $this->setVersion('v2');
+    public function __construct(
+        public int $corporation_id,
+    ) {
+        parent::__construct(
+            method: 'get',
+            endpoint: '/corporations/{corporation_id}/contacts/',
+            version: 'v2',
+        );
 
         $this->setRequiredScope('esi-corporations.read_contacts.v1');
 
@@ -74,11 +72,8 @@ class CorporationContactJob extends NewEsiBase implements HasPathValuesInterface
     public function middleware(): array
     {
         return [
-            new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
+            ...parent::middleware(),
         ];
     }
 
@@ -97,7 +92,7 @@ class CorporationContactJob extends NewEsiBase implements HasPathValuesInterface
      * @return void
      * @throws \Exception
      */
-    public function handle(): void
+    public function executeJob(): void
     {
         $processor = new ProcessContactResponse($this->corporation_id, CorporationInfo::class);
 

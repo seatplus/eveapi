@@ -26,32 +26,35 @@
 
 namespace Seatplus\Eveapi\Jobs\Corporation;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
+use Seatplus\Eveapi\Jobs\EsiBase;
+
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
+use Seatplus\Eveapi\Traits\HasCorporationRole;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CorporationMemberTrackingJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+class CorporationMemberTrackingJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, HasCorporationRoleInterface
 {
     use HasPathValues;
     use HasRequiredScopes;
+    use HasCorporationRole;
 
-    public function __construct(JobContainer $job_container)
-    {
-        $this->setJobType('corporation');
-        parent::__construct($job_container);
-
-        $this->setMethod('get');
-        $this->setEndpoint('/corporations/{corporation_id}/membertracking/');
-        $this->setVersion('v1');
+    public function __construct(
+        public int $corporation_id
+    ) {
+        parent::__construct(
+            method: 'get',
+            endpoint: '/corporations/{corporation_id}/membertracking/',
+            version: 'v2',
+        );
 
         $this->setRequiredScope('esi-corporations.track_members.v1');
+
+        $this->setCorporationRoles('Director');
 
         $this->setPathValues([
             'corporation_id' => $this->corporation_id,
@@ -66,11 +69,8 @@ class CorporationMemberTrackingJob extends NewEsiBase implements HasPathValuesIn
     public function middleware(): array
     {
         return [
-            new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
+            ...parent::middleware(),
         ];
     }
 
@@ -90,7 +90,7 @@ class CorporationMemberTrackingJob extends NewEsiBase implements HasPathValuesIn
      * @return void
      * @throws \Exception
      */
-    public function handle(): void
+    public function executeJob(): void
     {
         $response = $this->retrieve();
 

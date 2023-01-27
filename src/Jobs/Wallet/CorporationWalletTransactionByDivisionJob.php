@@ -26,40 +26,43 @@
 
 namespace Seatplus\Eveapi\Jobs\Wallet;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Seatplus\Eveapi\Containers\JobContainer;
+use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Services\Wallet\ProcessWalletTransactionResponse;
+use Seatplus\Eveapi\Traits\HasCorporationRole;
 use Seatplus\Eveapi\Traits\HasPages;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CorporationWalletTransactionByDivisionJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+class CorporationWalletTransactionByDivisionJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, HasCorporationRoleInterface
 {
     use HasPathValues;
     use HasRequiredScopes;
     use HasPages;
+    use HasCorporationRole;
 
-    public function __construct(JobContainer $job_container, private int $division)
-    {
-        $this->setJobType('corporation');
-        parent::__construct($job_container);
-
-        $this->setMethod('get');
-        $this->setEndpoint('/corporations/{corporation_id}/wallets/{division}/transactions/');
-        $this->setVersion('v1');
+    public function __construct(
+        public int $corporation_id,
+        private int $division
+    ) {
+        parent::__construct(
+            method: 'get',
+            endpoint: '/corporations/{corporation_id}/wallets/{division}/transactions/',
+            version: 'v1',
+        );
 
         $this->setRequiredScope(head(config('eveapi.scopes.corporation.wallet')));
 
         $this->setPathValues([
-            'corporation_id' => $this->getCorporationId(),
+            'corporation_id' => $this->corporation_id,
             'division' => $this->division,
         ]);
+
+        $this->setCorporationRoles(['Accountant', 'Junior_Accountant']);
     }
 
     /**
@@ -70,11 +73,8 @@ class CorporationWalletTransactionByDivisionJob extends NewEsiBase implements Ha
     public function middleware(): array
     {
         return [
-            new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
+            ...parent::middleware(),
         ];
     }
 
@@ -82,7 +82,7 @@ class CorporationWalletTransactionByDivisionJob extends NewEsiBase implements Ha
     {
         return [
             'corporation',
-            'corporation_id: ' . $this->getCorporationId(),
+            'corporation_id: ' . $this->corporation_id,
             'wallet',
             'transaction',
             'division: ' . $this->division,
@@ -95,9 +95,9 @@ class CorporationWalletTransactionByDivisionJob extends NewEsiBase implements Ha
      * @return void
      * @throws \Exception
      */
-    public function handle(): void
+    public function executeJob(): void
     {
-        $processor = new ProcessWalletTransactionResponse($this->getCorporationId(), CorporationInfo::class, $this->division);
+        $processor = new ProcessWalletTransactionResponse($this->corporation_id, CorporationInfo::class, $this->division);
 
         while (true) {
             $response = $this->retrieve($this->getPage());

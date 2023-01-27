@@ -24,25 +24,28 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Jobs\Middleware;
+namespace Seatplus\Eveapi\Jobs;
 
-use Exception;
-
-class HasRefreshTokenMiddleware
+interface BaseJobInterface
 {
     /**
-     * Process the queued job.
+     * Get the middleware the job should pass through.
      *
-     * @param  mixed  $job
-     * @param  callable  $next
-     * @return mixed
+     * @return array
      */
-    public function handle($job, $next)
-    {
-        if ($job->refresh_token) {
-            return $next($job);
-        }
+    public function middleware(): array;
 
-        $job->fail(new Exception('Refresh token is missing'));
-    }
+    /**
+     * Get the tags that should be assigned to the job.
+     *
+     * @return array
+     */
+    public function tags(): array;
+
+    /**
+     * Execute the job.
+     *
+     * @return void
+     */
+    public function executeJob(): void;
 }

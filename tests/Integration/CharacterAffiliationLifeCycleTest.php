@@ -2,10 +2,13 @@
 
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Redis;
+use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
+use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfoJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Services\Facade\RetrieveEsiData;
 
 it('dispatches alliance job', function () {
     Queue::fake();
@@ -157,4 +160,49 @@ it('updates cached ids', function () {
 
     expect(CharacterAffiliation::first())->character_id
         ->toBe($character_affiliation->character_id);
+});
+
+it('applies binary search and chaches it if one id is invalid', function () {
+    Queue::fake();
+
+    CharacterAffiliation::query()->delete();
+    $mock_data = CharacterAffiliation::factory()->make();
+
+    // expect no invalid ids in cache
+    expect(cache('invalid_character_ids'))->toBeNull();
+
+    // prepare the ids with a length of 2, the first id must be the invalid one
+    $ids = [123456789, $mock_data->character_id];
+
+    // Prepare the mock responses
+    $exception_mock = \Mockery::mock(\Exception::class);
+    $exception_mock->shouldReceive('getResponse->getReasonPhrase')->andReturn('Invalid character ID');
+    // first create the exception
+    $exception = new RequestFailedException($exception_mock,  new EsiResponse(json_encode([]), [], 'now', 200));
+
+    $mock_data = CharacterAffiliation::factory()->make();
+    $response = new EsiResponse(json_encode([$mock_data]), [], 'now', 200);
+
+    // Expectation for the 1st call
+    RetrieveEsiData::shouldReceive('execute')
+        ->once()
+        ->andThrow($exception)
+
+        // Expectation for the 2nd call
+        ->shouldReceive('execute')
+        ->once()
+        ->andThrow($exception)
+
+        // Expectation for the 3rd call
+        ->shouldReceive('execute')
+        ->once()
+        ->andReturn($response);
+
+    (new CharacterAffiliationJob($ids))->handle();
+
+    // Check that first id is cached as invalid
+    expect(cache('invalid_character_ids'))->toBe([123456789])
+        ->and(CharacterAffiliation::all())->toHaveCount(1)
+        ->and(CharacterAffiliation::first())->character_id
+        ->toBe($mock_data->character_id);
 });

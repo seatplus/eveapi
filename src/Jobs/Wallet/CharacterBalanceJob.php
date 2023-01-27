@@ -26,38 +26,34 @@
 
 namespace Seatplus\Eveapi\Jobs\Wallet;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Wallet\Balance;
 use Seatplus\Eveapi\Traits\HasPages;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CharacterBalanceJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+class CharacterBalanceJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
     use HasPathValues;
     use HasRequiredScopes;
     use HasPages;
 
-    public function __construct(JobContainer $job_container)
+    public function __construct(public int $character_id)
     {
-        $this->setJobType('character');
-        parent::__construct($job_container);
-
-        $this->setMethod('get');
-        $this->setEndpoint('/characters/{character_id}/wallet/');
-        $this->setVersion('v1');
+        parent::__construct(
+            method: 'get',
+            endpoint: '/characters/{character_id}/wallet/',
+            version: 'v1',
+        );
 
         $this->setRequiredScope('esi-wallet.read_character_wallet.v1');
 
         $this->setPathValues([
-            'character_id' => $this->getCharacterId(),
+            'character_id' => $character_id,
         ]);
     }
 
@@ -69,11 +65,8 @@ class CharacterBalanceJob extends NewEsiBase implements HasPathValuesInterface, 
     public function middleware(): array
     {
         return [
-            new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
+            ...parent::middleware(),
         ];
     }
 
@@ -81,7 +74,7 @@ class CharacterBalanceJob extends NewEsiBase implements HasPathValuesInterface, 
     {
         return [
             'character',
-            'character_id: ' . $this->getCharacterId(),
+            'character_id: ' . $this->character_id,
             'wallet',
             'balance',
         ];
@@ -93,12 +86,16 @@ class CharacterBalanceJob extends NewEsiBase implements HasPathValuesInterface, 
      * @return void
      * @throws \Exception
      */
-    public function handle(): void
+    public function executeJob(): void
     {
         $response = $this->retrieve($this->getPage());
 
+        if ($response->isCachedLoad()) {
+            return;
+        }
+
         Balance::updateOrCreate([
-            'balanceable_id' => $this->getCharacterId(),
+            'balanceable_id' => $this->character_id,
             'balanceable_type' => CharacterInfo::class,
         ], [
            'balance' => $response->scalar,

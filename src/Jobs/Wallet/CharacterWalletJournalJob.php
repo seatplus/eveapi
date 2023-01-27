@@ -26,38 +26,39 @@
 
 namespace Seatplus\Eveapi\Jobs\Wallet;
 
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Seatplus\Eveapi\Containers\JobContainer;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\Middleware\HasRefreshTokenMiddleware;
+use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Jobs\NewEsiBase;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Services\Wallet\ProcessWalletJournalResponse;
 use Seatplus\Eveapi\Traits\HasPages;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CharacterWalletJournalJob extends NewEsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+class CharacterWalletJournalJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
     use HasPathValues;
     use HasRequiredScopes;
     use HasPages;
 
-    public function __construct(JobContainer $job_container)
-    {
-        $this->setJobType('character');
-        parent::__construct($job_container);
+    public function __construct(
+        public int $character_id
+    ) {
+        parent::__construct(
+            method: 'get',
+            endpoint: '/characters/{character_id}/wallet/journal/',
+            version: 'v6',
+        );
 
-        $this->setMethod('get');
-        $this->setEndpoint('/characters/{character_id}/wallet/journal/');
-        $this->setVersion('v6');
+        $this->setPathValues([
+            'character_id' => $character_id,
+        ]);
 
         $this->setRequiredScope('esi-wallet.read_character_wallet.v1');
 
         $this->setPathValues([
-            'character_id' => $this->getCharacterId(),
+            'character_id' => $this->character_id,
         ]);
     }
 
@@ -69,11 +70,8 @@ class CharacterWalletJournalJob extends NewEsiBase implements HasPathValuesInter
     public function middleware(): array
     {
         return [
-            new HasRefreshTokenMiddleware,
             new HasRequiredScopeMiddleware,
-            (new ThrottlesExceptionsWithRedis(80, 5))
-                ->by('esiratelimit')
-                ->backoff(5),
+            ...parent::middleware(),
         ];
     }
 
@@ -81,7 +79,7 @@ class CharacterWalletJournalJob extends NewEsiBase implements HasPathValuesInter
     {
         return [
             'character',
-            'character_id: ' . $this->getCharacterId(),
+            'character_id: ' . $this->character_id,
             'wallet',
             'journal',
         ];
@@ -93,9 +91,9 @@ class CharacterWalletJournalJob extends NewEsiBase implements HasPathValuesInter
      * @return void
      * @throws \Exception
      */
-    public function handle(): void
+    public function executeJob(): void
     {
-        $processor = new ProcessWalletJournalResponse($this->getCharacterId(), CharacterInfo::class);
+        $processor = new ProcessWalletJournalResponse($this->character_id, CharacterInfo::class);
 
         while (true) {
             $response = $this->retrieve($this->getPage());
