@@ -77,7 +77,7 @@ class CharacterBatchJob implements ShouldQueue, ShouldBeUnique
 
                 // 2. Check if it is still pending
                 // Discard update if still pending or finished at is younger than 60 minutes
-                if ($batch_update->is_pending && now()->isSameDay($batch_update->started_at)) {
+                if ($batch_update->is_pending && now()->isSameHour($batch_update->started_at)) {
                     return;
                 }
 
