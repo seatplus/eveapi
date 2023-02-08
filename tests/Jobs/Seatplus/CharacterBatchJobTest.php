@@ -54,33 +54,38 @@ it('contains jobs if refresh_token has scope', function (string $scope, array $c
 
     Bus::fake();
 
-    (new CharacterBatchJob(testCharacter()->character_id))->handle();
+    $batch = new CharacterBatchJob(testCharacter()->character_id);
+
+    //dd($batch->batch_jobs);
 
     // loop through classes and check if jobs that are instance of class are in batch
     foreach ($classes as $class) {
         // if class is of type array
         if (is_array($class)) {
-            Bus::assertBatched(function (\Illuminate\Bus\PendingBatch $batch) use ($class) {
-                // get array inside the jobs array
-                $jobs = $batch->jobs->first(fn ($job) => is_array($job));
-                $classes = $class;
 
-                // expect lenght of jobs to be equal to classes
-                if (count($jobs) !== count($classes)) {
-                    return false;
-                }
+           $jobs = collect($batch->getBatchJobs())->first(fn ($job) => is_array($job));
+           $classes = $class;
 
-                // loop through classes and check if jobs that are instance of class are in batch
-                foreach ($classes as $class) {
-                    if (! collect($jobs)->first(fn ($job) => $job instanceof $class)) {
-                        return false;
-                    }
-                }
+            // expect lenght of jobs to be equal to classes
+           expect($jobs)->toHaveCount(count($classes));
 
-                return true;
-            });
+
+            if (count($jobs) !== count($classes)) {
+                return false;
+            }
+
+            // loop through classes and check if jobs that are instance of class are in batch
+            foreach ($classes as $class) {
+                $collection = (collect($jobs)
+                    ->map(fn ($job) => $job instanceof $class)
+                    ->filter());
+
+                expect($collection)->toHaveCount(1);
+            }
+
         } else {
-            Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof $class));
+            $batched_jobs = collect($batch->getBatchJobs())->filter(fn ($job) => $job instanceof $class);
+            expect($batched_jobs)->toHaveCount(1);
         }
     }
 })->with([
