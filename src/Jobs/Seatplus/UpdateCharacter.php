@@ -32,9 +32,10 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\Middleware\RateLimitedWithRedis;
 use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Jobs\Seatplus\Batch\CharacterBatchJob;
+use Seatplus\Eveapi\Models\BatchUpdate;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Schedules;
 
@@ -46,48 +47,72 @@ class UpdateCharacter implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    private int $delaySeconds;
+    private int $interval_in_minutes;
 
     public function __construct(
         public ?RefreshToken $refresh_token = null
     ) {
     }
 
-    public function middleware()
-    {
-        return  [
-            (new RateLimitedWithRedis('character_batch'))->dontRelease(),
-        ];
-    }
-
     public function handle()
     {
+
+        // if refresh_token is set, we only want to update this character
         $this->refresh_token
-            ? CharacterBatchJob::dispatch($this->refresh_token->character_id)->onQueue('high')
-            : RefreshToken::cursor()->each(fn ($token, $key) => CharacterBatchJob::dispatch($token->character_id)->delay(now()->addSeconds($key * $this->getDelaySeconds()))->onQueue('default'));
+            ? $this->updateSingleCharacter()
+            // otherwise we want to update the next increment of characters
+            : $this->updateNextIncrementOfCharacters();
     }
 
-    private function getDelaySeconds() : int
+    private function updateSingleCharacter(): void
     {
-        if (! isset($this->delaySeconds)) {
+        CharacterBatchJob::dispatch($this->refresh_token->character_id)->onQueue('high');
+    }
+
+    private function updateNextIncrementOfCharacters(): void
+    {
+
+        // get count of all RefreshToklens
+        $refresh_token_count = RefreshToken::count();
+        // get number of RefreshTokens that are needed to be completed per minute to complete all RefreshTokens in 1 hour
+        $refresh_tokens_per_minute = $refresh_token_count / $this->getIntervalInMinutes();
+
+        // round refresh_tokens_per_minute to nearest larger integer
+        $refresh_tokens_per_minute = (int) ceil($refresh_tokens_per_minute);
+
+        // get subquery of all characters that are in pending batch updates (finished_at is null)
+        $pending_batch_updates = BatchUpdate::query()
+            ->select('batchable_id')
+            ->whereNull('finished_at')
+            ->where('batchable_type', CharacterInfo::class);
+
+        // get random RefreshTokens that are not in pending batch updates subquery
+        $refresh_tokens = RefreshToken::query()
+            ->whereNotIn('character_id', $pending_batch_updates)
+            ->inRandomOrder()
+            ->limit($refresh_tokens_per_minute)
+            ->get();
+
+        // dispatch jobs for each RefreshToken
+        $refresh_tokens
+            ->each(fn ($token) => CharacterBatchJob::dispatch($token->character_id)->onQueue('default'));
+    }
+
+    private function getIntervalInMinutes() : int
+    {
+        if (! isset($this->interval_in_minutes)) {
             $expression = Schedules::firstWhere('job', UpdateCharacter::class)?->expression;
 
-            $this->delaySeconds = match ($expression) {
+            $this->interval_in_minutes = match ($expression) {
                 is_string($expression) => call_user_func(function ($expression) {
                     $cron = new CronExpression($expression);
-                    $seconds = carbon($cron->getPreviousRunDate())->diffInSeconds($cron->getNextRunDate(null));
-                    $tokens = RefreshToken::count();
 
-                    if ($tokens >= $seconds) {
-                        return 1;
-                    }
-
-                    return $seconds / $tokens <= 10 ?: 10;
+                    return carbon($cron->getPreviousRunDate())->diffInMinutes($cron->getNextRunDate(null));
                 }, $expression),
-                default => 10,
+                default => 60,
             };
         }
 
-        return $this->delaySeconds;
+        return $this->interval_in_minutes;
     }
 }
