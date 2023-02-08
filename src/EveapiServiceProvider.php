@@ -108,17 +108,8 @@ class EveapiServiceProvider extends ServiceProvider
         // Add commands
         $this->addCommands();
 
-        RateLimiter::for(
-            'corporation_batch',
-            fn ($job) => Limit::perHour(1)
-            ->by($job->corporation_id ?? 'corporation_batch')
-        );
-
-        RateLimiter::for(
-            'character_batch',
-            fn ($job) => Limit::perHour(1)
-            ->by($job?->refresh_token?->character_id ?? 'character_batch')
-        );
+        // Add Rate Limiters
+        $this->addRateLimiters();
     }
 
     public function register()
@@ -288,5 +279,31 @@ class EveapiServiceProvider extends ServiceProvider
             ClearCache::class,
             CheckJobsCommand::class,
         ]);
+    }
+
+    private function addRateLimiters()
+    {
+
+        RateLimiter::for(
+            'corporation_batch',
+            fn ($job) => Limit::perHour(1)
+                ->by($job->corporation_id ?? 'corporation_batch')
+        );
+
+        RateLimiter::for(
+            'character_batch',
+            function ($job) {
+
+                $character_id = $job?->refresh_token?->character_id;
+                $queue_name = $job?->queue;
+
+                // if queue is high then we need no rate limiting
+                if ($queue_name === 'high') {
+                    return Limit::none();
+                }
+
+                return Limit::perHour(1)->by("character_batch_{$character_id}_{$queue_name}");
+            }
+        );
     }
 }
