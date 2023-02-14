@@ -35,11 +35,6 @@ class System extends Model
 {
     use HasFactory;
 
-    protected static function newFactory()
-    {
-        return SystemFactory::new();
-    }
-
     /**
      * The attributes that aren't mass assignable.
      *

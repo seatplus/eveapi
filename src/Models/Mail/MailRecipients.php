@@ -34,11 +34,6 @@ class MailRecipients extends Model
 {
     use HasFactory;
 
-    protected static function newFactory()
-    {
-        return MailRecipientsFactory::new();
-    }
-
     /**
      * @var bool
      */

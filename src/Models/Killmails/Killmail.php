@@ -36,11 +36,6 @@ class Killmail extends Model
 {
     use HasFactory;
 
-    protected static function newFactory()
-    {
-        return KillmailFactory::new();
-    }
-
     /**
      * The attributes that aren't mass assignable.
      *

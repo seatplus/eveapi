@@ -11,6 +11,7 @@ use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use Seatplus\Eveapi\EveapiServiceProvider;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Staudenmeir\LaravelCte\DatabaseServiceProvider;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 abstract class TestCase extends OrchestraTestCase
 {
@@ -22,6 +23,10 @@ abstract class TestCase extends OrchestraTestCase
     {
         parent::setUp();
 
+        // Setup factories
+        Factory::guessFactoryNamesUsing(
+            fn (string $modelName) => 'Seatplus\\Eveapi\\Database\\Factories\\'.class_basename($modelName).'Factory'
+        );
 
         // Fake Queue by default so nothing gets queued during tests
         //Queue::fake();

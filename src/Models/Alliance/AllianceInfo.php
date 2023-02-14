@@ -40,11 +40,6 @@ class AllianceInfo extends Model
 {
     use HasFactory;
 
-    protected static function newFactory()
-    {
-        return AllianceInfoFactory::new();
-    }
-
     /**
      * The attributes that aren't mass assignable.
      *

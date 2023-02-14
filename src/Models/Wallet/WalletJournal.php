@@ -45,11 +45,6 @@ class WalletJournal extends Model
         'date' => 'datetime',
     ];
 
-    protected static function newFactory()
-    {
-        return WalletJournalFactory::new();
-    }
-
     public function wallet_journable()
     {
         return $this->morphTo();

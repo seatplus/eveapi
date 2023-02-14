@@ -85,11 +85,6 @@ class Asset extends Model
         'updating' => AssetUpdating::class,
     ];
 
-    protected static function newFactory()
-    {
-        return AssetFactory::new();
-    }
-
     public function assetable()
     {
         return $this->morphTo();

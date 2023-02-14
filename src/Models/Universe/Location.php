@@ -34,11 +34,6 @@ class Location extends Model
 {
     use HasFactory;
 
-    protected static function newFactory()
-    {
-        return LocationFactory::new();
-    }
-
     /**
      * The attributes that aren't mass assignable.
      *

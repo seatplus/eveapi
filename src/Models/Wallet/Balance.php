@@ -36,11 +36,6 @@ class Balance extends Model
 
     protected $guarded = false;
 
-    protected static function newFactory()
-    {
-        return BalanceFactory::new();
-    }
-
     public function balanceable()
     {
         return $this->morphTo();

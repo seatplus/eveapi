@@ -36,11 +36,6 @@ class Label extends Model
 
     protected $guarded = false;
 
-    protected static function newFactory()
-    {
-        return LabelFactory::new();
-    }
-
     public function labelable()
     {
         return $this->morphTo();

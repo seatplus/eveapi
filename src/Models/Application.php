@@ -46,11 +46,6 @@ class Application extends Model
 
     public $incrementing = false;
 
-    protected static function newFactory()
-    {
-        return ApplicationFactory::new();
-    }
-
     protected static function booted()
     {
         static::creating(function (Model $model) {

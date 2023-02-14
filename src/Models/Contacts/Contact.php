@@ -40,11 +40,6 @@ class Contact extends Model
 
     use HasFactory;
 
-    protected static function newFactory()
-    {
-        return ContactFactory::new();
-    }
-
     public function contactable()
     {
         return $this->morphTo();

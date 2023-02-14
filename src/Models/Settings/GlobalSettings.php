@@ -34,11 +34,6 @@ class GlobalSettings extends Model
 {
     use HasFactory;
 
-    protected static function newFactory()
-    {
-        return GlobalSettingsFactory::new();
-    }
-
     /**
      * The attributes that are mass assignable.
      *

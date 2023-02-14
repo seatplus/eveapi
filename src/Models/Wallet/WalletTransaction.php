@@ -47,11 +47,6 @@ class WalletTransaction extends Model
         'date' => 'datetime',
     ];
 
-    protected static function newFactory()
-    {
-        return WalletTransactionFactory::new();
-    }
-
     public function wallet_transactionable()
     {
         return $this->morphTo();

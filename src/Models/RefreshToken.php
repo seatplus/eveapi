@@ -43,11 +43,6 @@ class RefreshToken extends Model
     use SoftDeletes;
     use HasFactory;
 
-    protected static function newFactory()
-    {
-        return RefreshTokenFactory::new();
-    }
-
     /**
      * @var array
      */

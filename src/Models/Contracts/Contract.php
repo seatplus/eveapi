@@ -40,11 +40,6 @@ class Contract extends Model
     use HasFactory;
     use HasWatchlist;
 
-    protected static function newFactory()
-    {
-        return ContractFactory::new();
-    }
-
     /**
      * The attributes that aren't mass assignable.
      *

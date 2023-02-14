@@ -70,11 +70,6 @@ class Type extends Model
 
     protected $with = ['group', 'category'];
 
-    protected static function newFactory()
-    {
-        return TypeFactory::new();
-    }
-
     public function group()
     {
         return $this->hasOne(Group::class, 'group_id', 'group_id');
