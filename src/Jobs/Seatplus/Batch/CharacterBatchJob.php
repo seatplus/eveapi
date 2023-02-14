@@ -31,6 +31,7 @@ use Seatplus\Eveapi\Jobs\Skills\SkillsJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterBalanceJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletJournalJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
+use Seatplus\Eveapi\Models\BatchStatistic;
 use Seatplus\Eveapi\Models\BatchUpdate;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
@@ -92,6 +93,8 @@ class CharacterBatchJob implements ShouldQueue, ShouldBeUnique
         // 3. Dispatch and Return Job
         $batch = $this->execute();
 
+        BatchStatistic::createEntry($batch);
+
         $batch_update->batch_id = $batch->id;
         $batch_update->save();
     }
@@ -104,6 +107,7 @@ class CharacterBatchJob implements ShouldQueue, ShouldBeUnique
         return Bus::batch($this->getBatchJobs())
             ->finally(function (Batch $batch) {
                 BatchUpdate::where('batch_id', $batch->id)->update(['finished_at' => now()]);
+                BatchStatistic::where('batch_id', $batch->id)->update(['finished_at' => now()]);
             })
             ->name($batch_name)
             ->onQueue($this->queue)

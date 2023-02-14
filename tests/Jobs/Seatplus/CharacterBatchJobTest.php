@@ -20,6 +20,7 @@ use Seatplus\Eveapi\Jobs\Skills\SkillsJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterBalanceJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletJournalJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
+use Seatplus\Eveapi\Models\BatchStatistic;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 it('creates BatchUpdate entries', function () {
@@ -100,3 +101,14 @@ it('contains jobs if refresh_token has scope', function (string $scope, array $c
     ['esi-skills.read_skillqueue.v1', [SkillQueueJob::class]],
     ['esi-mail.read_mail.v1', [MailHeaderJob::class]],
 ]);
+
+it('Batch Statistics entry has been made', function () {
+    Bus::fake();
+
+    expect(BatchStatistic::count())->toBe(0);
+
+    (new CharacterBatchJob(testCharacter()->character_id))->handle();
+
+    expect(BatchStatistic::count())->toBe(1)
+        ->and(BatchStatistic::first())->finished_at->toBeNull();
+});

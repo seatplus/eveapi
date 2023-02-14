@@ -32,6 +32,7 @@ use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseGroupByIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseRegionByRegionIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
+use Seatplus\Eveapi\Models\BatchStatistic;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\Contracts\ContractItem;
@@ -58,6 +59,17 @@ it('dispatch get missing types from character assets job', function () {
     (new MaintenanceJob)->handle();
 
     Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingTypesFromCharacterAssets));
+});
+
+it('Batch Statistics entry has been made', function () {
+    Bus::fake();
+
+    expect(BatchStatistic::count())->toBe(0);
+
+    (new MaintenanceJob)->handle();
+
+    expect(BatchStatistic::count())->toBe(1)
+        ->and(BatchStatistic::first())->finished_at->toBeNull();
 });
 
 it('fetches missing types from assets', function () {

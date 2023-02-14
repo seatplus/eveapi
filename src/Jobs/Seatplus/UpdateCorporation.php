@@ -38,6 +38,7 @@ use Seatplus\Eveapi\Jobs\Corporation\CorporationDivisionsJob;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
 use Seatplus\Eveapi\Jobs\Wallet\CorporationBalanceJob;
 use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletJournalJob;
+use Seatplus\Eveapi\Models\BatchStatistic;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
@@ -81,15 +82,16 @@ class UpdateCorporation implements ShouldQueue
     {
         $corporation = optional(CorporationInfo::find($corporation_id))->name ?? $corporation_id;
 
-        $success_message = sprintf('%s (corporation) updated.', $corporation);
         $batch_name = sprintf('%s (corporation) update batch', $corporation);
 
         $batch = Bus::batch($this->getBatchJobs($corporation_id))
-            ->then(fn (Batch $batch) => logger()->info($success_message))
+            ->then(fn (Batch $batch) => BatchStatistic::where('batch_id', $batch->id)->update(['finished_at' => now()]))
             ->name($batch_name)
             ->onQueue($queue)
             ->allowFailures()
             ->dispatch();
+
+        BatchStatistic::createEntry($batch);
     }
 
     private function getBatchJobs(int $corporation_id): array
