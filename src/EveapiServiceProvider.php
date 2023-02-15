@@ -283,7 +283,6 @@ class EveapiServiceProvider extends ServiceProvider
 
     private function addRateLimiters()
     {
-
         RateLimiter::for(
             'corporation_batch',
             fn ($job) => Limit::perHour(1)
@@ -293,7 +292,6 @@ class EveapiServiceProvider extends ServiceProvider
         RateLimiter::for(
             'character_batch',
             function ($job) {
-
                 $character_id = $job?->refresh_token?->character_id;
                 $queue_name = $job?->queue;
 

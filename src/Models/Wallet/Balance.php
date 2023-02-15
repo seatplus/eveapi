@@ -28,7 +28,6 @@ namespace Seatplus\Eveapi\Models\Wallet;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\BalanceFactory;
 
 class Balance extends Model
 {

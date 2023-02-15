@@ -56,7 +56,6 @@ class UpdateCharacter implements ShouldQueue
 
     public function handle()
     {
-
         // if refresh_token is set, we only want to update this character
         $this->refresh_token
             ? $this->updateSingleCharacter()
@@ -71,7 +70,6 @@ class UpdateCharacter implements ShouldQueue
 
     private function updateNextIncrementOfCharacters(): void
     {
-
         // get count of all RefreshToklens
         $refresh_token_count = RefreshToken::count();
         // get number of RefreshTokens that are needed to be completed per minute to complete all RefreshTokens in 1 hour

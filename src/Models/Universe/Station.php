@@ -28,7 +28,6 @@ namespace Seatplus\Eveapi\Models\Universe;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\StationFactory;
 use Seatplus\Eveapi\Events\UniverseStationCreated;
 
 class Station extends Model

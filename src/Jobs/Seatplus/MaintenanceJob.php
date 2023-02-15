@@ -53,7 +53,6 @@ use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromSkillQueue;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromSkills;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromWalletTransaction;
 use Seatplus\Eveapi\Models\BatchStatistic;
-use Seatplus\Eveapi\Models\Skills\Skill;
 
 class MaintenanceJob implements ShouldQueue
 {
@@ -77,7 +76,6 @@ class MaintenanceJob implements ShouldQueue
      */
     public function handle()
     {
-
         $batch = $this->dispatchBatch();
 
         BatchStatistic::createEntry($batch);

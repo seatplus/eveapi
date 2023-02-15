@@ -28,7 +28,6 @@ namespace Seatplus\Eveapi\Models\Contacts;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\LabelFactory;
 
 class Label extends Model
 {

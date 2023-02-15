@@ -29,7 +29,6 @@ namespace Seatplus\Eveapi\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\SsoScopesFactory;
 
 class SsoScopes extends Model
 {

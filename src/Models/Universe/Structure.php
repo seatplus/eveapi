@@ -28,7 +28,6 @@ namespace Seatplus\Eveapi\Models\Universe;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\StructureFactory;
 use Seatplus\Eveapi\Events\UniverseStructureCreated;
 
 class Structure extends Model

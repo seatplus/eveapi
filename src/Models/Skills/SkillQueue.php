@@ -28,7 +28,6 @@ namespace Seatplus\Eveapi\Models\Skills;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\SkillQueueFactory;
 use Seatplus\Eveapi\Models\Universe\Type;
 
 class SkillQueue extends Model

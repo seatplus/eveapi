@@ -28,7 +28,6 @@ namespace Seatplus\Eveapi\Models\Corporation;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\CorporationInfoFactory;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Application;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;

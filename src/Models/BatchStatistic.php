@@ -15,7 +15,7 @@ class BatchStatistic extends Model
     protected $guarded = [];
 
     protected $appends = [
-        'duration'
+        'duration',
     ];
 
     protected $casts = [
@@ -49,6 +49,4 @@ class BatchStatistic extends Model
 
         return parent::create($attributes);
     }
-
-
 }

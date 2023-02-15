@@ -28,7 +28,6 @@ namespace Seatplus\Eveapi\Models\Killmails;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\KillmailFactory;
 use Seatplus\Eveapi\Models\Universe\System;
 use Seatplus\Eveapi\Models\Universe\Type;
 

@@ -63,12 +63,11 @@ it('contains jobs if refresh_token has scope', function (string $scope, array $c
     foreach ($classes as $class) {
         // if class is of type array
         if (is_array($class)) {
-
-           $jobs = collect($batch->getBatchJobs())->first(fn ($job) => is_array($job));
-           $classes = $class;
+            $jobs = collect($batch->getBatchJobs())->first(fn ($job) => is_array($job));
+            $classes = $class;
 
             // expect lenght of jobs to be equal to classes
-           expect($jobs)->toHaveCount(count($classes));
+            expect($jobs)->toHaveCount(count($classes));
 
 
             if (count($jobs) !== count($classes)) {
@@ -83,7 +82,6 @@ it('contains jobs if refresh_token has scope', function (string $scope, array $c
 
                 expect($collection)->toHaveCount(1);
             }
-
         } else {
             $batched_jobs = collect($batch->getBatchJobs())->filter(fn ($job) => $job instanceof $class);
             expect($batched_jobs)->toHaveCount(1);

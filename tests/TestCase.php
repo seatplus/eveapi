@@ -3,6 +3,7 @@
 
 namespace Seatplus\Eveapi\Tests;
 
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
@@ -11,7 +12,6 @@ use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use Seatplus\Eveapi\EveapiServiceProvider;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Staudenmeir\LaravelCte\DatabaseServiceProvider;
-use Illuminate\Database\Eloquent\Factories\Factory;
 
 abstract class TestCase extends OrchestraTestCase
 {
