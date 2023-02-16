@@ -10,3 +10,11 @@ it('has duration attribute', function () {
 
     expect($batch_statistic->duration)->toBe(5 * 60);
 });
+
+test('BatchStatistic factory has finished state ', function () {
+    $batch_statistic = BatchStatistic::factory()->finished()->create();
+
+    expect($batch_statistic->started_at)->toBeInstanceOf(Carbon\Carbon::class)
+        ->and($batch_statistic->finished_at)->toBeInstanceOf(Carbon\Carbon::class)
+        ->and($batch_statistic->duration)->toBeGreaterThan(0);
+});

@@ -35,11 +35,32 @@ class BatchStatisticFactory extends Factory
 
     public function definition()
     {
+
+        // get app env from config
+        $env = config('app.env');
+
+        // get horizon config
+        $horizon_config = config("horizon.environments.${env}.seatplus-workers");
+
         return [
             'batch_id' => $this->faker->uuid,
             'batch_name' => $this->faker->name,
             'total_jobs' => $this->faker->numberBetween(1, 100),
-            'queue_balancing_configuration' => $this->faker->numberBetween(1, 100),
+            'queue_balancing_configuration' => json_encode($horizon_config)
         ];
+    }
+
+    public function finished() : Factory
+    {
+        return $this->state(function (array $attributes) {
+
+            $started_at = $this->faker->dateTimeBetween('-1 week', 'now');
+            $duration = $this->faker->numberBetween(3, 42);
+
+            return [
+                'started_at' => $started_at,
+                'finished_at' => carbon($started_at)->addMinutes($duration),
+            ];
+        });
     }
 }
