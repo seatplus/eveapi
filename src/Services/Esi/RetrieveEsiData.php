@@ -48,10 +48,6 @@ class RetrieveEsiData
 
     private EsiClientSetup $esi_client;
 
-    /**
-     * @throws \Spatie\DataTransferObject\Exceptions\UnknownProperties
-     * @throws RequestFailedException
-     */
     public function getClient(): EsiClient
     {
         if (! isset($this->client)) {
@@ -71,8 +67,8 @@ class RetrieveEsiData
             }
 
             $authentication = new EsiAuthentication(
-                refresh_token: $refresh_token->refresh_token,
                 access_token: $refresh_token->getRawOriginal('token'),
+                refresh_token: $refresh_token->refresh_token,
                 token_expires: $refresh_token->expires_on,
             );
 
@@ -157,8 +153,8 @@ class RetrieveEsiData
             $logger->warning('Expected a paged response but had none');
         }
 
-        if (array_key_exists('Warning', $response->headers)) {
-            $logger->warning('A response contained a warning: ' . $response->headers['Warning']);
+        if (array_key_exists('Warning', $response->raw_headers)) {
+            $logger->warning('A response contained a warning: ' . $response->raw_headers['Warning']);
         }
     }
 
