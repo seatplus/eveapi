@@ -100,19 +100,20 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
             }
 
             // First update the
-            collect($response)->each(fn ($asset) => Asset::updateOrCreate([
-                'item_id' => $asset->item_id,
-            ], [
-                'assetable_id' => $this->character_id,
-                'assetable_type' => CharacterInfo::class,
-                'is_blueprint_copy' => optional($asset)->is_blueprint_copy ?? false,
-                'is_singleton' => $asset->is_singleton,
-                'location_flag' => $asset->location_flag,
-                'location_id' => $asset->location_id,
-                'location_type' => $asset->location_type,
-                'quantity' => $asset->quantity,
-                'type_id' => $asset->type_id,
-            ]))->pipe(fn (Collection $response) => $response->pluck('item_id')->each(fn ($id) => $this->known_assets->push($id)));
+            collect($response)
+                ->each(fn ($asset) => $this->known_assets->push([
+                    'item_id' => $asset->item_id,
+                    'assetable_id' => $this->character_id,
+                    'assetable_type' => CharacterInfo::class,
+                    'is_blueprint_copy' => optional($asset)->is_blueprint_copy ?? false,
+                    'is_singleton' => $asset->is_singleton,
+                    'location_flag' => $asset->location_flag,
+                    'location_id' => $asset->location_id,
+                    'location_type' => $asset->location_type,
+                    'quantity' => $asset->quantity,
+                    'type_id' => $asset->type_id,
+                    ])
+                );
 
             // Lastly if more pages are present load next page
             if ($this->page >= $response->pages) {
@@ -122,6 +123,7 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
             $this->page++;
         }
 
+        $this->persist();
         // Cleanup old items
         $this->cleanup();
 
@@ -132,9 +134,19 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
 
     private function cleanup()
     {
+
         Asset::query()
             ->where('assetable_id', $this->character_id)
-            ->whereNotIn('item_id', $this->known_assets->toArray())
+            ->whereNotIn('item_id', $this->known_assets->pluck('item_id')->toArray())
             ->delete();
+    }
+
+    private function persist()
+    {
+        Asset::upsert(
+            $this->known_assets->toArray(),
+            ['item_id'],
+            ['assetable_id', 'assetable_type', 'is_blueprint_copy', 'is_singleton', 'location_flag', 'location_id', 'location_type', 'quantity', 'type_id']
+        );
     }
 }
