@@ -101,7 +101,8 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
 
             // First update the
             collect($response)
-                ->each(fn ($asset) => $this->known_assets->push([
+                ->each(
+                    fn ($asset) => $this->known_assets->push([
                     'item_id' => $asset->item_id,
                     'assetable_id' => $this->character_id,
                     'assetable_type' => CharacterInfo::class,
@@ -134,7 +135,6 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
 
     private function cleanup()
     {
-
         Asset::query()
             ->where('assetable_id', $this->character_id)
             ->whereNotIn('item_id', $this->known_assets->pluck('item_id')->toArray())

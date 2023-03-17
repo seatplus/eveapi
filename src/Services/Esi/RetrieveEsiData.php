@@ -157,7 +157,6 @@ class RetrieveEsiData
         }
 
         if (array_key_exists('Warning', $response->parsed_headers)) {
-
             $warning = $response->parsed_headers['Warning'];
 
             $logger->warning("Response contained a warning: ${warning}");
