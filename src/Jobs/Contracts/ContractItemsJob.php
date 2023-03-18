@@ -32,6 +32,7 @@ use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Contracts\ContractItem;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
@@ -72,9 +73,10 @@ abstract class ContractItemsJob extends EsiBase implements HasPathValuesInterfac
             return;
         }
 
-        collect($response)->each(fn ($item) => ContractItem::updateOrCreate([
+        $contract_items = collect($response)->map(fn ($item) => [
+            // primary
             'record_id' => $item->record_id,
-        ], [
+        //others
             'contract_id' => $this->contract_id,
             'is_included' => $item->is_included,
             'is_singleton' => $item->is_singleton,
@@ -83,6 +85,17 @@ abstract class ContractItemsJob extends EsiBase implements HasPathValuesInterfac
 
             // optionals
             'raw_quantity' => optional($item)->raw_quantity,
-        ]));
+        ]);
+
+        ContractItem::upsert(
+            $contract_items->toArray(),
+            ['record_id'],
+            ['is_included', 'is_singleton', 'quantity', 'type_id', 'raw_quantity']
+        );
+
+        // Dispatch Resolve Universe Type Jobs for missing Types
+        ContractItem::doesntHave('type')
+            ->pluck('type_id')
+            ->each(fn ($type_id) => ResolveUniverseTypeByIdJob::dispatch($type_id)->onQueue('high'));
     }
 }

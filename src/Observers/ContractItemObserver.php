@@ -52,6 +52,7 @@ class ContractItemObserver
             return;
         }
 
+        // TODO check if Observer is obsolete
         ResolveUniverseTypeByIdJob::dispatch($this->contract_item->type_id)->onQueue('high');
     }
 }

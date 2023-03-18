@@ -78,6 +78,8 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
     {
         $page = 1;
 
+        $contracts = collect();
+
         while (true) {
             $response = $this->retrieve($page);
 
@@ -85,9 +87,10 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
                 return;
             }
 
-            collect($response)->each(fn ($contract) => Contract::updateOrCreate([
+            collect($response)->each(fn ($contract) => $contracts->push([
+                // primary
                 'contract_id' => $contract->contract_id,
-            ], [
+                // other columns
                 'acceptor_id' => $contract->acceptor_id,
                 'assignee_id' => $contract->assignee_id,
                 'availability' => $contract->availability,
@@ -113,27 +116,6 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
                 'volume' => optional($contract)->volume,
             ]));
 
-            $contract_ids = collect($response)->pluck('contract_id')->toArray();
-
-            $character = CharacterInfo::find($this->character_id);
-
-            if ($character) {
-                $character->contracts()->syncWithoutDetaching($contract_ids);
-            }
-
-            $location_job_array = Contract::query()
-                ->whereIn('contract_id', $contract_ids)
-                ->doesntHave('items')
-                ->where('volume', '>', 0)
-                ->where('status', '<>', 'deleted')
-                ->where('type', '<>', 'courier')
-                ->get()
-                ->map(fn ($contract) => new CharacterContractItemsJob($this->character_id, $contract->contract_id));
-
-            if ($this->batching()) {
-                $this->batch()->add($location_job_array);
-            }
-
             // Lastly if more pages are present load next page
             if ($page >= $response->pages) {
                 break;
@@ -141,5 +123,57 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
 
             $page++;
         }
+
+        Contract::upsert(
+            $contracts->toArray(),
+            ['contract_id'],
+            // TODO check which columns are actually can be updated
+            [
+                'acceptor_id',
+                'assignee_id',
+                'availability',
+                'date_expired',
+                'date_issued',
+                'for_corporation',
+                'issuer_corporation_id',
+                'issuer_id',
+                'status',
+                'type',
+                // optionals
+                'buyout',
+                'collateral',
+                'date_accepted',
+                'date_completed',
+                'days_to_complete',
+                'price',
+                'reward',
+                'end_location_id',
+                'start_location_id',
+                'title',
+                'volume'
+            ]
+        );
+
+        $character = CharacterInfo::find($this->character_id);
+
+        $contract_ids = $contracts->pluck('contract_id')->toArray();
+
+        if ($character) {
+            $character->contracts()->syncWithoutDetaching($contract_ids);
+        }
+
+        $location_job_array = Contract::query()
+            ->whereIn('contract_id', $contract_ids)
+            ->doesntHave('items')
+            ->where('volume', '>', 0)
+            ->where('status', '<>', 'deleted')
+            ->where('type', '<>', 'courier')
+            ->get()
+            ->map(fn ($contract) => new CharacterContractItemsJob($this->character_id, $contract->contract_id));
+
+        if ($this->batching()) {
+            $this->batch()->add($location_job_array);
+        }
+
     }
 }
