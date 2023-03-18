@@ -100,13 +100,14 @@ class CorporationBalanceJob extends EsiBase implements HasPathValuesInterface, H
         }
 
         $corporation_balances = collect($response)
-            ->map(fn ($wallet) => [
+            ->map(
+                fn ($wallet) => [
                 'balanceable_id' => $this->corporation_id,
                 'balanceable_type' => CorporationInfo::class,
                 'division' => data_get($wallet, 'division'),
                 'balance' => data_get($wallet, 'balance'),
             ]
-        );
+            );
 
         Balance::upsert(
             $corporation_balances->toArray(),

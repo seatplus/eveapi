@@ -79,7 +79,7 @@ class SkillQueueJob extends EsiBase implements HasPathValuesInterface, HasRequir
             return;
         }
 
-        $skill_queue = collect($response)->map(fn($queue_item) => [
+        $skill_queue = collect($response)->map(fn ($queue_item) => [
             'character_id' => $this->character_id,
             'skill_id' => data_get($queue_item, 'skill_id'),
             'queue_position' => data_get($queue_item, 'queue_position'),

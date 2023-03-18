@@ -150,7 +150,7 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
                 'end_location_id',
                 'start_location_id',
                 'title',
-                'volume'
+                'volume',
             ]
         );
 
@@ -174,6 +174,5 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
         if ($this->batching()) {
             $this->batch()->add($location_job_array);
         }
-
     }
 }
