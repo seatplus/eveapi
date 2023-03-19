@@ -3,7 +3,6 @@
 namespace Seatplus\Eveapi\Jobs\Wallet;
 
 use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasQueryStringInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
@@ -18,7 +17,10 @@ use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
 abstract class WalletTransactionBase extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, HasQueryStringInterface
 {
-    use HasPathValues, HasRequiredScopes, HasPages, HasQueryValues;
+    use HasPathValues;
+    use HasRequiredScopes;
+    use HasPages;
+    use HasQueryValues;
 
     protected int $from_id = PHP_INT_MAX;
 
@@ -47,7 +49,6 @@ abstract class WalletTransactionBase extends EsiBase implements HasPathValuesInt
         }
 
         while (true) {
-
             $this->setQueryString([
                 'from_id' => $this->from_id,
             ]);
@@ -99,5 +100,4 @@ abstract class WalletTransactionBase extends EsiBase implements HasPathValuesInt
         // This job is very memory consuming hence avoiding memory leaks, the worker should restart
         app('queue.worker')->shouldQuit = 1;
     }
-
 }

@@ -22,13 +22,15 @@ use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
 abstract class WalletJournalBase extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
-    use HasPathValues, HasRequiredScopes, HasPages, HasQueryValues;
+    use HasPathValues;
+    use HasRequiredScopes;
+    use HasPages;
+    use HasQueryValues;
 
     private array $journal_entries = [];
 
     public function executeJob(): void
     {
-
         // get path values
         $path_values = $this->getPathValues();
 
@@ -113,5 +115,4 @@ abstract class WalletJournalBase extends EsiBase implements HasPathValuesInterfa
 
         return $context_type[$context_id_type];
     }
-
 }
