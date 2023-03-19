@@ -26,24 +26,11 @@
 
 namespace Seatplus\Eveapi\Jobs\Wallet;
 
-use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
-use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\EsiBase;
-
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
-use Seatplus\Eveapi\Services\Wallet\ProcessWalletJournalResponse;
 use Seatplus\Eveapi\Traits\HasCorporationRole;
-use Seatplus\Eveapi\Traits\HasPages;
-use Seatplus\Eveapi\Traits\HasPathValues;
-use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CorporationWalletJournalByDivisionJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, HasCorporationRoleInterface
+class CorporationWalletJournalByDivisionJob extends WalletJournalBase
 {
-    use HasPathValues;
-    use HasRequiredScopes;
-    use HasPages;
     use HasCorporationRole;
 
     public function __construct(
@@ -88,37 +75,5 @@ class CorporationWalletJournalByDivisionJob extends EsiBase implements HasPathVa
             'journal',
             'division: ' . $this->division,
         ];
-    }
-
-    /**
-     * Execute the job.
-     *
-     * @return void
-     * @throws \Exception
-     */
-    public function executeJob(): void
-    {
-        $processor = new ProcessWalletJournalResponse($this->corporation_id, CorporationInfo::class, $this->division);
-
-        while (true) {
-            $response = $this->retrieve($this->getPage());
-
-            if ($response->isCachedLoad()) {
-                return;
-            }
-
-            $processor->execute($response);
-
-            // Lastly if more pages are present load next page
-            if ($this->getPage() >= $response->pages) {
-                break;
-            }
-
-            $this->incrementPage();
-        }
-
-        // see https://divinglaravel.com/avoiding-memory-leaks-when-running-laravel-queue-workers
-        // This job is very memory consuming hence avoiding memory leaks, the worker should restart
-        app('queue.worker')->shouldQuit = 1;
     }
 }
