@@ -90,12 +90,12 @@ abstract class ContractItemsJob extends EsiBase implements HasPathValuesInterfac
         ContractItem::upsert(
             $contract_items->toArray(),
             ['record_id'],
-            ['is_included', 'is_singleton', 'quantity', 'type_id', 'raw_quantity']
         );
 
         // Dispatch Resolve Universe Type Jobs for missing Types
         ContractItem::doesntHave('type')
             ->pluck('type_id')
+            ->unique()
             ->each(fn ($type_id) => ResolveUniverseTypeByIdJob::dispatch($type_id)->onQueue('high'));
     }
 }
