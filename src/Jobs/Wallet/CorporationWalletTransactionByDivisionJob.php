@@ -26,23 +26,16 @@
 
 namespace Seatplus\Eveapi\Jobs\Wallet;
 
-use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
-use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
-use Seatplus\Eveapi\Services\Wallet\ProcessWalletTransactionResponse;
+
 use Seatplus\Eveapi\Traits\HasCorporationRole;
-use Seatplus\Eveapi\Traits\HasPages;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CorporationWalletTransactionByDivisionJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, HasCorporationRoleInterface
+class CorporationWalletTransactionByDivisionJob extends WalletTransactionBase
 {
     use HasPathValues;
     use HasRequiredScopes;
-    use HasPages;
     use HasCorporationRole;
 
     public function __construct(
@@ -87,37 +80,5 @@ class CorporationWalletTransactionByDivisionJob extends EsiBase implements HasPa
             'transaction',
             'division: ' . $this->division,
         ];
-    }
-
-    /**
-     * Execute the job.
-     *
-     * @return void
-     * @throws \Exception
-     */
-    public function executeJob(): void
-    {
-        $processor = new ProcessWalletTransactionResponse($this->corporation_id, CorporationInfo::class, $this->division);
-
-        while (true) {
-            $response = $this->retrieve($this->getPage());
-
-            if ($response->isCachedLoad()) {
-                return;
-            }
-
-            $processor->execute($response);
-
-            // Lastly if more pages are present load next page
-            if ($this->getPage() >= $response->pages) {
-                break;
-            }
-
-            $this->incrementPage();
-        }
-
-        // see https://divinglaravel.com/avoiding-memory-leaks-when-running-laravel-queue-workers
-        // This job is very memory consuming hence avoiding memory leaks, the worker should restart
-        app('queue.worker')->shouldQuit = 1;
     }
 }
