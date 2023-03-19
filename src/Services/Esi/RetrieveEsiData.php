@@ -48,9 +48,6 @@ class RetrieveEsiData
 
     private EsiClientSetup $esi_client;
 
-    /**
-     * @throws RequestFailedException
-     */
     public function getClient(): EsiClient
     {
         if (! isset($this->client)) {
