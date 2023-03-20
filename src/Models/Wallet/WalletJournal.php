@@ -28,7 +28,6 @@ namespace Seatplus\Eveapi\Models\Wallet;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\WalletJournalFactory;
 
 class WalletJournal extends Model
 {
@@ -44,11 +43,6 @@ class WalletJournal extends Model
     protected $casts = [
         'date' => 'datetime',
     ];
-
-    protected static function newFactory()
-    {
-        return WalletJournalFactory::new();
-    }
 
     public function wallet_journable()
     {

@@ -28,16 +28,10 @@ namespace Seatplus\Eveapi\Models\Character;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\CorporationHistoryFactory;
 
 class CorporationHistory extends Model
 {
     use HasFactory;
-
-    protected static function newFactory()
-    {
-        return CorporationHistoryFactory::new();
-    }
 
     /**
      * The attributes that aren't mass assignable.

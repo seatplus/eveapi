@@ -26,22 +26,10 @@
 
 namespace Seatplus\Eveapi\Jobs\Wallet;
 
-use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Seatplus\Eveapi\Services\Wallet\ProcessWalletJournalResponse;
-use Seatplus\Eveapi\Traits\HasPages;
-use Seatplus\Eveapi\Traits\HasPathValues;
-use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CharacterWalletJournalJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+class CharacterWalletJournalJob extends WalletJournalBase
 {
-    use HasPathValues;
-    use HasRequiredScopes;
-    use HasPages;
-
     public function __construct(
         public int $character_id
     ) {
@@ -83,37 +71,5 @@ class CharacterWalletJournalJob extends EsiBase implements HasPathValuesInterfac
             'wallet',
             'journal',
         ];
-    }
-
-    /**
-     * Execute the job.
-     *
-     * @return void
-     * @throws \Exception
-     */
-    public function executeJob(): void
-    {
-        $processor = new ProcessWalletJournalResponse($this->character_id, CharacterInfo::class);
-
-        while (true) {
-            $response = $this->retrieve($this->getPage());
-
-            if ($response->isCachedLoad()) {
-                return;
-            }
-
-            $processor->execute($response);
-
-            // Lastly if more pages are present load next page
-            if ($this->getPage() >= $response->pages) {
-                break;
-            }
-
-            $this->incrementPage();
-        }
-
-        // see https://divinglaravel.com/avoiding-memory-leaks-when-running-laravel-queue-workers
-        // This job is very memory consuming hence avoiding memory leaks, the worker should restart
-        app('queue.worker')->shouldQuit = 1;
     }
 }

@@ -28,16 +28,10 @@ namespace Seatplus\Eveapi\Models\Universe;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\CategoryFactory;
 
 class Category extends Model
 {
     use HasFactory;
-
-    protected static function newFactory()
-    {
-        return CategoryFactory::new();
-    }
 
     /**
      * The attributes that aren't mass assignable.

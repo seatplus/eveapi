@@ -52,6 +52,7 @@ use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromLocations;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromSkillQueue;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromSkills;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromWalletTransaction;
+use Seatplus\Eveapi\Models\BatchStatistic;
 
 class MaintenanceJob implements ShouldQueue
 {
@@ -75,7 +76,14 @@ class MaintenanceJob implements ShouldQueue
      */
     public function handle()
     {
-        Bus::batch([
+        $batch = $this->dispatchBatch();
+
+        BatchStatistic::createEntry($batch);
+    }
+
+    private function dispatchBatch() : Batch
+    {
+        return Bus::batch([
 
             new GetMissingGroups,
             new GetMissingCategorys,
@@ -111,7 +119,7 @@ class MaintenanceJob implements ShouldQueue
             new GetMissingBodysFromMails,
 
         ])
-            ->then(fn (Batch $batch) => logger()->info('Maintenance job finished'))
+            ->then(fn (Batch $batch) => BatchStatistic::where('batch_id', $batch->id)->update(['finished_at' => now()]))
             ->name('Maintenance Job')
             ->allowFailures()
             ->dispatch();

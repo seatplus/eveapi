@@ -31,7 +31,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Seatplus\Eveapi\database\factories\ContactFactory;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 
 class Contact extends Model
@@ -39,11 +38,6 @@ class Contact extends Model
     protected $guarded = false;
 
     use HasFactory;
-
-    protected static function newFactory()
-    {
-        return ContactFactory::new();
-    }
 
     public function contactable()
     {

@@ -29,7 +29,6 @@ namespace Seatplus\Eveapi\Models\Assets;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\AssetFactory;
 use Seatplus\Eveapi\Events\AssetUpdating;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
@@ -84,11 +83,6 @@ class Asset extends Model
     protected $dispatchesEvents = [
         'updating' => AssetUpdating::class,
     ];
-
-    protected static function newFactory()
-    {
-        return AssetFactory::new();
-    }
 
     public function assetable()
     {

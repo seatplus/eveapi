@@ -31,6 +31,7 @@ use Illuminate\Console\Command;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use ReflectionClass;
 use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
@@ -57,15 +58,11 @@ class CheckJobsCommand extends Command
      */
     protected $description = 'Check all used endpoints and whether the jobs are up to date or in need of an update';
 
-    private $faker;
-
     private array $esi_paths = [];
     private Collection $jobs;
 
     public function __construct()
     {
-        $this->faker = \Faker\Factory::create();
-
         $url = 'https://esi.evetech.net/latest/swagger.json';
 
         $this->esi_paths = Http::acceptJson()
@@ -152,8 +149,8 @@ class CheckJobsCommand extends Command
                         }
 
                         return match ($type) {
-                            'int' => $this->faker->numberBetween(1, 1000000),
-                            'string' => $this->faker->word,
+                            'int' => random_int(1, 1_000_000),
+                            'string' => Str::random(),
                             default => throw new Exception('Unknown type'),
                         };
                     });

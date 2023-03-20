@@ -20,6 +20,7 @@ use Seatplus\Eveapi\Jobs\Skills\SkillsJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterBalanceJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletJournalJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
+use Seatplus\Eveapi\Models\BatchStatistic;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 it('creates BatchUpdate entries', function () {
@@ -54,33 +55,36 @@ it('contains jobs if refresh_token has scope', function (string $scope, array $c
 
     Bus::fake();
 
-    (new CharacterBatchJob(testCharacter()->character_id))->handle();
+    $batch = new CharacterBatchJob(testCharacter()->character_id);
+
+    //dd($batch->batch_jobs);
 
     // loop through classes and check if jobs that are instance of class are in batch
     foreach ($classes as $class) {
         // if class is of type array
         if (is_array($class)) {
-            Bus::assertBatched(function (\Illuminate\Bus\PendingBatch $batch) use ($class) {
-                // get array inside the jobs array
-                $jobs = $batch->jobs->first(fn ($job) => is_array($job));
-                $classes = $class;
+            $jobs = collect($batch->getBatchJobs())->first(fn ($job) => is_array($job));
+            $classes = $class;
 
-                // expect lenght of jobs to be equal to classes
-                if (count($jobs) !== count($classes)) {
-                    return false;
-                }
+            // expect lenght of jobs to be equal to classes
+            expect($jobs)->toHaveCount(count($classes));
 
-                // loop through classes and check if jobs that are instance of class are in batch
-                foreach ($classes as $class) {
-                    if (! collect($jobs)->first(fn ($job) => $job instanceof $class)) {
-                        return false;
-                    }
-                }
 
-                return true;
-            });
+            if (count($jobs) !== count($classes)) {
+                return false;
+            }
+
+            // loop through classes and check if jobs that are instance of class are in batch
+            foreach ($classes as $class) {
+                $collection = (collect($jobs)
+                    ->map(fn ($job) => $job instanceof $class)
+                    ->filter());
+
+                expect($collection)->toHaveCount(1);
+            }
         } else {
-            Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof $class));
+            $batched_jobs = collect($batch->getBatchJobs())->filter(fn ($job) => $job instanceof $class);
+            expect($batched_jobs)->toHaveCount(1);
         }
     }
 })->with([
@@ -95,3 +99,14 @@ it('contains jobs if refresh_token has scope', function (string $scope, array $c
     ['esi-skills.read_skillqueue.v1', [SkillQueueJob::class]],
     ['esi-mail.read_mail.v1', [MailHeaderJob::class]],
 ]);
+
+it('Batch Statistics entry has been made', function () {
+    Bus::fake();
+
+    expect(BatchStatistic::count())->toBe(0);
+
+    (new CharacterBatchJob(testCharacter()->character_id))->handle();
+
+    expect(BatchStatistic::count())->toBe(1)
+        ->and(BatchStatistic::first())->finished_at->toBeNull();
+});

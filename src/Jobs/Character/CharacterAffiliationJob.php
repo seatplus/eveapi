@@ -122,16 +122,16 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
 
         $timestamp = now();
 
+        $character_affiliations = collect();
+
         // try to get the character affiliations from the esi endpoint
         try {
             $response = $this->retrieve();
 
             collect($response)
-                ->each(fn ($result) => CharacterAffiliation::updateOrCreate(
+                ->each(fn ($result) => $character_affiliations->push(
                     [
                         'character_id' => $result->character_id,
-                    ],
-                    [
                         'corporation_id' => $result->corporation_id,
                         'alliance_id' => data_get($result, 'alliance_id'),
                         'faction_id' => data_get($result, 'faction_id'),
@@ -164,6 +164,12 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
             $this->updateOrCreateCharacterAffiliations($first_half);
             $this->updateOrCreateCharacterAffiliations($second_half);
         }
+
+        CharacterAffiliation::upsert(
+            $character_affiliations->toArray(),
+            ['character_id'],
+            ['corporation_id', 'alliance_id', 'faction_id', 'last_pulled']
+        );
     }
 
     /**

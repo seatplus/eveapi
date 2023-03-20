@@ -97,16 +97,22 @@ class CorporationDivisionsJob extends EsiBase implements HasPathValuesInterface,
             return;
         }
 
+        $divisions = collect();
+
         collect($response)->each(fn (array $entries, string $division_type) => collect($entries)
-            ->each(fn ($entry) => CorporationDivision::updateOrCreate(
+            ->each(fn ($entry) => $divisions->push(
                 [
                     'corporation_id' => $this->corporation_id,
                     'division_type' => $division_type,
                     'division_id' => $entry->division,
-                ],
-                [
                     'name' => data_get($entry, 'name', ''),
                 ]
             )));
+
+        CorporationDivision::upsert(
+            $divisions->toArray(),
+            ['corporation_id', 'division_type', 'division_id'],
+            ['name']
+        );
     }
 }

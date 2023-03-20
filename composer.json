@@ -10,7 +10,8 @@
     ],
     "autoload": {
         "psr-4": {
-            "Seatplus\\Eveapi\\": "src/"
+            "Seatplus\\Eveapi\\": "src/",
+            "Seatplus\\Eveapi\\Database\\Factories\\": "database/factories"
         },
         "files": [
             "./src/Helpers/helpers.php"
@@ -18,9 +19,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Seatplus\\Eveapi\\Tests\\": "tests/",
-            "Seatplus\\Eveapi\\database\\factories\\": "src/database/factories/",
-            "Database\\Seeders\\": "database/seeders/"
+            "Seatplus\\Eveapi\\Tests\\": "tests/"
         }
     },
     "minimum-stability": "alpha",
@@ -30,7 +29,7 @@
         "ext-json": "*",
         "ext-redis": "*",
         "laravel/framework": "^9.0",
-        "laravel/horizon": "^515.0",
+        "laravel/horizon": "^5.0",
         "seatplus/esi-client": "^2.0",
         "doctrine/dbal": "^3.0",
         "staudenmeir/laravel-cte": "^1.0"

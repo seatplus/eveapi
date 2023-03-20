@@ -28,16 +28,10 @@ namespace Seatplus\Eveapi\Models\Character;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\CharacterRoleFactory;
 
 class CharacterRole extends Model
 {
     use HasFactory;
-
-    protected static function newFactory()
-    {
-        return CharacterRoleFactory::new();
-    }
 
     /**
      * The attributes that aren't mass assignable.
