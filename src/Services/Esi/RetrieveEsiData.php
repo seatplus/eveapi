@@ -153,8 +153,10 @@ class RetrieveEsiData
             $logger->warning('Expected a paged response but had none');
         }
 
-        if (array_key_exists('Warning', $response->raw_headers)) {
-            $logger->warning('A response contained a warning: ' . $response->raw_headers['Warning']);
+        if (array_key_exists('Warning', $response->parsed_headers)) {
+            $warning = $response->parsed_headers['Warning'];
+
+            $logger->warning("Response contained a warning: ${warning}");
         }
     }
 

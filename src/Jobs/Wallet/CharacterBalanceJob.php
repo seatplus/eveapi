@@ -32,7 +32,6 @@ use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Wallet\Balance;
-use Seatplus\Eveapi\Traits\HasPages;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
@@ -40,7 +39,6 @@ class CharacterBalanceJob extends EsiBase implements HasPathValuesInterface, Has
 {
     use HasPathValues;
     use HasRequiredScopes;
-    use HasPages;
 
     public function __construct(public int $character_id)
     {
@@ -88,7 +86,7 @@ class CharacterBalanceJob extends EsiBase implements HasPathValuesInterface, Has
      */
     public function executeJob(): void
     {
-        $response = $this->retrieve($this->getPage());
+        $response = $this->retrieve();
 
         if ($response->isCachedLoad()) {
             return;

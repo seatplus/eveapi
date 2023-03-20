@@ -80,16 +80,20 @@ class SkillsJob extends EsiBase implements HasPathValuesInterface, HasRequiredSc
             return;
         }
 
-        $skills = data_get($response, 'skills');
+        $skills = collect(data_get($response, 'skills'))
+            ->map(fn ($skill) => [
+                'character_id' => $this->character_id,
+                'skill_id' => data_get($skill, 'skill_id'),
+                'active_skill_level' => data_get($skill, 'active_skill_level'),
+                'skillpoints_in_skill' => data_get($skill, 'skillpoints_in_skill'),
+                'trained_skill_level' => data_get($skill, 'trained_skill_level'),
+            ]);
 
-        collect($skills)->each(fn ($skill) => Skill::updateOrCreate([
-            'character_id' => $this->character_id,
-            'skill_id' => data_get($skill, 'skill_id'),
-        ], [
-            'active_skill_level' => data_get($skill, 'active_skill_level'),
-            'skillpoints_in_skill' => data_get($skill, 'skillpoints_in_skill'),
-            'trained_skill_level' => data_get($skill, 'trained_skill_level'),
-        ]));
+        Skill::upsert(
+            $skills->toArray(),
+            ['character_id', 'skill_id'],
+            ['skillpoints_in_skill', 'trained_skill_level', 'active_skill_level']
+        );
 
         CharacterInfo::where('character_id', $this->character_id)
             ->update([

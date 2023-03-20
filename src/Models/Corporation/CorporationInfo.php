@@ -28,7 +28,6 @@ namespace Seatplus\Eveapi\Models\Corporation;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\CorporationInfoFactory;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Application;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
@@ -43,11 +42,6 @@ use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 class CorporationInfo extends Model
 {
     use HasFactory;
-
-    protected static function newFactory()
-    {
-        return CorporationInfoFactory::new();
-    }
 
     /**
      * The attributes that aren't mass assignable.

@@ -7,6 +7,7 @@ use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
 use Seatplus\Eveapi\Jobs\Seatplus\UpdateCorporation;
 use Seatplus\Eveapi\Jobs\Wallet\CorporationBalanceJob;
 use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletJournalJob;
+use Seatplus\Eveapi\Models\BatchStatistic;
 
 test('it dispatches jobs if token with role, scope and permission is present', function (string $role, string $scope, array $job_classes) {
     Bus::fake();
@@ -49,3 +50,14 @@ test('it dispatches jobs if token with role, scope and permission is present', f
     ['Accountant', 'esi-wallet.read_corporation_wallets.v1', [[CorporationBalanceJob::class, CorporationWalletJournalJob::class]]],
     ['Junior_Accountant', 'esi-wallet.read_corporation_wallets.v1', [[CorporationBalanceJob::class, CorporationWalletJournalJob::class]]],
 ]);
+
+it('Batch Statistics entry has been made', function () {
+    Bus::fake();
+
+    expect(BatchStatistic::count())->toBe(0);
+
+    (new UpdateCorporation)->handle();
+
+    expect(BatchStatistic::count())->toBe(1)
+        ->and(BatchStatistic::first())->finished_at->toBeNull();
+});

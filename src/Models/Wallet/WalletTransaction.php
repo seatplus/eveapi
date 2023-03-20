@@ -28,7 +28,6 @@ namespace Seatplus\Eveapi\Models\Wallet;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\WalletTransactionFactory;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Type;
 
@@ -46,11 +45,6 @@ class WalletTransaction extends Model
     protected $casts = [
         'date' => 'datetime',
     ];
-
-    protected static function newFactory()
-    {
-        return WalletTransactionFactory::new();
-    }
 
     public function wallet_transactionable()
     {

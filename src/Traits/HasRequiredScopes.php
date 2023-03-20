@@ -66,7 +66,7 @@ trait HasRequiredScopes
             });
 
         // throw error if length of collection is not 1
-        if ($refresh_tokens->count() !== 1) {
+        if ($refresh_tokens->filter()->count() !== 1) {
             throw new Exception('Could not find refresh token for character_id, corporation_id or alliance_id');
         }
 

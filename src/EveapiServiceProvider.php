@@ -50,7 +50,6 @@ use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contracts\Contract;
-use Seatplus\Eveapi\Models\Contracts\ContractItem;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Models\Schedules;
 use Seatplus\Eveapi\Models\Skills\Skill;
@@ -63,7 +62,6 @@ use Seatplus\Eveapi\Observers\BalanceObserver;
 use Seatplus\Eveapi\Observers\CharacterAffiliationObserver;
 use Seatplus\Eveapi\Observers\CharacterAssetObserver;
 use Seatplus\Eveapi\Observers\CharacterInfoObserver;
-use Seatplus\Eveapi\Observers\ContractItemObserver;
 use Seatplus\Eveapi\Observers\ContractObserver;
 use Seatplus\Eveapi\Observers\CorporationMemberTrackingObserver;
 use Seatplus\Eveapi\Observers\GroupObserver;
@@ -88,7 +86,7 @@ class EveapiServiceProvider extends ServiceProvider
     public function boot()
     {
         //Add Migrations
-        $this->loadMigrationsFrom(__DIR__ . '/database/migrations/');
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations/');
 
         // Configure the queue dashboard
         $this->configureHorizon();
@@ -108,30 +106,21 @@ class EveapiServiceProvider extends ServiceProvider
         // Add commands
         $this->addCommands();
 
-        RateLimiter::for(
-            'corporation_batch',
-            fn ($job) => Limit::perHour(1)
-            ->by($job->corporation_id ?? 'corporation_batch')
-        );
-
-        RateLimiter::for(
-            'character_batch',
-            fn ($job) => Limit::perHour(1)
-            ->by($job?->refresh_token?->character_id ?? 'character_batch')
-        );
+        // Add Rate Limiters
+        $this->addRateLimiters();
     }
 
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__ . '/Config/eveapi.config.php', 'eveapi.config');
+        $this->mergeConfigFrom(__DIR__ . '/../config/eveapi.config.php', 'eveapi.config');
 
-        $this->mergeConfigFrom(__DIR__ . '/Config/eveapi.scopes.php', 'eveapi.scopes');
+        $this->mergeConfigFrom(__DIR__ . '/../config/eveapi.scopes.php', 'eveapi.scopes');
 
-        $this->mergeConfigFrom(__DIR__ . '/Config/eveapi.permissions.php', 'eveapi.permissions');
+        $this->mergeConfigFrom(__DIR__ . '/../config/eveapi.permissions.php', 'eveapi.permissions');
 
-        $this->mergeConfigFrom(__DIR__ . '/Config/eveapi.updateJobs.php', 'seatplus.updateJobs');
+        $this->mergeConfigFrom(__DIR__ . '/../config/eveapi.updateJobs.php', 'seatplus.updateJobs');
 
-        $this->mergeConfigFrom(__DIR__ . '/Config/eveapi.jobs.php', 'eveapi.jobs');
+        $this->mergeConfigFrom(__DIR__ . '/../config/eveapi.jobs.php', 'eveapi.jobs');
 
         // Eseye Singleton
         $this->app->singleton('esi-client', function () {
@@ -239,7 +228,6 @@ class EveapiServiceProvider extends ServiceProvider
 
         //Contract Observer
         Contract::observe(ContractObserver::class);
-        ContractItem::observe(ContractItemObserver::class);
 
         //WalletObserver
         WalletTransaction::observe(WalletTransactionObserver::class);
@@ -288,5 +276,29 @@ class EveapiServiceProvider extends ServiceProvider
             ClearCache::class,
             CheckJobsCommand::class,
         ]);
+    }
+
+    private function addRateLimiters()
+    {
+        RateLimiter::for(
+            'corporation_batch',
+            fn ($job) => Limit::perHour(1)
+                ->by($job->corporation_id ?? 'corporation_batch')
+        );
+
+        RateLimiter::for(
+            'character_batch',
+            function ($job) {
+                $character_id = $job?->refresh_token?->character_id;
+                $queue_name = $job?->queue;
+
+                // if queue is high then we need no rate limiting
+                if ($queue_name === 'high') {
+                    return Limit::none();
+                }
+
+                return Limit::perHour(1)->by("character_batch_{$character_id}_{$queue_name}");
+            }
+        );
     }
 }

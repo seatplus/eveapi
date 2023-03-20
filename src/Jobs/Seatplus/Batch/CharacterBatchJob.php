@@ -9,9 +9,9 @@ use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\RateLimitedWithRedis;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Bus;
-use Illuminate\Support\Facades\Redis;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
@@ -30,6 +30,7 @@ use Seatplus\Eveapi\Jobs\Skills\SkillsJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterBalanceJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletJournalJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
+use Seatplus\Eveapi\Models\BatchStatistic;
 use Seatplus\Eveapi\Models\BatchUpdate;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
@@ -42,7 +43,7 @@ class CharacterBatchJob implements ShouldQueue, ShouldBeUnique
     use Queueable;
     use SerializesModels;
 
-    private RefreshToken $refresh_token;
+    public RefreshToken $refresh_token;
     private array $batch_jobs;
 
     public function __construct(
@@ -53,6 +54,13 @@ class CharacterBatchJob implements ShouldQueue, ShouldBeUnique
         $this->createBatchJobs();
     }
 
+    public function middleware()
+    {
+        return  [
+            (new RateLimitedWithRedis('character_batch'))->dontRelease(),
+        ];
+    }
+
     public function uniqueId()
     {
         return $this->character_id . ':' . $this->queue;
@@ -60,40 +68,34 @@ class CharacterBatchJob implements ShouldQueue, ShouldBeUnique
 
     public function handle()
     {
-        Redis::throttle($this->character_id . ":" . $this->queue)
-            ->block(0)
-            ->allow(1)
-            ->every(60 * 60)
-            ->then(function () {
-                BatchUpdate::query()
-                    ->where('batchable_id', $this->character_id)
-                    ->delete();
+        // 1. Get BatchUpdate Entry
+        $batch_update = BatchUpdate::firstOrCreate([
+            'batchable_id' => $this->character_id,
+            'batchable_type' => CharacterInfo::class,
+        ]);
 
-                // 1. Get BatchUpdate Entry
-                $batch_update = BatchUpdate::firstOrCreate([
-                    'batchable_id' => $this->character_id,
-                    'batchable_type' => CharacterInfo::class,
-                ]);
+        // Discard update if still pending
+        if ($batch_update->is_pending && now()->isSameHour($batch_update->started_at)) {
+            return;
+        }
 
-                // 2. Check if it is still pending
-                // Discard update if still pending or finished at is younger than 60 minutes
-                if ($batch_update->is_pending && now()->isSameDay($batch_update->started_at)) {
-                    return;
-                }
+        // Discard update if finished in last hour
+        if ($batch_update->finished_at && now()->isSameHour($batch_update->finished_at)) {
+            return;
+        }
 
-                // reset batch_id, finished_at and started_at
-                $batch_update->finished_at = null;
-                $batch_update->batch_id = null;
-                $batch_update->started_at = now();
+        // reset batch_id, finished_at and started_at
+        $batch_update->finished_at = null;
+        $batch_update->batch_id = null;
+        $batch_update->started_at = now();
 
-                // 3. Dispatch and Return Job
-                $batch = $this->execute();
+        // 3. Dispatch and Return Job
+        $batch = $this->execute();
 
-                $batch_update->batch_id = $batch->id;
-                $batch_update->save();
-            }, function () {
-                $this->delete();
-            });
+        BatchStatistic::createEntry($batch);
+
+        $batch_update->batch_id = $batch->id;
+        $batch_update->save();
     }
 
     private function execute() : Batch
@@ -101,10 +103,10 @@ class CharacterBatchJob implements ShouldQueue, ShouldBeUnique
         $character = $this->refresh_token?->character?->name ?? $this->character_id;
         $batch_name = sprintf('%s (character) update batch', $character);
 
-
         return Bus::batch($this->getBatchJobs())
             ->finally(function (Batch $batch) {
                 BatchUpdate::where('batch_id', $batch->id)->update(['finished_at' => now()]);
+                BatchStatistic::where('batch_id', $batch->id)->update(['finished_at' => now()]);
             })
             ->name($batch_name)
             ->onQueue($this->queue)

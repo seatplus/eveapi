@@ -28,7 +28,6 @@ namespace Seatplus\Eveapi\Models\Universe;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\TypeFactory;
 
 class Type extends Model
 {
@@ -69,11 +68,6 @@ class Type extends Model
     ];
 
     protected $with = ['group', 'category'];
-
-    protected static function newFactory()
-    {
-        return TypeFactory::new();
-    }
 
     public function group()
     {

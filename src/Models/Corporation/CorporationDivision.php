@@ -28,16 +28,10 @@ namespace Seatplus\Eveapi\Models\Corporation;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\CorporationDivisionFactory;
 
 class CorporationDivision extends Model
 {
     use HasFactory;
-
-    protected static function newFactory()
-    {
-        return CorporationDivisionFactory::new();
-    }
 
     /**
      * The attributes that aren't mass assignable.

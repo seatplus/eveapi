@@ -28,16 +28,10 @@ namespace Seatplus\Eveapi\Models\Mail;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\MailRecipientsFactory;
 
 class MailRecipients extends Model
 {
     use HasFactory;
-
-    protected static function newFactory()
-    {
-        return MailRecipientsFactory::new();
-    }
 
     /**
      * @var bool

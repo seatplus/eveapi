@@ -28,17 +28,11 @@ namespace Seatplus\Eveapi\Models\Skills;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\SkillFactory;
 use Seatplus\Eveapi\Models\Universe\Type;
 
 class Skill extends Model
 {
     use HasFactory;
-
-    protected static function newFactory()
-    {
-        return SkillFactory::new();
-    }
 
     /**
      * The attributes that aren't mass assignable.

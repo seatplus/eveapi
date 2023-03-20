@@ -3,6 +3,7 @@
 
 namespace Seatplus\Eveapi\Tests;
 
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
@@ -22,6 +23,10 @@ abstract class TestCase extends OrchestraTestCase
     {
         parent::setUp();
 
+        // Setup factories
+        Factory::guessFactoryNamesUsing(
+            fn (string $modelName) => 'Seatplus\\Eveapi\\Database\\Factories\\'.class_basename($modelName).'Factory'
+        );
 
         // Fake Queue by default so nothing gets queued during tests
         //Queue::fake();

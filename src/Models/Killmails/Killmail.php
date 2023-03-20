@@ -28,18 +28,12 @@ namespace Seatplus\Eveapi\Models\Killmails;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Seatplus\Eveapi\database\factories\KillmailFactory;
 use Seatplus\Eveapi\Models\Universe\System;
 use Seatplus\Eveapi\Models\Universe\Type;
 
 class Killmail extends Model
 {
     use HasFactory;
-
-    protected static function newFactory()
-    {
-        return KillmailFactory::new();
-    }
 
     /**
      * The attributes that aren't mass assignable.

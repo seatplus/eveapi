@@ -31,7 +31,6 @@ use Firebase\JWT\JWT;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Seatplus\Eveapi\database\factories\RefreshTokenFactory;
 use Seatplus\Eveapi\Events\RefreshTokenCreated;
 use Seatplus\Eveapi\Events\UpdatingRefreshTokenEvent;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
@@ -42,11 +41,6 @@ class RefreshToken extends Model
 {
     use SoftDeletes;
     use HasFactory;
-
-    protected static function newFactory()
-    {
-        return RefreshTokenFactory::new();
-    }
 
     /**
      * @var array

@@ -79,26 +79,24 @@ class SkillQueueJob extends EsiBase implements HasPathValuesInterface, HasRequir
             return;
         }
 
-        $skill_queue_ids = collect($response)->map(function ($queue_item) {
-            $entry = SkillQueue::updateOrCreate([
-                'character_id' => $this->character_id,
-                'skill_id' => data_get($queue_item, 'skill_id'),
-                'queue_position' => data_get($queue_item, 'queue_position'),
-                'finished_level' => data_get($queue_item, 'finished_level'),
-            ], [
-                'start_date' => data_get($queue_item, 'start_date') ? carbon(data_get($queue_item, 'start_date')) : null,
-                'finish_date' => data_get($queue_item, 'finish_date') ? carbon(data_get($queue_item, 'finish_date')) : null,
-                'training_start_sp' => data_get($queue_item, 'training_start_sp'),
-                'level_start_sp' => data_get($queue_item, 'level_start_sp'),
-                'level_end_sp' => data_get($queue_item, 'level_end_sp'),
-            ]);
+        $skill_queue = collect($response)->map(fn ($queue_item) => [
+            'character_id' => $this->character_id,
+            'skill_id' => data_get($queue_item, 'skill_id'),
+            'queue_position' => data_get($queue_item, 'queue_position'),
+            'finished_level' => data_get($queue_item, 'finished_level'),
+            'start_date' => data_get($queue_item, 'start_date') ? carbon(data_get($queue_item, 'start_date')) : null,
+            'finish_date' => data_get($queue_item, 'finish_date') ? carbon(data_get($queue_item, 'finish_date')) : null,
+            'training_start_sp' => data_get($queue_item, 'training_start_sp'),
+            'level_start_sp' => data_get($queue_item, 'level_start_sp'),
+            'level_end_sp' => data_get($queue_item, 'level_end_sp'),
+        ]);
 
-            return $entry->id;
-        });
-
+        // Clean current skill queue
         SkillQueue::query()
             ->where('character_id', $this->character_id)
-            ->whereNotIn('id', $skill_queue_ids->toArray())
             ->delete();
+
+        // Upsert skill queue
+        SkillQueue::upsert($skill_queue->toArray(), ['character_id', 'skill_id', 'queue_position']);
     }
 }
