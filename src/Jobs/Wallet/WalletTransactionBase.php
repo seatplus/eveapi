@@ -83,7 +83,15 @@ abstract class WalletTransactionBase extends EsiBase implements HasPathValuesInt
                 ])->toArray();
 
             // get the last transaction id
-            $this->from_id = Arr::last($transactions)['transaction_id'] - 1;
+            $last_transaction_id = Arr::last($transactions)['transaction_id'] - 1;
+
+            // if the last transaction id is equal to the from_id, break the loop
+            if ($last_transaction_id === $this->from_id) {
+                break;
+            }
+
+            // set the from_id to the last transaction id
+            $this->from_id = $last_transaction_id;
 
             $this->transactions = array_merge($this->transactions, $transactions);
         }
