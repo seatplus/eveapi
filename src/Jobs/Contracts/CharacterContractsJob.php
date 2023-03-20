@@ -33,12 +33,14 @@ use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contracts\Contract;
+use Seatplus\Eveapi\Traits\HasPages;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
 class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
     use HasPathValues;
+    use HasPages;
     use HasRequiredScopes;
 
     public function __construct(
@@ -76,12 +78,11 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
 
     public function executeJob(): void
     {
-        $page = 1;
 
         $contracts = collect();
 
         while (true) {
-            $response = $this->retrieve($page);
+            $response = $this->retrieve($this->getPage());
 
             if ($response->isCachedLoad()) {
                 return;
@@ -117,11 +118,11 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
             ]));
 
             // Lastly if more pages are present load next page
-            if ($page >= $response->pages) {
+            if ($this->getPage() >= $response->pages) {
                 break;
             }
 
-            $page++;
+            $this->incrementPage();
         }
 
         Contract::upsert(
