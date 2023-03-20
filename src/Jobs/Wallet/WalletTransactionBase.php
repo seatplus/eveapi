@@ -47,7 +47,6 @@ abstract class WalletTransactionBase extends EsiBase implements HasPathValuesInt
         }
 
         while (true) {
-
             $this->setQueryString([
                 'from_id' => $this->from_id,
             ]);
@@ -96,5 +95,4 @@ abstract class WalletTransactionBase extends EsiBase implements HasPathValuesInt
         // This job is very memory consuming hence avoiding memory leaks, the worker should restart
         app('queue.worker')->shouldQuit = 1;
     }
-
 }

@@ -27,9 +27,9 @@
 namespace Seatplus\Eveapi\Jobs\Wallet;
 
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
+
 class CharacterWalletJournalJob extends WalletJournalBase
 {
-
     public function __construct(
         public int $character_id
     ) {
