@@ -26,11 +26,6 @@
 
 return [
 
-    'version' => '1.0.0', // TODO remove this
-
-    // API Joblog logging
-    'enable_joblog' => false, // TODO check if can be removed
-
     'esi-client' => [
         // ESI
         'datasource' => env('EVE_ESI_DATASOURCE', 'tranquility'),
