@@ -43,8 +43,8 @@ class BatchStatisticFactory extends Factory
         $horizon_config = config("horizon.environments.${env}.seatplus-workers");
 
         return [
-            'batch_id' => $this->faker->uuid,
-            'batch_name' => $this->faker->name,
+            'batch_id' => $this->faker->uuid(),
+            'batch_name' => $this->faker->name(),
             'total_jobs' => $this->faker->numberBetween(1, 100),
             'queue_balancing_configuration' => json_encode($horizon_config)
         ];
