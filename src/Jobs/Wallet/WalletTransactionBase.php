@@ -18,7 +18,7 @@ use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
 abstract class WalletTransactionBase extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, HasQueryStringInterface
 {
-    use HasPathValues, HasRequiredScopes, HasPages, HasQueryValues;
+    use HasPathValues, HasRequiredScopes, HasQueryValues;
 
     protected int $from_id = PHP_INT_MAX;
 
@@ -52,10 +52,10 @@ abstract class WalletTransactionBase extends EsiBase implements HasPathValuesInt
                 'from_id' => $this->from_id,
             ]);
 
-            $response = $this->retrieve($this->getPage());
+            $response = $this->retrieve();
 
             if ($response->isCachedLoad()) {
-                continue;
+                return;
             }
 
             // If no more transactions are present, break the loop.
@@ -83,14 +83,11 @@ abstract class WalletTransactionBase extends EsiBase implements HasPathValuesInt
                     'unit_price' => $entry->unit_price,
                 ])->toArray();
 
+            // get the last transaction id
+            $this->from_id = Arr::last($transactions)['transaction_id'] - 1;
+
             $this->transactions = array_merge($this->transactions, $transactions);
 
-            // Lastly if more pages are present load next page
-            if ($this->getPage() >= $response->pages) {
-                break;
-            }
-
-            $this->incrementPage();
         }
 
         WalletTransaction::upsert($this->transactions, ['transaction_id']);
