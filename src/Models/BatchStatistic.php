@@ -30,10 +30,12 @@ class BatchStatistic extends Model
 
     public static function createEntry(Batch $batch)
     {
-        $attributes['started_at'] = now();
-        $attributes['batch_id'] = $batch->id;
-        $attributes['total_jobs'] = $batch->totalJobs;
-        $attributes['batch_name'] = $batch->name;
+        $attributes = [
+            'started_at' => now(),
+            'batch_id' => $batch->id,
+            'total_jobs' => $batch->totalJobs,
+            'batch_name' => $batch->name,
+        ];
 
         // get app env from config
         $env = config('app.env');
