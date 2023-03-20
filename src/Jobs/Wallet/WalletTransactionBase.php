@@ -3,7 +3,6 @@
 namespace Seatplus\Eveapi\Jobs\Wallet;
 
 use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasQueryStringInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
@@ -11,14 +10,15 @@ use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
-use Seatplus\Eveapi\Traits\HasPages;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasQueryValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
 abstract class WalletTransactionBase extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, HasQueryStringInterface
 {
-    use HasPathValues, HasRequiredScopes, HasQueryValues;
+    use HasPathValues;
+    use HasRequiredScopes;
+    use HasQueryValues;
 
     protected int $from_id = PHP_INT_MAX;
 
@@ -86,7 +86,6 @@ abstract class WalletTransactionBase extends EsiBase implements HasPathValuesInt
             $this->from_id = Arr::last($transactions)['transaction_id'] - 1;
 
             $this->transactions = array_merge($this->transactions, $transactions);
-
         }
 
         WalletTransaction::upsert($this->transactions, ['transaction_id']);
