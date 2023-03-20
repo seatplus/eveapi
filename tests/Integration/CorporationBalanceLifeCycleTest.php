@@ -141,7 +141,21 @@ function buildCorporationWalletTransactionEsiMockData()
         'division' => 3,
     ]);
 
-    mockRetrieveEsiDataAction($mock_data->toArray());
+    $copy = clone $mock_data;
+
+    // split into two arrays
+    $half = ceil($copy->count() / 2);
+    $first_half = $copy->splice($half);
+    $second_half = $copy;
+
+    // create esi response
+    $response_1 = new \Seatplus\EsiClient\DataTransferObjects\EsiResponse(json_encode($first_half->toArray()), [], 'now',200);
+    $response_2 = new \Seatplus\EsiClient\DataTransferObjects\EsiResponse(json_encode($second_half->toArray()), [], 'now',200);
+    $empty_response = new \Seatplus\EsiClient\DataTransferObjects\EsiResponse(json_encode([]), [], 'now',200);
+
+    \Seatplus\Eveapi\Services\Facade\RetrieveEsiData::shouldReceive('execute')
+        ->times(3)
+        ->andReturn($response_1, $response_2, $empty_response);
 
     return $mock_data;
 }
