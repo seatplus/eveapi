@@ -52,7 +52,7 @@ class BatchStatisticFactory extends Factory
 
     public function finished() : Factory
     {
-        return $this->state(function (array $attributes) {
+        return $this->state(function () {
 
             $started_at = $this->faker->dateTimeBetween('-1 week', 'now');
             $duration = $this->faker->numberBetween(3, 42);

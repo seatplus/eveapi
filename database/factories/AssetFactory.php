@@ -53,7 +53,7 @@ class AssetFactory extends Factory
 
     public function withName()
     {
-        return $this->state(function (array $attributes) {
+        return $this->state(function () {
             return [
                 'name' => implode(' ', $this->faker->unique()->words(2)),
             ];
@@ -62,7 +62,7 @@ class AssetFactory extends Factory
 
     public function withType()
     {
-        return $this->state(function (array $attributes) {
+        return $this->state(function () {
             return [
                 'type_id' => Type::factory(),
             ];

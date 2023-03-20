@@ -51,7 +51,7 @@ class SkillFactory extends Factory
             'character_id' => CharacterInfo::factory(),
             'active_skill_level' => $this->faker->randomDigitNotNull(),
             'skill_id' => Type::factory(),
-            'skillpoints_in_skill' => $this->faker->numberBetween($min = 1000, $max = 9000), // 8567,
+            'skillpoints_in_skill' => $this->faker->numberBetween(1000, 9000), // 8567,
             'trained_skill_level' => $this->faker->randomDigitNotNull(),
         ];
     }

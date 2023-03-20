@@ -49,7 +49,7 @@ class ContactFactory extends Factory
 
     public function withLabels()
     {
-        return $this->state(function (array $attributes) {
+        return $this->state(function () {
             return [
                 'label_ids' => [1, 2, 3],
             ];
