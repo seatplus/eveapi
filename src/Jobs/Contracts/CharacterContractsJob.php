@@ -78,7 +78,6 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
 
     public function executeJob(): void
     {
-
         $contracts = collect();
 
         while (true) {
