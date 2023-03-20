@@ -48,10 +48,10 @@ class CharacterRoleFactory extends Factory
     {
         return [
             'character_id' => $this->faker->numberBetween(99000000, 100000000),
-            'roles' => $this->faker->optional()->randomElements($this->roles_array, $count = $this->faker->randomDigitNotNull) ?? [],
-            'roles_at_base' => $this->faker->optional()->randomElements($this->roles_array, $count = $this->faker->randomDigitNotNull),
-            'roles_at_hq' => $this->faker->optional()->randomElements($this->roles_array, $count = $this->faker->randomDigitNotNull),
-            'roles_at_other' => $this->faker->optional()->randomElements($this->roles_array, $count = $this->faker->randomDigitNotNull),
+            'roles' => $this->faker->optional()->randomElements($this->roles_array, $this->faker->randomDigitNotNull) ?? [],
+            'roles_at_base' => $this->faker->optional()->randomElements($this->roles_array, $this->faker->randomDigitNotNull),
+            'roles_at_hq' => $this->faker->optional()->randomElements($this->roles_array, $this->faker->randomDigitNotNull),
+            'roles_at_other' => $this->faker->optional()->randomElements($this->roles_array, $this->faker->randomDigitNotNull),
         ];
     }
 }
