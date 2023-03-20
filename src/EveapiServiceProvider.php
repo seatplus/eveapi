@@ -63,7 +63,6 @@ use Seatplus\Eveapi\Observers\BalanceObserver;
 use Seatplus\Eveapi\Observers\CharacterAffiliationObserver;
 use Seatplus\Eveapi\Observers\CharacterAssetObserver;
 use Seatplus\Eveapi\Observers\CharacterInfoObserver;
-use Seatplus\Eveapi\Observers\ContractItemObserver;
 use Seatplus\Eveapi\Observers\ContractObserver;
 use Seatplus\Eveapi\Observers\CorporationMemberTrackingObserver;
 use Seatplus\Eveapi\Observers\GroupObserver;
@@ -230,7 +229,6 @@ class EveapiServiceProvider extends ServiceProvider
 
         //Contract Observer
         Contract::observe(ContractObserver::class);
-        ContractItem::observe(ContractItemObserver::class);
 
         //WalletObserver
         WalletTransaction::observe(WalletTransactionObserver::class);
