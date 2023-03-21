@@ -45,7 +45,10 @@ class RefreshToken extends Model
     /**
      * @var array
      */
-    protected $dates = ['expires_on', 'deleted_at'];
+    protected $casts = [
+        'expires_on' => 'datetime',
+        'deleted_at' => 'datetime',
+    ];
 
     /**
      * @var string

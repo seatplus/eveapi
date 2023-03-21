@@ -14,7 +14,7 @@ it('has has batchable morph to relationship', function ($batch) {
     expect($batch)->batchable->toBeInstanceOf(CharacterInfo::class);
 })->with('batch_update');
 
-test('character has batch_update relationship ', function () {
+test('character has batch_update relationship ', function ($batch) {
     expect($this->test_character)->batch_update->toBeInstanceOf(BatchUpdate::class);
 })->with('batch_update');
 
