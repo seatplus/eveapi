@@ -16,12 +16,12 @@ it('only returns token if it is not already considered expired', function () {
     $refresh_token = \Seatplus\Eveapi\Models\RefreshToken::factory()->make();
 
     expect($refresh_token)
-        ->expires_on->toBeGreaterThan(\Illuminate\Support\Carbon::now())
+        ->expires_on->timestamp->toBeGreaterThan(\Illuminate\Support\Carbon::now()->timestamp)
         ->token->toBeString();
 
     $refresh_token->expires_on = \Carbon\Carbon::now()->subMinutes(2);
 
     expect($refresh_token)
-        ->expires_on->toBeLessThan(\Illuminate\Support\Carbon::now())
+        ->expires_on->timestamp->toBeLessThan(\Illuminate\Support\Carbon::now()->timestamp)
         ->token->toBeNull();
 });
