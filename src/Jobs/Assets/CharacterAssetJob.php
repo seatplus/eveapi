@@ -50,8 +50,7 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
 
     public function __construct(
         public int $character_id
-    )
-    {
+    ) {
         parent::__construct(
             method: 'get',
             endpoint: '/characters/{character_id}/assets/',
@@ -106,7 +105,7 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
             // First update the
             collect($response)
                 ->each(
-                    fn($asset) => $this->known_assets->push([
+                    fn ($asset) => $this->known_assets->push([
                         'item_id' => $asset->item_id,
                         'assetable_id' => $this->character_id,
                         'assetable_type' => CharacterInfo::class,
@@ -160,13 +159,11 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
 
     private function dispatchFollowUpJobs()
     {
-
         // Resolve unknown locations
         $this->resolveUnknownLocations();
 
         // Resolve unknown types
         $this->resolveUnknownTypes();
-
     }
 
     private function resolveUnknownLocations()
@@ -184,10 +181,10 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
 
         $refresh_token = RefreshToken::find($this->character_id);
 
-        $unknown_location_ids->each(fn($location_id) => ResolveLocationJob::dispatch($location_id, $refresh_token)
+        $unknown_location_ids->each(
+            fn ($location_id) => ResolveLocationJob::dispatch($location_id, $refresh_token)
             ->onQueue('high')
         );
-
     }
 
     private function resolveUnknownTypes()
@@ -205,9 +202,9 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
 
         $refresh_token = RefreshToken::find($this->character_id);
 
-        $unknown_type_ids->each(fn($type_id) => ResolveUniverseTypeByIdJob::dispatch($type_id, $refresh_token)
+        $unknown_type_ids->each(
+            fn ($type_id) => ResolveUniverseTypeByIdJob::dispatch($type_id, $refresh_token)
             ->onQueue('high')
         );
     }
 }
-
