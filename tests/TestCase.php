@@ -34,17 +34,6 @@ abstract class TestCase extends OrchestraTestCase
     }
 
     /**
-     * Resolve application HTTP Kernel implementation.
-     *
-     * @param  \Illuminate\Foundation\Application  $app
-     * @return void
-     */
-    /*protected function resolveApplicationHttpKernel($app)
-    {
-        $app->singleton('Illuminate\Contracts\Http\Kernel', Kernel::class);
-    }*/
-
-    /**
      * Get application providers.
      *
      * @param  \Illuminate\Foundation\Application  $app
