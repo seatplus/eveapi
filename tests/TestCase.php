@@ -28,12 +28,6 @@ abstract class TestCase extends OrchestraTestCase
             fn (string $modelName) => 'Seatplus\\Eveapi\\Database\\Factories\\'.class_basename($modelName).'Factory'
         );
 
-        // Fake Queue by default so nothing gets queued during tests
-        //Queue::fake();
-
-        // setup database
-        $this->setupDatabase($this->app);
-
         Event::fakeFor(function () {
             $this->test_character = CharacterInfo::factory()->create();
         });
@@ -67,17 +61,6 @@ abstract class TestCase extends OrchestraTestCase
     }
 
     /**
-     * @param \Illuminate\Foundation\Application  $app
-     */
-    private function setupDatabase($app)
-    {
-        // Path to our migrations to load
-        //$this->loadMigrationsFrom(__DIR__ . '/database/migrations');
-        //$this->artisan('migrate', ['--database' => 'testbench']);
-        $this->artisan('migrate');
-    }
-
-    /**
      * Define environment setup.
      *
      * @param  \Illuminate\Foundation\Application  $app
@@ -88,9 +71,6 @@ abstract class TestCase extends OrchestraTestCase
         // Setup default database to use sqlite :memory:
         $app['config']->set('database.default', 'mysql');
 
-        //config(['app.debug' => true]);
-
-        //$app['router']->aliasMiddleware('auth', Authenticate::class);
     }
 
     protected function tearDown(): void

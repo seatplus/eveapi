@@ -31,8 +31,11 @@ use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
+use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
@@ -47,7 +50,8 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
 
     public function __construct(
         public int $character_id
-    ) {
+    )
+    {
         parent::__construct(
             method: 'get',
             endpoint: '/characters/{character_id}/assets/',
@@ -102,17 +106,17 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
             // First update the
             collect($response)
                 ->each(
-                    fn ($asset) => $this->known_assets->push([
-                    'item_id' => $asset->item_id,
-                    'assetable_id' => $this->character_id,
-                    'assetable_type' => CharacterInfo::class,
-                    'is_blueprint_copy' => optional($asset)->is_blueprint_copy ?? false,
-                    'is_singleton' => $asset->is_singleton,
-                    'location_flag' => $asset->location_flag,
-                    'location_id' => $asset->location_id,
-                    'location_type' => $asset->location_type,
-                    'quantity' => $asset->quantity,
-                    'type_id' => $asset->type_id,
+                    fn($asset) => $this->known_assets->push([
+                        'item_id' => $asset->item_id,
+                        'assetable_id' => $this->character_id,
+                        'assetable_type' => CharacterInfo::class,
+                        'is_blueprint_copy' => optional($asset)->is_blueprint_copy ?? false,
+                        'is_singleton' => $asset->is_singleton,
+                        'location_flag' => $asset->location_flag,
+                        'location_id' => $asset->location_id,
+                        'location_type' => $asset->location_type,
+                        'quantity' => $asset->quantity,
+                        'type_id' => $asset->type_id,
                     ])
                 );
 
@@ -125,8 +129,12 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
         }
 
         $this->persist();
+
         // Cleanup old items
         $this->cleanup();
+
+        // Dispatch follow-up jobs
+        $this->dispatchFollowUpJobs();
 
         // see https://divinglaravel.com/avoiding-memory-leaks-when-running-laravel-queue-workers
         // This job is very memory consuming hence avoiding memory leaks, the worker should restart
@@ -149,4 +157,57 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
             ['assetable_id', 'assetable_type', 'is_blueprint_copy', 'is_singleton', 'location_flag', 'location_id', 'location_type', 'quantity', 'type_id']
         );
     }
+
+    private function dispatchFollowUpJobs()
+    {
+
+        // Resolve unknown locations
+        $this->resolveUnknownLocations();
+
+        // Resolve unknown types
+        $this->resolveUnknownTypes();
+
+    }
+
+    private function resolveUnknownLocations()
+    {
+        $unknown_location_ids = Asset::query()
+            ->where('assetable_id', $this->character_id)
+            ->doesntHave('location')
+            ->pluck('location_id')
+            ->unique();
+
+        // if there are no unknown locations, we can skip this step
+        if ($unknown_location_ids->isEmpty()) {
+            return;
+        }
+
+        $refresh_token = RefreshToken::find($this->character_id);
+
+        $unknown_location_ids->each(fn($location_id) => ResolveLocationJob::dispatch($location_id, $refresh_token)
+            ->onQueue('high')
+        );
+
+    }
+
+    private function resolveUnknownTypes()
+    {
+        $unknown_type_ids = Asset::query()
+            ->where('assetable_id', $this->character_id)
+            ->doesntHave('type')
+            ->pluck('type_id')
+            ->unique();
+
+        // if there are no unknown types, we can skip this step
+        if ($unknown_type_ids->isEmpty()) {
+            return;
+        }
+
+        $refresh_token = RefreshToken::find($this->character_id);
+
+        $unknown_type_ids->each(fn($type_id) => ResolveUniverseTypeByIdJob::dispatch($type_id, $refresh_token)
+            ->onQueue('high')
+        );
+    }
 }
+
