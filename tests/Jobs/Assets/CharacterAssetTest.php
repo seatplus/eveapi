@@ -129,7 +129,6 @@ it('dispatches unknown types job', function () {
 });
 
 it('does not dispatch ResolveUniverseTypeByIdJob if type is known', function () {
-
     $type = \Seatplus\Eveapi\Models\Universe\Type::factory()->create();
 
     $assets = Asset::factory()->count(5)->create([
@@ -143,11 +142,9 @@ it('does not dispatch ResolveUniverseTypeByIdJob if type is known', function () 
     (new CharacterAssetJob($this->test_character->character_id))->handle();
 
     Queue::assertNotPushed(ResolveUniverseTypeByIdJob::class);
-
 });
 
 it('does not dispatch ResolveLocationJob if location is known', function () {
-
     $location = \Seatplus\Eveapi\Models\Universe\Location::factory()->create();
 
     $assets = Asset::factory()->count(5)->create([
