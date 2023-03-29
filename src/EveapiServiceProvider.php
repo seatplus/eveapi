@@ -209,9 +209,6 @@ class EveapiServiceProvider extends ServiceProvider
         //Character Observers
         CharacterInfo::observe(CharacterInfoObserver::class);
 
-        //Corporation Observers
-        CorporationMemberTracking::observe(CorporationMemberTrackingObserver::class);
-
         //WalletObserver
         WalletTransaction::observe(WalletTransactionObserver::class);
     }

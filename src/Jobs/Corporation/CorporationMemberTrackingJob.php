@@ -29,10 +29,14 @@ namespace Seatplus\Eveapi\Jobs\Corporation;
 use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
+use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\EsiBase;
 
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
+use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
+use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Traits\HasCorporationRole;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
@@ -98,7 +102,7 @@ class CorporationMemberTrackingJob extends EsiBase implements HasPathValuesInter
             return;
         }
 
-        collect($response)
+        $members = collect($response)
             ->map(fn ($member) => [
                 'corporation_id' => $this->corporation_id,
                 'character_id' => $member->character_id,
@@ -109,18 +113,59 @@ class CorporationMemberTrackingJob extends EsiBase implements HasPathValuesInter
                 'location_id' => $member->location_id ?? null,
                 'ship_type_id' => $member->ship_type_id ?? null,
 
-            ])
-            ->pipe(function ($members) {
-                CorporationMemberTracking::upsert($members->toArray(), ['corporation_id', 'character_id']);
+            ]);
 
-                return $members;
-            })
-            ->pipe(
-                fn ($members) => CorporationMemberTracking::where('corporation_id', $this->corporation_id)
-                ->whereNotIn('character_id', $members->pluck('character_id')->all())
-                // in order to use model events we must actually receive the models and delete them individually
-                ->get()
-                ->each(fn ($ex_member) => $ex_member->delete())
-            );
+        $this->upsertMembers($members);
+        $this->removeOldMembers($members);
+        $this->getMemberCharacterInfo();
+        $this->getLocations();
+        $this->getShipTypes();
+
+    }
+
+    private function upsertMembers(\Illuminate\Support\Collection $members)
+    {
+        CorporationMemberTracking::upsert($members->toArray(), ['corporation_id', 'character_id']);
+    }
+
+    private function removeOldMembers(\Illuminate\Support\Collection $members)
+    {
+        CorporationMemberTracking::where('corporation_id', $this->corporation_id)
+            ->whereNotIn('character_id', $members->pluck('character_id')->all())
+            // in order to use model events we must actually receive the models and delete them individually
+            ->get()
+            ->each(fn ($ex_member) => $ex_member->delete());
+    }
+
+    private function getLocations()
+    {
+        $refresh_token = $this->getRefreshToken();
+
+        CorporationMemberTracking::query()
+            ->where('corporation_id', $this->corporation_id)
+            ->doesntHave('location')
+            ->pluck('location_id')
+            ->unique()
+            ->each(fn ($location_id) => ResolveLocationJob::dispatch($location_id, $refresh_token)->onQueue('high'));
+    }
+
+    private function getMemberCharacterInfo()
+    {
+        CorporationMemberTracking::query()
+            ->where('corporation_id', $this->corporation_id)
+            ->doesntHave('character')
+            ->pluck('character_id')
+            ->unique()
+            ->each(fn ($character_id) => CharacterInfoJob::dispatch($character_id)->onQueue('high'));
+    }
+
+    private function getShipTypes()
+    {
+        CorporationMemberTracking::query()
+            ->where('corporation_id', $this->corporation_id)
+            ->doesntHave('ship')
+            ->pluck('ship_type_id')
+            ->unique()
+            ->each(fn ($ship_type_id) => ResolveUniverseTypeByIdJob::dispatch($ship_type_id)->onQueue('high'));
     }
 }
