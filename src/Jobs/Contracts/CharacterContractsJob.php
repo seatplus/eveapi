@@ -130,7 +130,6 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
         $this->persist($contracts);
 
         $this->dispatchFollowUpJobs($contracts);
-
     }
 
     private function persist(Collection $contracts)
@@ -177,7 +176,6 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
 
     private function dispatchFollowUpJobs(Collection $contracts)
     {
-
         $contract_ids = $contracts->pluck('contract_id')->toArray();
 
         $contract_item_jobs = $this->getContractItemJobs($contract_ids);
@@ -186,13 +184,13 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
 
         if ($this->batching()) {
             $this->batch()->add([...$contract_item_jobs, ...$location_jobs]);
+
             return;
         }
 
         foreach ([...$contract_item_jobs, ...$location_jobs] as $job) {
             dispatch($job)->onQueue('high');
         }
-
     }
 
     private function getContractItemJobs(array $contract_ids): Collection
@@ -214,15 +212,14 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
         return Contract::query()
             ->whereIn('contract_id', $contract_ids)
             // where has start_location_id or end_location_id
-            ->where(fn($query) => $query->whereNotNull('start_location_id')->orWhereNotNull('end_location_id'))
+            ->where(fn ($query) => $query->whereNotNull('start_location_id')->orWhereNotNull('end_location_id'))
             // where doesn't have start_location or end_location
-            ->where(fn($query) => $query->doesntHave('start_location')->orDoesntHave('end_location'))
+            ->where(fn ($query) => $query->doesntHave('start_location')->orDoesntHave('end_location'))
             ->select('start_location_id', 'end_location_id')
             ->get()
             ->map(fn ($contract) => [$contract->start_location_id, $contract->end_location_id])
             ->flatten()
             ->unique()
             ->map(fn ($location_id) => new ResolveLocationJob($location_id, $refresh_token));
-
     }
 }

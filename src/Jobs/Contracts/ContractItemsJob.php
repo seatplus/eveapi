@@ -93,7 +93,6 @@ abstract class ContractItemsJob extends EsiBase implements HasPathValuesInterfac
         );
 
         $this->dispatchFollowUpJobs();
-
     }
 
     private function dispatchFollowUpJobs()
