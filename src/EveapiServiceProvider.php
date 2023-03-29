@@ -46,7 +46,6 @@ use Seatplus\Eveapi\Listeners\DispatchGetRegionById;
 use Seatplus\Eveapi\Listeners\DispatchGetSystemJobSubscriber;
 use Seatplus\Eveapi\Listeners\ReactOnFreshRefreshToken;
 use Seatplus\Eveapi\Listeners\UpdatingRefreshTokenListener;
-use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
@@ -58,7 +57,6 @@ use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Models\Wallet\Balance;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 use Seatplus\Eveapi\Observers\BalanceObserver;
-use Seatplus\Eveapi\Observers\CharacterAffiliationObserver;
 use Seatplus\Eveapi\Observers\CharacterInfoObserver;
 use Seatplus\Eveapi\Observers\ContractObserver;
 use Seatplus\Eveapi\Observers\CorporationMemberTrackingObserver;
@@ -218,7 +216,6 @@ class EveapiServiceProvider extends ServiceProvider
 
         //Character Observers
         CharacterInfo::observe(CharacterInfoObserver::class);
-        CharacterAffiliation::observe(CharacterAffiliationObserver::class);
 
         //Corporation Observers
         CorporationMemberTracking::observe(CorporationMemberTrackingObserver::class);

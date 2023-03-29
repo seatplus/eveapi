@@ -31,6 +31,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\Eveapi\Esi\HasRequestBodyInterface;
+use Seatplus\Eveapi\Jobs\Alliances\AllianceInfoJob;
+use Seatplus\Eveapi\Jobs\Corporation\CorporationInfoJob;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Services\Jobs\CharacterAffiliationService;
@@ -84,8 +86,6 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
         if ($this->manual_ids) {
             $this->updateOrCreateCharacterAffiliations($this->manual_ids);
         }
-
-
 
         if (! $this->manual_ids) {
             Redis::throttle('character_affiliations')
@@ -170,6 +170,8 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
             ['character_id'],
             ['corporation_id', 'alliance_id', 'faction_id', 'last_pulled']
         );
+
+        $this->followUp();
     }
 
     /**
@@ -192,5 +194,32 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
         $manual_ids = is_array($manual_ids) ? $manual_ids : [$manual_ids];
 
         $this->manual_ids = $manual_ids;
+    }
+
+    private function followUp()
+    {
+        $this->getMissingCorporations();
+        $this->getMissingAlliances();
+    }
+
+    private function getMissingCorporations() : void
+    {
+        CharacterAffiliation::query()
+            ->has('character')
+            ->whereDoesntHave('corporation')
+            ->pluck('corporation_id')
+            ->unique()
+            ->each(fn ($corporation_id) => CorporationInfoJob::dispatch($corporation_id)->onQueue('high'));
+    }
+
+    private function getMissingAlliances(): void
+    {
+        CharacterAffiliation::query()
+            ->has('character')
+            ->whereNotNull('alliance_id')
+            ->whereDoesntHave('alliance')
+            ->pluck('alliance_id')
+            ->unique()
+            ->each(fn ($alliance_id) => AllianceInfoJob::dispatch($alliance_id)->onQueue('high'));
     }
 }
