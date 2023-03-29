@@ -2,25 +2,30 @@
 
 
 use Illuminate\Support\Facades\Queue;
+use Seatplus\Eveapi\Jobs\Contracts\CharacterContractsJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Contracts\Contract;
 
-test('observer dispatches nothing by default upon creation with factory', function () {
-    $fake = Queue::fake();
+test('job dispatches nothing by default upon creation with factory', function () {
+    Queue::fake();
 
-    $contract = Contract::factory()->create([
+    $contract = Contract::factory()->make([
         'for_corporation' => true,
     ]);
 
-    $this->assertNotNull($contract->start_location);
-    $this->assertNotNull($contract->end_location);
-    $this->assertNotNull($contract->issuer);
+    expect($contract->start_location)->not()->toBeNull()
+        ->and($contract->end_location)->not()->toBeNull()
+        ->and($contract->issuer)->not()->toBeNull();
+
+    mockRetrieveEsiDataAction([$contract->toArray()]);
+
+    (new CharacterContractsJob($contract->issuer_id))->handle();
 
     Queue::assertNotPushed(ResolveLocationJob::class);
 });
 
-test('observer dispatches location job with unknown location id', function () {
-    $fake = Queue::fake();
+test('job dispatches location job with unknown location id', function () {
+    Queue::fake();
 
     $contract = Contract::factory()->create([
         'assignee_id' => $this->test_character->character_id,
@@ -28,9 +33,14 @@ test('observer dispatches location job with unknown location id', function () {
         'for_corporation' => true,
     ]);
 
-    expect($contract->start_location)->toBeNull();
-    $this->assertNotNull($contract->end_location);
-    $this->assertNotNull($contract->issuer);
+    mockRetrieveEsiDataAction([$contract->toArray()]);
+
+    (new CharacterContractsJob(testCharacter()->character_id))->handle();
+
+    expect($contract->start_location)->toBeNull()
+        ->and($contract->end_location)->not()->toBeNull()
+        ->and($contract->issuer)->not()->toBeNull();
+
 
     Queue::assertPushedOn('high', ResolveLocationJob::class);
 });

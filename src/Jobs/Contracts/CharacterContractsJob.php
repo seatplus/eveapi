@@ -26,13 +26,16 @@
 
 namespace Seatplus\Eveapi\Jobs\Contracts;
 
+use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
+use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contracts\Contract;
+use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Traits\HasPages;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
@@ -124,6 +127,14 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
             $this->incrementPage();
         }
 
+        $this->persist($contracts);
+
+        $this->dispatchFollowUpJobs($contracts);
+
+    }
+
+    private function persist(Collection $contracts)
+    {
         Contract::upsert(
             $contracts->toArray(),
             ['contract_id'],
@@ -154,6 +165,7 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
             ]
         );
 
+        // Next sync the contracts to the character
         $character = CharacterInfo::find($this->character_id);
 
         $contract_ids = $contracts->pluck('contract_id')->toArray();
@@ -161,8 +173,31 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
         if ($character) {
             $character->contracts()->syncWithoutDetaching($contract_ids);
         }
+    }
 
-        $location_job_array = Contract::query()
+    private function dispatchFollowUpJobs(Collection $contracts)
+    {
+
+        $contract_ids = $contracts->pluck('contract_id')->toArray();
+
+        $contract_item_jobs = $this->getContractItemJobs($contract_ids);
+        $location_jobs = $this->getLocationJobs($contract_ids);
+
+
+        if ($this->batching()) {
+            $this->batch()->add([...$contract_item_jobs, ...$location_jobs]);
+            return;
+        }
+
+        foreach ([...$contract_item_jobs, ...$location_jobs] as $job) {
+            dispatch($job)->onQueue('high');
+        }
+
+    }
+
+    private function getContractItemJobs(array $contract_ids): Collection
+    {
+        return Contract::query()
             ->whereIn('contract_id', $contract_ids)
             ->doesntHave('items')
             ->where('volume', '>', 0)
@@ -170,9 +205,24 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
             ->where('type', '<>', 'courier')
             ->get()
             ->map(fn ($contract) => new CharacterContractItemsJob($this->character_id, $contract->contract_id));
+    }
 
-        if ($this->batching()) {
-            $this->batch()->add($location_job_array);
-        }
+    private function getLocationJobs(array $contract_ids): Collection
+    {
+        $refresh_token = RefreshToken::find($this->character_id);
+
+        return Contract::query()
+            ->whereIn('contract_id', $contract_ids)
+            // where has start_location_id or end_location_id
+            ->where(fn($query) => $query->whereNotNull('start_location_id')->orWhereNotNull('end_location_id'))
+            // where doesn't have start_location or end_location
+            ->where(fn($query) => $query->doesntHave('start_location')->orDoesntHave('end_location'))
+            ->select('start_location_id', 'end_location_id')
+            ->get()
+            ->map(fn ($contract) => [$contract->start_location_id, $contract->end_location_id])
+            ->flatten()
+            ->unique()
+            ->map(fn ($location_id) => new ResolveLocationJob($location_id, $refresh_token));
+
     }
 }
