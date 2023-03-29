@@ -7,9 +7,7 @@ use Seatplus\Eveapi\Jobs\Skills\SkillQueueJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Skills\SkillQueue;
 use Seatplus\Eveapi\Models\Universe\Type;
-use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
-uses(MockRetrieveEsiDataAction::class);
 
 beforeEach(function () {
     // Prevent any auto dispatching of jobs
@@ -25,23 +23,35 @@ it('runs skill job', function () {
 
     (new SkillQueueJob(testCharacter()->character_id))->handle();
 
-    expect(SkillQueue::all())->toHaveCount(5);
-    expect(SkillQueue::first()->type)->toBeInstanceOf(Type::class);
+    expect(SkillQueue::all())->toHaveCount(5)
+        ->and(SkillQueue::first()->type)->toBeInstanceOf(Type::class)
+        ->and($this->test_character->refresh()->skill_queues)->toHaveCount(5);
 
-    expect($this->test_character->refresh()->skill_queues)->toHaveCount(5);
 });
 
-it('observes skill creation', function () {
+it('dispatch type job if skill_id is not yet in the type table', function () {
+
+    expect(SkillQueue::all())->toHaveCount(0);
+
     Queue::assertNothingPushed();
 
-    SkillQueue::factory(['skill_id' => 123])->create();
+    //SkillQueue::factory(['skill_id' => 123])->make();
+
+    $mock_data = buildSkillQueueMockEsiData();
+
+    // Delete all types
+    Type::query()->delete();
+
+    (new SkillQueueJob(testCharacter()->character_id))->handle();
+
+    expect(SkillQueue::first())->type->not()->toBeInstanceOf(Type::class);
 
     Queue::assertPushed(ResolveUniverseTypeByIdJob::class);
 });
 
 it('deletes old queue items', function () {
     // create old Dataa
-    $old_data = Event::fakeFor(fn () => SkillQueue::factory(['character_id' => $this->test_character->character_id])->create());
+    $old_data = Event::fakeFor(fn () => SkillQueue::factory(['character_id' => testCharacter()->character_id])->create());
 
     expect(SkillQueue::all())->toHaveCount(1);
 
@@ -60,11 +70,9 @@ function buildSkillQueueMockEsiData()
 {
     Queue::assertNothingPushed();
 
-    $mock_data = Event::fakeFor(
-        fn () => SkillQueue::factory(['character_id' => testCharacter()->character_id])
+    $mock_data = SkillQueue::factory(['character_id' => testCharacter()->character_id])
         ->count(5)
-        ->make()
-    );
+        ->make();
 
     mockRetrieveEsiDataAction($mock_data->toArray());
 
