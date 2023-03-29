@@ -30,8 +30,10 @@ use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Skills\Skill;
+use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
@@ -100,5 +102,17 @@ class SkillsJob extends EsiBase implements HasPathValuesInterface, HasRequiredSc
                 'total_sp' => data_get($response, 'total_sp'),
                 'unallocated_sp' => data_get($response, 'unallocated_sp'),
             ]);
+
+        $this->dispatchMissingSkillTypeJobs();
+    }
+
+    private function dispatchMissingSkillTypeJobs()
+    {
+
+        Skill::query()
+            ->where('character_id', $this->character_id)
+            ->doesntHave('type')
+            ->pluck('skill_id')
+            ->each(fn ($skill_id) => ResolveUniverseTypeByIdJob::dispatch($skill_id)->onQueue('high'));
     }
 }

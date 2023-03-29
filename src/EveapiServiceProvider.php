@@ -49,7 +49,6 @@ use Seatplus\Eveapi\Listeners\UpdatingRefreshTokenListener;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Models\Schedules;
-use Seatplus\Eveapi\Models\Skills\Skill;
 use Seatplus\Eveapi\Models\Skills\SkillQueue;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Type;
@@ -57,7 +56,6 @@ use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 use Seatplus\Eveapi\Observers\CharacterInfoObserver;
 use Seatplus\Eveapi\Observers\CorporationMemberTrackingObserver;
 use Seatplus\Eveapi\Observers\GroupObserver;
-use Seatplus\Eveapi\Observers\SkillObserver;
 use Seatplus\Eveapi\Observers\SkillQueueObserver;
 use Seatplus\Eveapi\Observers\TypeObserver;
 use Seatplus\Eveapi\Observers\WalletTransactionObserver;
@@ -220,7 +218,6 @@ class EveapiServiceProvider extends ServiceProvider
         WalletTransaction::observe(WalletTransactionObserver::class);
 
         //SkillObserver
-        Skill::observe(SkillObserver::class);
         SkillQueue::observe(SkillQueueObserver::class);
     }
 
