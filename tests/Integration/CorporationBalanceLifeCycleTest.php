@@ -32,7 +32,7 @@ it('runs the job', function () {
     expect(Balance::all())->toHaveCount(7);
 });
 
-it('has observer and dispatches job', function () {
+it('dispatches follow up jobs', function () {
     $character_roles = $this->test_character->roles;
     $character_roles->roles = ['Accountant'];
     $character_roles->save();
@@ -42,10 +42,14 @@ it('has observer and dispatches job', function () {
     $balances = Balance::factory()
         ->withDivision()
         ->count(7)
-        ->create([
+        ->make([
             'balanceable_id' => $this->test_character->corporation->corporation_id,
             'balanceable_type' => CorporationInfo::class,
         ]);
+
+    mockRetrieveEsiDataAction($balances->toArray());
+
+    (new CorporationBalanceJob(testCharacter()->corporation->corporation_id))->handle();
 
     Queue::assertPushed(CorporationWalletJournalByDivisionJob::class);
     Queue::assertPushed(CorporationWalletTransactionByDivisionJob::class);

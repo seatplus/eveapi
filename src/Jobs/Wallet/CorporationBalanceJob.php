@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Wallet;
 
+use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
@@ -114,5 +115,15 @@ class CorporationBalanceJob extends EsiBase implements HasPathValuesInterface, H
             ['balanceable_id', 'balanceable_type', 'division'],
             ['balance']
         );
+
+        $this->dispatchDivisionJobs($corporation_balances);
+    }
+
+    private function dispatchDivisionJobs(Collection $corporation_balances)
+    {
+        $corporation_balances->each(function ($balance) {
+            CorporationWalletJournalByDivisionJob::dispatch($this->corporation_id, $balance['division'])->onQueue('high');
+            CorporationWalletTransactionByDivisionJob::dispatch($this->corporation_id, $balance['division'])->onQueue('high');
+        });
     }
 }

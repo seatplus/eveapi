@@ -54,9 +54,7 @@ use Seatplus\Eveapi\Models\Skills\Skill;
 use Seatplus\Eveapi\Models\Skills\SkillQueue;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Type;
-use Seatplus\Eveapi\Models\Wallet\Balance;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
-use Seatplus\Eveapi\Observers\BalanceObserver;
 use Seatplus\Eveapi\Observers\CharacterInfoObserver;
 use Seatplus\Eveapi\Observers\ContractObserver;
 use Seatplus\Eveapi\Observers\CorporationMemberTrackingObserver;
@@ -225,7 +223,6 @@ class EveapiServiceProvider extends ServiceProvider
 
         //WalletObserver
         WalletTransaction::observe(WalletTransactionObserver::class);
-        Balance::observe(BalanceObserver::class);
 
         //SkillObserver
         Skill::observe(SkillObserver::class);
