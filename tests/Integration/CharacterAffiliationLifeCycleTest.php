@@ -44,25 +44,24 @@ it('handles follow-up job', function (string $job_class, array $configuration = 
     // run the job
     (new CharacterAffiliationJob($character_id))->handle();
 
-    if($pushed) {
+    if ($pushed) {
         Queue::assertPushedOn('high', $job_class);
     } else {
         Queue::assertNotPushed($job_class);
     }
-
 })->with([
     'dispatching alliance job, if alliance is unknown' => [AllianceInfoJob::class, ['alliance_id' => 123456]],
     'not dispatching alliance job, if no alliance ' => [AllianceInfoJob::class, ['alliance_id' => null], false],
-    'not dispatching alliance job, if alliance is known ' => fn() => [
+    'not dispatching alliance job, if alliance is known ' => fn () => [
         AllianceInfoJob::class,
         ['alliance_id' => AllianceInfo::factory()->create()->alliance_id],
-        false
+        false,
     ],
     'dispatching corporation job, if corporation is unknown' => [CorporationInfoJob::class],
-    'not dispatching corporation job, if corporation is known' => fn() => [
+    'not dispatching corporation job, if corporation is known' => fn () => [
         CorporationInfoJob::class,
         ['corporation_id' => CorporationInfo::factory()->create()->corporation_id],
-        false
+        false,
     ],
 ]);
 
