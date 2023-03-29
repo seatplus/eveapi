@@ -1,44 +1,69 @@
 <?php
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Redis;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfoJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
+use Seatplus\Eveapi\Jobs\Corporation\CorporationInfoJob;
+use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Services\Facade\RetrieveEsiData;
 
-it('dispatches alliance job', function () {
+it('handles follow-up job', function (string $job_class, array $configuration = [], bool $pushed = true) {
     Queue::fake();
     Queue::assertNothingPushed();
 
-    $character = CharacterInfo::factory()->create();
-    $character->character_affiliation()->delete();
+    // get character_id from config or create a new one
+    $character_id = CharacterAffiliation::factory()->make()->character_id;
+    $character_id = Arr::get($configuration, 'character_id', $character_id);
+
+    // If config contains has_character, we create a character and use its id
+    if (Arr::get($configuration, 'has_character', true)) {
+        $character = CharacterInfo::factory()->create([
+            'character_id' => $character_id,
+        ]);
+        $character->character_affiliation()->delete();
+    }
+
+    $attributes = array_merge([
+        'character_id' => $character_id,
+    ], Arr::only($configuration, ['alliance_id', 'corporation_id']));
 
     $character_affiliation = CharacterAffiliation::factory()->create([
         'character_id' => $character->character_id,
-        'alliance_id' => 123456,
+        ...$attributes,
     ]);
 
-    Queue::assertPushedOn('high', AllianceInfoJob::class);
-});
+    mockRetrieveEsiDataAction([$character_affiliation->toArray()]);
 
-it('dispatches no alliance job if alliance id is null', function () {
-    Queue::fake();
-    Queue::assertNothingPushed();
+    // run the job
+    (new CharacterAffiliationJob($character_id))->handle();
 
-    $character = CharacterInfo::factory()->create();
-    $character->character_affiliation()->delete();
-
-    $character_affiliation = CharacterAffiliation::factory()->create([
-        'character_id' => $character->character_id,
-        'alliance_id' => null,
-    ]);
-
-    Queue::assertNotPushed(AllianceInfoJob::class);
-});
+    if ($pushed) {
+        Queue::assertPushedOn('high', $job_class);
+    } else {
+        Queue::assertNotPushed($job_class);
+    }
+})->with([
+    'dispatching alliance job, if alliance is unknown' => [AllianceInfoJob::class, ['alliance_id' => 123456]],
+    'not dispatching alliance job, if no alliance ' => [AllianceInfoJob::class, ['alliance_id' => null], false],
+    'not dispatching alliance job, if alliance is known ' => fn () => [
+        AllianceInfoJob::class,
+        ['alliance_id' => AllianceInfo::factory()->create()->alliance_id],
+        false,
+    ],
+    'dispatching corporation job, if corporation is unknown' => [CorporationInfoJob::class],
+    'not dispatching corporation job, if corporation is known' => fn () => [
+        CorporationInfoJob::class,
+        ['corporation_id' => CorporationInfo::factory()->create()->corporation_id],
+        false,
+    ],
+]);
 
 
 it('does not update affiliation younger then an hours', function () {

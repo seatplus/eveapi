@@ -1,6 +1,8 @@
 <?php
 
+use Seatplus\Eveapi\Commands\CheckJobsCommand;
+
 it('should not fail', function () {
-    $this->artisan('seatplus:check:endpoints')
+    $this->artisan(CheckJobsCommand::class)
         ->assertSuccessful();
 });
