@@ -34,10 +34,20 @@ it('runs skill job', function () {
     expect($this->test_character->refresh()->skills)->toHaveCount(5);
 });
 
-it('observes skill creation', function () {
+it('Dispatch Type job if skill is missing', function () {
     Queue::assertNothingPushed();
 
-    Skill::factory(['skill_id' => 123])->create();
+    $skill = Skill::factory(['skill_id' => 123])->make();
+
+    expect($skill->type)->toBeNull();
+
+    mockRetrieveEsiDataAction([
+        'skills' => [$skill->toArray()],
+        'total_sp' => 1337,
+        'unallocated_sp' => 42,
+    ]);
+
+    (new SkillsJob(testCharacter()->character_id))->handle();
 
     Queue::assertPushed(ResolveUniverseTypeByIdJob::class);
 });

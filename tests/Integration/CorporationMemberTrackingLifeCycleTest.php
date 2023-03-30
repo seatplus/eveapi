@@ -1,9 +1,9 @@
 <?php
 
 
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob as CharacterInfoJob;
+use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
@@ -15,90 +15,36 @@ beforeEach(function () {
     Queue::fake();
 });
 
-it('dispatches type job', function () {
+it('handles missing jobs after corporation member job', function (string $job_class, array $configuration, bool $should_be_queued = true) {
+    // update refresh token to be valid
+    updateRefreshTokenScopes(testCharacter()->refresh_token, ['esi-corporations.track_members.v1'])->save();
+
+    expect(testCharacter()->refresh_token->scopes)->toContain('esi-corporations.track_members.v1');
+
+    // add required roles to character
+    updateCharacterRoles(['Director']);
+
+    expect(testCharacter())->roles->roles->toContain('Director');
+
     $tracking = CorporationMemberTracking::factory()->make([
-        'ship_type_id' => Type::factory()->make(),
+        'corporation_id' => testCharacter()->corporation->corporation_id,
+        'character_id' => testCharacter()->character_id,
+        ...$configuration,
     ]);
 
-    Queue::assertNotPushed('high', ResolveUniverseTypeByIdJob::class);
+    mockRetrieveEsiDataAction([$tracking->toArray()]);
 
-    $this->assertDatabaseMissing('corporation_member_trackings', ['ship_type_id' => $tracking->ship_type_id]);
+    (new CorporationMemberTrackingJob($tracking->corporation_id))->handle();
 
-    $tracking->save();
-
-    $this->assertDatabaseHas('corporation_member_trackings', ['ship_type_id' => $tracking->ship_type_id]);
-
-    Queue::assertPushedOn('high', ResolveUniverseTypeByIdJob::class);
-
-    Queue::assertPushed(ResolveUniverseTypeByIdJob::class, function ($job) use ($tracking) {
-        return in_array(sprintf('type_id:%s', $tracking->ship_type_id), $job->tags());
-    });
-});
-
-it('does not dispatch type job if type is known', function () {
-    $type = Type::factory()->create();
-
-    $tracking = CorporationMemberTracking::factory()->create([
-        'ship_type_id' => $type->type_id,
-    ]);
-
-    Queue::assertNotPushed(ResolveUniverseTypeByIdJob::class);
-});
-
-it('dispatches location job', function () {
-    $tracking = CorporationMemberTracking::factory()->create([
-        'character_id' => $this->test_character->character_id,
-    ]);
-
-    Queue::assertPushedOn('high', ResolveLocationJob::class);
-});
-
-it('does not dispatch location job if location is known', function () {
-    $location = Location::factory()->create();
-
-    $tracking = CorporationMemberTracking::factory()->create([
-        'location_id' => $location->location_id,
-    ]);
-
-    Queue::assertNotPushed(ResolveLocationJob::class);
-});
-
-it('dispatches location job if location is updating', function () {
-    $tracking = Event::fakeFor(function () {
-        return CorporationMemberTracking::factory()->create([
-            'location_id' => 1234,
-        ]);
-    });
-
-    Queue::assertNotPushed(ResolveLocationJob::class);
-
-    $tracking->location_id = 56789;
-    $tracking->save();
-
-    Queue::assertPushedOn('high', ResolveLocationJob::class);
-});
-
-it('dispatches type job if ship is updating', function () {
-    $tracking = Event::fakeFor(function () {
-        return CorporationMemberTracking::factory()->create([
-            'ship_type_id' => 1234,
-        ]);
-    });
-
-    Queue::assertNotPushed(ResolveUniverseTypeByIdJob::class);
-
-    $tracking->ship_type_id = 56789;
-    $tracking->save();
-
-    Queue::assertPushedOn('high', ResolveUniverseTypeByIdJob::class);
-});
-
-it('does not dispatch character job if character is known', function () {
-    $character = CharacterInfo::factory()->create();
-
-    $tracking = CorporationMemberTracking::factory()->create([
-        'character_id' => $character->character_id,
-    ]);
-
-    Queue::assertNotPushed(CharacterInfoJob::class);
-});
+    match ($should_be_queued) {
+        true => Queue::assertPushedOn('high', $job_class),
+        false => Queue::assertNotPushed($job_class),
+    };
+})->with([
+    'resolves type if ship is unknown' => [ResolveUniverseTypeByIdJob::class, ['ship_type_id' => 1234]],
+    'resolves location if location is unknown' => [ResolveLocationJob::class, ['location_id' => 1234]],
+    'resolves character if character is unknown' => [CharacterInfoJob::class, ['character_id' => 1234]],
+    'does not resolves type if ship is known' => fn () => [ResolveUniverseTypeByIdJob::class, ['ship_type_id' => Type::factory()->create()->type_id], false],
+    'does not resolves location if location is known' => fn () => [ResolveLocationJob::class, ['location_id' => Location::factory()->create()->location_id], false],
+    'does not resolves character if character is known' => fn () => [CharacterInfoJob::class, ['location_id' => CharacterInfo::factory()->create()->character_id], false],
+]);

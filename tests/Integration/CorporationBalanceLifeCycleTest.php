@@ -10,7 +10,6 @@ use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletTransactionByDivisionJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Wallet\Balance;
 use Seatplus\Eveapi\Models\Wallet\WalletJournal;
-use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 uses(MockRetrieveEsiDataAction::class);
@@ -32,7 +31,7 @@ it('runs the job', function () {
     expect(Balance::all())->toHaveCount(7);
 });
 
-it('has observer and dispatches job', function () {
+it('dispatches follow up jobs', function () {
     $character_roles = $this->test_character->roles;
     $character_roles->roles = ['Accountant'];
     $character_roles->save();
@@ -42,10 +41,14 @@ it('has observer and dispatches job', function () {
     $balances = Balance::factory()
         ->withDivision()
         ->count(7)
-        ->create([
+        ->make([
             'balanceable_id' => $this->test_character->corporation->corporation_id,
             'balanceable_type' => CorporationInfo::class,
         ]);
+
+    mockRetrieveEsiDataAction($balances->toArray());
+
+    (new CorporationBalanceJob(testCharacter()->corporation->corporation_id))->handle();
 
     Queue::assertPushed(CorporationWalletJournalByDivisionJob::class);
     Queue::assertPushed(CorporationWalletTransactionByDivisionJob::class);
@@ -87,26 +90,6 @@ it('creates wallet journal entries', function () {
     expect($corporation->wallet_journals->first())->toBeInstanceOf(WalletJournal::class);
 });
 
-it('creates wallet transaction entries', function () {
-    Event::fakeFor(fn () => updateRefreshTokenScopes($this->test_character->refresh_token, config('eveapi.scopes.corporation.wallet'))->save());
-    $this->test_character->roles()->update(['roles' => ['Accountant']]);
-
-    $corporation = $this->test_character->corporation;
-
-    expect($corporation->wallet_transactions)->toHaveCount(0);
-
-    $mock_data = buildCorporationWalletTransactionEsiMockData();
-
-    // Prevent Observers to pickup any new jobs
-    Event::fake();
-
-    (new CorporationWalletTransactionByDivisionJob(testCharacter()->corporation->corporation_id, $mock_data->first()->division))->handle();
-
-    $corporation = $corporation->refresh();
-    expect($corporation->wallet_transactions)->toHaveCount($mock_data->count());
-    expect($corporation->wallet_transactions->first())->toBeInstanceOf(WalletTransaction::class);
-});
-
 // Helpers
 function buildCorpWalletEsiMockData()
 {
@@ -129,33 +112,6 @@ function buildCorporationWalletJournalEsiMockData()
     ]);
 
     mockRetrieveEsiDataAction($mock_data->toArray());
-
-    return $mock_data;
-}
-
-function buildCorporationWalletTransactionEsiMockData()
-{
-    $mock_data = WalletTransaction::factory()->count(7)->make([
-        'wallet_transactionable_id' => testCharacter()->corporation->corporation_id,
-        'wallet_transactionable_type' => CorporationInfo::class,
-        'division' => 3,
-    ]);
-
-    $copy = clone $mock_data;
-
-    // split into two arrays
-    $half = ceil($copy->count() / 2);
-    $first_half = $copy->splice($half);
-    $second_half = $copy;
-
-    // create esi response
-    $response_1 = new \Seatplus\EsiClient\DataTransferObjects\EsiResponse(json_encode($first_half->toArray()), [], 'now', 200);
-    $response_2 = new \Seatplus\EsiClient\DataTransferObjects\EsiResponse(json_encode($second_half->toArray()), [], 'now', 200);
-    $empty_response = new \Seatplus\EsiClient\DataTransferObjects\EsiResponse(json_encode([]), [], 'now', 200);
-
-    \Seatplus\Eveapi\Services\Facade\RetrieveEsiData::shouldReceive('execute')
-        ->times(3)
-        ->andReturn($response_1, $response_2, $empty_response);
 
     return $mock_data;
 }

@@ -27,6 +27,7 @@
 namespace Seatplus\Eveapi\Jobs\Assets;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequestBodyInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
@@ -50,6 +51,8 @@ class CharacterAssetsNameJob extends EsiBase implements HasPathValuesInterface, 
     const ORBITALS_CATEGORY = 46;
     const STRUCTURE_CATEGORY = 65;
 
+    private Collection $asset_names;
+
     public function __construct(
         public int $character_id,
     ) {
@@ -64,6 +67,8 @@ class CharacterAssetsNameJob extends EsiBase implements HasPathValuesInterface, 
         $this->setPathValues([
             'character_id' => $character_id,
         ]);
+
+        $this->asset_names = collect();
     }
 
     /**
@@ -122,16 +127,20 @@ class CharacterAssetsNameJob extends EsiBase implements HasPathValuesInterface, 
 
                 $response = $this->retrieve();
 
-                collect($response)->each(function ($response) {
-                    // "None" seems to indicate that no name is set.
-                    if ($response->name === 'None') {
-                        return;
-                    }
-
-                    Asset::where('assetable_id', $this->character_id)
-                        ->where('item_id', $response->item_id)
-                        ->update(['name' => $response->name]);
-                });
+                // merge response into asset_names collection
+                $this->asset_names = $this->asset_names->merge(collect($response));
             });
+
+        // Update all assets in one go
+        $this->asset_names
+            // filter out "None" names
+            ->filter(fn ($asset_name) => $asset_name->name !== 'None')
+            // update asset names
+            ->each(
+                fn ($asset_name) => Asset::query()
+                ->where('assetable_id', $this->character_id)
+                ->where('item_id', $asset_name->item_id)
+                ->update(['name' => $asset_name->name])
+            );
     }
 }

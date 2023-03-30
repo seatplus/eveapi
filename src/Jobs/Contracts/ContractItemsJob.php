@@ -92,6 +92,16 @@ abstract class ContractItemsJob extends EsiBase implements HasPathValuesInterfac
             ['record_id'],
         );
 
+        $this->dispatchFollowUpJobs();
+    }
+
+    private function dispatchFollowUpJobs()
+    {
+        $this->getMissingTypes();
+    }
+
+    private function getMissingTypes()
+    {
         // Dispatch Resolve Universe Type Jobs for missing Types
         ContractItem::doesntHave('type')
             ->pluck('type_id')

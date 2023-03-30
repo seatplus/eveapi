@@ -47,24 +47,12 @@ use Seatplus\Eveapi\Listeners\DispatchGetSystemJobSubscriber;
 use Seatplus\Eveapi\Listeners\ReactOnFreshRefreshToken;
 use Seatplus\Eveapi\Listeners\UpdatingRefreshTokenListener;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Seatplus\Eveapi\Models\Contracts\Contract;
-use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Models\Schedules;
-use Seatplus\Eveapi\Models\Skills\Skill;
-use Seatplus\Eveapi\Models\Skills\SkillQueue;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Type;
-use Seatplus\Eveapi\Models\Wallet\Balance;
-use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
-use Seatplus\Eveapi\Observers\BalanceObserver;
 use Seatplus\Eveapi\Observers\CharacterInfoObserver;
-use Seatplus\Eveapi\Observers\ContractObserver;
-use Seatplus\Eveapi\Observers\CorporationMemberTrackingObserver;
 use Seatplus\Eveapi\Observers\GroupObserver;
-use Seatplus\Eveapi\Observers\SkillObserver;
-use Seatplus\Eveapi\Observers\SkillQueueObserver;
 use Seatplus\Eveapi\Observers\TypeObserver;
-use Seatplus\Eveapi\Observers\WalletTransactionObserver;
 use Seatplus\Eveapi\Services\Esi\EsiClientSetup;
 
 class EveapiServiceProvider extends ServiceProvider
@@ -216,20 +204,6 @@ class EveapiServiceProvider extends ServiceProvider
 
         //Character Observers
         CharacterInfo::observe(CharacterInfoObserver::class);
-
-        //Corporation Observers
-        CorporationMemberTracking::observe(CorporationMemberTrackingObserver::class);
-
-        //Contract Observer
-        Contract::observe(ContractObserver::class);
-
-        //WalletObserver
-        WalletTransaction::observe(WalletTransactionObserver::class);
-        Balance::observe(BalanceObserver::class);
-
-        //SkillObserver
-        Skill::observe(SkillObserver::class);
-        SkillQueue::observe(SkillQueueObserver::class);
     }
 
     private function addSchedules()

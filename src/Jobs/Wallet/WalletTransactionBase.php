@@ -7,6 +7,8 @@ use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasQueryStringInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
+use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
@@ -96,10 +98,42 @@ abstract class WalletTransactionBase extends EsiBase implements HasPathValuesInt
             $this->transactions = array_merge($this->transactions, $transactions);
         }
 
-        WalletTransaction::upsert($this->transactions, ['transaction_id']);
+        $this->persistTransactions();
+        $this->dispatchFollowUpJobs();
 
         // see https://divinglaravel.com/avoiding-memory-leaks-when-running-laravel-queue-workers
         // This job is very memory consuming hence avoiding memory leaks, the worker should restart
         app('queue.worker')->shouldQuit = 1;
+    }
+
+    private function persistTransactions()
+    {
+        WalletTransaction::upsert($this->transactions, ['transaction_id']);
+    }
+
+    private function dispatchFollowUpJobs()
+    {
+        $this->dispatchMissingTypeJobs();
+        $this->dispatchMissingLocationJobs();
+    }
+
+    private function dispatchMissingTypeJobs()
+    {
+        WalletTransaction::query()
+            ->doesntHave('type')
+            ->pluck('type_id')
+            ->unique()
+            ->each(fn ($type_id) => ResolveUniverseTypeByIdJob::dispatch($type_id)->onQueue('high'));
+    }
+
+    private function dispatchMissingLocationJobs()
+    {
+        $refresh_token = $this->getRefreshToken();
+
+        WalletTransaction::query()
+            ->doesntHave('location')
+            ->pluck('location_id')
+            ->unique()
+            ->each(fn ($location_id) => ResolveLocationJob::dispatch($location_id, $refresh_token)->onQueue('high'));
     }
 }
