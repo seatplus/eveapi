@@ -106,7 +106,6 @@ class SkillQueueJob extends EsiBase implements HasPathValuesInterface, HasRequir
 
     private function dispatchMissingSkillTypeJobs()
     {
-
         SkillQueue::query()
             ->where('character_id', $this->character_id)
             ->doesntHave('type')

@@ -8,7 +8,6 @@ use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Skills\SkillQueue;
 use Seatplus\Eveapi\Models\Universe\Type;
 
-
 beforeEach(function () {
     // Prevent any auto dispatching of jobs
     Queue::fake();
@@ -26,11 +25,9 @@ it('runs skill job', function () {
     expect(SkillQueue::all())->toHaveCount(5)
         ->and(SkillQueue::first()->type)->toBeInstanceOf(Type::class)
         ->and($this->test_character->refresh()->skill_queues)->toHaveCount(5);
-
 });
 
 it('dispatch type job if skill_id is not yet in the type table', function () {
-
     expect(SkillQueue::all())->toHaveCount(0);
 
     Queue::assertNothingPushed();

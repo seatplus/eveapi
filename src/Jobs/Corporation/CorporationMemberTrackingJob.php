@@ -36,7 +36,6 @@ use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
-use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Traits\HasCorporationRole;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
@@ -120,7 +119,6 @@ class CorporationMemberTrackingJob extends EsiBase implements HasPathValuesInter
         $this->getMemberCharacterInfo();
         $this->getLocations();
         $this->getShipTypes();
-
     }
 
     private function upsertMembers(\Illuminate\Support\Collection $members)
