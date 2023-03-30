@@ -136,11 +136,11 @@ class CharacterAssetsNameJob extends EsiBase implements HasPathValuesInterface, 
             // filter out "None" names
             ->filter(fn ($asset_name) => $asset_name->name !== 'None')
             // update asset names
-            ->each(fn ($asset_name) => Asset::query()
+            ->each(
+                fn ($asset_name) => Asset::query()
                 ->where('assetable_id', $this->character_id)
                 ->where('item_id', $asset_name->item_id)
                 ->update(['name' => $asset_name->name])
             );
-
     }
 }

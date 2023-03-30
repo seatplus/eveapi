@@ -204,7 +204,6 @@ class EveapiServiceProvider extends ServiceProvider
 
         //Character Observers
         CharacterInfo::observe(CharacterInfoObserver::class);
-
     }
 
     private function addSchedules()

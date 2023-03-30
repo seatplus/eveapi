@@ -23,7 +23,6 @@ beforeEach(function () {
 });
 
 test('run wallet transaction action', function (bool $is_corporation = false) {
-
     $wallet_transactionable_id = $is_corporation ? testCharacter()->corporation->corporation_id : testCharacter()->character_id;
 
     Queue::assertNothingPushed();
@@ -50,12 +49,10 @@ test('run wallet transaction action', function (bool $is_corporation = false) {
 ]);
 
 test('it dispatches follow up jobs', function (string $job_class, array $configuration, bool $should_dispatch) {
-
-
     $mock_data = WalletTransaction::factory()->make([
         'wallet_transactionable_id' => testCharacter()->character_id,
         'wallet_transactionable_type' => CharacterInfo::class,
-        ...$configuration
+        ...$configuration,
     ]);
 
     runWalletTransactionJobWithMockData([$mock_data]);
@@ -65,32 +62,30 @@ test('it dispatches follow up jobs', function (string $job_class, array $configu
     } else {
         Queue::assertNotPushed($job_class);
     }
-
 })->with([
-    'dispatching location job' => fn() => [ResolveLocationJob::class, [], true],
-    'dispatching type job' => fn() => [ResolveUniverseTypeByIdJob::class, [], true],
-    'not dispatching location job' => fn() => [
+    'dispatching location job' => fn () => [ResolveLocationJob::class, [], true],
+    'dispatching type job' => fn () => [ResolveUniverseTypeByIdJob::class, [], true],
+    'not dispatching location job' => fn () => [
         ResolveLocationJob::class,
         ['location_id' => Location::factory()->create()->location_id],
-        false
+        false,
     ],
-    'not dispatching type job' => fn() => [
+    'not dispatching type job' => fn () => [
         ResolveUniverseTypeByIdJob::class,
         ['type_id' => Type::factory()->create()->type_id],
-        false
+        false,
     ],
 ]);
 
 function runWalletTransactionJobWithMockData(array $mock_data)
 {
-
     updateRefreshTokenScopes(testCharacter()->refresh_token, ['esi-wallet.read_character_wallet.v1'])->save();
 
     $division_id = Arr::get($mock_data, '0.division', null);
     // If division is set, we are dealing with a corporation wallet transaction
     $is_corporation = ! is_null($division_id);
 
-    if($is_corporation) {
+    if ($is_corporation) {
         updateRefreshTokenScopes(testCharacter()->refresh_token, ['esi-wallet.read_corporation_wallets.v1'])->save();
         updateCharacterRoles(['Director']);
     }

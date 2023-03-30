@@ -10,7 +10,6 @@ use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletTransactionByDivisionJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Wallet\Balance;
 use Seatplus\Eveapi\Models\Wallet\WalletJournal;
-use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 uses(MockRetrieveEsiDataAction::class);
