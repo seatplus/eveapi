@@ -27,15 +27,10 @@
 namespace Seatplus\Eveapi\Jobs\Contacts;
 
 use Illuminate\Support\Collection;
-use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\EsiBase;
 
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Services\Contacts\ProcessContactLabelsResponse;
-use Seatplus\Eveapi\Traits\HasPathValues;
-use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
 class CharacterContactLabelJob extends ContactBaseJob
 {
