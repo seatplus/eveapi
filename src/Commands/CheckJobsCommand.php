@@ -40,6 +40,8 @@ use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
 use Seatplus\Eveapi\Jobs\Contracts\ContractItemsJob;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
+use Seatplus\Eveapi\Jobs\Wallet\WalletJournalBase;
+use Seatplus\Eveapi\Jobs\Wallet\WalletTransactionBase;
 use function Termwind\render;
 
 class CheckJobsCommand extends Command
@@ -60,6 +62,7 @@ class CheckJobsCommand extends Command
 
     private array $esi_paths = [];
     private Collection $jobs;
+    private bool $has_errors = false;
 
     public function __construct()
     {
@@ -113,6 +116,12 @@ class CheckJobsCommand extends Command
 
                 $this->writeNewLine();
             });
+
+        if ($this->has_errors) {
+            return self::FAILURE;
+        }
+
+        return self::SUCCESS;
     }
 
     private function getAllJobs() : Collection
@@ -334,10 +343,16 @@ class CheckJobsCommand extends Command
         $reflection_class = new ReflectionClass($job_class);
         $job_filename = $reflection_class->getFileName();
 
-        // if job is extending ContractItemsJob
-        if (is_subclass_of($job_class, ContractItemsJob::class)) {
-            $reflection_class = new ReflectionClass(ContractItemsJob::class);
-            $job_filename = $reflection_class->getFileName();
+        // check if job is extending a BaseJob
+        foreach ([ContractItemsJob::class, WalletJournalBase::class, WalletTransactionBase::class] as $base_job) {
+            // check if base_job is abstract
+            $reflection_class = new ReflectionClass($base_job);
+
+            throw_unless($reflection_class->isAbstract(), new Exception("${base_job} is not abstract but checker is overwriting job_filename"));
+
+            if (is_subclass_of($job_class, $base_job)) {
+                $job_filename = $reflection_class->getFileName();
+            }
         }
 
         // check if job isCachedLoad() is called somewhere in the job
@@ -374,6 +389,7 @@ class CheckJobsCommand extends Command
     private function writeError(string $message): void
     {
         $this->writeAssertionOutput($message, 'text-red font-bold px-2', '⨯');
+        $this->has_errors = true;
     }
 
     private function writeWarning(string $message): void
