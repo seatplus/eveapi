@@ -19,6 +19,7 @@ abstract class ContactBaseJob extends EsiBase implements HasPathValuesInterface,
     {
         $this->required_scope = $required_scope;
     }
+
     public function getRequiredScope(): string
     {
         return $this->required_scope;
@@ -49,18 +50,15 @@ abstract class ContactBaseJob extends EsiBase implements HasPathValuesInterface,
 
         // if neither corporation_id nor alliance_id is set, get refresh token for character_id
         return $this->getToken('character_id', $object_vars['character_id']);
-
     }
 
     private function getToken(string $key, int $value): RefreshToken
     {
-
         return RefreshToken::query()
             ->when($key === 'character_id', fn ($query) => $query->where('character_id', $value))
             ->when($key === 'corporation_id', fn ($query) => $query->whereHas('corporation', fn ($query) => $query->where('corporation_id', $value)))
             ->when($key === 'alliance_id', fn ($query) => $query->whereHas('corporation.alliance', fn ($query) => $query->where('alliance_id', $value)))
             ->get()
             ->first(fn ($refresh_token) => $refresh_token->hasScope($this->getRequiredScope()));
-
     }
 }
