@@ -2,6 +2,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Contacts;
 
+use Exception;
 use Illuminate\Support\Arr;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
@@ -13,7 +14,7 @@ abstract class ContactBaseJob extends EsiBase implements HasPathValuesInterface,
 {
     use HasPathValues;
 
-    private string $required_scope;
+    protected string $required_scope;
 
     public function setRequiredScope(string $required_scope): void
     {
@@ -56,8 +57,8 @@ abstract class ContactBaseJob extends EsiBase implements HasPathValuesInterface,
     {
         return RefreshToken::query()
             ->when($key === 'character_id', fn ($query) => $query->where('character_id', $value))
-            ->when($key === 'corporation_id', fn ($query) => $query->whereHas('corporation', fn ($query) => $query->where('corporation_id', $value)))
-            ->when($key === 'alliance_id', fn ($query) => $query->whereHas('corporation.alliance', fn ($query) => $query->where('alliance_id', $value)))
+            ->when($key === 'corporation_id', fn ($query) => $query->whereRelation('corporation', 'corporation_infos.corporation_id', $value))
+            ->when($key === 'alliance_id', fn ($query) => $query->whereRelation('corporation.alliance', 'alliance_infos.alliance_id', $value))
             ->get()
             ->first(fn ($refresh_token) => $refresh_token->hasScope($this->getRequiredScope()));
     }

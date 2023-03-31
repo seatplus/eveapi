@@ -37,11 +37,8 @@ use Seatplus\Eveapi\Services\Contacts\ProcessContactLabelsResponse;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class AllianceContactLabelJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+class AllianceContactLabelJob extends ContactBaseJob
 {
-    use HasPathValues;
-    use HasRequiredScopes;
-
     private int $page = 1;
 
     private Collection $known_ids;
