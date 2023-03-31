@@ -26,13 +26,14 @@
 
 namespace Seatplus\Eveapi\Jobs\Wallet;
 
+use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 
 use Seatplus\Eveapi\Traits\HasCorporationRole;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CorporationWalletTransactionByDivisionJob extends WalletTransactionBase
+class CorporationWalletTransactionByDivisionJob extends WalletTransactionBase implements HasCorporationRoleInterface
 {
     use HasPathValues;
     use HasRequiredScopes;

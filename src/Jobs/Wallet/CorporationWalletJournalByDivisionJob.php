@@ -26,10 +26,11 @@
 
 namespace Seatplus\Eveapi\Jobs\Wallet;
 
+use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Traits\HasCorporationRole;
 
-class CorporationWalletJournalByDivisionJob extends WalletJournalBase
+class CorporationWalletJournalByDivisionJob extends WalletJournalBase implements HasCorporationRoleInterface
 {
     use HasCorporationRole;
 
