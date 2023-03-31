@@ -39,9 +39,7 @@ test('run corporation contact label', function () {
 
     updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-corporations.read_contacts.v1'])->save();
 
-    $job = new CorporationContactLabelJob(testCharacter()->corporation->corporation_id);
-
-    dispatch_sync($job);
+    (new CorporationContactLabelJob(testCharacter()->corporation->corporation_id))->handle();
 
     //assertContactLabel($mock_data, $this->test_character->corporation->corporation_id);
     foreach ($mock_data as $data) {
@@ -58,9 +56,7 @@ test('run alliance contact label', function () {
 
     updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-alliances.read_contacts.v1'])->save();
 
-    $job = new AllianceContactLabelJob(testCharacter()->corporation->alliance_id);
-
-    dispatch_sync($job);
+    (new AllianceContactLabelJob(testCharacter()->corporation->alliance_id))->handle();
 
     //assertContactLabel($mock_data, $this->test_character->corporation->alliance_id);
     foreach ($mock_data as $data) {

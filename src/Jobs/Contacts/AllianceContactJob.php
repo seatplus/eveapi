@@ -27,21 +27,13 @@
 namespace Seatplus\Eveapi\Jobs\Contacts;
 
 use Illuminate\Support\Collection;
-use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\EsiBase;
 
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Services\Contacts\ProcessContactResponse;
-use Seatplus\Eveapi\Traits\HasPathValues;
-use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class AllianceContactJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+class AllianceContactJob extends ContactBaseJob
 {
-    use HasRequiredScopes;
-    use HasPathValues;
-
     private int $page = 1;
 
     private Collection $known_ids;
