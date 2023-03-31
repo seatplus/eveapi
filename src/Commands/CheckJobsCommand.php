@@ -348,7 +348,7 @@ class CheckJobsCommand extends Command
             // check if base_job is abstract
             $reflection_class = new ReflectionClass($base_job);
 
-            throw_unless($reflection_class->isAbstract(), new \Exception("${base_job} is not abstract but checker is overwriting job_filename"));
+            throw_unless($reflection_class->isAbstract(), new Exception("${base_job} is not abstract but checker is overwriting job_filename"));
 
             if (is_subclass_of($job_class, $base_job)) {
                 $job_filename = $reflection_class->getFileName();
