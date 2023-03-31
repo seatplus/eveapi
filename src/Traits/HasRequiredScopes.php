@@ -57,12 +57,10 @@ trait HasRequiredScopes
             ->filter(fn ($value, $key) => in_array($key, ['character_id', 'corporation_id', 'alliance_id']))
             ->filter(fn ($value, $key) => $value !== null)
             // get refresh token for character_id, corporation_id or alliance_id
-            ->map(function ($value, $key) {
-                return match ($key) {
-                    'character_id' => RefreshToken::firstWhere('character_id', $value),
-                    'corporation_id' => $this->getCorporateRefreshToken($value),
-                    'alliance_id' => $this->getAllianceRefreshToken($value),
-                };
+            ->map(fn($value, $key) => match ($key) {
+                'character_id' => RefreshToken::firstWhere('character_id', $value),
+                'corporation_id' => $this->getCorporateRefreshToken($value),
+                'alliance_id' => $this->getAllianceRefreshToken($value),
             });
 
         // throw error if length of collection is not 1
