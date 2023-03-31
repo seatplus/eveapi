@@ -117,8 +117,9 @@ class CheckJobsCommand extends Command
                 $this->writeNewLine();
             });
 
-        if ($this->has_errors)
+        if ($this->has_errors) {
             return self::FAILURE;
+        }
 
         return self::SUCCESS;
     }
@@ -344,7 +345,6 @@ class CheckJobsCommand extends Command
 
         // check if job is extending a BaseJob
         foreach ([ContractItemsJob::class, WalletJournalBase::class, WalletTransactionBase::class] as $base_job) {
-
             // check if base_job is abstract
             $reflection_class = new ReflectionClass($base_job);
 
