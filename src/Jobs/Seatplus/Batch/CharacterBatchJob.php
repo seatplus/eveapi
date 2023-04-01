@@ -194,10 +194,13 @@ class CharacterBatchJob implements ShouldQueue, ShouldBeUnique
             return [];
         }
 
+        // Get corporation_id from character
+        $corporation_id = $this->refresh_token->character->corporation_id;
+
         return [
             [
-                new CorporationContactJob($this->character_id),
-                new CorporationContactLabelJob($this->character_id),
+                new CorporationContactJob($corporation_id, $this->character_id),
+                new CorporationContactLabelJob($corporation_id, $this->character_id),
             ],
         ];
     }
@@ -209,10 +212,18 @@ class CharacterBatchJob implements ShouldQueue, ShouldBeUnique
             return [];
         }
 
+        // Get alliance_id from character
+        $alliance_id = $this->refresh_token->character->alliance_id;
+
+        // Return empty array if character has no alliance
+        if (! $alliance_id) {
+            return [];
+        }
+
         return [
             [
-                new AllianceContactJob($this->character_id),
-                new AllianceContactLabelJob($this->character_id),
+                new AllianceContactJob($alliance_id, $this->character_id),
+                new AllianceContactLabelJob($alliance_id, $this->character_id),
             ],
         ];
     }

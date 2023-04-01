@@ -15,7 +15,7 @@ test('alliance contact job', function () {
     // Assert that no jobs were pushed...
     Queue::assertNothingPushed();
 
-    AllianceContactJob::dispatch(testCharacter()->corporation->alliance->alliance_id)->onQueue('default');
+    AllianceContactJob::dispatch(testCharacter()->corporation->alliance->alliance_id, testCharacter()->character_id)->onQueue('default');
 
     // Assert a job was pushed to a given queue...
     Queue::assertPushedOn('default', AllianceContactJob::class);
@@ -27,7 +27,7 @@ test('alliance contact label job', function () {
     // Assert that no jobs were pushed...
     Queue::assertNothingPushed();
 
-    AllianceContactLabelJob::dispatch(testCharacter()->corporation->alliance->alliance_id)->onQueue('default');
+    AllianceContactLabelJob::dispatch(testCharacter()->corporation->alliance->alliance_id, testCharacter()->character_id)->onQueue('default');
 
     // Assert a job was pushed to a given queue...
     Queue::assertPushedOn('default', AllianceContactLabelJob::class);
@@ -39,7 +39,7 @@ test('corporation contact job', function () {
     // Assert that no jobs were pushed...
     Queue::assertNothingPushed();
 
-    CorporationContactJob::dispatch(testCharacter()->corporation->corporation_id)->onQueue('default');
+    CorporationContactJob::dispatch(testCharacter()->corporation->corporation_id, testCharacter()->character_id)->onQueue('default');
 
     // Assert a job was pushed to a given queue...
     Queue::assertPushedOn('default', CorporationContactJob::class);
@@ -51,7 +51,7 @@ test('corporation contact label job', function () {
     // Assert that no jobs were pushed...
     Queue::assertNothingPushed();
 
-    CorporationContactLabelJob::dispatch(testCharacter()->corporation->corporation_id)->onQueue('default');
+    CorporationContactLabelJob::dispatch(testCharacter()->corporation->corporation_id, testCharacter()->character_id)->onQueue('default');
 
     // Assert a job was pushed to a given queue...
     Queue::assertPushedOn('default', CorporationContactLabelJob::class);
@@ -92,11 +92,11 @@ test('ContactJob using ContactBaseJob and finds refresh_token', function (string
 
     $job = match ($flavour) {
         'character' => new CharacterContactJob($this->test_character->character_id),
-        'corporation' => new CorporationContactJob($this->test_character->corporation->corporation_id),
-        'alliance' => new AllianceContactJob($this->test_character->corporation->alliance->alliance_id),
+        'corporation' => new CorporationContactJob($this->test_character->corporation->corporation_id, testCharacter()->character_id),
+        'alliance' => new AllianceContactJob($this->test_character->corporation->alliance->alliance_id, testCharacter()->character_id),
         'character_label' => new CharacterContactLabelJob($this->test_character->character_id),
-        'corporation_label' => new CorporationContactLabelJob($this->test_character->corporation->corporation_id),
-        'alliance_label' => new AllianceContactLabelJob($this->test_character->corporation->alliance->alliance_id),
+        'corporation_label' => new CorporationContactLabelJob($this->test_character->corporation->corporation_id, testCharacter()->character_id),
+        'alliance_label' => new AllianceContactLabelJob($this->test_character->corporation->alliance->alliance_id, testCharacter()->character_id),
     };
 
     expect($job->getRefreshToken())->character_id->toBe($this->test_character->character_id);

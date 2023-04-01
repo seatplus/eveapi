@@ -35,31 +35,16 @@ abstract class ContactBaseJob extends EsiBase implements HasPathValuesInterface,
 
         // throw exception if character_id, corporation_id or alliance_id is not set
         throw_unless(
-            Arr::hasAny($object_vars, ['character_id', 'corporation_id', 'alliance_id']),
-            new Exception('character_id, corporation_id or alliance_id is not set')
+            Arr::has($object_vars, 'character_id'),
+            new Exception('character_id is not set')
         );
 
-        // if corporation_id is set, get refresh token for corporation_id
-        if (Arr::has($object_vars, 'corporation_id')) {
-            return $this->getToken('corporation_id', $object_vars['corporation_id']);
-        }
+        $character_id = $object_vars['character_id'];
 
-        // if alliance_id is set, get refresh token for alliance_id
-        if (Arr::has($object_vars, 'alliance_id')) {
-            return $this->getToken('alliance_id', $object_vars['alliance_id']);
-        }
+        $refresh_token = RefreshToken::find($character_id);
 
-        // if neither corporation_id nor alliance_id is set, get refresh token for character_id
-        return $this->getToken('character_id', $object_vars['character_id']);
-    }
+        throw_unless($refresh_token->hasScope($this->getRequiredScope()), new Exception('refresh token does not have required scope'));
 
-    private function getToken(string $key, int $value): RefreshToken
-    {
-        return RefreshToken::query()
-            ->when($key === 'character_id', fn ($query) => $query->where('character_id', $value))
-            ->when($key === 'corporation_id', fn ($query) => $query->whereRelation('corporation', 'corporation_infos.corporation_id', $value))
-            ->when($key === 'alliance_id', fn ($query) => $query->whereRelation('corporation.alliance', 'alliance_infos.alliance_id', $value))
-            ->get()
-            ->first(fn ($refresh_token) => $refresh_token->hasScope($this->getRequiredScope()));
+        return $refresh_token;
     }
 }

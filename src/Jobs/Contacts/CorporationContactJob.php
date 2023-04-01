@@ -40,6 +40,7 @@ class CorporationContactJob extends ContactBaseJob
 
     public function __construct(
         public int $corporation_id,
+        public int $character_id
     ) {
         parent::__construct(
             method: 'get',
