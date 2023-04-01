@@ -223,7 +223,7 @@ class CharacterBatchJob implements ShouldQueue, ShouldBeUnique
         return [
             [
                 new AllianceContactJob($alliance_id, $this->character_id),
-                new AllianceContactLabelJob($alliance_id, $this->character_id)
+                new AllianceContactLabelJob($alliance_id, $this->character_id),
             ],
         ];
     }

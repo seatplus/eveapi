@@ -41,7 +41,7 @@ abstract class ContactBaseJob extends EsiBase implements HasPathValuesInterface,
 
         $character_id = $object_vars['character_id'];
 
-        $refresh_token =  RefreshToken::find($character_id);
+        $refresh_token = RefreshToken::find($character_id);
 
         throw_unless($refresh_token->hasScope($this->getRequiredScope()), new Exception('refresh token does not have required scope'));
 
