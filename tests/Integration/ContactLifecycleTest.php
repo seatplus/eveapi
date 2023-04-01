@@ -42,7 +42,7 @@ test('run character contact', function () {
 test('run corporation contact', function () {
     $mock_data = buildContactLifecycleMockEsiData();
 
-    $job = new CorporationContactJob(testCharacter()->corporation->corporation_id);
+    $job = new CorporationContactJob(testCharacter()->corporation->corporation_id, testCharacter()->character_id);
 
     updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-corporations.read_contacts.v1'])->save();
 
@@ -66,7 +66,7 @@ test('run corporation contact', function () {
 test('run alliance contact', function () {
     $mock_data = buildContactLifecycleMockEsiData();
 
-    $job = new AllianceContactJob(testCharacter()->corporation->alliance_id);
+    $job = new AllianceContactJob(testCharacter()->corporation->alliance_id, testCharacter()->character_id);
 
     updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-alliances.read_contacts.v1'])->save();
 

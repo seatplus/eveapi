@@ -40,6 +40,7 @@ class AllianceContactJob extends ContactBaseJob
 
     public function __construct(
         public int $alliance_id,
+        public int $character_id
     ) {
         parent::__construct(
             method: 'get',
