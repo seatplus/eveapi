@@ -43,19 +43,30 @@ class GetMissingLocationFromAssets extends HydrateMaintenanceBase
             return;
         }
 
+        // First do the character assets
+
         Asset::whereDoesntHave('location', fn ($query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]))
+            // limit result to assetable_type CharacterInfo
+            ->where('assetable_type', CharacterInfo::class)
             ->AssetsLocationIds()
             ->inRandomOrder()
-            ->addSelect('assetable_id', 'assetable_type')
+            ->addSelect('assetable_id')
             ->get()
+            ->unique('location_id')
+            ->filter()
             ->each(function ($asset) {
-                if ($asset->assetable_type === CharacterInfo::class) {
-                    $refresh_token = RefreshToken::find($asset->assetable_id);
+                $refresh_token = RefreshToken::find($asset->assetable_id);
+
+                if (is_null($refresh_token)) {
+                    return;
                 }
 
                 $this->batch()->add([
                     new ResolveLocationJob($asset->location_id, $refresh_token),
                 ]);
             });
+
+        // Then do the corporation assets
+        // TODO: Implement GetMissingLocationFromAssets for corporation assets
     }
 }

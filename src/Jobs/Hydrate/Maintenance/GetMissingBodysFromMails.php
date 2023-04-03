@@ -40,15 +40,30 @@ class GetMissingBodysFromMails extends HydrateMaintenanceBase
             return;
         }
 
-        $jobs = Mail::where('body', null)
+        $jobs = collect();
+
+        Mail::where('body', null)
             ->pluck('id')
-            ->map(function ($mail_id) {
-                $refresh_token = RefreshToken::whereHas('character.mails', fn ($query) => $query->where('mails.id', $mail_id))
-                    ->get()
+            ->each(function ($mail_id) use ($jobs) {
+
+
+                $refresh_tokens = RefreshToken::whereHas('character.mails', fn ($query) => $query->where('mails.id', $mail_id))->get();
+
+                // if no refresh token is found, we can not hydrate the mail body and skip it
+                if ($refresh_tokens->isEmpty()) {
+                    return;
+                }
+
+                $refresh_token = $refresh_tokens
                     ->filter(fn (RefreshToken $token) => $token->hasScope('esi-mail.read_mail.v1'))
                     ->random();
 
-                return new MailBodyJob($refresh_token->character_id, $mail_id);
+                // if no refresh token with the required scope is found, we can not hydrate the mail body and skip it
+                if (is_null($refresh_token)) {
+                    return;
+                }
+
+                $jobs->push(new MailBodyJob($refresh_token->character_id, $mail_id));
             });
 
         $this->batch()->add(
