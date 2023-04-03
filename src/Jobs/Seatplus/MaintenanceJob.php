@@ -34,7 +34,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Bus;
-use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingAssetsNames;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingBodysFromMails;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCategorys;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCharacterInfosFromCorporationMemberTracking;
@@ -87,14 +86,11 @@ class MaintenanceJob implements ShouldQueue
 
             new GetMissingGroups,
             new GetMissingCategorys,
-            new GetMissingAssetsNames,
             new GetMissingCharacterInfosFromCorporationMemberTracking,
 
-            // Region
-            [
-                new GetMissingConstellations,
-                new GetMissingRegions,
-            ],
+            // Constellations and Regions
+            new GetMissingConstellations,
+            new GetMissingRegions,
 
             // Locations
             new GetMissingLocationFromWalletTransaction,

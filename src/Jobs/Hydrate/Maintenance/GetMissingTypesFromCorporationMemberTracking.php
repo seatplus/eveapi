@@ -39,9 +39,12 @@ class GetMissingTypesFromCorporationMemberTracking extends HydrateMaintenanceBas
             return;
         }
 
-        $type_ids = CorporationMemberTracking::doesntHave('ship')->pluck('ship_type_id')->unique()->values();
-
-        $jobs = $type_ids->map(fn ($id) => new ResolveUniverseTypeByIdJob($id));
+        $jobs = CorporationMemberTracking::query()
+            ->doesntHave('ship')
+            ->pluck('ship_type_id')
+            ->unique()
+            ->filter()
+            ->map(fn ($ship_type_id) => new ResolveUniverseTypeByIdJob($ship_type_id));
 
         $this->batch()->add(
             $jobs->toArray()

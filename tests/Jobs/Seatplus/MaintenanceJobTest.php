@@ -3,9 +3,7 @@
 
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
-use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingAssetsNames;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingBodysFromMails;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCategorys;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCharacterInfosFromCorporationMemberTracking;
@@ -216,37 +214,6 @@ test('get missing location from assets pipe can handle non station or structure 
         ->once()
         ->with([
             new ResolveLocationJob($type->type_id, $this->test_character->refresh_token),
-        ]);
-
-    $mock->handle();
-});
-
-it('dispatch get missing assets names job', function () {
-    Bus::fake();
-
-    (new MaintenanceJob)->handle();
-
-    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingAssetsNames));
-});
-
-it('dispatch resolve missing assets name job', function () {
-    $asset = Event::fakeFor(fn () => Asset::factory()->create([
-        'assetable_id' => $this->test_character->character_id,
-        'location_flag' => 'Hangar',
-    ]));
-
-    Event::fakeFor(fn () => Type::factory()->create([
-        'type_id' => $asset->type_id,
-        'group_id' => Group::factory()->create(['category_id' => 2]),
-    ]));
-
-    $mock = Mockery::mock(GetMissingAssetsNames::class)->makePartial();
-
-    $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
-    $mock->shouldReceive('batch->add')
-        ->once()
-        ->with([
-            new CharacterAssetsNameJob($this->test_character->character_id),
         ]);
 
     $mock->handle();
