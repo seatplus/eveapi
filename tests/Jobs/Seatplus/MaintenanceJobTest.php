@@ -3,9 +3,7 @@
 
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
-use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
-use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingAssetsNames;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingBodysFromMails;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCategorys;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCharacterInfosFromCorporationMemberTracking;
