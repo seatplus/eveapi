@@ -59,6 +59,12 @@ class Enlistments extends Model
 
     public function getStepsAttribute($value) : array
     {
+
+        // if value is an empty string return array with 'open' as first element
+        if (empty($value)) {
+            return ['Open'];
+        }
+
         return explode('; ', $value);
     }
 
