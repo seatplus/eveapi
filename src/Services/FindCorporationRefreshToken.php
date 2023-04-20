@@ -31,13 +31,9 @@ use Seatplus\Eveapi\Models\RefreshToken;
 class FindCorporationRefreshToken
 {
     /**
-     * @param int    $corporation_id
-     * @param string|array  $scope
-     * @param string $role
-     *
-     * @return \Seatplus\Eveapi\Models\RefreshToken|null
+     * @param  string  $role
      */
-    public function __invoke(int $corporation_id, string | array $scope, string | array $role): ?RefreshToken
+    public function __invoke(int $corporation_id, string|array $scope, string|array $role): ?RefreshToken
     {
         $scopes = is_string($scope) ? [$scope] : (is_array($scope) ? $scope : []);
         $roles = is_string($role) ? [$role] : (is_array($role) ? $role : []);

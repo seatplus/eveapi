@@ -31,7 +31,6 @@ use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\EsiBase;
-
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
@@ -66,8 +65,6 @@ class CorporationMemberTrackingJob extends EsiBase implements HasPathValuesInter
 
     /**
      * Get the middleware the job should pass through.
-     *
-     * @return array
      */
     public function middleware(): array
     {
@@ -81,7 +78,7 @@ class CorporationMemberTrackingJob extends EsiBase implements HasPathValuesInter
     {
         return [
             'corporation',
-            'corporation_id: ' . $this->corporation_id,
+            'corporation_id: '.$this->corporation_id,
             'member',
             'tracking',
         ];
@@ -90,7 +87,6 @@ class CorporationMemberTrackingJob extends EsiBase implements HasPathValuesInter
     /**
      * Execute the job.
      *
-     * @return void
      * @throws \Exception
      */
     public function executeJob(): void

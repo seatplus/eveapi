@@ -57,8 +57,6 @@ class CharacterBalanceJob extends EsiBase implements HasPathValuesInterface, Has
 
     /**
      * Get the middleware the job should pass through.
-     *
-     * @return array
      */
     public function middleware(): array
     {
@@ -72,7 +70,7 @@ class CharacterBalanceJob extends EsiBase implements HasPathValuesInterface, Has
     {
         return [
             'character',
-            'character_id: ' . $this->character_id,
+            'character_id: '.$this->character_id,
             'wallet',
             'balance',
         ];
@@ -81,7 +79,6 @@ class CharacterBalanceJob extends EsiBase implements HasPathValuesInterface, Has
     /**
      * Execute the job.
      *
-     * @return void
      * @throws \Exception
      */
     public function executeJob(): void
@@ -96,7 +93,7 @@ class CharacterBalanceJob extends EsiBase implements HasPathValuesInterface, Has
             'balanceable_id' => $this->character_id,
             'balanceable_type' => CharacterInfo::class,
         ], [
-           'balance' => $response->scalar,
+            'balance' => $response->scalar,
         ]);
     }
 }

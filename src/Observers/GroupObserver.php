@@ -42,7 +42,6 @@ class GroupObserver
     /**
      * Handle the User "created" event.
      *
-     * @param \Seatplus\Eveapi\Models\Universe\Group $group
      *
      * @return void
      */

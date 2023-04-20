@@ -52,8 +52,6 @@ class ResolveUniverseTypeByIdJob extends EsiBase implements HasPathValuesInterfa
 
     /**
      * Get the middleware the job should pass through.
-     *
-     * @return array
      */
     public function middleware(): array
     {

@@ -1,9 +1,5 @@
 <?php
 
-
-
-
-
 test('set global setting', function () {
     $test_value = 'settingTest';
     setting(['test', $test_value]);

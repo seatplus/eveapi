@@ -52,8 +52,6 @@ class ResolveUniverseGroupByIdJob extends EsiBase implements HasPathValuesInterf
 
     /**
      * Get the middleware the job should pass through.
-     *
-     * @return array
      */
     public function middleware(): array
     {
@@ -73,8 +71,6 @@ class ResolveUniverseGroupByIdJob extends EsiBase implements HasPathValuesInterf
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
     public function executeJob(): void
     {

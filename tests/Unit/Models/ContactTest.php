@@ -1,6 +1,5 @@
 <?php
 
-
 use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
@@ -70,7 +69,6 @@ test('contact has label', function () {
         'contactable_id' => $this->test_character->character_id,
         'contactable_type' => CharacterInfo::class,
     ]));
-
 
     expect($contact->labels)->toHaveCount(0);
 

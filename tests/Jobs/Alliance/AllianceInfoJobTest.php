@@ -13,7 +13,6 @@ test('if job is queued', function () {
     // Assert that no jobs were pushed...
     Queue::assertNothingPushed();
 
-
     AllianceInfoJob::dispatch($this->test_character->character_id)->onQueue('default');
 
     // Assert a job was pushed to a given queue...

@@ -1,6 +1,5 @@
 <?php
 
-
 use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
@@ -20,7 +19,6 @@ it('creates group', function () {
     expect(Group::first())
         ->first()->category_id->toBe($mock_data->category_id);
 });
-
 
 // Helpers
 function buildGroupMockData()

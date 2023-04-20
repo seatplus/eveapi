@@ -54,15 +54,13 @@ class CorporationHistoryJob extends EsiBase implements HasPathValuesInterface
         return [
             'character',
             'info',
-            'character_id:' . $this->character_id,
+            'character_id:'.$this->character_id,
             'corporationhistory',
         ];
     }
 
     /**
      * Get the middleware the job should pass through.
-     *
-     * @return array
      */
     public function middleware(): array
     {
@@ -74,7 +72,6 @@ class CorporationHistoryJob extends EsiBase implements HasPathValuesInterface
     /**
      * Execute the job.
      *
-     * @return void
      * @throws \Exception
      */
     public function executeJob(): void

@@ -1,6 +1,5 @@
 <?php
 
-
 use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationDivisionsJob;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
@@ -21,7 +20,7 @@ test('it dispatches jobs if token with role, scope and permission is present', f
     foreach ($job_classes as $job_class) {
         // if class is of type array
         if (is_array($job_class)) {
-            Bus::assertBatched(function (\Illuminate\Bus\PendingBatch $batch) use ($job_class) {
+            Bus::assertBatched(function (Illuminate\Bus\PendingBatch $batch) use ($job_class) {
                 // get array inside the jobs array
                 $jobs = $batch->jobs->first(fn ($job) => is_array($job));
                 $classes = $job_class;

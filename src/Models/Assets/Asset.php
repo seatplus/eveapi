@@ -57,7 +57,6 @@ class Asset extends Model
      */
     protected $primaryKey = 'item_id';
 
-
     /**
      * Indicates if the model's ID is auto-incrementing.
      *
@@ -127,7 +126,7 @@ class Asset extends Model
         return $query->where('location_id', '<>', self::ASSET_SAFETY);
     }
 
-    public function scopeInRegion(Builder $query, int | array $regions): Builder
+    public function scopeInRegion(Builder $query, int|array $regions): Builder
     {
         $region_ids = is_array($regions) ? $regions : [$regions];
 
@@ -146,7 +145,7 @@ class Asset extends Model
         );
     }
 
-    public function scopeInSystems(Builder $query, int | array $systems): Builder
+    public function scopeInSystems(Builder $query, int|array $systems): Builder
     {
         $system_ids = is_array($systems) ? $systems : [$systems];
 
@@ -155,19 +154,19 @@ class Asset extends Model
         return $query->whereRelation(
             'location',
             fn (Builder $query) => $query
-            ->whereHasMorph(
-                'locatable',
-                [Station::class, Structure::class],
-                function (Builder $query, $type) use ($system_ids) {
-                    $column = $type === Station::class ? 'universe_stations.system_id' : 'universe_structures.solar_system_id';
+                ->whereHasMorph(
+                    'locatable',
+                    [Station::class, Structure::class],
+                    function (Builder $query, $type) use ($system_ids) {
+                        $column = $type === Station::class ? 'universe_stations.system_id' : 'universe_structures.solar_system_id';
 
-                    $query->whereIn($column, $system_ids);
-                }
-            )
+                        $query->whereIn($column, $system_ids);
+                    }
+                )
         );
     }
 
-    public function scopeOfTypes(Builder $query, int | array $types) : Builder
+    public function scopeOfTypes(Builder $query, int|array $types): Builder
     {
         $type_ids = is_array($types) ? $types : [$types];
 
@@ -175,7 +174,7 @@ class Asset extends Model
             ->whereRelation('type', fn (Builder $query) => $query->whereIn('type_id', $type_ids));
     }
 
-    public function scopeOfGroups(Builder $query, int | array $groups) : Builder
+    public function scopeOfGroups(Builder $query, int|array $groups): Builder
     {
         $group_ids = is_array($groups) ? $groups : [$groups];
 
@@ -183,7 +182,7 @@ class Asset extends Model
             ->whereRelation('type.group', fn (Builder $query) => $query->whereIn('group_id', $group_ids));
     }
 
-    public function scopeOfCategories(Builder $query, int | array $categories) : Builder
+    public function scopeOfCategories(Builder $query, int|array $categories): Builder
     {
         $category_ids = is_array($categories) ? $categories : [$categories];
 

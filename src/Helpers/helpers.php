@@ -34,9 +34,7 @@ if (! function_exists('setting')) {
      * Providing a string argument will retrieve a setting.
      * Providing an array argument will set a setting.
      *
-     * @param      $name
-     * @param bool $global
-     *
+     * @param  bool  $global
      * @return mixed
      *
      * @throws \Seatplus\Eveapi\Exceptions\SettingException
@@ -70,8 +68,7 @@ if (! function_exists('carbon')) {
     /**
      * A helper to get a fresh instance of Carbon.
      *
-     * @param null $data
-     *
+     * @param  null  $data
      * @return \Carbon\Carbon
      */
     function carbon($data = null)

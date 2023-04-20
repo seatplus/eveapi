@@ -24,7 +24,6 @@ it('fails the job if required scope is not set', function () {
 
     $this->job->shouldReceive('getRequiredScope')->andThrow(new Exception);
 
-
     $this->middleware->handle($this->job, $this->next);
 });
 

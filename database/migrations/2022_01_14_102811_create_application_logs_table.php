@@ -6,7 +6,8 @@ use Illuminate\Support\Facades\Schema;
 use Seatplus\Eveapi\Models\Application;
 use Seatplus\Eveapi\Models\Recruitment\ApplicationLogs;
 
-return new class extends Migration {
+return new class extends Migration
+{
     public function up()
     {
         Schema::create('application_logs', function (Blueprint $table) {

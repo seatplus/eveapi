@@ -1,6 +1,5 @@
 <?php
 
-
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Contracts\CharacterContractsJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
@@ -40,7 +39,6 @@ test('job dispatches location job with unknown location id', function () {
     expect($contract->start_location)->toBeNull()
         ->and($contract->end_location)->not()->toBeNull()
         ->and($contract->issuer)->not()->toBeNull();
-
 
     Queue::assertPushedOn('high', ResolveLocationJob::class);
 });

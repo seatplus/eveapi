@@ -56,8 +56,6 @@ class CorporationWalletJournalByDivisionJob extends WalletJournalBase implements
 
     /**
      * Get the middleware the job should pass through.
-     *
-     * @return array
      */
     public function middleware(): array
     {
@@ -71,10 +69,10 @@ class CorporationWalletJournalByDivisionJob extends WalletJournalBase implements
     {
         return [
             'corporation',
-            'corporation_id: ' . $this->corporation_id,
+            'corporation_id: '.$this->corporation_id,
             'wallet',
             'journal',
-            'division: ' . $this->division,
+            'division: '.$this->division,
         ];
     }
 }

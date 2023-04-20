@@ -106,8 +106,6 @@ it('does not update for wrong category', function () {
 
     $this->assertRetrieveEsiDataIsNotCalled();
 
-
-
     //Assert that character asset created has no name
     $this->assertDatabaseMissing('assets', [
         'assetable_id' => $asset->assetable_id,
@@ -141,7 +139,6 @@ it('does not run if category id is out of scope', function () {
     ]);
 
     $this->assertRetrieveEsiDataIsNotCalled();
-
 
     //Assert that character asset created has no name
     $this->assertDatabaseMissing('assets', [
@@ -199,7 +196,6 @@ it('runs the job', function () {
         'is_singleton' => true,
     ]));
 
-
     //Assert that character asset created has no name
     $this->assertDatabaseHas('assets', [
         'assetable_id' => $asset->assetable_id,
@@ -220,8 +216,8 @@ it('runs the job', function () {
     $this->assertCount(
         1,
         Asset::where('assetable_id', $asset->assetable_id)
-        ->where('item_id', $asset->item_id)
-        ->where('name', $this->name_to_create)
-        ->get()
+            ->where('item_id', $asset->item_id)
+            ->where('name', $this->name_to_create)
+            ->get()
     );
 });

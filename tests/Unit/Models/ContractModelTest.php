@@ -89,7 +89,6 @@ it('has ofGroups scope', function () {
         ->type->toBeInstanceOf(Type::class)
         ->type->group_id->toBeInt();
 
-
     expect(Contract::ofGroups($item->type->group_id)->get())->toHaveCount(1);
     expect(Contract::ofGroups($item->type->group_id + 1)->get())->toHaveCount(0);
 });
@@ -108,7 +107,6 @@ it('has ofCategories scope', function () {
         ->type->toBeInstanceOf(Type::class)
         ->type->group->toBeInstanceOf(Group::class)
         ->type->group->category->toBeInstanceOf(Category::class);
-
 
     expect(Contract::ofCategories($item->type->group->category->category_id)->get())->toHaveCount(1);
     expect(Contract::ofCategories($item->type->group->category->category_id + 1)->get())->toHaveCount(0);

@@ -24,7 +24,6 @@ class UpdateRefreshTokenService
             refresh_token: $refreshToken->refresh_token,
         );
 
-
         // Values are access_token // expires_in // token_type // refresh_token
         $token = $this->getRefreshTokenService()->getRefreshTokenResponse($authentication);
 
@@ -37,9 +36,6 @@ class UpdateRefreshTokenService
         ]);
     }
 
-    /**
-     * @return EsiClientUpdateToken
-     */
     public function getRefreshTokenService(): EsiClientUpdateToken
     {
         if (! isset($this->refreshTokenService)) {
@@ -49,9 +45,6 @@ class UpdateRefreshTokenService
         return $this->refreshTokenService;
     }
 
-    /**
-     * @param EsiClientUpdateToken $refreshTokenService
-     */
     public function setRefreshTokenService(EsiClientUpdateToken $refreshTokenService): self
     {
         $this->refreshTokenService = $refreshTokenService;

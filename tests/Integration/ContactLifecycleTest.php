@@ -1,6 +1,5 @@
 <?php
 
-
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Contacts\AllianceContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\CharacterContactJob;
@@ -94,7 +93,6 @@ it('has labels', function () {
     expect($this->test_character->contacts)->toHaveCount(0);
 
     $job->handle();
-
 
     foreach (collect($mock_data) as $data) {
         //Assert that character asset created

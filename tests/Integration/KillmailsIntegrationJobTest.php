@@ -1,6 +1,5 @@
 <?php
 
-
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
@@ -37,7 +36,6 @@ it('creates killmail', function () {
 
     Queue::assertPushed(ResolveUniverseSystemBySystemIdJob::class);
     Queue::assertPushed(ResolveUniverseTypeByIdJob::class);
-
 
     expect(Killmail::all())->toHaveCount(1);
 

@@ -1,6 +1,5 @@
 <?php
 
-
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\SsoScopes;
 

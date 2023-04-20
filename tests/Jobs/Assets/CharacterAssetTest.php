@@ -66,12 +66,10 @@ it('cleans up assets', function () {
         ]);
     }
 
-
     $mock_data = buildAssetMockEsiData();
 
     // Run CharacterAssetsAction
     (new CharacterAssetJob($this->test_character->character_id))->handle();
-
 
     foreach ($mock_data as $data) {
         //Assert that character asset created
@@ -86,8 +84,8 @@ it('cleans up assets', function () {
         $this->assertCount(
             0,
             Asset::where('assetable_id', $this->test_character->character_id)
-            ->where('item_id', $data->item_id)
-            ->get()
+                ->where('item_id', $data->item_id)
+                ->get()
         );
     }
 });

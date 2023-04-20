@@ -1,6 +1,5 @@
 <?php
 
-
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\System;
 

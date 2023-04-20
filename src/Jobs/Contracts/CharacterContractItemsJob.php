@@ -28,10 +28,8 @@ class CharacterContractItemsJob extends ContractItemsJob
             'character',
             'contract',
             'items',
-            'character_id:' . $this->character_id,
-            'contract_id:' . $this->contract_id,
+            'character_id:'.$this->character_id,
+            'contract_id:'.$this->contract_id,
         ];
     }
-}
-{
 }

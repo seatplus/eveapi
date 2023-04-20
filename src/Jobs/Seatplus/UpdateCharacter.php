@@ -96,7 +96,7 @@ class UpdateCharacter implements ShouldQueue
             ->each(fn ($token) => CharacterBatchJob::dispatch($token->character_id)->onQueue('default'));
     }
 
-    private function getIntervalInMinutes() : int
+    private function getIntervalInMinutes(): int
     {
         if (! isset($this->interval_in_minutes)) {
             $expression = Schedules::firstWhere('job', UpdateCharacter::class)?->expression;

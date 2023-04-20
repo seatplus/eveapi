@@ -65,8 +65,6 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
 
     /**
      * Get the middleware the job should pass through.
-     *
-     * @return array
      */
     public function middleware(): array
     {
@@ -78,7 +76,6 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
     /**
      * Execute the job.
      *
-     * @return void
      * @throws \Exception
      */
     public function executeJob(): void
@@ -116,7 +113,7 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
             ->pluck('character_id');
     }
 
-    private function updateOrCreateCharacterAffiliations(array $character_ids) : void
+    private function updateOrCreateCharacterAffiliations(array $character_ids): void
     {
         $this->setRequestBody($character_ids);
 
@@ -174,17 +171,11 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
         $this->followUp();
     }
 
-    /**
-     * @return array
-     */
     public function getManualIds(): array
     {
         return $this->manual_ids;
     }
 
-    /**
-     * @param int|array|null $manual_ids
-     */
     public function setManualIds(int|array|null $manual_ids): void
     {
         if (is_null($manual_ids)) {
@@ -202,7 +193,7 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
         $this->getMissingAlliances();
     }
 
-    private function getMissingCorporations() : void
+    private function getMissingCorporations(): void
     {
         CharacterAffiliation::query()
             ->has('character')

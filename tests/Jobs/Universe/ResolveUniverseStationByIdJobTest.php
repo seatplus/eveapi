@@ -1,6 +1,5 @@
 <?php
 
-
 use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Events\UniverseStationCreated;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseStationByIdJob;
@@ -25,7 +24,6 @@ it('creates station', function () {
     $mock_data = buildStationMockEsiData();
 
     expect(Station::find($mock_data->station_id))->toBeNull();
-
 
     (new ResolveUniverseStationByIdJob($mock_data->station_id))->handle();
 

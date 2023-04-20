@@ -1,0 +1,1934 @@
+parameters:
+	ignoreErrors:
+		-
+			message: """
+				#^Fetching deprecated class constant INFO of class Monolog\\\\Logger\\:
+				Use \\\\Monolog\\\\Level\\:\\:Info$#
+			"""
+			count: 1
+			path: config/eveapi.config.php
+
+		-
+			message: "#^Access to an undefined property Faker\\\\Generator\\:\\:\\$randomDigit\\.$#"
+			count: 1
+			path: database/factories/AssetFactory.php
+
+		-
+			message: "#^Access to an undefined property Faker\\\\Generator\\:\\:\\$randomNumber\\.$#"
+			count: 1
+			path: database/factories/BalanceFactory.php
+
+		-
+			message: "#^Access to an undefined property Faker\\\\Generator\\:\\:\\$bs\\.$#"
+			count: 1
+			path: database/factories/CharacterInfoFactory.php
+
+		-
+			message: "#^Method Seatplus\\\\Eveapi\\\\Database\\\\Factories\\\\CharacterInfoFactory\\:\\:configure\\(\\) should return \\$this\\(Seatplus\\\\Eveapi\\\\Database\\\\Factories\\\\CharacterInfoFactory\\) but returns static\\(Seatplus\\\\Eveapi\\\\Database\\\\Factories\\\\CharacterInfoFactory\\)\\.$#"
+			count: 1
+			path: database/factories/CharacterInfoFactory.php
+
+		-
+			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
+			count: 1
+			path: database/factories/CharacterRoleFactory.php
+
+		-
+			message: "#^Access to an undefined property Faker\\\\Generator\\:\\:\\$randomDigit\\.$#"
+			count: 1
+			path: database/factories/ContractItemFactory.php
+
+		-
+			message: "#^PHPDoc type string of property Seatplus\\\\Eveapi\\\\Database\\\\Factories\\\\MailFactory\\:\\:\\$model is not covariant with PHPDoc type class\\-string\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Factories\\\\Factory\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:\\$model\\.$#"
+			count: 1
+			path: database/factories/MailFactory.php
+
+		-
+			message: "#^PHPDoc type string of property Seatplus\\\\Eveapi\\\\Database\\\\Factories\\\\MailRecipientsFactory\\:\\:\\$model is not covariant with PHPDoc type class\\-string\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Factories\\\\Factory\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:\\$model\\.$#"
+			count: 1
+			path: database/factories/MailRecipientsFactory.php
+
+		-
+			message: "#^PHPDoc type string of property Seatplus\\\\Eveapi\\\\Database\\\\Factories\\\\SkillFactory\\:\\:\\$model is not covariant with PHPDoc type class\\-string\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Factories\\\\Factory\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:\\$model\\.$#"
+			count: 1
+			path: database/factories/SkillFactory.php
+
+		-
+			message: "#^Access to an undefined property Faker\\\\Generator\\:\\:\\$randomNumber\\.$#"
+			count: 3
+			path: database/factories/SkillQueueFactory.php
+
+		-
+			message: "#^PHPDoc type string of property Seatplus\\\\Eveapi\\\\Database\\\\Factories\\\\SkillQueueFactory\\:\\:\\$model is not covariant with PHPDoc type class\\-string\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Factories\\\\Factory\\<Illuminate\\\\Database\\\\Eloquent\\\\Model\\>\\:\\:\\$model\\.$#"
+			count: 1
+			path: database/factories/SkillQueueFactory.php
+
+		-
+			message: "#^Access to an undefined property Faker\\\\Generator\\:\\:\\$randomDigit\\.$#"
+			count: 1
+			path: database/factories/StationFactory.php
+
+		-
+			message: "#^Access to an undefined property Faker\\\\Generator\\:\\:\\$randomNumber\\.$#"
+			count: 1
+			path: database/factories/WalletJournalFactory.php
+
+		-
+			message: "#^Access to an undefined property Faker\\\\Generator\\:\\:\\$randomNumber\\.$#"
+			count: 1
+			path: database/factories/WalletTransactionFactory.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Application\\:\\:\\$causer_id\\.$#"
+			count: 1
+			path: database/migrations/2022_01_14_102811_create_application_logs_table.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Application\\:\\:\\$causer_type\\.$#"
+			count: 1
+			path: database/migrations/2022_01_14_102811_create_application_logs_table.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Application\\:\\:\\$comment\\.$#"
+			count: 1
+			path: database/migrations/2022_01_14_102811_create_application_logs_table.php
+
+		-
+			message: "#^Property 'application_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Recruitment\\\\ApplicationLogs model\\.$#"
+			count: 1
+			path: database/migrations/2022_01_14_102811_create_application_logs_table.php
+
+		-
+			message: "#^Property 'causer_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Recruitment\\\\ApplicationLogs model\\.$#"
+			count: 1
+			path: database/migrations/2022_01_14_102811_create_application_logs_table.php
+
+		-
+			message: "#^Property 'causer_type' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Recruitment\\\\ApplicationLogs model\\.$#"
+			count: 1
+			path: database/migrations/2022_01_14_102811_create_application_logs_table.php
+
+		-
+			message: "#^Property 'comment' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Recruitment\\\\ApplicationLogs model\\.$#"
+			count: 1
+			path: database/migrations/2022_01_14_102811_create_application_logs_table.php
+
+		-
+			message: "#^Property 'type' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Recruitment\\\\ApplicationLogs model\\.$#"
+			count: 1
+			path: database/migrations/2022_01_14_102811_create_application_logs_table.php
+
+		-
+			message: "#^Property 'job' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Schedules model\\.$#"
+			count: 1
+			path: database/migrations/2023_02_07_070017_seed_schedule_tables_with_default_expressions.php
+
+		-
+			message: "#^Match expression does not handle remaining value\\: mixed$#"
+			count: 1
+			path: src/Commands/CheckJobsCommand.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Containers\\\\EsiRequestContainer\\:\\:\\$query_string\\.$#"
+			count: 1
+			path: src/Esi/RetrieveFromEsiBase.php
+
+		-
+			message: "#^Call to an undefined method Exception\\:\\:getResponse\\(\\)\\.$#"
+			count: 1
+			path: src/Esi/RetrieveFromEsiBase.php
+
+		-
+			message: "#^Using nullsafe method call on non\\-nullable type Exception\\. Use \\-\\> instead\\.$#"
+			count: 1
+			path: src/Esi/RetrieveFromEsiBase.php
+
+		-
+			message: "#^Access to an undefined property Illuminate\\\\Contracts\\\\Foundation\\\\Application\\:\\:\\$events\\.$#"
+			count: 5
+			path: src/EveapiServiceProvider.php
+
+		-
+			message: "#^Property Seatplus\\\\Eveapi\\\\Events\\\\AssetUpdating\\:\\:\\$character_asset is never read, only written\\.$#"
+			count: 1
+			path: src/Events/AssetUpdating.php
+
+		-
+			message: "#^Parameter \\$previous of method Seatplus\\\\Eveapi\\\\Exceptions\\\\RateLimitedException\\:\\:__construct\\(\\) has invalid type Seatplus\\\\Eveapi\\\\Exceptions\\\\Throwable\\.$#"
+			count: 1
+			path: src/Exceptions/RateLimitedException.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Settings\\\\GlobalSettings\\:\\:\\$value\\.$#"
+			count: 1
+			path: src/Helpers/helpers.php
+
+		-
+			message: "#^PHPDoc tag @param references unknown parameter\\: \\$global$#"
+			count: 1
+			path: src/Helpers/helpers.php
+
+		-
+			message: "#^Property 'name' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Settings\\\\GlobalSettings model\\.$#"
+			count: 2
+			path: src/Helpers/helpers.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$creator_corporation_id\\.$#"
+			count: 1
+			path: src/Jobs/Alliances/AllianceInfoJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$creator_id\\.$#"
+			count: 1
+			path: src/Jobs/Alliances/AllianceInfoJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$date_founded\\.$#"
+			count: 1
+			path: src/Jobs/Alliances/AllianceInfoJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$name\\.$#"
+			count: 1
+			path: src/Jobs/Alliances/AllianceInfoJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$ticker\\.$#"
+			count: 1
+			path: src/Jobs/Alliances/AllianceInfoJob.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/Jobs/Assets/CharacterAssetJob.php
+
+		-
+			message: "#^Job class Seatplus\\\\Eveapi\\\\Jobs\\\\Universe\\\\ResolveUniverseTypeByIdJob constructor invoked with 2 parameters in Seatplus\\\\Eveapi\\\\Jobs\\\\Universe\\\\ResolveUniverseTypeByIdJob\\:\\:dispatch\\(\\), 1 required\\.$#"
+			count: 1
+			path: src/Jobs/Assets/CharacterAssetJob.php
+
+		-
+			message: "#^Match expression does not handle remaining value\\: string$#"
+			count: 1
+			path: src/Jobs/Assets/CharacterAssetJob.php
+
+		-
+			message: "#^Property 'alliance_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationInfo model\\.$#"
+			count: 1
+			path: src/Jobs/Assets/CharacterAssetJob.php
+
+		-
+			message: "#^Property 'assetable_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Assets\\\\Asset model\\.$#"
+			count: 3
+			path: src/Jobs/Assets/CharacterAssetJob.php
+
+		-
+			message: "#^Property Illuminate\\\\Queue\\\\Worker\\:\\:\\$shouldQuit \\(bool\\) does not accept int\\.$#"
+			count: 1
+			path: src/Jobs/Assets/CharacterAssetJob.php
+
+		-
+			message: "#^Relation 'location' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Assets\\\\Asset model\\.$#"
+			count: 1
+			path: src/Jobs/Assets/CharacterAssetJob.php
+
+		-
+			message: "#^Relation 'type' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Assets\\\\Asset model\\.$#"
+			count: 1
+			path: src/Jobs/Assets/CharacterAssetJob.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/Jobs/Assets/CharacterAssetsNameJob.php
+
+		-
+			message: "#^Match expression does not handle remaining value\\: string$#"
+			count: 1
+			path: src/Jobs/Assets/CharacterAssetsNameJob.php
+
+		-
+			message: "#^Property 'alliance_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationInfo model\\.$#"
+			count: 1
+			path: src/Jobs/Assets/CharacterAssetsNameJob.php
+
+		-
+			message: "#^Property 'assetable_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Assets\\\\Asset model\\.$#"
+			count: 2
+			path: src/Jobs/Assets/CharacterAssetsNameJob.php
+
+		-
+			message: "#^Property 'is_singleton' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Assets\\\\Asset model\\.$#"
+			count: 1
+			path: src/Jobs/Assets/CharacterAssetsNameJob.php
+
+		-
+			message: "#^Property 'name' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Assets\\\\Asset model\\.$#"
+			count: 1
+			path: src/Jobs/Assets/CharacterAssetsNameJob.php
+
+		-
+			message: "#^Relation 'type' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Assets\\\\Asset model\\.$#"
+			count: 2
+			path: src/Jobs/Assets/CharacterAssetsNameJob.php
+
+		-
+			message: "#^Property 'corporation_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Character\\\\CharacterAffiliation model\\.$#"
+			count: 1
+			path: src/Jobs/Character/CharacterAffiliationJob.php
+
+		-
+			message: "#^Property 'last_pulled' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Character\\\\CharacterAffiliation model\\.$#"
+			count: 1
+			path: src/Jobs/Character/CharacterAffiliationJob.php
+
+		-
+			message: "#^Relation 'alliance' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Character\\\\CharacterAffiliation model\\.$#"
+			count: 1
+			path: src/Jobs/Character/CharacterAffiliationJob.php
+
+		-
+			message: "#^Relation 'character' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Character\\\\CharacterAffiliation model\\.$#"
+			count: 2
+			path: src/Jobs/Character/CharacterAffiliationJob.php
+
+		-
+			message: "#^Relation 'corporation' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Character\\\\CharacterAffiliation model\\.$#"
+			count: 1
+			path: src/Jobs/Character/CharacterAffiliationJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$birthday\\.$#"
+			count: 1
+			path: src/Jobs/Character/CharacterInfoJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$bloodline_id\\.$#"
+			count: 1
+			path: src/Jobs/Character/CharacterInfoJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$gender\\.$#"
+			count: 1
+			path: src/Jobs/Character/CharacterInfoJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$name\\.$#"
+			count: 1
+			path: src/Jobs/Character/CharacterInfoJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$race_id\\.$#"
+			count: 1
+			path: src/Jobs/Character/CharacterInfoJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$roles\\.$#"
+			count: 1
+			path: src/Jobs/Character/CharacterRoleJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$roles_at_base\\.$#"
+			count: 1
+			path: src/Jobs/Character/CharacterRoleJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$roles_at_hq\\.$#"
+			count: 1
+			path: src/Jobs/Character/CharacterRoleJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$roles_at_other\\.$#"
+			count: 1
+			path: src/Jobs/Character/CharacterRoleJob.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/Jobs/Character/CharacterRoleJob.php
+
+		-
+			message: "#^Match expression does not handle remaining value\\: string$#"
+			count: 1
+			path: src/Jobs/Character/CharacterRoleJob.php
+
+		-
+			message: "#^Property 'alliance_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationInfo model\\.$#"
+			count: 1
+			path: src/Jobs/Character/CharacterRoleJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Contracts\\\\Contract\\:\\:\\$end_location_id\\.$#"
+			count: 1
+			path: src/Jobs/Contracts/CharacterContractsJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Contracts\\\\Contract\\:\\:\\$start_location_id\\.$#"
+			count: 1
+			path: src/Jobs/Contracts/CharacterContractsJob.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/Jobs/Contracts/CharacterContractsJob.php
+
+		-
+			message: "#^Match expression does not handle remaining value\\: string$#"
+			count: 1
+			path: src/Jobs/Contracts/CharacterContractsJob.php
+
+		-
+			message: "#^PHPDoc tag @param references unknown parameter\\: \\$page$#"
+			count: 1
+			path: src/Jobs/Contracts/CharacterContractsJob.php
+
+		-
+			message: "#^Property 'alliance_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationInfo model\\.$#"
+			count: 1
+			path: src/Jobs/Contracts/CharacterContractsJob.php
+
+		-
+			message: "#^Property 'status' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Contracts\\\\Contract model\\.$#"
+			count: 1
+			path: src/Jobs/Contracts/CharacterContractsJob.php
+
+		-
+			message: "#^Property 'type' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Contracts\\\\Contract model\\.$#"
+			count: 1
+			path: src/Jobs/Contracts/CharacterContractsJob.php
+
+		-
+			message: "#^Property 'volume' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Contracts\\\\Contract model\\.$#"
+			count: 1
+			path: src/Jobs/Contracts/CharacterContractsJob.php
+
+		-
+			message: "#^Relation 'end_location' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Contracts\\\\Contract model\\.$#"
+			count: 1
+			path: src/Jobs/Contracts/CharacterContractsJob.php
+
+		-
+			message: "#^Relation 'items' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Contracts\\\\Contract model\\.$#"
+			count: 1
+			path: src/Jobs/Contracts/CharacterContractsJob.php
+
+		-
+			message: "#^Relation 'start_location' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Contracts\\\\Contract model\\.$#"
+			count: 1
+			path: src/Jobs/Contracts/CharacterContractsJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Jobs\\\\Contracts\\\\ContractItemsJob\\:\\:\\$contract_id\\.$#"
+			count: 3
+			path: src/Jobs/Contracts/ContractItemsJob.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/Jobs/Contracts/ContractItemsJob.php
+
+		-
+			message: "#^Match expression does not handle remaining value\\: string$#"
+			count: 1
+			path: src/Jobs/Contracts/ContractItemsJob.php
+
+		-
+			message: "#^Property 'alliance_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationInfo model\\.$#"
+			count: 1
+			path: src/Jobs/Contracts/ContractItemsJob.php
+
+		-
+			message: "#^Property 'contract_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Contracts\\\\ContractItem model\\.$#"
+			count: 1
+			path: src/Jobs/Contracts/ContractItemsJob.php
+
+		-
+			message: "#^Relation 'type' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Contracts\\\\ContractItem model\\.$#"
+			count: 1
+			path: src/Jobs/Contracts/ContractItemsJob.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/Jobs/Corporation/CorporationDivisionsJob.php
+
+		-
+			message: "#^Match expression does not handle remaining value\\: string$#"
+			count: 1
+			path: src/Jobs/Corporation/CorporationDivisionsJob.php
+
+		-
+			message: "#^Property 'alliance_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationInfo model\\.$#"
+			count: 1
+			path: src/Jobs/Corporation/CorporationDivisionsJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$ceo_id\\.$#"
+			count: 1
+			path: src/Jobs/Corporation/CorporationInfoJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$creator_id\\.$#"
+			count: 1
+			path: src/Jobs/Corporation/CorporationInfoJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$member_count\\.$#"
+			count: 1
+			path: src/Jobs/Corporation/CorporationInfoJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$name\\.$#"
+			count: 1
+			path: src/Jobs/Corporation/CorporationInfoJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$tax_rate\\.$#"
+			count: 1
+			path: src/Jobs/Corporation/CorporationInfoJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$ticker\\.$#"
+			count: 1
+			path: src/Jobs/Corporation/CorporationInfoJob.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/Jobs/Corporation/CorporationMemberTrackingJob.php
+
+		-
+			message: "#^Match expression does not handle remaining value\\: string$#"
+			count: 1
+			path: src/Jobs/Corporation/CorporationMemberTrackingJob.php
+
+		-
+			message: "#^Property 'alliance_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationInfo model\\.$#"
+			count: 1
+			path: src/Jobs/Corporation/CorporationMemberTrackingJob.php
+
+		-
+			message: "#^Property 'corporation_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationMemberTracking model\\.$#"
+			count: 4
+			path: src/Jobs/Corporation/CorporationMemberTrackingJob.php
+
+		-
+			message: "#^Relation 'character' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationMemberTracking model\\.$#"
+			count: 1
+			path: src/Jobs/Corporation/CorporationMemberTrackingJob.php
+
+		-
+			message: "#^Relation 'location' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationMemberTracking model\\.$#"
+			count: 1
+			path: src/Jobs/Corporation/CorporationMemberTrackingJob.php
+
+		-
+			message: "#^Relation 'ship' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationMemberTracking model\\.$#"
+			count: 1
+			path: src/Jobs/Corporation/CorporationMemberTrackingJob.php
+
+		-
+			message: "#^Call to function is_null\\(\\) with Seatplus\\\\Eveapi\\\\Models\\\\RefreshToken will always evaluate to false\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingBodysFromMails.php
+
+		-
+			message: "#^Property 'body' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Mail\\\\Mail model\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingBodysFromMails.php
+
+		-
+			message: "#^Relation 'mails' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Character\\\\CharacterInfo model\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingBodysFromMails.php
+
+		-
+			message: "#^Relation 'category' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Group model\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingCategorys.php
+
+		-
+			message: "#^Relation 'character' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationMemberTracking model\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingCharacterInfosFromCorporationMemberTracking.php
+
+		-
+			message: "#^Relation 'constellation' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\System model\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingConstellations.php
+
+		-
+			message: "#^Relation 'group' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Type model\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingGroups.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Assets\\\\Asset\\:\\:\\$assetable_id\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingLocationFromAssets.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Assets\\\\Asset\\:\\:\\$location_id\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingLocationFromAssets.php
+
+		-
+			message: "#^Property 'assetable_type' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Assets\\\\Asset model\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingLocationFromAssets.php
+
+		-
+			message: "#^Relation 'location' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Assets\\\\Asset model\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingLocationFromAssets.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Contracts\\\\Contract\\:\\:\\$assignee_id\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingLocationFromContracts.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Contracts\\\\Contract\\:\\:\\$end_location\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingLocationFromContracts.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Contracts\\\\Contract\\:\\:\\$end_location_id\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingLocationFromContracts.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Contracts\\\\Contract\\:\\:\\$issuer_id\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingLocationFromContracts.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Contracts\\\\Contract\\:\\:\\$start_location\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingLocationFromContracts.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Contracts\\\\Contract\\:\\:\\$start_location_id\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingLocationFromContracts.php
+
+		-
+			message: "#^Relation 'end_location' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Contracts\\\\Contract model\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingLocationFromContracts.php
+
+		-
+			message: "#^Relation 'start_location' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Contracts\\\\Contract model\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingLocationFromContracts.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationMemberTracking\\:\\:\\$character_id\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingLocationFromCorporationMemberTracking.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationMemberTracking\\:\\:\\$corporation_id\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingLocationFromCorporationMemberTracking.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationMemberTracking\\:\\:\\$location_id\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingLocationFromCorporationMemberTracking.php
+
+		-
+			message: "#^Relation 'location' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationMemberTracking model\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingLocationFromCorporationMemberTracking.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Jobs\\\\Hydrate\\\\Maintenance\\\\GetMissingLocationFromWalletTransaction\\:\\:\\$wallet_transaction\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingLocationFromWalletTransaction.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Wallet\\\\WalletTransaction\\:\\:\\$location_id\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingLocationFromWalletTransaction.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Wallet\\\\WalletTransaction\\:\\:\\$wallet_transactionable\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingLocationFromWalletTransaction.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Wallet\\\\WalletTransaction\\:\\:\\$wallet_transactionable_id\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingLocationFromWalletTransaction.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Wallet\\\\WalletTransaction\\:\\:\\$wallet_transactionable_type\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingLocationFromWalletTransaction.php
+
+		-
+			message: "#^Relation 'location' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Wallet\\\\WalletTransaction model\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingLocationFromWalletTransaction.php
+
+		-
+			message: "#^Relation 'region' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Constellation model\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingRegions.php
+
+		-
+			message: "#^Relation 'type' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Assets\\\\Asset model\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingTypesFromCharacterAssets.php
+
+		-
+			message: "#^Relation 'type' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Contracts\\\\ContractItem model\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingTypesFromContractItem.php
+
+		-
+			message: "#^Relation 'ship' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationMemberTracking model\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingTypesFromCorporationMemberTracking.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Location\\:\\:\\$locatable\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingTypesFromLocations.php
+
+		-
+			message: "#^Relation 'locatable' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Location model\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingTypesFromLocations.php
+
+		-
+			message: "#^Relation 'type' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Skills\\\\SkillQueue model\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingTypesFromSkillQueue.php
+
+		-
+			message: "#^Relation 'type' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Skills\\\\Skill model\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingTypesFromSkills.php
+
+		-
+			message: "#^Relation 'type' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Wallet\\\\WalletTransaction model\\.$#"
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingTypesFromWalletTransaction.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Killmails\\\\Killmail\\:\\:\\$complete\\.$#"
+			count: 1
+			path: src/Jobs/Killmails/KillmailJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Killmails\\\\Killmail\\:\\:\\$ship\\.$#"
+			count: 1
+			path: src/Jobs/Killmails/KillmailJob.php
+
+		-
+			message: "#^Property 'alliance_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Killmails\\\\KillmailAttacker model\\.$#"
+			count: 1
+			path: src/Jobs/Killmails/KillmailJob.php
+
+		-
+			message: "#^Property 'character_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Killmails\\\\KillmailAttacker model\\.$#"
+			count: 1
+			path: src/Jobs/Killmails/KillmailJob.php
+
+		-
+			message: "#^Property 'corporation_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Killmails\\\\KillmailAttacker model\\.$#"
+			count: 1
+			path: src/Jobs/Killmails/KillmailJob.php
+
+		-
+			message: "#^Property 'damage_done' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Killmails\\\\KillmailAttacker model\\.$#"
+			count: 1
+			path: src/Jobs/Killmails/KillmailJob.php
+
+		-
+			message: "#^Property 'destroyed' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Killmails\\\\KillmailItem model\\.$#"
+			count: 1
+			path: src/Jobs/Killmails/KillmailJob.php
+
+		-
+			message: "#^Property 'dropped' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Killmails\\\\KillmailItem model\\.$#"
+			count: 1
+			path: src/Jobs/Killmails/KillmailJob.php
+
+		-
+			message: "#^Property 'final_blow' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Killmails\\\\KillmailAttacker model\\.$#"
+			count: 1
+			path: src/Jobs/Killmails/KillmailJob.php
+
+		-
+			message: "#^Property 'killmail_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Killmails\\\\KillmailAttacker model\\.$#"
+			count: 1
+			path: src/Jobs/Killmails/KillmailJob.php
+
+		-
+			message: "#^Property 'location_flag' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Killmails\\\\KillmailItem model\\.$#"
+			count: 1
+			path: src/Jobs/Killmails/KillmailJob.php
+
+		-
+			message: "#^Property 'location_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Killmails\\\\KillmailItem model\\.$#"
+			count: 1
+			path: src/Jobs/Killmails/KillmailJob.php
+
+		-
+			message: "#^Property 'quantity' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Killmails\\\\KillmailItem model\\.$#"
+			count: 1
+			path: src/Jobs/Killmails/KillmailJob.php
+
+		-
+			message: "#^Property 'ship_type_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Killmails\\\\KillmailAttacker model\\.$#"
+			count: 1
+			path: src/Jobs/Killmails/KillmailJob.php
+
+		-
+			message: "#^Property 'singleton' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Killmails\\\\KillmailItem model\\.$#"
+			count: 1
+			path: src/Jobs/Killmails/KillmailJob.php
+
+		-
+			message: "#^Property 'type_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Killmails\\\\KillmailItem model\\.$#"
+			count: 1
+			path: src/Jobs/Killmails/KillmailJob.php
+
+		-
+			message: "#^Property 'weapon_type_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Killmails\\\\KillmailAttacker model\\.$#"
+			count: 1
+			path: src/Jobs/Killmails/KillmailJob.php
+
+		-
+			message: "#^Relation 'ship' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Killmails\\\\KillmailAttacker model\\.$#"
+			count: 1
+			path: src/Jobs/Killmails/KillmailJob.php
+
+		-
+			message: "#^Relation 'type' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Killmails\\\\KillmailItem model\\.$#"
+			count: 1
+			path: src/Jobs/Killmails/KillmailJob.php
+
+		-
+			message: "#^Relation 'weapon' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Killmails\\\\KillmailAttacker model\\.$#"
+			count: 1
+			path: src/Jobs/Killmails/KillmailJob.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/Jobs/Mail/MailBodyJob.php
+
+		-
+			message: "#^Match expression does not handle remaining value\\: string$#"
+			count: 1
+			path: src/Jobs/Mail/MailBodyJob.php
+
+		-
+			message: "#^Property 'alliance_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationInfo model\\.$#"
+			count: 1
+			path: src/Jobs/Mail/MailBodyJob.php
+
+		-
+			message: "#^Property 'body' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Mail\\\\Mail model\\.$#"
+			count: 1
+			path: src/Jobs/Mail/MailBodyJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Mail\\\\Mail\\:\\:\\$body\\.$#"
+			count: 1
+			path: src/Jobs/Mail/MailHeaderJob.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/Jobs/Mail/MailHeaderJob.php
+
+		-
+			message: "#^Match expression does not handle remaining value\\: string$#"
+			count: 2
+			path: src/Jobs/Mail/MailHeaderJob.php
+
+		-
+			message: "#^Property 'alliance_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationInfo model\\.$#"
+			count: 1
+			path: src/Jobs/Mail/MailHeaderJob.php
+
+		-
+			message: "#^Property Illuminate\\\\Queue\\\\Worker\\:\\:\\$shouldQuit \\(bool\\) does not accept int\\.$#"
+			count: 1
+			path: src/Jobs/Mail/MailHeaderJob.php
+
+		-
+			message: "#^PHPDoc tag @param for parameter \\$job with type mixed is not subtype of native type Seatplus\\\\Eveapi\\\\Jobs\\\\EsiBase\\.$#"
+			count: 1
+			path: src/Jobs/Middleware/HasRequiredScopeMiddleware.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\BatchUpdate\\:\\:\\$batch_id\\.$#"
+			count: 1
+			path: src/Jobs/Seatplus/Batch/CharacterBatchJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\BatchUpdate\\:\\:\\$finished_at\\.$#"
+			count: 2
+			path: src/Jobs/Seatplus/Batch/CharacterBatchJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\BatchUpdate\\:\\:\\$started_at\\.$#"
+			count: 2
+			path: src/Jobs/Seatplus/Batch/CharacterBatchJob.php
+
+		-
+			message: "#^Property 'batch_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\BatchStatistic model\\.$#"
+			count: 1
+			path: src/Jobs/Seatplus/Batch/CharacterBatchJob.php
+
+		-
+			message: "#^Property 'batch_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\BatchUpdate model\\.$#"
+			count: 1
+			path: src/Jobs/Seatplus/Batch/CharacterBatchJob.php
+
+		-
+			message: "#^Property 'batchable_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\BatchUpdate model\\.$#"
+			count: 1
+			path: src/Jobs/Seatplus/Batch/CharacterBatchJob.php
+
+		-
+			message: "#^Property 'batchable_type' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\BatchUpdate model\\.$#"
+			count: 1
+			path: src/Jobs/Seatplus/Batch/CharacterBatchJob.php
+
+		-
+			message: "#^Property 'finished_at' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\BatchStatistic model\\.$#"
+			count: 1
+			path: src/Jobs/Seatplus/Batch/CharacterBatchJob.php
+
+		-
+			message: "#^Property 'finished_at' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\BatchUpdate model\\.$#"
+			count: 1
+			path: src/Jobs/Seatplus/Batch/CharacterBatchJob.php
+
+		-
+			message: "#^Property 'batch_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\BatchStatistic model\\.$#"
+			count: 1
+			path: src/Jobs/Seatplus/MaintenanceJob.php
+
+		-
+			message: "#^Property 'finished_at' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\BatchStatistic model\\.$#"
+			count: 1
+			path: src/Jobs/Seatplus/MaintenanceJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Schedules\\:\\:\\$expression\\.$#"
+			count: 1
+			path: src/Jobs/Seatplus/UpdateCharacter.php
+
+		-
+			message: "#^Property 'batchable_type' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\BatchUpdate model\\.$#"
+			count: 1
+			path: src/Jobs/Seatplus/UpdateCharacter.php
+
+		-
+			message: "#^Property 'job' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Schedules model\\.$#"
+			count: 1
+			path: src/Jobs/Seatplus/UpdateCharacter.php
+
+		-
+			message: "#^Property 'batch_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\BatchStatistic model\\.$#"
+			count: 1
+			path: src/Jobs/Seatplus/UpdateCorporation.php
+
+		-
+			message: "#^Property 'finished_at' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\BatchStatistic model\\.$#"
+			count: 1
+			path: src/Jobs/Seatplus/UpdateCorporation.php
+
+		-
+			message: "#^Relation 'corporation' is not found in Seatplus\\\\Eveapi\\\\Models\\\\RefreshToken model\\.$#"
+			count: 1
+			path: src/Jobs/Seatplus/UpdateCorporation.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/Jobs/Skills/SkillQueueJob.php
+
+		-
+			message: "#^Match expression does not handle remaining value\\: string$#"
+			count: 1
+			path: src/Jobs/Skills/SkillQueueJob.php
+
+		-
+			message: "#^Property 'alliance_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationInfo model\\.$#"
+			count: 1
+			path: src/Jobs/Skills/SkillQueueJob.php
+
+		-
+			message: "#^Property 'character_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Skills\\\\SkillQueue model\\.$#"
+			count: 2
+			path: src/Jobs/Skills/SkillQueueJob.php
+
+		-
+			message: "#^Relation 'type' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Skills\\\\SkillQueue model\\.$#"
+			count: 1
+			path: src/Jobs/Skills/SkillQueueJob.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/Jobs/Skills/SkillsJob.php
+
+		-
+			message: "#^Match expression does not handle remaining value\\: string$#"
+			count: 1
+			path: src/Jobs/Skills/SkillsJob.php
+
+		-
+			message: "#^Property 'alliance_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationInfo model\\.$#"
+			count: 1
+			path: src/Jobs/Skills/SkillsJob.php
+
+		-
+			message: "#^Property 'character_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Skills\\\\Skill model\\.$#"
+			count: 1
+			path: src/Jobs/Skills/SkillsJob.php
+
+		-
+			message: "#^Property 'total_sp' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Character\\\\CharacterInfo model\\.$#"
+			count: 1
+			path: src/Jobs/Skills/SkillsJob.php
+
+		-
+			message: "#^Property 'unallocated_sp' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Character\\\\CharacterInfo model\\.$#"
+			count: 1
+			path: src/Jobs/Skills/SkillsJob.php
+
+		-
+			message: "#^Relation 'type' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Skills\\\\Skill model\\.$#"
+			count: 1
+			path: src/Jobs/Skills/SkillsJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Character\\\\CharacterInfo\\:\\:\\$name\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveLocationJob.php
+
+		-
+			message: "#^Relation 'locatable' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Location model\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveLocationJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$category_id\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseCategoryByIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$name\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseCategoryByIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$published\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseCategoryByIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$constellation_id\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseConstellationByConstellationIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$name\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseConstellationByConstellationIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$region_id\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseConstellationByConstellationIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$category_id\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseGroupByIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$group_id\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseGroupByIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$name\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseGroupByIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$published\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseGroupByIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$name\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseRegionByRegionIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$region_id\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseRegionByRegionIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$max_dockable_ship_volume\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseStationByIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$name\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseStationByIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$office_rental_cost\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseStationByIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$reprocessing_efficiency\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseStationByIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$reprocessing_stations_take\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseStationByIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$system_id\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseStationByIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$type_id\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseStationByIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$name\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseStructureByIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$owner_id\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseStructureByIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$solar_system_id\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseStructureByIdJob.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseStructureByIdJob.php
+
+		-
+			message: "#^Match expression does not handle remaining value\\: string$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseStructureByIdJob.php
+
+		-
+			message: "#^Property 'alliance_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationInfo model\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseStructureByIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$constellation_id\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseSystemBySystemIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$name\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseSystemBySystemIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$security_status\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseSystemBySystemIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$system_id\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseSystemBySystemIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$description\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseTypeByIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$group_id\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseTypeByIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$name\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseTypeByIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$published\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseTypeByIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$type_id\\.$#"
+			count: 1
+			path: src/Jobs/Universe/ResolveUniverseTypeByIdJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\EsiClient\\\\DataTransferObjects\\\\EsiResponse\\:\\:\\$scalar\\.$#"
+			count: 1
+			path: src/Jobs/Wallet/CharacterBalanceJob.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/Jobs/Wallet/CharacterBalanceJob.php
+
+		-
+			message: "#^Match expression does not handle remaining value\\: string$#"
+			count: 1
+			path: src/Jobs/Wallet/CharacterBalanceJob.php
+
+		-
+			message: "#^Property 'alliance_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationInfo model\\.$#"
+			count: 1
+			path: src/Jobs/Wallet/CharacterBalanceJob.php
+
+		-
+			message: "#^Property 'balanceable_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Wallet\\\\Balance model\\.$#"
+			count: 1
+			path: src/Jobs/Wallet/CharacterBalanceJob.php
+
+		-
+			message: "#^Property 'balanceable_type' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Wallet\\\\Balance model\\.$#"
+			count: 1
+			path: src/Jobs/Wallet/CharacterBalanceJob.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/Jobs/Wallet/CharacterWalletTransactionJob.php
+
+		-
+			message: "#^Match expression does not handle remaining value\\: string$#"
+			count: 1
+			path: src/Jobs/Wallet/CharacterWalletTransactionJob.php
+
+		-
+			message: "#^Property 'alliance_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationInfo model\\.$#"
+			count: 1
+			path: src/Jobs/Wallet/CharacterWalletTransactionJob.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/Jobs/Wallet/CorporationBalanceJob.php
+
+		-
+			message: "#^Match expression does not handle remaining value\\: string$#"
+			count: 1
+			path: src/Jobs/Wallet/CorporationBalanceJob.php
+
+		-
+			message: "#^PHPDoc tag @param references unknown parameter\\: \\$page$#"
+			count: 1
+			path: src/Jobs/Wallet/CorporationBalanceJob.php
+
+		-
+			message: "#^Property 'alliance_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationInfo model\\.$#"
+			count: 1
+			path: src/Jobs/Wallet/CorporationBalanceJob.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Wallet\\\\Balance\\:\\:\\$division\\.$#"
+			count: 2
+			path: src/Jobs/Wallet/CorporationWalletJournalJob.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/Jobs/Wallet/CorporationWalletTransactionByDivisionJob.php
+
+		-
+			message: "#^Match expression does not handle remaining value\\: string$#"
+			count: 1
+			path: src/Jobs/Wallet/CorporationWalletTransactionByDivisionJob.php
+
+		-
+			message: "#^Property 'alliance_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationInfo model\\.$#"
+			count: 1
+			path: src/Jobs/Wallet/CorporationWalletTransactionByDivisionJob.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/Jobs/Wallet/WalletJournalBase.php
+
+		-
+			message: "#^Match expression does not handle remaining value\\: string$#"
+			count: 1
+			path: src/Jobs/Wallet/WalletJournalBase.php
+
+		-
+			message: "#^PHPDoc tag @param references unknown parameter\\: \\$page$#"
+			count: 1
+			path: src/Jobs/Wallet/WalletJournalBase.php
+
+		-
+			message: "#^Property 'alliance_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationInfo model\\.$#"
+			count: 1
+			path: src/Jobs/Wallet/WalletJournalBase.php
+
+		-
+			message: "#^Property Illuminate\\\\Queue\\\\Worker\\:\\:\\$shouldQuit \\(bool\\) does not accept int\\.$#"
+			count: 1
+			path: src/Jobs/Wallet/WalletJournalBase.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Wallet\\\\WalletTransaction\\:\\:\\$transaction_id\\.$#"
+			count: 1
+			path: src/Jobs/Wallet/WalletTransactionBase.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: src/Jobs/Wallet/WalletTransactionBase.php
+
+		-
+			message: "#^Match expression does not handle remaining value\\: string$#"
+			count: 1
+			path: src/Jobs/Wallet/WalletTransactionBase.php
+
+		-
+			message: "#^Property 'alliance_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationInfo model\\.$#"
+			count: 1
+			path: src/Jobs/Wallet/WalletTransactionBase.php
+
+		-
+			message: "#^Property 'wallet_transactionable_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Wallet\\\\WalletTransaction model\\.$#"
+			count: 1
+			path: src/Jobs/Wallet/WalletTransactionBase.php
+
+		-
+			message: "#^Property Illuminate\\\\Queue\\\\Worker\\:\\:\\$shouldQuit \\(bool\\) does not accept int\\.$#"
+			count: 1
+			path: src/Jobs/Wallet/WalletTransactionBase.php
+
+		-
+			message: "#^Relation 'location' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Wallet\\\\WalletTransaction model\\.$#"
+			count: 1
+			path: src/Jobs/Wallet/WalletTransactionBase.php
+
+		-
+			message: "#^Relation 'type' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Wallet\\\\WalletTransaction model\\.$#"
+			count: 1
+			path: src/Jobs/Wallet/WalletTransactionBase.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\System\\:\\:\\$constellation\\.$#"
+			count: 1
+			path: src/Listeners/DispatchGetConstellationById.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\System\\:\\:\\$constellation_id\\.$#"
+			count: 1
+			path: src/Listeners/DispatchGetConstellationById.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Constellation\\:\\:\\$region\\.$#"
+			count: 1
+			path: src/Listeners/DispatchGetRegionById.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Constellation\\:\\:\\$region_id\\.$#"
+			count: 1
+			path: src/Listeners/DispatchGetRegionById.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Character\\\\CharacterInfo\\:\\:\\$corporation\\.$#"
+			count: 1
+			path: src/Listeners/UpdatingRefreshTokenListener.php
+
+		-
+			message: "#^Using nullsafe property access on non\\-nullable type Seatplus\\\\Eveapi\\\\Models\\\\RefreshToken\\. Use \\-\\> instead\\.$#"
+			count: 1
+			path: src/Listeners/UpdatingRefreshTokenListener.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Alliance\\\\AllianceInfo\\:\\:\\$casts is not covariant with PHPDoc type array\\<string, string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$casts\\.$#"
+			count: 1
+			path: src/Models/Alliance/AllianceInfo.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Alliance\\\\AllianceInfo\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Alliance/AllianceInfo.php
+
+		-
+			message: "#^Class Seatplus\\\\Auth\\\\Models\\\\User not found\\.$#"
+			count: 1
+			path: src/Models/Application.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Application\\:\\:\\$casts is not covariant with PHPDoc type array\\<string, string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$casts\\.$#"
+			count: 1
+			path: src/Models/Application.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Application\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Application.php
+
+		-
+			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Seatplus\\\\Eveapi\\\\Models\\\\Assets\\\\Asset\\>\\:\\:withRecursiveExpression\\(\\)\\.$#"
+			count: 1
+			path: src/Models/Assets/Asset.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Assets\\\\Asset\\:\\:\\$casts is not covariant with PHPDoc type array\\<string, string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$casts\\.$#"
+			count: 1
+			path: src/Models/Assets/Asset.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Assets\\\\Asset\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Assets/Asset.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\BatchStatistic\\:\\:\\$finished_at\\.$#"
+			count: 1
+			path: src/Models/BatchStatistic.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\BatchStatistic\\:\\:\\$started_at\\.$#"
+			count: 1
+			path: src/Models/BatchStatistic.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\BatchUpdate\\:\\:\\$finished_at\\.$#"
+			count: 1
+			path: src/Models/BatchUpdate.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\BatchUpdate\\:\\:\\$started_at\\.$#"
+			count: 1
+			path: src/Models/BatchUpdate.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\BatchUpdate\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/BatchUpdate.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Character\\\\CharacterAffiliation\\:\\:\\$casts is not covariant with PHPDoc type array\\<string, string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$casts\\.$#"
+			count: 1
+			path: src/Models/Character/CharacterAffiliation.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Character\\\\CharacterAffiliation\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Character/CharacterAffiliation.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Character\\\\CharacterInfo\\:\\:\\$character_affiliation\\.$#"
+			count: 2
+			path: src/Models/Character/CharacterInfo.php
+
+		-
+			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Relations\\\\MorphOne\\<Seatplus\\\\Eveapi\\\\Models\\\\Application\\>\\:\\:whereStatus\\(\\)\\.$#"
+			count: 1
+			path: src/Models/Character/CharacterInfo.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Character\\\\CharacterInfo\\:\\:\\$casts is not covariant with PHPDoc type array\\<string, string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$casts\\.$#"
+			count: 1
+			path: src/Models/Character/CharacterInfo.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Character\\\\CharacterInfo\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Character/CharacterInfo.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Character\\\\CharacterRole\\:\\:\\$casts is not covariant with PHPDoc type array\\<string, string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$casts\\.$#"
+			count: 1
+			path: src/Models/Character/CharacterRole.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Character\\\\CharacterRole\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Character/CharacterRole.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Character\\\\CorporationHistory\\:\\:\\$casts is not covariant with PHPDoc type array\\<string, string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$casts\\.$#"
+			count: 1
+			path: src/Models/Character/CorporationHistory.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Character\\\\CorporationHistory\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Character/CorporationHistory.php
+
+		-
+			message: "#^Access to an undefined property Illuminate\\\\Foundation\\\\Auth\\\\User\\:\\:\\$characters\\.$#"
+			count: 1
+			path: src/Models/Contacts/Contact.php
+
+		-
+			message: "#^Call to an undefined method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\:\\:entityFilter\\(\\)\\.$#"
+			count: 2
+			path: src/Models/Contacts/Contact.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Contacts\\\\ContactLabel\\:\\:\\$contact\\.$#"
+			count: 1
+			path: src/Models/Contacts/ContactLabel.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Contacts\\\\ContactLabel\\:\\:\\$label_id\\.$#"
+			count: 1
+			path: src/Models/Contacts/ContactLabel.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Contracts\\\\Contract\\:\\:\\$assignee_corporation\\.$#"
+			count: 1
+			path: src/Models/Contracts/Contract.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Contracts\\\\Contract\\:\\:\\$for_corporation\\.$#"
+			count: 1
+			path: src/Models/Contracts/Contract.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Contracts\\\\Contract\\:\\:\\$issuer_character\\.$#"
+			count: 1
+			path: src/Models/Contracts/Contract.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Contracts\\\\Contract\\:\\:\\$issuer_corporation\\.$#"
+			count: 1
+			path: src/Models/Contracts/Contract.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Contracts\\\\Contract\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Contracts/Contract.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Contracts\\\\ContractItem\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Contracts/ContractItem.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationDivision\\:\\:\\$casts is not covariant with PHPDoc type array\\<string, string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$casts\\.$#"
+			count: 1
+			path: src/Models/Corporation/CorporationDivision.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationDivision\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Corporation/CorporationDivision.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationInfo\\:\\:\\$casts is not covariant with PHPDoc type array\\<string, string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$casts\\.$#"
+			count: 1
+			path: src/Models/Corporation/CorporationInfo.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationInfo\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Corporation/CorporationInfo.php
+
+		-
+			message: "#^Function getAffiliatedIdsByClass not found\\.$#"
+			count: 1
+			path: src/Models/Corporation/CorporationMemberTracking.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationMemberTracking\\:\\:\\$casts is not covariant with PHPDoc type array\\<string, string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$casts\\.$#"
+			count: 1
+			path: src/Models/Corporation/CorporationMemberTracking.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationMemberTracking\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Corporation/CorporationMemberTracking.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Killmails\\\\Killmail\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Killmails/Killmail.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Killmails\\\\KillmailAttacker\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Killmails/KillmailAttacker.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Killmails\\\\KillmailItem\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Killmails/KillmailItem.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Mail\\\\Mail\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Mail/Mail.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Mail\\\\MailRecipients\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Mail/MailRecipients.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Recruitment\\\\Enlistments\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Recruitment/Enlistments.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\RefreshToken\\:\\:\\$corporation\\.$#"
+			count: 1
+			path: src/Models/RefreshToken.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\RefreshToken\\:\\:\\$expires_on\\.$#"
+			count: 1
+			path: src/Models/RefreshToken.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\RefreshToken\\:\\:\\$casts is not covariant with PHPDoc type array\\<string, string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$casts\\.$#"
+			count: 1
+			path: src/Models/RefreshToken.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\RefreshToken\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/RefreshToken.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Schedules\\:\\:\\$casts is not covariant with PHPDoc type array\\<string, string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$casts\\.$#"
+			count: 1
+			path: src/Models/Schedules.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Schedules\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Schedules.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Settings\\\\GlobalSettings\\:\\:\\$casts is not covariant with PHPDoc type array\\<string, string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$casts\\.$#"
+			count: 1
+			path: src/Models/Settings/GlobalSettings.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Settings\\\\GlobalSettings\\:\\:\\$fillable is not covariant with PHPDoc type array\\<string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$fillable\\.$#"
+			count: 1
+			path: src/Models/Settings/GlobalSettings.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Skills\\\\Skill\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Skills/Skill.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Skills\\\\SkillQueue\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Skills/SkillQueue.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\SsoScopes\\:\\:\\$casts is not covariant with PHPDoc type array\\<string, string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$casts\\.$#"
+			count: 1
+			path: src/Models/SsoScopes.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\SsoScopes\\:\\:\\$fillable is not covariant with PHPDoc type array\\<string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$fillable\\.$#"
+			count: 1
+			path: src/Models/SsoScopes.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Category\\:\\:\\$casts is not covariant with PHPDoc type array\\<string, string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$casts\\.$#"
+			count: 1
+			path: src/Models/Universe/Category.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Category\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Universe/Category.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Constellation\\:\\:\\$casts is not covariant with PHPDoc type array\\<string, string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$casts\\.$#"
+			count: 1
+			path: src/Models/Universe/Constellation.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Constellation\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Universe/Constellation.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Group\\:\\:\\$casts is not covariant with PHPDoc type array\\<string, string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$casts\\.$#"
+			count: 1
+			path: src/Models/Universe/Group.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Group\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Universe/Group.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Location\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Universe/Location.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Name\\:\\:\\$casts is not covariant with PHPDoc type array\\<string, string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$casts\\.$#"
+			count: 1
+			path: src/Models/Universe/Name.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Name\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Universe/Name.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Region\\:\\:\\$casts is not covariant with PHPDoc type array\\<string, string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$casts\\.$#"
+			count: 1
+			path: src/Models/Universe/Region.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Region\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Universe/Region.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Station\\:\\:\\$casts is not covariant with PHPDoc type array\\<string, string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$casts\\.$#"
+			count: 1
+			path: src/Models/Universe/Station.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Station\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Universe/Station.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Structure\\:\\:\\$casts is not covariant with PHPDoc type array\\<string, string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$casts\\.$#"
+			count: 1
+			path: src/Models/Universe/Structure.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Structure\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Universe/Structure.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\System\\:\\:\\$casts is not covariant with PHPDoc type array\\<string, string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$casts\\.$#"
+			count: 1
+			path: src/Models/Universe/System.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\System\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Universe/System.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Type\\:\\:\\$casts is not covariant with PHPDoc type array\\<string, string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$casts\\.$#"
+			count: 1
+			path: src/Models/Universe/Type.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Type\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
+			count: 1
+			path: src/Models/Universe/Type.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Wallet\\\\WalletJournal\\:\\:\\$casts is not covariant with PHPDoc type array\\<string, string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$casts\\.$#"
+			count: 1
+			path: src/Models/Wallet/WalletJournal.php
+
+		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Wallet\\\\WalletTransaction\\:\\:\\$casts is not covariant with PHPDoc type array\\<string, string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$casts\\.$#"
+			count: 1
+			path: src/Models/Wallet/WalletTransaction.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Assets\\\\Asset\\:\\:\\$assetable_id\\.$#"
+			count: 1
+			path: src/Observers/GroupObserver.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Group\\:\\:\\$category\\.$#"
+			count: 1
+			path: src/Observers/GroupObserver.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Group\\:\\:\\$category_id\\.$#"
+			count: 2
+			path: src/Observers/GroupObserver.php
+
+		-
+			message: "#^PHPDoc tag @var for property Seatplus\\\\Eveapi\\\\Observers\\\\GroupObserver\\:\\:\\$group with type Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Group\\|null is not subtype of native type Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Group\\.$#"
+			count: 1
+			path: src/Observers/GroupObserver.php
+
+		-
+			message: "#^Relation 'type' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Assets\\\\Asset model\\.$#"
+			count: 1
+			path: src/Observers/GroupObserver.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Type\\:\\:\\$group\\.$#"
+			count: 1
+			path: src/Observers/TypeObserver.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Type\\:\\:\\$group_id\\.$#"
+			count: 1
+			path: src/Observers/TypeObserver.php
+
+		-
+			message: "#^Property 'label_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Contacts\\\\Label model\\.$#"
+			count: 1
+			path: src/Services/Contacts/ProcessContactLabelsResponse.php
+
+		-
+			message: "#^Property 'labelable_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Contacts\\\\Label model\\.$#"
+			count: 2
+			path: src/Services/Contacts/ProcessContactLabelsResponse.php
+
+		-
+			message: "#^Property 'labelable_type' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Contacts\\\\Label model\\.$#"
+			count: 2
+			path: src/Services/Contacts/ProcessContactLabelsResponse.php
+
+		-
+			message: "#^Property 'contact_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Contacts\\\\Contact model\\.$#"
+			count: 1
+			path: src/Services/Contacts/ProcessContactResponse.php
+
+		-
+			message: "#^Property 'contactable_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Contacts\\\\Contact model\\.$#"
+			count: 2
+			path: src/Services/Contacts/ProcessContactResponse.php
+
+		-
+			message: "#^Property 'contactable_type' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Contacts\\\\Contact model\\.$#"
+			count: 2
+			path: src/Services/Contacts/ProcessContactResponse.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\RefreshToken\\:\\:\\$expires_on\\.$#"
+			count: 4
+			path: src/Services/Esi/RetrieveEsiData.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\RefreshToken\\:\\:\\$refresh_token\\.$#"
+			count: 1
+			path: src/Services/Esi/RetrieveEsiData.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\RefreshToken\\:\\:\\$updated_at\\.$#"
+			count: 1
+			path: src/Services/Esi/RetrieveEsiData.php
+
+		-
+			message: "#^Call to function is_null\\(\\) with Seatplus\\\\EsiClient\\\\EsiClient will always evaluate to false\\.$#"
+			count: 1
+			path: src/Services/Esi/RetrieveEsiData.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\RefreshToken\\:\\:\\$refresh_token\\.$#"
+			count: 1
+			path: src/Services/Esi/UpdateRefreshTokenService.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/Services/Esi/UpdateRefreshTokenService.php
+
+		-
+			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
+			count: 2
+			path: src/Services/FindCorporationRefreshToken.php
+
+		-
+			message: "#^Relation 'corporation' is not found in Seatplus\\\\Eveapi\\\\Models\\\\RefreshToken model\\.$#"
+			count: 2
+			path: src/Services/FindCorporationRefreshToken.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Character\\\\CharacterInfo\\:\\:\\$corporation\\.$#"
+			count: 1
+			path: src/Services/GetOwnedIds.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Character\\\\CharacterInfo\\:\\:\\$roles\\.$#"
+			count: 1
+			path: src/Services/GetOwnedIds.php
+
+		-
+			message: "#^Call to static method whereId\\(\\) on an unknown class Seatplus\\\\Auth\\\\Models\\\\User\\.$#"
+			count: 1
+			path: src/Services/GetOwnedIds.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/Services/Jobs/CharacterAffiliationService.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/Services/Jobs/GetLocationFlagNameService.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Schedules\\:\\:\\$expression\\.$#"
+			count: 1
+			path: src/Services/MinutesUntilNextSchedule.php
+
+		-
+			message: "#^Property 'job' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Schedules model\\.$#"
+			count: 1
+			path: src/Services/MinutesUntilNextSchedule.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Location\\:\\:\\$locatable\\.$#"
+			count: 1
+			path: src/Services/ResolveLocation/ResolveStationPipe.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Station\\:\\:\\$updated_at\\.$#"
+			count: 1
+			path: src/Services/ResolveLocation/ResolveStationPipe.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Character\\\\CharacterInfo\\:\\:\\$name\\.$#"
+			count: 1
+			path: src/Services/ResolveLocation/ResolveStructurePipe.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Location\\:\\:\\$locatable\\.$#"
+			count: 1
+			path: src/Services/ResolveLocation/ResolveStructurePipe.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Structure\\:\\:\\$updated_at\\.$#"
+			count: 1
+			path: src/Services/ResolveLocation/ResolveStructurePipe.php

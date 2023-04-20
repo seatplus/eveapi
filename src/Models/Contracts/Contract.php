@@ -51,7 +51,6 @@ class Contract extends Model
      */
     protected $primaryKey = 'contract_id';
 
-
     /**
      * Indicates if the model's ID is auto-incrementing.
      *
@@ -109,7 +108,7 @@ class Contract extends Model
         return $this->morphedByMany(CharacterInfo::class, 'contractable', null, 'contract_id');
     }
 
-    public function scopeInRegion(Builder $query, int | array $regions): Builder
+    public function scopeInRegion(Builder $query, int|array $regions): Builder
     {
         $region_ids = is_array($regions) ? $regions : [$regions];
 
@@ -118,7 +117,7 @@ class Contract extends Model
             ->orWhereHas('end_location.locatable', fn (Builder $query) => $query->whereHas('system.region', fn ($query) => $query->whereIn('universe_regions.region_id', $region_ids)));
     }
 
-    public function scopeInSystems(Builder $query, int | array $systems): Builder
+    public function scopeInSystems(Builder $query, int|array $systems): Builder
     {
         $system_ids = is_array($systems) ? $systems : [$systems];
 
@@ -127,21 +126,21 @@ class Contract extends Model
             ->orWhereHas('end_location.locatable', fn (Builder $query) => $query->whereHas('system', fn ($query) => $query->whereIn('system_id', $system_ids)));
     }
 
-    public function scopeOfTypes(Builder $query, int | array $types) : Builder
+    public function scopeOfTypes(Builder $query, int|array $types): Builder
     {
         $type_ids = is_array($types) ? $types : [$types];
 
         return $query->whereHas('items.type', fn (Builder $query) => $query->whereIn('type_id', $type_ids));
     }
 
-    public function scopeOfGroups(Builder $query, int | array $groups) : Builder
+    public function scopeOfGroups(Builder $query, int|array $groups): Builder
     {
         $group_ids = is_array($groups) ? $groups : [$groups];
 
         return $query->whereHas('items.type', fn (Builder $query) => $query->whereIn('group_id', $group_ids));
     }
 
-    public function scopeOfCategories(Builder $query, int | array $categories) : Builder
+    public function scopeOfCategories(Builder $query, int|array $categories): Builder
     {
         $category_ids = is_array($categories) ? $categories : [$categories];
 

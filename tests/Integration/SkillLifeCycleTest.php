@@ -1,6 +1,5 @@
 <?php
 
-
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Skills\SkillsJob;
@@ -58,8 +57,8 @@ function buildSkillMockEsiData()
     Queue::assertNothingPushed();
     $mocked_skills = Event::fakeFor(
         fn () => Skill::factory(['character_id' => testCharacter()->character_id])
-        ->count(5)
-        ->make()
+            ->count(5)
+            ->make()
     );
     Queue::assertNothingPushed();
 

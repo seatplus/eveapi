@@ -17,7 +17,6 @@ test('setRequestBody method', function () {
     expect($esi_request->request_body)->toBeArray()->toBe(['foo' => 'bar']);
 });
 
-
 test('isPublic method', function () {
     $esi_request = new EsiRequestContainer(
         method: '-',

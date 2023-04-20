@@ -1,6 +1,5 @@
 <?php
 
-
 use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseCategoryByIdJob;
 use Seatplus\Eveapi\Models\Universe\Category;
@@ -18,7 +17,6 @@ it('creates category', function () {
     expect(Category::first())
         ->first()->category_id->toBe($mock_data->category_id);
 });
-
 
 // Helpers
 function buildCategoryMockData()

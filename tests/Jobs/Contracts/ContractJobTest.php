@@ -1,6 +1,5 @@
 <?php
 
-
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Contracts\CharacterContractsJob;
@@ -51,7 +50,6 @@ it('creates contract job', function () {
 
 it('creates contract job other way', function () {
     $mock_data = buildContractJobMockEsiData();
-
 
     Event::fakeFor(fn () => (new CharacterContractsJob(testCharacter()->character_id))->handle());
 

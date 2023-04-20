@@ -53,14 +53,12 @@ class ResolveUniverseConstellationByConstellationIdJob extends EsiBase implement
     {
         return [
             'constellation_resolver',
-            'constellation_id:' . $this->constellation_id,
+            'constellation_id:'.$this->constellation_id,
         ];
     }
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
     public function executeJob(): void
     {

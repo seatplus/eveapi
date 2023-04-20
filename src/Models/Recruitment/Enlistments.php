@@ -52,12 +52,12 @@ class Enlistments extends Model
         return $this->belongsTo(CorporationInfo::class, 'corporation_id', 'corporation_id');
     }
 
-    public function getStepsCountAttribute() : int
+    public function getStepsCountAttribute(): int
     {
         return count($this->steps);
     }
 
-    public function getStepsAttribute($value) : array
+    public function getStepsAttribute($value): array
     {
         return explode('; ', $value);
     }

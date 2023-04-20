@@ -32,7 +32,8 @@
         "laravel/horizon": "^5.0",
         "seatplus/esi-client": "^2.0",
         "doctrine/dbal": "^3.0",
-        "staudenmeir/laravel-cte": "^1.0"
+        "staudenmeir/laravel-cte": "^1.0",
+        "laravel/pint": "^1.9"
     },
     "require-dev": {
         "orchestra/testbench": "^8.0",
@@ -40,7 +41,11 @@
         "itsgoingd/clockwork": "^5.0",
         "barryvdh/laravel-ide-helper": "^2.12",
         "pestphp/pest": "^2.0",
-        "pestphp/pest-plugin-laravel": "^2.0"
+        "pestphp/pest-plugin-laravel": "^2.0",
+        "phpstan/extension-installer": "^1.1",
+        "phpstan/phpstan-deprecation-rules": "^1.0",
+        "phpstan/phpstan-phpunit": "^1.0",
+        "nunomaduro/larastan": "^2.0"
     },
     "extra": {
         "laravel": {
@@ -50,13 +55,16 @@
         }
     },
     "scripts": {
+        "analyse": "vendor/bin/phpstan analyse",
         "test": "vendor/bin/pest",
         "test-coverage": "XDEBUG_MODE=coverage ./vendor/bin/pest --coverage",
-        "parallel": "vendor/bin/testbench package:test --parallel --no-coverage"
+        "parallel": "vendor/bin/testbench package:test --parallel --no-coverage",
+        "format": "vendor/bin/pint"
     },
     "config": {
         "allow-plugins": {
-            "pestphp/pest-plugin": true
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true
         }
     }
 }

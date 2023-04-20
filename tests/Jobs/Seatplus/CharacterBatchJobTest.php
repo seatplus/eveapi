@@ -69,7 +69,6 @@ it('contains jobs if refresh_token has scope', function (string $scope, array $c
             // expect lenght of jobs to be equal to classes
             expect($jobs)->toHaveCount(count($classes));
 
-
             if (count($jobs) !== count($classes)) {
                 return false;
             }

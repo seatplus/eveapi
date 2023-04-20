@@ -29,7 +29,6 @@ namespace Seatplus\Eveapi\Jobs\Character;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
-
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Models\Character\CharacterRole;
 use Seatplus\Eveapi\Traits\HasPathValues;
@@ -58,8 +57,6 @@ class CharacterRoleJob extends EsiBase implements HasPathValuesInterface, HasReq
 
     /**
      * Get the middleware the job should pass through.
-     *
-     * @return array
      */
     public function middleware(): array
     {
@@ -73,7 +70,7 @@ class CharacterRoleJob extends EsiBase implements HasPathValuesInterface, HasReq
     {
         return [
             'character',
-            'character_id: ' . $this->character_id,
+            'character_id: '.$this->character_id,
             'roles',
         ];
     }

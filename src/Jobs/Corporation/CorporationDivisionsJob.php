@@ -30,7 +30,6 @@ use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
-
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Models\Corporation\CorporationDivision;
 use Seatplus\Eveapi\Traits\HasCorporationRole;
@@ -63,8 +62,6 @@ class CorporationDivisionsJob extends EsiBase implements HasPathValuesInterface,
 
     /**
      * Get the middleware the job should pass through.
-     *
-     * @return array
      */
     public function middleware(): array
     {
@@ -78,7 +75,7 @@ class CorporationDivisionsJob extends EsiBase implements HasPathValuesInterface,
     {
         return [
             'corporation',
-            'corporation_id: ' . $this->corporation_id,
+            'corporation_id: '.$this->corporation_id,
             'divisions',
         ];
     }
@@ -86,7 +83,6 @@ class CorporationDivisionsJob extends EsiBase implements HasPathValuesInterface,
     /**
      * Execute the job.
      *
-     * @return void
      * @throws \Exception
      */
     public function executeJob(): void

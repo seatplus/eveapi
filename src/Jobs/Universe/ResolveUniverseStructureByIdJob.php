@@ -68,7 +68,7 @@ class ResolveUniverseStructureByIdJob extends EsiBase implements HasPathValuesIn
             'resolve',
             'universe',
             'structure',
-            'location_id:' . $this->location_id,
+            'location_id:'.$this->location_id,
         ];
     }
 
@@ -78,8 +78,8 @@ class ResolveUniverseStructureByIdJob extends EsiBase implements HasPathValuesIn
             new HasRequiredScopeMiddleware,
             // This is very likely throwing errors if user is not on acl. In order to not getting blocked by esi rate limit only use half of allowed errors
             (new ThrottlesExceptionsWithRedis($this->getRatelimit() / 2, 5))
-                 ->by('esiratelimit')
-                 ->backoff(5),
+                ->by('esiratelimit')
+                ->backoff(5),
         ];
     }
 
@@ -92,7 +92,6 @@ class ResolveUniverseStructureByIdJob extends EsiBase implements HasPathValuesIn
 
             return;
         }
-
 
         if ($result->isCachedLoad()) {
             return;
@@ -123,7 +122,6 @@ class ResolveUniverseStructureByIdJob extends EsiBase implements HasPathValuesIn
 
             return;
         }
-
 
         if ($exception?->getOriginalException()?->getResponse()?->getReasonPhrase() === 'Forbidden') {
             logger()->info('Received Forbidden, going to delete the job');

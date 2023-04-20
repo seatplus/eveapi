@@ -58,7 +58,7 @@ class ResolveUniverseStationByIdJob extends EsiBase implements HasPathValuesInte
             'resolve',
             'universe',
             'station',
-            'location_id:' . $this->location_id,
+            'location_id:'.$this->location_id,
         ];
     }
 
