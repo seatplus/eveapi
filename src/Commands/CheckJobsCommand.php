@@ -62,26 +62,13 @@ class CheckJobsCommand extends Command
 
     private array $esi_paths = [];
 
-    private Collection $jobs;
-
     private bool $has_errors = false;
 
-    public function __construct()
-    {
-        $url = 'https://esi.evetech.net/latest/swagger.json';
-
-        $this->esi_paths = Http::acceptJson()
-            ->get($url)
-            ->json('paths');
-
-        $this->jobs = $this->getAllJobs();
-
-        parent::__construct();
-    }
+    const URL = 'https://esi.evetech.net/latest/swagger.json';
 
     public function handle()
     {
-        $this->jobs
+        $this->getAllJobs()
             ->map(function ($job) {
                 $assertions = $this->checkJob($job);
 
@@ -187,7 +174,7 @@ class CheckJobsCommand extends Command
         // remove the v from string
         $version = (int) str_replace('v', '', $version_string);
 
-        $alternative_versions = $this->esi_paths[$job->getEndpoint()][$job->getMethod()]['x-alternate-versions'];
+        $alternative_versions = $this->getEsiPaths()[$job->getEndpoint()][$job->getMethod()]['x-alternate-versions'];
 
         if (! in_array($version_string, $alternative_versions)) {
             $available_versions = implode(', ', $alternative_versions);
@@ -216,7 +203,7 @@ class CheckJobsCommand extends Command
     private function checkRequiredScope(EsiBase $job): array
     {
         // check if esi-path of job has security parameter
-        $security = $this->esi_paths[$job->getEndpoint()][$job->getMethod()]['security'] ?? null;
+        $security = $this->getEsiPaths()[$job->getEndpoint()][$job->getMethod()]['security'] ?? null;
 
         if (is_null($security)) {
             if ($job instanceof HasRequiredScopeInterface) {
@@ -293,7 +280,7 @@ class CheckJobsCommand extends Command
 
     private function checkCorporationRoles(EsiBase $job): array
     {
-        $required_roles = $this->esi_paths[$job->getEndpoint()][$job->getMethod()]['x-required-roles'] ?? [];
+        $required_roles = $this->getEsiPaths()[$job->getEndpoint()][$job->getMethod()]['x-required-roles'] ?? [];
 
         // if no roles are required, return success
         if (empty($required_roles)) {
@@ -326,7 +313,7 @@ class CheckJobsCommand extends Command
 
     private function checkIsCheckingCache(EsiBase $job): array
     {
-        $cached_seconds = $this->esi_paths[$job->getEndpoint()][$job->getMethod()]['x-cached-seconds'] ?? null;
+        $cached_seconds = $this->getEsiPaths()[$job->getEndpoint()][$job->getMethod()]['x-cached-seconds'] ?? null;
         $has_cached_seconds = ! is_null($cached_seconds);
 
         // if method is post and has cached seconds, return warning
@@ -415,5 +402,17 @@ class CheckJobsCommand extends Command
     private function writeNewLine(): void
     {
         render(PHP_EOL);
+    }
+
+    public function getEsiPaths(): array
+    {
+        if (empty($this->esi_paths)) {
+
+            $this->esi_paths = Http::acceptJson()
+                ->get(self::URL)
+                ->json('paths');
+        }
+
+        return $this->esi_paths;
     }
 }
