@@ -16,7 +16,7 @@ class EsiClientSetup
         $config = Configuration::getInstance();
 
         $esi_configuration = new EsiConfiguration(
-            http_user_agent: 'SeAT plus v' . InstalledVersions::getPrettyVersion('seatplus/eveapi'),
+            http_user_agent: 'SeAT plus v'.InstalledVersions::getPrettyVersion('seatplus/eveapi'),
             // ESI
             datasource: config('eveapi.config.esi-client.datasource'),
             esi_scheme: config('eveapi.config.esi-client.esi_scheme'),

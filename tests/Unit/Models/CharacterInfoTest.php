@@ -1,6 +1,5 @@
 <?php
 
-
 use Faker\Factory;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;

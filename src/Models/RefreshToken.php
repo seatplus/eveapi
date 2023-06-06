@@ -77,10 +77,6 @@ class RefreshToken extends Model
     /**
      * Only return a token value if it is not already
      * considered expired.
-     *
-     * @param $value
-     *
-     * @return string|null
      */
     public function getTokenAttribute($value): ?string
     {

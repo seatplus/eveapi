@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Seatplus\Eveapi\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -36,7 +35,6 @@ abstract class TestCase extends OrchestraTestCase
      * Get application providers.
      *
      * @param  \Illuminate\Foundation\Application  $app
-     *
      * @return array
      */
     protected function getPackageProviders($app)

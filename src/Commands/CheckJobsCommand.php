@@ -61,7 +61,9 @@ class CheckJobsCommand extends Command
     protected $description = 'Check all used endpoints and whether the jobs are up to date or in need of an update';
 
     private array $esi_paths = [];
+
     private Collection $jobs;
+
     private bool $has_errors = false;
 
     public function __construct()
@@ -73,7 +75,6 @@ class CheckJobsCommand extends Command
             ->json('paths');
 
         $this->jobs = $this->getAllJobs();
-
 
         parent::__construct();
     }
@@ -124,16 +125,16 @@ class CheckJobsCommand extends Command
         return self::SUCCESS;
     }
 
-    private function getAllJobs() : Collection
+    private function getAllJobs(): Collection
     {
-        $jobs = glob(__DIR__ . '/../Jobs/*/*.php');
+        $jobs = glob(__DIR__.'/../Jobs/*/*.php');
 
         return collect($jobs)
             ->map(function ($job) {
-                $job = str_replace(__DIR__ . '/../Jobs/', '', $job);
+                $job = str_replace(__DIR__.'/../Jobs/', '', $job);
                 $job = str_replace('.php', '', $job);
                 $job = str_replace('/', '\\', $job);
-                $job = 'Seatplus\\Eveapi\\Jobs\\' . $job;
+                $job = 'Seatplus\\Eveapi\\Jobs\\'.$job;
 
                 return $job;
             })
@@ -143,7 +144,7 @@ class CheckJobsCommand extends Command
             ->map(function ($job) {
                 $constructor_parameters = (new ReflectionClass($job))->getConstructor()?->getParameters();
                 $constructor_parameters = collect($constructor_parameters)
-                    ->map(function (\ReflectionParameter $parameter) use ($job) {
+                    ->map(function (\ReflectionParameter $parameter) {
                         $type = 'unknown';
 
                         if ($parameter->getType() instanceof \ReflectionUnionType) {
@@ -199,7 +200,7 @@ class CheckJobsCommand extends Command
 
         // check if version+1 is available
         $next_version = $version + 1;
-        if (in_array('v' . $next_version, $alternative_versions)) {
+        if (in_array('v'.$next_version, $alternative_versions)) {
             return [
                 'status' => 'warning',
                 'message' => "new version is available. Using $version_string but v$next_version is available",

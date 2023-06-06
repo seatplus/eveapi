@@ -13,7 +13,6 @@
 
 /** @link https://pestphp.com/docs/underlying-test-case */
 
-
 use Faker\Factory;
 use Firebase\JWT\JWT;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
@@ -72,7 +71,7 @@ function testCharacter()
     return \Seatplus\Eveapi\Models\Character\CharacterInfo::first();
 }
 
-function updateRefreshTokenScopes(\Seatplus\Eveapi\Models\RefreshToken $refreshToken, array $scopes): \Seatplus\Eveapi\Models\RefreshToken
+function updateRefreshTokenScopes(Seatplus\Eveapi\Models\RefreshToken $refreshToken, array $scopes): Seatplus\Eveapi\Models\RefreshToken
 {
     $jwt = $refreshToken->getRawOriginal('token');
     $jwt_payload_base64_encoded = explode('.', $jwt)[1];
@@ -84,16 +83,16 @@ function updateRefreshTokenScopes(\Seatplus\Eveapi\Models\RefreshToken $refreshT
     $jwt_payload = json_encode($jwt_payload);
 
     $jwt_header = json_encode([
-        "alg" => "RS256",
-        "kid" => "JWT-Signature-Key",
-        "typ" => "JWT",
+        'alg' => 'RS256',
+        'kid' => 'JWT-Signature-Key',
+        'typ' => 'JWT',
     ]);
 
-    $data = JWT::urlsafeB64Encode($jwt_header) . "." . JWT::urlsafeB64Encode($jwt_payload);
+    $data = JWT::urlsafeB64Encode($jwt_header).'.'.JWT::urlsafeB64Encode($jwt_payload);
 
     $signature = hash_hmac(
         'sha256',
-        base64_encode($jwt_header) . "." . base64_encode($jwt_payload),
+        base64_encode($jwt_header).'.'.base64_encode($jwt_payload),
         'test'
     );
 

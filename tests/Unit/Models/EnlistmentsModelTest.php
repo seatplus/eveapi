@@ -1,6 +1,5 @@
 <?php
 
-
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Recruitment\Enlistments;
 
@@ -25,7 +24,7 @@ it('supports multistep', function () {
         ->steps->toBeArray()
         ->steps_count->toBeInt()->toBe(1);
 
-    $enlistment->steps = "One; Two, three but actually two";
+    $enlistment->steps = 'One; Two, three but actually two';
     $enlistment->save();
 
     expect($enlistment)

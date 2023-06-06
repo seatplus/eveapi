@@ -51,8 +51,6 @@ class ResolveUniverseRegionByRegionIdJob extends EsiBase implements HasPathValue
 
     /**
      * Get the middleware the job should pass through.
-     *
-     * @return array
      */
     public function middleware(): array
     {
@@ -65,14 +63,12 @@ class ResolveUniverseRegionByRegionIdJob extends EsiBase implements HasPathValue
     {
         return [
             'region_resolver',
-            'region_id:' . $this->region_id,
+            'region_id:'.$this->region_id,
         ];
     }
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
     public function executeJob(): void
     {

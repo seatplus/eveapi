@@ -70,7 +70,7 @@ class EveapiServiceProvider extends ServiceProvider
     public function boot()
     {
         //Add Migrations
-        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations/');
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations/');
 
         // Configure the queue dashboard
         $this->configureHorizon();
@@ -96,15 +96,15 @@ class EveapiServiceProvider extends ServiceProvider
 
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__ . '/../config/eveapi.config.php', 'eveapi.config');
+        $this->mergeConfigFrom(__DIR__.'/../config/eveapi.config.php', 'eveapi.config');
 
-        $this->mergeConfigFrom(__DIR__ . '/../config/eveapi.scopes.php', 'eveapi.scopes');
+        $this->mergeConfigFrom(__DIR__.'/../config/eveapi.scopes.php', 'eveapi.scopes');
 
-        $this->mergeConfigFrom(__DIR__ . '/../config/eveapi.permissions.php', 'eveapi.permissions');
+        $this->mergeConfigFrom(__DIR__.'/../config/eveapi.permissions.php', 'eveapi.permissions');
 
-        $this->mergeConfigFrom(__DIR__ . '/../config/eveapi.updateJobs.php', 'seatplus.updateJobs');
+        $this->mergeConfigFrom(__DIR__.'/../config/eveapi.updateJobs.php', 'seatplus.updateJobs');
 
-        $this->mergeConfigFrom(__DIR__ . '/../config/eveapi.jobs.php', 'eveapi.jobs');
+        $this->mergeConfigFrom(__DIR__.'/../config/eveapi.jobs.php', 'eveapi.jobs');
 
         // Eseye Singleton
         $this->app->singleton('esi-client', function () {

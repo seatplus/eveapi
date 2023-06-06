@@ -41,9 +41,9 @@ function it_uses_model_events_on_deletion()
 {
     Event::fake();
 
-    Event::assertNotDispatched('eloquent.deleted: ' . CorporationMemberTracking::class);
+    Event::assertNotDispatched('eloquent.deleted: '.CorporationMemberTracking::class);
 
     $this->tracking->delete();
 
-    Event::assertDispatched('eloquent.deleted: ' . CorporationMemberTracking::class);
+    Event::assertDispatched('eloquent.deleted: '.CorporationMemberTracking::class);
 }

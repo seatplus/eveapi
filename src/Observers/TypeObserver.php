@@ -34,7 +34,6 @@ class TypeObserver
     /**
      * Handle the User "created" event.
      *
-     * @param \Seatplus\Eveapi\Models\Universe\Type $type
      *
      * @return void
      */

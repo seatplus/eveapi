@@ -68,8 +68,6 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
 
     /**
      * Get the middleware the job should pass through.
-     *
-     * @return array
      */
     public function middleware(): array
     {
@@ -83,15 +81,13 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
     {
         return [
             'character',
-            'character_id: ' . $this->character_id,
+            'character_id: '.$this->character_id,
             'assets',
         ];
     }
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
     public function executeJob(): void
     {
@@ -183,7 +179,7 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
 
         $unknown_location_ids->each(
             fn ($location_id) => ResolveLocationJob::dispatch($location_id, $refresh_token)
-            ->onQueue('high')
+                ->onQueue('high')
         );
     }
 
@@ -204,7 +200,7 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
 
         $unknown_type_ids->each(
             fn ($type_id) => ResolveUniverseTypeByIdJob::dispatch($type_id, $refresh_token)
-            ->onQueue('high')
+                ->onQueue('high')
         );
     }
 }

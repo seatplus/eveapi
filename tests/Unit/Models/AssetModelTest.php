@@ -1,6 +1,5 @@
 <?php
 
-
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Events\AssetUpdating;
@@ -96,7 +95,7 @@ it('has scope assets location ids', function () {
 
 it('has assetable relationship', function () {
     $test_asset = Asset::factory()->create([
-        'assetable_id' => $this->test_character->character_id,//CharacterInfo::factory(),
+        'assetable_id' => $this->test_character->character_id, //CharacterInfo::factory(),
         'assetable_type' => CharacterInfo::class,
     ]);
 
@@ -121,7 +120,6 @@ it('has asset search scope by', function ($type) {
             'group_id' => Group::factory()->create(['category_id' => Category::factory()]),
         ]),
     ]);
-
 
     $name = match ($type) {
         'name' => $test_asset->name,
@@ -164,7 +162,7 @@ it('has withRecursiveContent scope for Level', function ($level) {
         ->get();
 
     expect($assets)->toHaveCount($level + 1);
-})->with([0,1,2]);
+})->with([0, 1, 2]);
 
 it('has content relationship', function () {
     $test_asset = Asset::factory()->create([

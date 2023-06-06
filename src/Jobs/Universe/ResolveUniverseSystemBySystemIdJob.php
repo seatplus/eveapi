@@ -44,7 +44,6 @@ class ResolveUniverseSystemBySystemIdJob extends EsiBase implements HasPathValue
             version: 'v4',
         );
 
-
         $this->setPathValues([
             'system_id' => $system_id,
         ]);
@@ -52,8 +51,6 @@ class ResolveUniverseSystemBySystemIdJob extends EsiBase implements HasPathValue
 
     /**
      * Get the middleware the job should pass through.
-     *
-     * @return array
      */
     public function middleware(): array
     {
@@ -66,14 +63,12 @@ class ResolveUniverseSystemBySystemIdJob extends EsiBase implements HasPathValue
     {
         return [
             'system_resolve',
-            'system_id:' . $this->system_id,
+            'system_id:'.$this->system_id,
         ];
     }
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
     public function executeJob(): void
     {

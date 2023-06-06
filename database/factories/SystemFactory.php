@@ -41,7 +41,7 @@ class SystemFactory extends Factory
             'name' => $this->faker->name,
             'constellation_id' => Constellation::factory(),
             'security_class' => $this->faker->optional()->word,
-            'security_status' => $this->faker->randomFloat(1, -1,  1),
+            'security_status' => $this->faker->randomFloat(1, -1, 1),
         ];
     }
 

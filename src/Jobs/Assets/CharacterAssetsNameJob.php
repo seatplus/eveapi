@@ -45,10 +45,15 @@ class CharacterAssetsNameJob extends EsiBase implements HasPathValuesInterface, 
     use HasRequestBody;
 
     const CELESTIAL_CATEGORY = 2;
+
     const SHIP_CATEGORY = 6;
+
     const DEPLOYABLE_CATEGORY = 22;
+
     const STARBASE_CATEGORY = 23;
+
     const ORBITALS_CATEGORY = 46;
+
     const STRUCTURE_CATEGORY = 65;
 
     private Collection $asset_names;
@@ -73,8 +78,6 @@ class CharacterAssetsNameJob extends EsiBase implements HasPathValuesInterface, 
 
     /**
      * Get the middleware the job should pass through.
-     *
-     * @return array
      */
     public function middleware(): array
     {
@@ -88,7 +91,7 @@ class CharacterAssetsNameJob extends EsiBase implements HasPathValuesInterface, 
     {
         return [
             'character',
-            'character_id: ' . $this->character_id,
+            'character_id: '.$this->character_id,
             'assets',
             'name',
         ];
@@ -96,8 +99,6 @@ class CharacterAssetsNameJob extends EsiBase implements HasPathValuesInterface, 
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
     public function executeJob(): void
     {
@@ -138,9 +139,9 @@ class CharacterAssetsNameJob extends EsiBase implements HasPathValuesInterface, 
             // update asset names
             ->each(
                 fn ($asset_name) => Asset::query()
-                ->where('assetable_id', $this->character_id)
-                ->where('item_id', $asset_name->item_id)
-                ->update(['name' => $asset_name->name])
+                    ->where('assetable_id', $this->character_id)
+                    ->where('item_id', $asset_name->item_id)
+                    ->update(['name' => $asset_name->name])
             );
     }
 }

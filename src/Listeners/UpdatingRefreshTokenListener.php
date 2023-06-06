@@ -39,7 +39,6 @@ class UpdatingRefreshTokenListener
         $original_scopes = $refresh_token->getOriginal('scopes');
         $new_scopes = $this->getScopes($refresh_token->token);
 
-
         if (array_diff($new_scopes, $original_scopes)) {
             UpdateCharacter::dispatch($refresh_token)->onQueue('high');
 

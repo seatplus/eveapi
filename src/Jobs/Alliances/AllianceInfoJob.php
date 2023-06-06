@@ -44,7 +44,6 @@ class AllianceInfoJob extends EsiBase implements HasPathValuesInterface
             version: 'v4',
         );
 
-
         $this->setPathValues([
             'alliance_id' => $this->alliance_id,
         ]);
@@ -52,8 +51,6 @@ class AllianceInfoJob extends EsiBase implements HasPathValuesInterface
 
     /**
      * Get the middleware the job should pass through.
-     *
-     * @return array
      */
     public function middleware(): array
     {
@@ -66,7 +63,7 @@ class AllianceInfoJob extends EsiBase implements HasPathValuesInterface
     {
         return [
             'alliance',
-            'alliance_id: ' . $this->alliance_id,
+            'alliance_id: '.$this->alliance_id,
             'info',
         ];
     }
@@ -74,7 +71,6 @@ class AllianceInfoJob extends EsiBase implements HasPathValuesInterface
     /**
      * Execute the job.
      *
-     * @return void
      * @throws \Seatplus\EsiClient\Exceptions\RequestFailedException
      */
     public function executeJob(): void

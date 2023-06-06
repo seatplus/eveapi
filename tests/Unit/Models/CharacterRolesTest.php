@@ -1,6 +1,5 @@
 <?php
 
-
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Character\CharacterRole;
 
@@ -16,7 +15,7 @@ test('character role has character relation test', function () {
 
 test('has role test', function () {
     $character_role = CharacterRole::factory()->make([
-        'roles' => ["Contract_Manager"],
+        'roles' => ['Contract_Manager'],
     ]);
 
     expect($character_role->hasRole('roles', 'Contract_Manager'))->toBeTrue();

@@ -34,9 +34,9 @@ class CharacterInfoObserver
     /**
      * Handle the User "created" event.
      *
-     * @param \Seatplus\Eveapi\Models\Character\CharacterInfo $character_info
      *
      * @return void
+     *
      * @throws \Seatplus\Eveapi\Exceptions\InvalidContainerDataException
      */
     public function created(CharacterInfo $character_info)
@@ -47,9 +47,9 @@ class CharacterInfoObserver
     /**
      * Handle the User "updating" event.
      *
-     * @param \Seatplus\Eveapi\Models\Character\CharacterInfo $character_info
      *
      * @return void
+     *
      * @throws \Seatplus\Eveapi\Exceptions\InvalidContainerDataException
      */
     public function updating(CharacterInfo $character_info)

@@ -66,8 +66,6 @@ class CorporationBalanceJob extends EsiBase implements HasPathValuesInterface, H
 
     /**
      * Get the middleware the job should pass through.
-     *
-     * @return array
      */
     public function middleware(): array
     {
@@ -81,7 +79,7 @@ class CorporationBalanceJob extends EsiBase implements HasPathValuesInterface, H
     {
         return [
             'corporation',
-            'corporation_id: ' . $this->corporation_id,
+            'corporation_id: '.$this->corporation_id,
             'balances',
         ];
     }
@@ -89,7 +87,6 @@ class CorporationBalanceJob extends EsiBase implements HasPathValuesInterface, H
     /**
      * Execute the job.
      *
-     * @return void
      * @throws \Exception
      */
     public function executeJob(): void
@@ -103,11 +100,11 @@ class CorporationBalanceJob extends EsiBase implements HasPathValuesInterface, H
         $corporation_balances = collect($response)
             ->map(
                 fn ($wallet) => [
-                'balanceable_id' => $this->corporation_id,
-                'balanceable_type' => CorporationInfo::class,
-                'division' => data_get($wallet, 'division'),
-                'balance' => data_get($wallet, 'balance'),
-            ]
+                    'balanceable_id' => $this->corporation_id,
+                    'balanceable_type' => CorporationInfo::class,
+                    'division' => data_get($wallet, 'division'),
+                    'balance' => data_get($wallet, 'balance'),
+                ]
             );
 
         Balance::upsert(

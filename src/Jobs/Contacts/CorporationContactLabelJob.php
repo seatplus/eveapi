@@ -27,7 +27,6 @@
 namespace Seatplus\Eveapi\Jobs\Contacts;
 
 use Illuminate\Support\Collection;
-
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Services\Contacts\ProcessContactLabelsResponse;
@@ -59,8 +58,6 @@ class CorporationContactLabelJob extends ContactBaseJob
 
     /**
      * Get the middleware the job should pass through.
-     *
-     * @return array
      */
     public function middleware(): array
     {
@@ -74,7 +71,7 @@ class CorporationContactLabelJob extends ContactBaseJob
     {
         return [
             'corporation',
-            'corporation_id: ' . $this->corporation_id,
+            'corporation_id: '.$this->corporation_id,
             'contacts',
             'label',
         ];
@@ -83,7 +80,6 @@ class CorporationContactLabelJob extends ContactBaseJob
     /**
      * Execute the job.
      *
-     * @return void
      * @throws \Exception
      */
     public function executeJob(): void

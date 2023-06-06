@@ -27,7 +27,6 @@
 namespace Seatplus\Eveapi\Jobs\Contacts;
 
 use Illuminate\Support\Collection;
-
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Services\Contacts\ProcessContactLabelsResponse;
@@ -59,8 +58,6 @@ class AllianceContactLabelJob extends ContactBaseJob
 
     /**
      * Get the middleware the job should pass through.
-     *
-     * @return array
      */
     public function middleware(): array
     {
@@ -74,7 +71,7 @@ class AllianceContactLabelJob extends ContactBaseJob
     {
         return [
             'alliance',
-            'alliance_id: ' . $this->alliance_id,
+            'alliance_id: '.$this->alliance_id,
             'contacts',
             'labels',
         ];
@@ -83,7 +80,6 @@ class AllianceContactLabelJob extends ContactBaseJob
     /**
      * Execute the job.
      *
-     * @return void
      * @throws \Exception
      */
     public function executeJob(): void

@@ -1,6 +1,5 @@
 <?php
 
-
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Events\RefreshTokenCreated;
@@ -218,7 +217,7 @@ it('checks no structure younger then a week', function () {
 });
 
 // Helpers
-function buildJob(int $location_id, \Seatplus\Eveapi\Models\RefreshToken $token) : ResolveLocationJob
+function buildJob(int $location_id, Seatplus\Eveapi\Models\RefreshToken $token): ResolveLocationJob
 {
     $refresh_token = updateRefreshTokenScopes($token, ['esi-universe.read_structures.v1']);
 

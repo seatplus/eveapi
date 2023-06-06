@@ -52,8 +52,6 @@ class CharacterWalletJournalJob extends WalletJournalBase
 
     /**
      * Get the middleware the job should pass through.
-     *
-     * @return array
      */
     public function middleware(): array
     {
@@ -67,7 +65,7 @@ class CharacterWalletJournalJob extends WalletJournalBase
     {
         return [
             'character',
-            'character_id: ' . $this->character_id,
+            'character_id: '.$this->character_id,
             'wallet',
             'journal',
         ];

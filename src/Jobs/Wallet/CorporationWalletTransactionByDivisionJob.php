@@ -28,7 +28,6 @@ namespace Seatplus\Eveapi\Jobs\Wallet;
 
 use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-
 use Seatplus\Eveapi\Traits\HasCorporationRole;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
@@ -61,8 +60,6 @@ class CorporationWalletTransactionByDivisionJob extends WalletTransactionBase im
 
     /**
      * Get the middleware the job should pass through.
-     *
-     * @return array
      */
     public function middleware(): array
     {
@@ -76,10 +73,10 @@ class CorporationWalletTransactionByDivisionJob extends WalletTransactionBase im
     {
         return [
             'corporation',
-            'corporation_id: ' . $this->corporation_id,
+            'corporation_id: '.$this->corporation_id,
             'wallet',
             'transaction',
-            'division: ' . $this->division,
+            'division: '.$this->division,
         ];
     }
 }

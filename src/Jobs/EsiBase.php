@@ -127,9 +127,6 @@ abstract class EsiBase extends RetrieveFromEsiBase implements ShouldQueue, BaseJ
 
     /**
      * Handle a job failure.
-     *
-     * @param  \Throwable  $exception
-     * @return void
      */
     public function failed(Throwable $exception): void
     {

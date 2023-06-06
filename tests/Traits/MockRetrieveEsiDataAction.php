@@ -7,7 +7,7 @@ use Seatplus\Eveapi\Services\Facade\RetrieveEsiData;
 
 trait MockRetrieveEsiDataAction
 {
-    public function mockRetrieveEsiDataAction(array $body) : void
+    public function mockRetrieveEsiDataAction(array $body): void
     {
         $data = json_encode($body);
 
@@ -18,7 +18,7 @@ trait MockRetrieveEsiDataAction
             ->andReturn($response);
     }
 
-    public function assertRetrieveEsiDataIsNotCalled() : void
+    public function assertRetrieveEsiDataIsNotCalled(): void
     {
         RetrieveEsiData::shouldReceive('execute')->never();
     }

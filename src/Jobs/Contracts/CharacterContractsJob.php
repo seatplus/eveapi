@@ -30,7 +30,6 @@ use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
-
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
@@ -74,7 +73,7 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
     {
         return [
             'character',
-            'character_id: ' . $this->character_id,
+            'character_id: '.$this->character_id,
             'contracts',
         ];
     }
@@ -180,7 +179,6 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
 
         $contract_item_jobs = $this->getContractItemJobs($contract_ids);
         $location_jobs = $this->getLocationJobs($contract_ids);
-
 
         if ($this->batching()) {
             $this->batch()->add([...$contract_item_jobs, ...$location_jobs]);

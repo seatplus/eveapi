@@ -37,18 +37,18 @@ class RefreshTokenFactory extends Factory
     public function definition()
     {
         $jwt_payload = json_encode([
-            "scp" => [
-                "esi-skills.read_skills.v1",
-                "esi-skills.read_skillqueue.v1",
+            'scp' => [
+                'esi-skills.read_skills.v1',
+                'esi-skills.read_skillqueue.v1',
             ],
-            "jti" => "998e12c7-3241-43c5-8355-2c48822e0a1b",
-            "kid" => "JWT-Signature-Key",
-            "sub" => "CHARACTER:EVE:123123",
-            "azp" => "my3rdpartyclientid",
-            "name" => "Some Bloke",
-            "owner" => "8PmzCeTKb4VFUDrHLc/AeZXDSWM=",
-            "exp" => 1534412504,
-            "iss" => "login.eveonline.com",
+            'jti' => '998e12c7-3241-43c5-8355-2c48822e0a1b',
+            'kid' => 'JWT-Signature-Key',
+            'sub' => 'CHARACTER:EVE:123123',
+            'azp' => 'my3rdpartyclientid',
+            'name' => 'Some Bloke',
+            'owner' => '8PmzCeTKb4VFUDrHLc/AeZXDSWM=',
+            'exp' => 1534412504,
+            'iss' => 'login.eveonline.com',
         ]);
 
         return [
@@ -74,12 +74,12 @@ class RefreshTokenFactory extends Factory
     private function buildJWT(string $payload)
     {
         $jwt_header = json_encode([
-            "alg" => "RS256",
-            "kid" => "JWT-Signature-Key",
-            "typ" => "JWT",
+            'alg' => 'RS256',
+            'kid' => 'JWT-Signature-Key',
+            'typ' => 'JWT',
         ]);
 
-        $data = JWT::urlsafeB64Encode($jwt_header) . "." . JWT::urlsafeB64Encode($payload);
+        $data = JWT::urlsafeB64Encode($jwt_header).'.'.JWT::urlsafeB64Encode($payload);
 
         $signature = hash_hmac(
             'sha256',

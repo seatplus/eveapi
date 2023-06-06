@@ -65,7 +65,6 @@ it('handles follow-up job', function (string $job_class, array $configuration = 
     ],
 ]);
 
-
 it('does not update affiliation younger then an hours', function () {
     // expect the test_character entry to exist
     expect(CharacterAffiliation::all())->toHaveCount(1);
@@ -203,7 +202,7 @@ it('applies binary search and chaches it if one id is invalid', function () {
     $exception_mock = \Mockery::mock(\Exception::class);
     $exception_mock->shouldReceive('getResponse->getReasonPhrase')->andReturn('Invalid character ID');
     // first create the exception
-    $exception = new RequestFailedException($exception_mock,  new EsiResponse(json_encode([]), [], 'now', 200));
+    $exception = new RequestFailedException($exception_mock, new EsiResponse(json_encode([]), [], 'now', 200));
 
     $mock_data = CharacterAffiliation::factory()->make();
     $response = new EsiResponse(json_encode([$mock_data]), [], 'now', 200);

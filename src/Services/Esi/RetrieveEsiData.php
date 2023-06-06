@@ -119,9 +119,6 @@ class RetrieveEsiData
         return $result;
     }
 
-    /**
-     * @param EsiRequestContainer $request
-     */
     public function setRequest(EsiRequestContainer $request): void
     {
         $this->request = $request;

@@ -39,6 +39,7 @@ class Name extends Model
      * @var array
      */
     protected $guarded = [];
+
     /**
      * @var string
      */

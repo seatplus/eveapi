@@ -80,7 +80,7 @@ class MaintenanceJob implements ShouldQueue
         BatchStatistic::createEntry($batch);
     }
 
-    private function dispatchBatch() : Batch
+    private function dispatchBatch(): Batch
     {
         return Bus::batch([
 

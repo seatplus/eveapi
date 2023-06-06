@@ -30,7 +30,6 @@ use Illuminate\Support\Facades\Redis;
 
 /**
  * Trait RateLimitsEsiCalls.
- * @package Seat\Eveapi\Traits
  */
 trait RateLimitsEsiCalls
 {
@@ -53,7 +52,6 @@ trait RateLimitsEsiCalls
     protected $ratelimit_duration = 5;
 
     /**
-     * @return bool
      * @throws \Exception
      */
     public function isEsiRateLimited(): bool
@@ -66,8 +64,6 @@ trait RateLimitsEsiCalls
     }
 
     /**
-     * @param int $amount
-     *
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function incrementEsiRateLimit(int $amount = 1)
@@ -85,12 +81,9 @@ trait RateLimitsEsiCalls
      */
     public function getRateLimitKeyTtl()
     {
-        return Redis::ttl('seat:' . $this->ratelimit_key);
+        return Redis::ttl('seat:'.$this->ratelimit_key);
     }
 
-    /**
-     * @return int
-     */
     public function getRatelimit(): int
     {
         return $this->ratelimit;

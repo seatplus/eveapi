@@ -54,7 +54,7 @@ class CorporationInfoJob extends EsiBase implements HasPathValuesInterface
         return [
             'corporation',
             'info',
-            'corporation_id:' . $this->corporation_id,
+            'corporation_id:'.$this->corporation_id,
         ];
     }
 

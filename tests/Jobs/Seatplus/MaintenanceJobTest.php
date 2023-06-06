@@ -1,6 +1,5 @@
 <?php
 
-
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
@@ -102,7 +101,6 @@ it('fetches missing types from locations', function () {
         'locatable_id' => $station->station_id,
         'locatable_type' => Station::class,
     ]));
-
 
     $mock = Mockery::mock(GetMissingTypesFromLocations::class)->makePartial();
 
@@ -230,7 +228,6 @@ it('dispatch get missing types from corporation member tracking job', function (
 it('fetches missing types from corporation member tracking', function () {
     $corporation_member_tracking = Event::fakeFor(fn () => CorporationMemberTracking::factory()->create());
 
-
     $mock = Mockery::mock(GetMissingTypesFromCorporationMemberTracking::class)->makePartial();
 
     $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
@@ -280,7 +277,6 @@ test('get missing location from corporation member tracking pipe can handle non 
     ]);
 
     expect(Location::all())->toHaveCount(1);
-
 
     Event::fakeFor(fn () => CorporationMemberTracking::factory()->create([
         'character_id' => $this->test_character->character_id,
@@ -365,7 +361,6 @@ test('get missing location from wallet transaction pipe can handle non station o
 
     expect(Location::all())->toHaveCount(1);
 
-
     Event::fakeFor(fn () => WalletTransaction::factory()->create([
         'wallet_transactionable_id' => $this->test_character->character_id,
         'location_id' => $type->type_id,
@@ -424,7 +419,6 @@ it('dispatches resolve types job for missing contract item types', function () {
             'contract_id' => $contract->contract_id,
         ]);
     });
-
 
     $mock = Mockery::mock(GetMissingTypesFromContractItem::class)->makePartial();
 

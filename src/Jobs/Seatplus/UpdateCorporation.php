@@ -60,7 +60,7 @@ class UpdateCorporation implements ShouldQueue
 
     public function middleware()
     {
-        return  [
+        return [
             (new RateLimitedWithRedis('corporation_batch'))->dontRelease(),
         ];
     }

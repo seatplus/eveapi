@@ -80,7 +80,7 @@ class ClearCache extends Command
         try {
             RedisHelper::flushall();
         } catch (Exception $exception) {
-            $this->error('Failed to clear the Redis Cache. Error: ' . $exception->getMessage());
+            $this->error('Failed to clear the Redis Cache. Error: '.$exception->getMessage());
         }
     }
 

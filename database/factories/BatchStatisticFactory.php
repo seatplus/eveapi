@@ -46,11 +46,11 @@ class BatchStatisticFactory extends Factory
             'batch_id' => $this->faker->uuid(),
             'batch_name' => $this->faker->name(),
             'total_jobs' => $this->faker->numberBetween(1, 100),
-            'queue_balancing_configuration' => json_encode($horizon_config)
+            'queue_balancing_configuration' => json_encode($horizon_config),
         ];
     }
 
-    public function finished() : Factory
+    public function finished(): Factory
     {
         return $this->state(function () {
 

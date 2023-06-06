@@ -74,7 +74,7 @@ class CorporationWalletJournalJob implements ShouldQueue, ShouldBeUnique
     {
         return [
             'corporation',
-            'corporation_id: ' . $this->corporation_id,
+            'corporation_id: '.$this->corporation_id,
             'wallet',
             'journals',
         ];
@@ -83,7 +83,6 @@ class CorporationWalletJournalJob implements ShouldQueue, ShouldBeUnique
     /**
      * Execute the job.
      *
-     * @return void
      * @throws \Exception
      */
     public function handle(): void

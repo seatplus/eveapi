@@ -93,7 +93,7 @@ class Application extends Model
         return $this->log_entries()->where('type', 'decision')->count();
     }
 
-    public function scopeOfCorporation(Builder $query, int | array $corporation): Builder
+    public function scopeOfCorporation(Builder $query, int|array $corporation): Builder
     {
         $corporation_ids = is_int($corporation) ? [$corporation] : $corporation;
 

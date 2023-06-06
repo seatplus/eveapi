@@ -46,7 +46,6 @@ class GetMissingBodysFromMails extends HydrateMaintenanceBase
             ->pluck('id')
             ->each(function ($mail_id) use ($jobs) {
 
-
                 $refresh_tokens = RefreshToken::whereHas('character.mails', fn ($query) => $query->where('mails.id', $mail_id))->get();
 
                 // if no refresh token is found, we can not hydrate the mail body and skip it

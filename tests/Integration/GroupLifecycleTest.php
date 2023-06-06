@@ -1,6 +1,5 @@
 <?php
 
-
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseCategoryByIdJob;
@@ -48,7 +47,6 @@ it('dispatches assets name job', function () {
         'group_id' => $type->group_id,
         'category_id' => 6,
     ]);
-
 
     Queue::assertPushedOn('high', CharacterAssetsNameJob::class);
 });
