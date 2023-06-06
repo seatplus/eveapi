@@ -66,7 +66,6 @@ class CheckJobsCommand extends Command
 
     const URL = 'https://esi.evetech.net/latest/swagger.json';
 
-
     public function handle()
     {
         $this->getAllJobs()
@@ -405,9 +404,6 @@ class CheckJobsCommand extends Command
         render(PHP_EOL);
     }
 
-    /**
-     * @return array
-     */
     public function getEsiPaths(): array
     {
         if (empty($this->esi_paths)) {
