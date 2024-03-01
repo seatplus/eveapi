@@ -39,7 +39,7 @@
         "orchestra/testbench": "^8.0",
         "nunomaduro/collision": "^7.0",
         "itsgoingd/clockwork": "^5.0",
-        "barryvdh/laravel-ide-helper": "^2.12",
+        "barryvdh/laravel-ide-helper": "^3.0",
         "pestphp/pest": "^2.0",
         "pestphp/pest-plugin-laravel": "^2.0",
         "phpstan/extension-installer": "^1.1",
