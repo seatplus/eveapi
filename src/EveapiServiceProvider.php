@@ -227,7 +227,11 @@ class EveapiServiceProvider extends ServiceProvider
             }
 
             Schedules::cursor()->each(function ($entry) use ($schedule) {
-                $schedule->job(new $entry->job)->cron($entry->expression);
+
+                // Check if the job exists before adding it to the schedule
+                if (class_exists($entry->job)) {
+                    $schedule->job(new $entry->job)->cron($entry->expression);
+                }
             });
 
             // Run Character Affiliation Job every five minutes to updated outdated affiliations.

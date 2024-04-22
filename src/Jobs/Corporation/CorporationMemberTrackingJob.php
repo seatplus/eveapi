@@ -39,11 +39,11 @@ use Seatplus\Eveapi\Traits\HasCorporationRole;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CorporationMemberTrackingJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, HasCorporationRoleInterface
+class CorporationMemberTrackingJob extends EsiBase implements HasCorporationRoleInterface, HasPathValuesInterface, HasRequiredScopeInterface
 {
+    use HasCorporationRole;
     use HasPathValues;
     use HasRequiredScopes;
-    use HasCorporationRole;
 
     public function __construct(
         public int $corporation_id

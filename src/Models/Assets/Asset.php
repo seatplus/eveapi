@@ -190,7 +190,7 @@ class Asset extends Model
             ->whereRelation('type.group', fn (Builder $query) => $query->whereIn('category_id', $category_ids));
     }
 
-    public function scopeSearch(Builder $query, string $terms = null)
+    public function scopeSearch(Builder $query, ?string $terms = null)
     {
         collect(str_getcsv($terms, ' ', '"'))->filter()
             ->each(function ($term) use ($query) {

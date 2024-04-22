@@ -40,7 +40,7 @@ use Seatplus\Eveapi\Services\ResolveLocation\ResolveLocationDTO;
 use Seatplus\Eveapi\Services\ResolveLocation\ResolveStationPipe;
 use Seatplus\Eveapi\Services\ResolveLocation\ResolveStructurePipe;
 
-class ResolveLocationJob implements ShouldQueue, ShouldBeUnique
+class ResolveLocationJob implements ShouldBeUnique, ShouldQueue
 {
     use Batchable;
     use Dispatchable;

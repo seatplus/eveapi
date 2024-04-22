@@ -37,7 +37,7 @@ use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Wallet\Balance;
 
-class CorporationWalletJournalJob implements ShouldQueue, ShouldBeUnique
+class CorporationWalletJournalJob implements ShouldBeUnique, ShouldQueue
 {
     use Batchable;
     use Dispatchable;

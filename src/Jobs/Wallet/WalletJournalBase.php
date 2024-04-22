@@ -22,10 +22,10 @@ use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
 abstract class WalletJournalBase extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
-    use HasPathValues;
-    use HasRequiredScopes;
     use HasPages;
+    use HasPathValues;
     use HasQueryValues;
+    use HasRequiredScopes;
 
     private array $journal_entries = [];
 

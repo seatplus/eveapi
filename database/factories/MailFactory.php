@@ -39,12 +39,7 @@ class MailFactory extends Factory
      */
     protected $model = Mail::class;
 
-    /**
-     * Define the model's default state.
-     *
-     * @return array
-     */
-    public function definition()
+    public function definition(): array
     {
         return [
             'id' => $this->faker->unique()->randomNumber(),

@@ -40,11 +40,6 @@ class SkillFactory extends Factory
      */
     protected $model = Skill::class;
 
-    /**
-     * Define the model's default state.
-     *
-     * @return array
-     */
     public function definition()
     {
         return [

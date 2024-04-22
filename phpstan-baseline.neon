@@ -149,6 +149,16 @@ parameters:
 			path: src/EveapiServiceProvider.php
 
 		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Schedules\\:\\:\\$expression\\.$#"
+			count: 1
+			path: src/EveapiServiceProvider.php
+
+		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Schedules\\:\\:\\$job\\.$#"
+			count: 1
+			path: src/EveapiServiceProvider.php
+
+		-
 			message: "#^Property Seatplus\\\\Eveapi\\\\Events\\\\AssetUpdating\\:\\:\\$character_asset is never read, only written\\.$#"
 			count: 1
 			path: src/Events/AssetUpdating.php
@@ -939,6 +949,11 @@ parameters:
 			path: src/Jobs/Seatplus/UpdateCharacter.php
 
 		-
+			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\RefreshToken\\:\\:\\$corporation\\.$#"
+			count: 1
+			path: src/Jobs/Seatplus/UpdateCorporation.php
+
+		-
 			message: "#^Property 'batch_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\BatchStatistic model\\.$#"
 			count: 1
 			path: src/Jobs/Seatplus/UpdateCorporation.php
@@ -1584,6 +1599,11 @@ parameters:
 			path: src/Models/Killmails/KillmailAttacker.php
 
 		-
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Killmails\\\\KillmailItem\\:\\:\\$appends is not covariant with PHPDoc type array\\<int, string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$appends\\.$#"
+			count: 1
+			path: src/Models/Killmails/KillmailItem.php
+
+		-
 			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Killmails\\\\KillmailItem\\:\\:\\$guarded is not covariant with PHPDoc type array\\<string\\>\\|bool of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$guarded\\.$#"
 			count: 1
 			path: src/Models/Killmails/KillmailItem.php
@@ -1639,7 +1659,7 @@ parameters:
 			path: src/Models/Settings/GlobalSettings.php
 
 		-
-			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Settings\\\\GlobalSettings\\:\\:\\$fillable is not covariant with PHPDoc type array\\<string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$fillable\\.$#"
+			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\Settings\\\\GlobalSettings\\:\\:\\$fillable is not covariant with PHPDoc type array\\<int, string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$fillable\\.$#"
 			count: 1
 			path: src/Models/Settings/GlobalSettings.php
 
@@ -1655,11 +1675,6 @@ parameters:
 
 		-
 			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\SsoScopes\\:\\:\\$casts is not covariant with PHPDoc type array\\<string, string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$casts\\.$#"
-			count: 1
-			path: src/Models/SsoScopes.php
-
-		-
-			message: "#^PHPDoc type array of property Seatplus\\\\Eveapi\\\\Models\\\\SsoScopes\\:\\:\\$fillable is not covariant with PHPDoc type array\\<string\\> of overridden property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$fillable\\.$#"
 			count: 1
 			path: src/Models/SsoScopes.php
 
@@ -1875,11 +1890,6 @@ parameters:
 
 		-
 			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Character\\\\CharacterInfo\\:\\:\\$corporation\\.$#"
-			count: 1
-			path: src/Services/GetOwnedIds.php
-
-		-
-			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Character\\\\CharacterInfo\\:\\:\\$roles\\.$#"
 			count: 1
 			path: src/Services/GetOwnedIds.php
 
