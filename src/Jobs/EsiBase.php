@@ -40,14 +40,14 @@ use Seatplus\Eveapi\Esi\RetrieveFromEsiBase;
 use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 use Throwable;
 
-abstract class EsiBase extends RetrieveFromEsiBase implements ShouldQueue, BaseJobInterface, ShouldBeUnique
+abstract class EsiBase extends RetrieveFromEsiBase implements BaseJobInterface, ShouldBeUnique, ShouldQueue
 {
     use Batchable;
     use Dispatchable;
     use InteractsWithQueue;
     use Queueable;
-    use SerializesModels;
     use RateLimitsEsiCalls;
+    use SerializesModels;
 
     /**
      * The number of times the job may be attempted.

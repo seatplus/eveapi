@@ -36,10 +36,10 @@ use Seatplus\Eveapi\Traits\HasCorporationRole;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CorporationDivisionsJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, HasCorporationRoleInterface
+class CorporationDivisionsJob extends EsiBase implements HasCorporationRoleInterface, HasPathValuesInterface, HasRequiredScopeInterface
 {
-    use HasPathValues;
     use HasCorporationRole;
+    use HasPathValues;
     use HasRequiredScopes;
 
     public function __construct(

@@ -16,11 +16,11 @@ use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasQueryValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-abstract class WalletTransactionBase extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, HasQueryStringInterface
+abstract class WalletTransactionBase extends EsiBase implements HasPathValuesInterface, HasQueryStringInterface, HasRequiredScopeInterface
 {
     use HasPathValues;
-    use HasRequiredScopes;
     use HasQueryValues;
+    use HasRequiredScopes;
 
     protected int $from_id = PHP_INT_MAX;
 

@@ -34,9 +34,9 @@ use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
 class CorporationWalletTransactionByDivisionJob extends WalletTransactionBase implements HasCorporationRoleInterface
 {
+    use HasCorporationRole;
     use HasPathValues;
     use HasRequiredScopes;
-    use HasCorporationRole;
 
     public function __construct(
         public int $corporation_id,

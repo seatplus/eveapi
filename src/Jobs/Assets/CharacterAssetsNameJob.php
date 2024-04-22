@@ -40,9 +40,9 @@ use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
 class CharacterAssetsNameJob extends EsiBase implements HasPathValuesInterface, HasRequestBodyInterface, HasRequiredScopeInterface
 {
-    use HasRequiredScopes;
     use HasPathValues;
     use HasRequestBody;
+    use HasRequiredScopes;
 
     const CELESTIAL_CATEGORY = 2;
 

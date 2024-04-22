@@ -120,7 +120,7 @@ class KillmailJob extends EsiBase implements HasPathValuesInterface
         }
     }
 
-    private function createKillmailItems(array $items, int $location_id = null)
+    private function createKillmailItems(array $items, ?int $location_id = null)
     {
         collect($items)->each(function ($item) use ($location_id) {
             $killmail_item = KillmailItem::create([

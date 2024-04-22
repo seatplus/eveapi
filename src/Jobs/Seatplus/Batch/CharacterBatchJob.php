@@ -35,7 +35,7 @@ use Seatplus\Eveapi\Models\BatchUpdate;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 
-class CharacterBatchJob implements ShouldQueue, ShouldBeUnique
+class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
 {
     use Batchable;
     use Dispatchable;

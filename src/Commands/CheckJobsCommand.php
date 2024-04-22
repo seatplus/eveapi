@@ -42,6 +42,7 @@ use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Jobs\Wallet\WalletJournalBase;
 use Seatplus\Eveapi\Jobs\Wallet\WalletTransactionBase;
+
 use function Termwind\render;
 
 class CheckJobsCommand extends Command

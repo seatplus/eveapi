@@ -36,8 +36,8 @@ use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 
 abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
 {
-    use RateLimitsEsiCalls;
     use InteractsWithQueue;
+    use RateLimitsEsiCalls;
 
     private EsiRequestContainer $esi_request_container;
 

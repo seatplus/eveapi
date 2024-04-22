@@ -39,12 +39,12 @@ use Seatplus\Eveapi\Traits\HasPages;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CorporationBalanceJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface, HasCorporationRoleInterface
+class CorporationBalanceJob extends EsiBase implements HasCorporationRoleInterface, HasPathValuesInterface, HasRequiredScopeInterface
 {
+    use HasCorporationRole;
+    use HasPages;
     use HasPathValues;
     use HasRequiredScopes;
-    use HasPages;
-    use HasCorporationRole;
 
     public function __construct(
         public int $corporation_id,
