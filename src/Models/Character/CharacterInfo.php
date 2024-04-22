@@ -45,7 +45,6 @@ use Seatplus\Eveapi\Models\Wallet\Balance;
 use Seatplus\Eveapi\Models\Wallet\WalletJournal;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 
-
 /**
  * @property ?CharacterRole $roles
  */
