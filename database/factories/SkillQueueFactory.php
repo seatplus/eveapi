@@ -40,11 +40,6 @@ class SkillQueueFactory extends Factory
      */
     protected $model = SkillQueue::class;
 
-    /**
-     * Define the model's default state.
-     *
-     * @return array
-     */
     public function definition()
     {
         return [
