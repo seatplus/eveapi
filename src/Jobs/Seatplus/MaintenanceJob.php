@@ -34,6 +34,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Bus;
+use Seatplus\Eveapi\Jobs\Assets\EnrichAssetTypeGroupCategoryJob;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingBodysFromMails;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCategorys;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCharacterInfosFromCorporationMemberTracking;
@@ -86,6 +87,7 @@ class MaintenanceJob implements ShouldQueue
 
             new GetMissingGroups,
             new GetMissingCategorys,
+            new EnrichAssetTypeGroupCategoryJob,
             new GetMissingCharacterInfosFromCorporationMemberTracking,
 
             // Constellations and Regions

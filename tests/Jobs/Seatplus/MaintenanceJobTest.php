@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
+use Seatplus\Eveapi\Jobs\Assets\EnrichAssetTypeGroupCategoryJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingBodysFromMails;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCategorys;
@@ -50,13 +51,43 @@ beforeEach(function () {
     //$this->job = new MaintenanceJob;
 });
 
-it('dispatch get missing types from character assets job', function () {
+it('MaintenanceJob dispatches job: ', function ($hydrate_job) {
     Bus::fake();
 
     (new MaintenanceJob)->handle();
 
-    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingTypesFromCharacterAssets));
-});
+    Bus::assertBatched(function ($batch) use ($hydrate_job) {
+        return $batch->jobs->first(fn($job) => $job instanceof $hydrate_job);
+    });
+
+})->with([
+    GetMissingGroups::class,
+    GetMissingCategorys::class,
+    EnrichAssetTypeGroupCategoryJob::class,
+    GetMissingCharacterInfosFromCorporationMemberTracking::class,
+
+    // Constellations and Regions
+    GetMissingConstellations::class,
+    GetMissingRegions::class,
+
+    // Locations
+    GetMissingLocationFromWalletTransaction::class,
+    GetMissingLocationFromCorporationMemberTracking::class,
+    GetMissingLocationFromAssets::class,
+    GetMissingLocationFromContracts::class,
+
+    // Types
+    GetMissingTypesFromContractItem::class,
+    GetMissingTypesFromCorporationMemberTracking::class,
+    GetMissingTypesFromWalletTransaction::class,
+    GetMissingTypesFromCharacterAssets::class,
+    GetMissingTypesFromLocations::class,
+    GetMissingTypesFromSkills::class,
+    GetMissingTypesFromSkillQueue::class,
+
+    // Mails
+    GetMissingBodysFromMails::class,
+]);
 
 it('Batch Statistics entry has been made', function () {
     Bus::fake();
@@ -86,14 +117,6 @@ it('fetches missing types from assets', function () {
     $mock->handle();
 });
 
-it('dispatch get missing types from locations job', function () {
-    Bus::fake();
-
-    (new MaintenanceJob)->handle();
-
-    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingTypesFromLocations));
-});
-
 it('fetches missing types from locations', function () {
     $station = Event::fakeFor(fn () => Station::factory()->create());
     $location = Event::fakeFor(fn () => Location::factory()->create([
@@ -114,14 +137,6 @@ it('fetches missing types from locations', function () {
     $mock->handle();
 });
 
-it('dispatch get missing groups job', function () {
-    Bus::fake();
-
-    (new MaintenanceJob)->handle();
-
-    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingGroups));
-});
-
 it('catches missing groups from type', function () {
     $type = Event::fakeFor(fn () => Type::factory()->create());
 
@@ -137,14 +152,6 @@ it('catches missing groups from type', function () {
     $mock->handle();
 });
 
-it('dispatch get missing categorys job', function () {
-    Bus::fake();
-
-    (new MaintenanceJob)->handle();
-
-    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingCategorys));
-});
-
 it('catches missing categories from group', function () {
     $group = Event::fakeFor(fn () => Group::factory()->create());
 
@@ -158,14 +165,6 @@ it('catches missing categories from group', function () {
         ]);
 
     $mock->handle();
-});
-
-it('dispatch get missing location from assets job', function () {
-    Bus::fake();
-
-    (new MaintenanceJob)->handle();
-
-    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingLocationFromAssets));
 });
 
 it('adds resolve location job for missing assets location to batch', function () {
@@ -217,14 +216,6 @@ test('get missing location from assets pipe can handle non station or structure 
     $mock->handle();
 });
 
-it('dispatch get missing types from corporation member tracking job', function () {
-    Bus::fake();
-
-    (new MaintenanceJob)->handle();
-
-    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingTypesFromCorporationMemberTracking));
-});
-
 it('fetches missing types from corporation member tracking', function () {
     $corporation_member_tracking = Event::fakeFor(fn () => CorporationMemberTracking::factory()->create());
 
@@ -238,14 +229,6 @@ it('fetches missing types from corporation member tracking', function () {
         ]);
 
     $mock->handle();
-});
-
-it('dispatch get missing location from corporation member tracking job', function () {
-    Bus::fake();
-
-    (new MaintenanceJob)->handle();
-
-    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingLocationFromCorporationMemberTracking));
 });
 
 it('dispatch resolve location job for missing corporation member tracking location', function () {
@@ -298,14 +281,6 @@ test('get missing location from corporation member tracking pipe can handle non 
     $mock->handle();
 });
 
-it('dispatch get missing types from wallet transaction job', function () {
-    Bus::fake();
-
-    (new MaintenanceJob)->handle();
-
-    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingTypesFromWalletTransaction));
-});
-
 it('fetches missing types from wallet transaction', function () {
     $asset = Event::fakeFor(fn () => WalletTransaction::factory()->create([
         'wallet_transactionable_id' => $this->test_character->character_id,
@@ -321,14 +296,6 @@ it('fetches missing types from wallet transaction', function () {
         ]);
 
     $mock->handle();
-});
-
-it('dispatch get missing location from wallet transaction job', function () {
-    Bus::fake();
-
-    (new MaintenanceJob)->handle();
-
-    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingLocationFromWalletTransaction));
 });
 
 it('dispatch resolve location job for missing wallet transaction location', function () {
@@ -378,14 +345,6 @@ test('get missing location from wallet transaction pipe can handle non station o
     $mock->handle();
 });
 
-it('dispatch get missing character infos from corporation member tracking job', function () {
-    Bus::fake();
-
-    (new MaintenanceJob)->handle();
-
-    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingCharacterInfosFromCorporationMemberTracking));
-});
-
 it('dispatches character info job for missing member tracking characters', function () {
     $corporation_member_tracking = Event::fakeFor(fn () => CorporationMemberTracking::factory()->create([
         'character_id' => CharacterInfo::factory()->make(),
@@ -401,14 +360,6 @@ it('dispatches character info job for missing member tracking characters', funct
         ]);
 
     $mock->handle();
-});
-
-it('dispatch get missing types from contract item job', function () {
-    Bus::fake();
-
-    (new MaintenanceJob)->handle();
-
-    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingTypesFromContractItem));
 });
 
 it('dispatches resolve types job for missing contract item types', function () {
@@ -430,14 +381,6 @@ it('dispatches resolve types job for missing contract item types', function () {
         ]);
 
     $mock->handle();
-});
-
-it('dispatch get missing location from contracts job', function () {
-    Bus::fake();
-
-    (new MaintenanceJob)->handle();
-
-    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingLocationFromContracts));
 });
 
 it('dispatches resolve location job for missing contract locations', function () {
@@ -531,14 +474,6 @@ it('dispatches resolve universe region by region id job for missing regions', fu
     $mock->handle();
 });
 
-it('dispatch get missing types from skills as chained job', function () {
-    Bus::fake();
-
-    (new MaintenanceJob)->handle();
-
-    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingTypesFromSkills));
-});
-
 it('dispatches resolve universe type by id job for missing types of skills', function () {
     $skill = Event::fakeFor(fn () => Skill::factory(['skill_id' => 1234])->create());
 
@@ -554,14 +489,6 @@ it('dispatches resolve universe type by id job for missing types of skills', fun
     $mock->handle();
 });
 
-it('dispatch get missing types from skill queue as chained job', function () {
-    Bus::fake();
-
-    (new MaintenanceJob)->handle();
-
-    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingTypesFromSkillQueue));
-});
-
 it('dispatches resolve universe type by id job for missing types of skillqueue', function () {
     $skill = Event::fakeFor(fn () => SkillQueue::factory(['skill_id' => 1234])->create());
 
@@ -575,14 +502,6 @@ it('dispatches resolve universe type by id job for missing types of skillqueue',
         ]);
 
     $mock->handle();
-});
-
-it('dispatch get missing bodys from mails as chained job', function () {
-    Bus::fake();
-
-    (new MaintenanceJob)->handle();
-
-    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof GetMissingBodysFromMails));
 });
 
 it('dispatches mail body job for missing mail bodies', function () {

@@ -29,6 +29,9 @@ namespace Seatplus\Eveapi\Models\Assets;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Seatplus\Eveapi\Events\AssetUpdating;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
@@ -88,28 +91,22 @@ class Asset extends Model
         return $this->morphTo();
     }
 
-    public function type()
+    public function type(): HasOne
     {
         return $this->hasOne(Type::class, 'type_id', 'type_id');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function container()
+    public function container(): BelongsTo
     {
         return $this->belongsTo(self::class, 'location_id', 'item_id');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function content()
+    public function content(): HasMany
     {
         return $this->hasMany(self::class, 'location_id', 'item_id');
     }
 
-    public function location()
+    public function location(): HasOne
     {
         //Todo create morphTo relation
         return $this->hasOne(Location::class, 'location_id', 'location_id');

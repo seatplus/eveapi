@@ -96,7 +96,7 @@ function updateRefreshTokenScopes(Seatplus\Eveapi\Models\RefreshToken $refreshTo
         'test'
     );
 
-    $refreshToken->token = "${data}.${signature}";
+    $refreshToken->token = "{$data}.{$signature}";
 
     return $refreshToken;
 }

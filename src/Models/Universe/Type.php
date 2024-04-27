@@ -28,6 +28,8 @@ namespace Seatplus\Eveapi\Models\Universe;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 class Type extends Model
 {
@@ -69,12 +71,12 @@ class Type extends Model
 
     protected $with = ['group', 'category'];
 
-    public function group()
+    public function group(): HasOne
     {
         return $this->hasOne(Group::class, 'group_id', 'group_id');
     }
 
-    public function category()
+    public function category(): HasOneThrough
     {
         return $this->hasOneThrough(
             Category::class,

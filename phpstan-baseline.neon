@@ -1,14 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: """
-				#^Fetching deprecated class constant INFO of class Monolog\\\\Logger\\:
-				Use \\\\Monolog\\\\Level\\:\\:Info$#
-			"""
-			count: 1
-			path: config/eveapi.config.php
-
-		-
 			message: "#^Access to an undefined property Faker\\\\Generator\\:\\:\\$randomDigit\\.$#"
 			count: 1
 			path: database/factories/AssetFactory.php
@@ -239,16 +231,6 @@ parameters:
 			path: src/Jobs/Assets/CharacterAssetJob.php
 
 		-
-			message: "#^Relation 'location' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Assets\\\\Asset model\\.$#"
-			count: 1
-			path: src/Jobs/Assets/CharacterAssetJob.php
-
-		-
-			message: "#^Relation 'type' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Assets\\\\Asset model\\.$#"
-			count: 1
-			path: src/Jobs/Assets/CharacterAssetJob.php
-
-		-
 			message: "#^If condition is always true\\.$#"
 			count: 1
 			path: src/Jobs/Assets/CharacterAssetsNameJob.php
@@ -279,9 +261,19 @@ parameters:
 			path: src/Jobs/Assets/CharacterAssetsNameJob.php
 
 		-
-			message: "#^Relation 'type' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Assets\\\\Asset model\\.$#"
+			message: "#^Access to an undefined property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$type\\.$#"
+			count: 5
+			path: src/Jobs/Assets/EnrichAssetTypeGroupCategoryJob.php
+
+		-
+			message: "#^Access to an undefined property Illuminate\\\\Database\\\\Eloquent\\\\Model\\:\\:\\$location\\.$#"
 			count: 2
-			path: src/Jobs/Assets/CharacterAssetsNameJob.php
+			path: src/Jobs/Assets/UpdateAssetSystemRegionJob.php
+
+		-
+			message: "#^Property 'assetable_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Assets\\\\Asset model\\.$#"
+			count: 1
+			path: src/Jobs/Assets/UpdateAssetSystemRegionJob.php
 
 		-
 			message: "#^Property 'corporation_id' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Character\\\\CharacterAffiliation model\\.$#"
@@ -554,11 +546,6 @@ parameters:
 			path: src/Jobs/Hydrate/Maintenance/GetMissingBodysFromMails.php
 
 		-
-			message: "#^Relation 'category' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Group model\\.$#"
-			count: 1
-			path: src/Jobs/Hydrate/Maintenance/GetMissingCategorys.php
-
-		-
 			message: "#^Relation 'character' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Corporation\\\\CorporationMemberTracking model\\.$#"
 			count: 1
 			path: src/Jobs/Hydrate/Maintenance/GetMissingCharacterInfosFromCorporationMemberTracking.php
@@ -567,11 +554,6 @@ parameters:
 			message: "#^Relation 'constellation' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\System model\\.$#"
 			count: 1
 			path: src/Jobs/Hydrate/Maintenance/GetMissingConstellations.php
-
-		-
-			message: "#^Relation 'group' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Type model\\.$#"
-			count: 1
-			path: src/Jobs/Hydrate/Maintenance/GetMissingGroups.php
 
 		-
 			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Assets\\\\Asset\\:\\:\\$assetable_id\\.$#"
@@ -585,11 +567,6 @@ parameters:
 
 		-
 			message: "#^Property 'assetable_type' does not exist in Seatplus\\\\Eveapi\\\\Models\\\\Assets\\\\Asset model\\.$#"
-			count: 1
-			path: src/Jobs/Hydrate/Maintenance/GetMissingLocationFromAssets.php
-
-		-
-			message: "#^Relation 'location' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Assets\\\\Asset model\\.$#"
 			count: 1
 			path: src/Jobs/Hydrate/Maintenance/GetMissingLocationFromAssets.php
 
@@ -687,11 +664,6 @@ parameters:
 			message: "#^Relation 'region' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Constellation model\\.$#"
 			count: 1
 			path: src/Jobs/Hydrate/Maintenance/GetMissingRegions.php
-
-		-
-			message: "#^Relation 'type' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Assets\\\\Asset model\\.$#"
-			count: 1
-			path: src/Jobs/Hydrate/Maintenance/GetMissingTypesFromCharacterAssets.php
 
 		-
 			message: "#^Relation 'type' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Contracts\\\\ContractItem model\\.$#"
@@ -1789,11 +1761,6 @@ parameters:
 			path: src/Observers/GroupObserver.php
 
 		-
-			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Group\\:\\:\\$category\\.$#"
-			count: 1
-			path: src/Observers/GroupObserver.php
-
-		-
 			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Group\\:\\:\\$category_id\\.$#"
 			count: 2
 			path: src/Observers/GroupObserver.php
@@ -1802,16 +1769,6 @@ parameters:
 			message: "#^PHPDoc tag @var for property Seatplus\\\\Eveapi\\\\Observers\\\\GroupObserver\\:\\:\\$group with type Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Group\\|null is not subtype of native type Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Group\\.$#"
 			count: 1
 			path: src/Observers/GroupObserver.php
-
-		-
-			message: "#^Relation 'type' is not found in Seatplus\\\\Eveapi\\\\Models\\\\Assets\\\\Asset model\\.$#"
-			count: 1
-			path: src/Observers/GroupObserver.php
-
-		-
-			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Type\\:\\:\\$group\\.$#"
-			count: 1
-			path: src/Observers/TypeObserver.php
 
 		-
 			message: "#^Access to an undefined property Seatplus\\\\Eveapi\\\\Models\\\\Universe\\\\Type\\:\\:\\$group_id\\.$#"
