@@ -121,6 +121,14 @@ it('has asset search scope by', function ($type) {
         ]),
     ]);
 
+    $test_asset->update([
+        'type_name_normalized' => $test_asset->type->name_normalized,
+        'group_id' => $test_asset->type->group->group_id,
+        'group_name_normalized' => $test_asset->type->group->name_normalized,
+        'category_id' => $test_asset->type->group->category->category_id,
+        'category_name_normalized' => $test_asset->type->group->category->name_normalized,
+    ]);
+
     $name = match ($type) {
         'name' => $test_asset->name,
         'type' => $test_asset->type->name,
@@ -133,6 +141,7 @@ it('has asset search scope by', function ($type) {
 
     expect($assets)
         ->item_id->toBeInt()->toBe($test_asset->item_id);
+
 })->with(['name', 'type', 'group']);
 
 it('has withRecursiveContent scope for Level', function ($level) {
@@ -193,21 +202,13 @@ it('has container relationship', function () {
 it('has in region scope', function () {
     expect(Asset::all())->toHaveCount(0);
 
+    $region = Event::fakeFor(fn() => Region::factory()->create());
+
     $test_asset = Event::fakeFor(fn () => Asset::factory()->create([
-        'location_flag' => 'Hangar',
-        'location_id' => Location::factory()->create([
-            'locatable_type' => Station::class,
-            'locatable_id' => Station::factory()->create([
-                'system_id' => System::factory()->create([
-                    'constellation_id' => Constellation::factory()->create([
-                        'region_id' => Region::factory(),
-                    ]),
-                ]),
-            ]),
-        ]),
+        'region_id' => $region->region_id,
     ]));
 
-    $region_id = $test_asset->location->locatable->system->region->region_id;
+    $region_id = $test_asset->region_id;
 
     expect(Asset::inRegion($region_id)->get())->toHaveCount(1);
     expect(Asset::inRegion($region_id + 1)->get())->toHaveCount(0);
@@ -216,21 +217,13 @@ it('has in region scope', function () {
 it('has in system scope', function () {
     expect(Asset::all())->toHaveCount(0);
 
+    $system = Event::fakeFor(fn () => System::factory()->create());
+
     $test_asset = Event::fakeFor(fn () => Asset::factory()->create([
-        'location_flag' => 'Hangar',
-        'location_id' => Location::factory()->create([
-            'locatable_type' => Station::class,
-            'locatable_id' => Station::factory()->create([
-                'system_id' => System::factory()->create([
-                    'constellation_id' => Constellation::factory()->create([
-                        'region_id' => Region::factory(),
-                    ]),
-                ]),
-            ]),
-        ]),
+        'solar_system_id' => $system->system_id,
     ]));
 
-    $system_id = $test_asset->location->locatable->system->system_id;
+    $system_id = $test_asset->solar_system_id;
 
     expect(Asset::inSystems($system_id)->get())->toHaveCount(1);
     expect(Asset::inSystems($system_id + 1)->get())->toHaveCount(0);
@@ -247,7 +240,9 @@ it('has in scope', function (string $scope) {
 
     Asset::factory()->create([
         'location_flag' => 'Hangar',
-        'type_id' => $type,
+        'type_id' => $type->type_id,
+        'group_id' => $type->group->group_id,
+        'category_id' => $type->group->category->category_id,
     ]);
 
     $query = Asset::query();
