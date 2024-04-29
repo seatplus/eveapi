@@ -38,7 +38,7 @@ class GroupFactory extends Factory
         return [
             'group_id' => $this->faker->numberBetween(0, 10000),
             'category_id' => $this->faker->numberBetween(0, 10000),
-            'name' => $this->faker->name,
+            'name' => $this->faker->firstName,
             'published' => $this->faker->boolean,
         ];
     }

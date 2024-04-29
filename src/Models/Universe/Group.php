@@ -28,6 +28,8 @@ namespace Seatplus\Eveapi\Models\Universe;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Group extends Model
 {
@@ -71,13 +73,13 @@ class Group extends Model
         'published' => 'boolean',
     ];
 
-    public function types()
+    public function types(): HasMany
     {
         return $this->hasMany(Type::class, 'group_id', 'group_id');
     }
 
-    public function category()
+    public function category(): HasOne
     {
-        return $this->belongsTo(Category::class, 'category_id', 'category_id');
+        return $this->hasOne(Category::class, 'category_id', 'category_id');
     }
 }

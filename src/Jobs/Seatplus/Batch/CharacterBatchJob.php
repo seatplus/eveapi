@@ -14,6 +14,8 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
+use Seatplus\Eveapi\Jobs\Assets\EnrichAssetTypeGroupCategoryJob;
+use Seatplus\Eveapi\Jobs\Assets\UpdateAssetSystemRegionJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterRoleJob;
 use Seatplus\Eveapi\Jobs\Character\CorporationHistoryJob;
@@ -147,6 +149,8 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
             [
                 new CharacterAssetJob($this->character_id),
                 new CharacterAssetsNameJob($this->character_id),
+                new EnrichAssetTypeGroupCategoryJob,
+                new UpdateAssetSystemRegionJob($this->character_id),
             ],
         ];
     }

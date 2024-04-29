@@ -44,7 +44,7 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
     use HasPathValues;
     use HasRequiredScopes;
 
-    private Collection $known_assets;
+    private Collection $assets;
 
     private int $page = 1;
 
@@ -63,7 +63,7 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
             'character_id' => $character_id,
         ]);
 
-        $this->known_assets = collect();
+        $this->assets = collect();
     }
 
     /**
@@ -101,7 +101,7 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
             // First update the
             collect($response)
                 ->each(
-                    fn ($asset) => $this->known_assets->push([
+                    fn ($asset) => $this->assets->push([
                         'item_id' => $asset->item_id,
                         'assetable_id' => $this->character_id,
                         'assetable_type' => CharacterInfo::class,
@@ -140,14 +140,14 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
     {
         Asset::query()
             ->where('assetable_id', $this->character_id)
-            ->whereNotIn('item_id', $this->known_assets->pluck('item_id')->toArray())
+            ->whereNotIn('item_id', $this->assets->pluck('item_id')->toArray())
             ->delete();
     }
 
     private function persist()
     {
         Asset::upsert(
-            $this->known_assets->toArray(),
+            $this->assets->toArray(),
             ['item_id'],
             ['assetable_id', 'assetable_type', 'is_blueprint_copy', 'is_singleton', 'location_flag', 'location_id', 'location_type', 'quantity', 'type_id']
         );

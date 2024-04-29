@@ -29,10 +29,11 @@ namespace Seatplus\Eveapi\Models\Assets;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Seatplus\Eveapi\Events\AssetUpdating;
 use Seatplus\Eveapi\Models\Universe\Location;
-use Seatplus\Eveapi\Models\Universe\Station;
-use Seatplus\Eveapi\Models\Universe\Structure;
 use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Traits\HasWatchlist;
 
@@ -88,28 +89,22 @@ class Asset extends Model
         return $this->morphTo();
     }
 
-    public function type()
+    public function type(): HasOne
     {
         return $this->hasOne(Type::class, 'type_id', 'type_id');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function container()
+    public function container(): BelongsTo
     {
         return $this->belongsTo(self::class, 'location_id', 'item_id');
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function content()
+    public function content(): HasMany
     {
         return $this->hasMany(self::class, 'location_id', 'item_id');
     }
 
-    public function location()
+    public function location(): HasOne
     {
         //Todo create morphTo relation
         return $this->hasOne(Location::class, 'location_id', 'location_id');
@@ -130,64 +125,35 @@ class Asset extends Model
     {
         $region_ids = is_array($regions) ? $regions : [$regions];
 
-        $query->with('location.locatable.system.region');
-
-        return $query->whereRelation(
-            'location',
-            fn (Builder $query) => $query
-                ->whereMorphRelation(
-                    'locatable',
-                    [Station::class, Structure::class],
-                    function (Builder $query) use ($region_ids) {
-                        $query->whereRelation('system.region', fn (Builder $query) => $query->whereIn('universe_regions.region_id', $region_ids));
-                    }
-                )
-        );
+        return $query->whereIn('region_id', $region_ids);
     }
 
     public function scopeInSystems(Builder $query, int|array $systems): Builder
     {
         $system_ids = is_array($systems) ? $systems : [$systems];
 
-        $query->with('location.locatable.system');
-
-        return $query->whereRelation(
-            'location',
-            fn (Builder $query) => $query
-                ->whereHasMorph(
-                    'locatable',
-                    [Station::class, Structure::class],
-                    function (Builder $query, $type) use ($system_ids) {
-                        $column = $type === Station::class ? 'universe_stations.system_id' : 'universe_structures.solar_system_id';
-
-                        $query->whereIn($column, $system_ids);
-                    }
-                )
-        );
+        return $query->whereIn('solar_system_id', $system_ids);
     }
 
     public function scopeOfTypes(Builder $query, int|array $types): Builder
     {
         $type_ids = is_array($types) ? $types : [$types];
 
-        return $query
-            ->whereRelation('type', fn (Builder $query) => $query->whereIn('type_id', $type_ids));
+        return $query->whereIn('type_id', $type_ids);
     }
 
     public function scopeOfGroups(Builder $query, int|array $groups): Builder
     {
         $group_ids = is_array($groups) ? $groups : [$groups];
 
-        return $query
-            ->whereRelation('type.group', fn (Builder $query) => $query->whereIn('group_id', $group_ids));
+        return $query->whereIn('group_id', $group_ids);
     }
 
     public function scopeOfCategories(Builder $query, int|array $categories): Builder
     {
         $category_ids = is_array($categories) ? $categories : [$categories];
 
-        return $query
-            ->whereRelation('type.group', fn (Builder $query) => $query->whereIn('category_id', $category_ids));
+        return $query->whereIn('category_id', $category_ids);
     }
 
     public function scopeSearch(Builder $query, ?string $terms = null)
@@ -196,10 +162,10 @@ class Asset extends Model
             ->each(function ($term) use ($query) {
                 $term = $term.'%';
 
-                $query
-                    ->where('name_normalized', 'like', $term)
-                    ->orWhereRelation('type', 'name_normalized', 'like', $term)
-                    ->orWhereRelation('type.group', 'name_normalized', 'like', $term);
+                $query->where('name_normalized', 'like', $term)
+                    ->orWhere('type_name_normalized', 'like', $term)
+                    ->orWhere('group_name_normalized', 'like', $term)
+                    ->orWhere('category_name_normalized', 'like', $term);
             });
     }
 
