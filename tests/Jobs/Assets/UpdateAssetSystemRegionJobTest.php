@@ -1,14 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Event;
-use Seatplus\Eveapi\Jobs\Assets\EnrichAssetTypeGroupCategoryJob;
 use Seatplus\Eveapi\Jobs\Assets\UpdateAssetSystemRegionJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
-use Seatplus\Eveapi\Models\Universe\Category;
-use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
-use Seatplus\Eveapi\Models\Universe\Type;
 
 it('does update asset system with or without assetable_id: ', function (bool $withAssetableId) {
 
@@ -42,5 +38,3 @@ it('does update asset system with or without assetable_id: ', function (bool $wi
         ->solar_system_id->toBe($station->system->system_id)
         ->region_id->toBe($station->system->region->region_id);
 })->with([true, false]);
-
-

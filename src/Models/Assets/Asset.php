@@ -34,8 +34,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Seatplus\Eveapi\Events\AssetUpdating;
 use Seatplus\Eveapi\Models\Universe\Location;
-use Seatplus\Eveapi\Models\Universe\Station;
-use Seatplus\Eveapi\Models\Universe\Structure;
 use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Traits\HasWatchlist;
 

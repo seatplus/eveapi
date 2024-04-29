@@ -23,12 +23,12 @@ class UpdateAssetSystemRegionJob extends HydrateMaintenanceBase
         $assets = $this->getAssetsWithMissingSystemAndRegionInfo();
 
         $assets->each(fn ($asset) => $asset->update([
-                'solar_system_id' => $asset->location->locatable->system->system_id,
-                'region_id' => $asset->location->locatable->system->region->region_id
-            ]));
+            'solar_system_id' => $asset->location->locatable->system->system_id,
+            'region_id' => $asset->location->locatable->system->region->region_id,
+        ]));
     }
 
-    private function getAssetsWithMissingSystemAndRegionInfo() : Collection
+    private function getAssetsWithMissingSystemAndRegionInfo(): Collection
     {
         return Asset::query()
             ->when($this->assetable_id, fn ($query) => $query->where('assetable_id', $this->assetable_id))
@@ -37,7 +37,4 @@ class UpdateAssetSystemRegionJob extends HydrateMaintenanceBase
             ->with('location.locatable.system.region')
             ->get();
     }
-}
-{
-
 }

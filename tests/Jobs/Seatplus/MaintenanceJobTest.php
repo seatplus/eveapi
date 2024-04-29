@@ -57,7 +57,7 @@ it('MaintenanceJob dispatches job: ', function ($hydrate_job) {
     (new MaintenanceJob)->handle();
 
     Bus::assertBatched(function ($batch) use ($hydrate_job) {
-        return $batch->jobs->first(fn($job) => $job instanceof $hydrate_job);
+        return $batch->jobs->first(fn ($job) => $job instanceof $hydrate_job);
     });
 
 })->with([

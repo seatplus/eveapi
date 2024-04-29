@@ -6,11 +6,9 @@ use Seatplus\Eveapi\Events\AssetUpdating;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Universe\Category;
-use Seatplus\Eveapi\Models\Universe\Constellation;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Region;
-use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\System;
 use Seatplus\Eveapi\Models\Universe\Type;
 
@@ -202,7 +200,7 @@ it('has container relationship', function () {
 it('has in region scope', function () {
     expect(Asset::all())->toHaveCount(0);
 
-    $region = Event::fakeFor(fn() => Region::factory()->create());
+    $region = Event::fakeFor(fn () => Region::factory()->create());
 
     $test_asset = Event::fakeFor(fn () => Asset::factory()->create([
         'region_id' => $region->region_id,

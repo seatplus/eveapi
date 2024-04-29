@@ -46,6 +46,4 @@ return new class extends Migration
         EnrichAssetTypeGroupCategoryJob::dispatch()->onQueue('high');
         UpdateAssetSystemRegionJob::dispatch()->onQueue('high');
     }
-
-
 };
