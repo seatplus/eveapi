@@ -1,6 +1,6 @@
 <?php
 
-namespace Seatplus\Eveapi\Services\ResolveLocation;
+namespace Seatplus\Eveapi\Services\ResolveLocation\Resolver;
 
 use Illuminate\Database\Eloquent\Collection;
 use Seatplus\Eveapi\Models\LocationRefreshTokens;

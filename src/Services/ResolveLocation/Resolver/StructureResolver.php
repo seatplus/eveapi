@@ -24,9 +24,8 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Services\ResolveLocation;
+namespace Seatplus\Eveapi\Services\ResolveLocation\Resolver;
 
-use Closure;
 use Exception;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseStructureByIdJob;
 use Seatplus\Eveapi\Models\RefreshToken;

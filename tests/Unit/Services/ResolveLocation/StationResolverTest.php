@@ -2,11 +2,10 @@
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
-use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\Structure;
-use Seatplus\Eveapi\Services\ResolveLocation\StationResolver;
+use Seatplus\Eveapi\Services\ResolveLocation\Resolver\StationResolver;
 use Illuminate\Support\Facades\Queue;
 
 beforeEach(function () {

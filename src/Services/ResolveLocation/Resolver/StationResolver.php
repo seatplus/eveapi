@@ -24,7 +24,7 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Services\ResolveLocation;
+namespace Seatplus\Eveapi\Services\ResolveLocation\Resolver;
 
 use Closure;
 use Exception;
@@ -33,7 +33,7 @@ use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\Structure;
 
-class StationResolver
+class StationResolver implements ResolverInterface
 {
     const MIN_STATION_ID = 60_000_000;
 

@@ -19,7 +19,7 @@ use Seatplus\Eveapi\Services\ResolveLocation\Finders\ThroughPreviouslyFailedRefr
 use Seatplus\Eveapi\Services\ResolveLocation\Finders\ThroughRandomRefreshTokenFinder;
 use Seatplus\Eveapi\Services\ResolveLocation\Finders\ThroughSuccessfulRefreshTokenFinder;
 use Seatplus\Eveapi\Services\ResolveLocation\Finders\ThroughWalletTransactionsFinder;
-use Seatplus\Eveapi\Services\ResolveLocation\StructureRefreshTokenFinder;
+use Seatplus\Eveapi\Services\ResolveLocation\Resolver\StructureRefreshTokenFinder;
 
 beforeEach(function () {
     Queue::fake();
