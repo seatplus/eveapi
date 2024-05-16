@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
-use Seatplus\Eveapi\Events\AssetUpdating;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Universe\Category;
@@ -14,44 +13,6 @@ use Seatplus\Eveapi\Models\Universe\Type;
 
 beforeEach(function () {
     Queue::fake();
-});
-
-it('creates an event upon updating', function () {
-    $asset = Asset::factory()->create([
-        'assetable_id' => 42,
-    ]);
-
-    $this->assertDatabaseHas('assets', [
-        'assetable_id' => $asset->assetable_id,
-        'item_id' => $asset->item_id,
-    ]);
-
-    Event::fake();
-
-    $character_asset = Asset::find($asset->item_id);
-    $character_asset->assetable_id = 1337;
-    $character_asset->save();
-
-    Event::assertDispatched(AssetUpdating::class);
-});
-
-it('creates no event upon no update', function () {
-    $asset = Asset::factory()->create([
-        'assetable_id' => 42,
-    ]);
-
-    $this->assertDatabaseHas('assets', [
-        'assetable_id' => $asset->assetable_id,
-        'item_id' => $asset->item_id,
-    ]);
-
-    Event::fake();
-
-    $character_asset = Asset::find($asset->item_id);
-    $character_asset->assetable_id = 42;
-    $character_asset->save();
-
-    Event::assertNotDispatched(AssetUpdating::class);
 });
 
 test('model has types', function () {

@@ -8,7 +8,7 @@ use Seatplus\Eveapi\Models\Character\CharacterRole;
 use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
-use Seatplus\Eveapi\Models\LocationRefreshTokens;
+use Seatplus\Eveapi\Models\LocationRefreshToken;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 use Seatplus\Eveapi\Services\ResolveLocation\Finders\FinderInterface;
@@ -33,7 +33,7 @@ beforeEach(function () {
         'roles' => ['Director'],
     ]);
 
-    $this->character_id = $this->test_character->character_id;
+    $this->character_id = test()->test_character->character_id;
     $this->corporation_id = $this->test_character->corporation->corporation_id;
     $this->location_id = 60_005_617;
 });
@@ -41,7 +41,7 @@ beforeEach(function () {
 describe('filters through different finders', function () {
 
     it('finds token ThroughSuccessfulRefreshTokenFinder', function (){
-        LocationRefreshTokens::query()
+        LocationRefreshToken::query()
             ->updateOrCreate([
                 'location_id' => test()->location_id,
                 'character_id' => test()->character_id,
@@ -102,7 +102,7 @@ describe('filters through different finders', function () {
     });
 
     it('finds token ThroughPreviouslyFailedRefreshTokenFinder', function (){
-        LocationRefreshTokens::query()
+        LocationRefreshToken::query()
             ->create([
                 'location_id' => test()->location_id,
                 'character_id' => test()->character_id,
@@ -149,7 +149,7 @@ describe('filters through different finders', function () {
 
 function executeFindStructureRefreshTokenTest(FinderInterface $instance)
 {
-    $tracings = LocationRefreshTokens::query()
+    $tracings = LocationRefreshToken::query()
         ->where('location_id', test()->location_id)
         ->inRandomOrder()
         ->get();
@@ -172,35 +172,37 @@ it('allows shortcut findValidToken method', function () {
 });
 
 it('increments and resets attempts', function () {
-    $instance = new StructureRefreshTokenFinder(testCharacter()->refresh_token);
+    $refresh_token = test()->test_character->refresh_token;
+    $location_id = test()->location_id;
 
-    $instance->findValidToken(test()->location_id);
+    $instance = new StructureRefreshTokenFinder($refresh_token);
+
+    $instance->findValidToken($location_id);
 
     $instance->markAsFailed();
 
-    $location_refresh_token = LocationRefreshTokens::query()
-        ->where('location_id', test()->location_id)
-        ->where('character_id', test()->character_id)
-        ->first();
-
-    expect($location_refresh_token->attempts)->toBe(1);
+    expect(LocationRefreshToken::all())
+        ->toHaveCount(1)
+        ->first()->attempts->toBe(1)
+        ->first()->resolved->toBeFalsy();
 
     $instance->markAsResolved();
 
-    $location_refresh_token = LocationRefreshTokens::query()
+    $location_refresh_token = LocationRefreshToken::query()
         ->where('location_id', test()->location_id)
-        ->where('character_id', test()->character_id)
+        ->where('character_id', test()->test_character->character_id)
         ->first();
 
-    expect($location_refresh_token)
-        ->attempts->toBe(0)
-        ->resolved->toBeTruthy();
+    expect(LocationRefreshToken::all())
+        ->toHaveCount(1)
+        ->first()->attempts->toBe(0)
+        ->first()->resolved->toBeTruthy();
 
 });
 
 it('goes through all finder classes', function () {
     // Arrange
-    LocationRefreshTokens::query()
+    LocationRefreshToken::query()
         ->create([
             'location_id' => test()->location_id,
             'character_id' => test()->character_id,
@@ -211,7 +213,7 @@ it('goes through all finder classes', function () {
     $instance = new StructureRefreshTokenFinder();
 
     // make sure the ThrougRandomRefreshTokenFinder did not result positively
-    $random_token = (new ThroughRandomRefreshTokenFinder)->handle(test()->location_id, LocationRefreshTokens::all());
+    $random_token = (new ThroughRandomRefreshTokenFinder)->handle(test()->location_id, LocationRefreshToken::all());
 
     // Act
     $result = $instance->findValidToken(test()->location_id);

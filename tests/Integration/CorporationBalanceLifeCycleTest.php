@@ -18,6 +18,8 @@ beforeEach(function () {
 });
 
 it('runs the job', function () {
+    Queue::fake();
+
     buildCorpWalletEsiMockData();
 
     expect(Balance::all())->toHaveCount(0);

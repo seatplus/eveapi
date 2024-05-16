@@ -17,8 +17,7 @@ it('updates RefreshToken', function ($refresh_token, $access_token, $expires_in)
     // run the test
     $new_token = \Seatplus\Eveapi\Services\Esi\UpdateRefreshTokenService::make()
         ->setRefreshTokenService($mock)
-        ->update(testCharacter()->refresh_token);
-
+        ->update(\Seatplus\Eveapi\Models\RefreshToken::first());
     // assert
     expect($new_token)
         ->refresh_token->toBeString()->toBe($refresh_token)
