@@ -31,14 +31,10 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Pipeline\Pipeline;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Models\RefreshToken;
-use Seatplus\Eveapi\Models\Universe\Location;
-use Seatplus\Eveapi\Services\ResolveLocation\ResolveLocationDTO;
-use Seatplus\Eveapi\Services\ResolveLocation\ResolveStationPipe;
-use Seatplus\Eveapi\Services\ResolveLocation\ResolveStructurePipe;
+use Seatplus\Eveapi\Services\ResolveLocation\ResolveLocationService;
 
 class ResolveLocationJob implements ShouldBeUnique, ShouldQueue
 {
@@ -64,48 +60,37 @@ class ResolveLocationJob implements ShouldBeUnique, ShouldQueue
 
     /**
      * The unique ID of the job.
-     *
-     * @return string
      */
-    public function uniqueId()
+    public function uniqueId(): string
     {
-        return sprintf(
-            'Location %s via %s (%s)',
-            $this->location_id,
-            $this->refresh_token->character->name,
-            $this->refresh_token->character_id
-        );
+        return implode('; ', $this->tags());
     }
 
     public function __construct(
         public int $location_id,
-        public RefreshToken $refresh_token
+        public ?RefreshToken $refresh_token = null
     ) {
     }
 
     public function tags()
     {
+        if ($this->refresh_token) {
+            return [
+                'location_resolve',
+                'location_id:'.$this->location_id,
+                'via character: '.$this->refresh_token->character_id,
+            ];
+        }
+
         return [
             'location_resolve',
             'location_id:'.$this->location_id,
-            'via character: '.$this->refresh_token->character_id,
         ];
     }
 
     public function handle(): void
     {
-        /** @noinspection PhpParamsInspection */
-        $payload = new ResolveLocationDTO(
-            location: Location::with('locatable')->findOrNew($this->location_id),
-            log_message: '',
-        );
 
-        app(Pipeline::class)
-            ->send($payload)
-            ->through([
-                new ResolveStationPipe($this->location_id),
-                new ResolveStructurePipe($this->location_id, $this->refresh_token),
-            ])
-            ->then(fn ($payload) => logger()->info($payload->log_message));
+        ResolveLocationService::make($this->refresh_token)->handle($this->location_id);
     }
 }
