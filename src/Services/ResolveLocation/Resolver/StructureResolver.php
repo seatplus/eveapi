@@ -33,7 +33,7 @@ use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\Structure;
 
-class StructureResolver
+class StructureResolver implements ResolverInterface
 {
     private StructureRefreshTokenFinder $tokenService;
 
