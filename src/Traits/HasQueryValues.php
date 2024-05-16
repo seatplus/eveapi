@@ -28,15 +28,15 @@ namespace Seatplus\Eveapi\Traits;
 
 trait HasQueryValues
 {
-    private array $query_string;
+    private array $query_parameters = [];
 
-    public function getQueryString(): array
+    public function getQueryParameters(): array
     {
-        return $this->query_string;
+        return $this->query_parameters;
     }
 
-    public function setQueryString(array $array): void
+    public function setQueryParameters(array $array): void
     {
-        $this->query_string = $array;
+        $this->query_parameters = $array;
     }
 }

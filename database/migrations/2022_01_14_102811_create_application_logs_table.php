@@ -23,10 +23,10 @@ return new class extends Migration
             ->get()
             ->each(fn (Application $application) => ApplicationLogs::create([
                 'application_id' => $application->id,
-                'causer_type' => $application->causer_type,
-                'causer_id' => $application->causer_id,
+                'causer_type' => data_get($application, 'causer_type'),
+                'causer_id' => data_get($application, 'causer_id'),
                 'type' => 'decision',
-                'comment' => $application->comment,
+                'comment' => data_get($application, 'comment'),
             ]));
 
         Schema::table('applications', function (Blueprint $table) {

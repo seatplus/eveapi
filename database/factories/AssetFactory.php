@@ -46,7 +46,7 @@ class AssetFactory extends Factory
             'location_flag' => $this->faker->randomElement($this->getLocationFlagArray()),
             'location_id' => $this->faker->randomNumber(),
             'location_type' => $this->faker->randomElement(['station', 'solar_system', 'other']),
-            'quantity' => $this->faker->randomDigit,
+            'quantity' => $this->faker->randomDigit(),
             'type_id' => $this->faker->numberBetween(5, 10000),
         ];
     }

@@ -13,8 +13,7 @@ class ResolveLocationService
 {
     public function __construct(
         private ?RefreshToken $refresh_token = null
-    )
-    {
+    ) {
     }
 
     public static function make(?RefreshToken $refresh_token = null): self
@@ -37,7 +36,7 @@ class ResolveLocationService
         ];
 
         foreach ($resolvers as $resolver) {
-            if($resolver instanceof ResolverInterface) {
+            if ($resolver instanceof ResolverInterface) {
                 $is_resolved = $resolver->handle($location);
 
                 if ($is_resolved) {
@@ -46,5 +45,4 @@ class ResolveLocationService
             }
         }
     }
-
 }

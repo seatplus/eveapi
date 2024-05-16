@@ -30,13 +30,10 @@ use Seatplus\Eveapi\Models\RefreshToken;
 
 class FindCorporationRefreshToken
 {
-    /**
-     * @param  string  $role
-     */
     public function __invoke(int $corporation_id, string|array $scope, string|array $role): ?RefreshToken
     {
-        $scopes = is_string($scope) ? [$scope] : (is_array($scope) ? $scope : []);
-        $roles = is_string($role) ? [$role] : (is_array($role) ? $role : []);
+        $scopes = is_string($scope) ? [$scope] : $scope;
+        $roles = is_string($role) ? [$role] : $role;
 
         return RefreshToken::with('corporation', 'character.roles')
             ->whereHas('corporation', fn ($query) => $query->where('corporation_infos.corporation_id', $corporation_id))

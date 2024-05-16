@@ -131,7 +131,7 @@ class MailHeaderJob extends EsiBase implements HasPathValuesInterface, HasRequir
 
         // see https://divinglaravel.com/avoiding-memory-leaks-when-running-laravel-queue-workers
         // This job is very memory consuming hence avoiding memory leaks, the worker should restart
-        app('queue.worker')->shouldQuit = 1;
+        app('queue.worker')->shouldQuit = true;
     }
 
     private function getReceivableType(string $recipient_type)
@@ -140,7 +140,8 @@ class MailHeaderJob extends EsiBase implements HasPathValuesInterface, HasRequir
             'alliance' => AllianceInfo::class,
             'character' => CharacterInfo::class,
             'corporation' => CorporationInfo::class,
-            'mailing_list' => 'mailing_list'
+            'mailing_list' => 'mailing_list',
+            default => throw new \Exception("Unknown recipient type {$recipient_type}"),
         };
     }
 }

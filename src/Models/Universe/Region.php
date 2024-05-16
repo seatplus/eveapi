@@ -33,11 +33,6 @@ class Region extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
     protected $guarded = [];
 
     /**
@@ -59,11 +54,6 @@ class Region extends Model
      */
     protected $table = 'universe_regions';
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         'region_id' => 'integer',
         'name' => 'string',

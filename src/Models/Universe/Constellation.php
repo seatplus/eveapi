@@ -28,17 +28,13 @@ namespace Seatplus\Eveapi\Models\Universe;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Seatplus\Eveapi\Events\UniverseConstellationCreated;
 
 class Constellation extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
     protected $guarded = [];
 
     /**
@@ -69,18 +65,13 @@ class Constellation extends Model
         'created' => UniverseConstellationCreated::class,
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         'constellation_id' => 'integer',
         'region_id' => 'integer',
         'name' => 'string',
     ];
 
-    public function region()
+    public function region(): HasOne
     {
         return $this->hasOne(Region::class, 'region_id', 'region_id');
     }

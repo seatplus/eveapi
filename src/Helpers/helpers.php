@@ -28,18 +28,8 @@ use Seatplus\Eveapi\Exceptions\SettingException;
 use Seatplus\Eveapi\Models\Settings\GlobalSettings;
 
 if (! function_exists('setting')) {
-    /**
-     * Work with settings.
-     *
-     * Providing a string argument will retrieve a setting.
-     * Providing an array argument will set a setting.
-     *
-     * @param  bool  $global
-     * @return mixed
-     *
-     * @throws \Seatplus\Eveapi\Exceptions\SettingException
-     */
-    function setting($name)
+
+    function setting(array|string $name): mixed
     {
         // If we received an array, it means we want to set.
         if (is_array($name)) {

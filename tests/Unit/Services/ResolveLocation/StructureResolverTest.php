@@ -2,13 +2,13 @@
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\Structure;
 use Seatplus\Eveapi\Services\ResolveLocation\Resolver\StructureRefreshTokenFinder;
 use Seatplus\Eveapi\Services\ResolveLocation\Resolver\StructureResolver;
-use Illuminate\Support\Facades\Queue;
 
 beforeEach(function () {
     Queue::fake();
@@ -211,5 +211,3 @@ describe('is potential structure', function () {
     })->throws(\Exception::class);
 
 });
-
-

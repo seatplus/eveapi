@@ -27,22 +27,14 @@
 namespace Seatplus\Eveapi\Models\Killmails;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Seatplus\Eveapi\Models\Universe\Type;
 
 class KillmailItem extends Model
 {
-    /**
-     * The accessors to append to the model's array form.
-     *
-     * @var array
-     */
     protected $appends = ['has_content'];
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
     protected $guarded = [];
 
     public function getHasContentAttribute()
@@ -50,12 +42,12 @@ class KillmailItem extends Model
         return $this->content()->exists();
     }
 
-    public function content()
+    public function content(): HasMany
     {
         return $this->hasMany(self::class, 'location_id', 'id');
     }
 
-    public function type()
+    public function type(): HasOne
     {
         return $this->hasOne(Type::class, 'type_id', 'type_id');
     }

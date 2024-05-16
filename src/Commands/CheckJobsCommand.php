@@ -100,6 +100,7 @@ class CheckJobsCommand extends Command
                         'success' => $this->writeSuccess($assertion['message']),
                         'warning' => $this->writeWarning($assertion['message']),
                         'error' => $this->writeError($assertion['message']),
+                        default => throw new Exception('Unknown status'),
                     };
                 });
 

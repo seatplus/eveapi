@@ -28,6 +28,9 @@ namespace Seatplus\Eveapi\Models\Universe;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Seatplus\Eveapi\Events\UniverseSystemCreated;
 
 class System extends Model
@@ -37,7 +40,7 @@ class System extends Model
     /**
      * The attributes that aren't mass assignable.
      *
-     * @var array
+     * @var array<string>|bool
      */
     protected $guarded = [];
 
@@ -66,11 +69,6 @@ class System extends Model
         'created' => UniverseSystemCreated::class,
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         'system_id' => 'integer',
         'constellation_id' => 'integer',
@@ -79,12 +77,12 @@ class System extends Model
         'security_status' => 'double',
     ];
 
-    public function constellation()
+    public function constellation(): BelongsTo
     {
         return $this->belongsTo(Constellation::class, 'constellation_id', 'constellation_id');
     }
 
-    public function region()
+    public function region(): HasOneThrough
     {
         return $this->hasOneThrough(
             Region::class,
@@ -96,12 +94,12 @@ class System extends Model
         );
     }
 
-    public function stations()
+    public function stations(): HasMany
     {
         return $this->hasMany(Station::class, 'system_id', 'system_id');
     }
 
-    public function structures()
+    public function structures(): HasMany
     {
         return $this->hasMany(Structure::class, 'solar_system_id', 'system_id');
     }

@@ -40,7 +40,7 @@ beforeEach(function () {
 
 describe('filters through different finders', function () {
 
-    it('finds token ThroughSuccessfulRefreshTokenFinder', function (){
+    it('finds token ThroughSuccessfulRefreshTokenFinder', function () {
         LocationRefreshToken::query()
             ->updateOrCreate([
                 'location_id' => test()->location_id,
@@ -55,7 +55,7 @@ describe('filters through different finders', function () {
 
     });
 
-    it('finds token ThroughCharacterAssetsFinder', function (){
+    it('finds token ThroughCharacterAssetsFinder', function () {
         Asset::factory()->create([
             'location_id' => test()->location_id,
             'assetable_id' => test()->character_id,
@@ -67,7 +67,7 @@ describe('filters through different finders', function () {
         executeFindStructureRefreshTokenTest($instance);
     });
 
-    it('finds token ThroughContractsFinder', function (){
+    it('finds token ThroughContractsFinder', function () {
         Contract::factory()->create([
             'start_location_id' => test()->location_id,
             'issuer_id' => test()->character_id,
@@ -78,7 +78,7 @@ describe('filters through different finders', function () {
         executeFindStructureRefreshTokenTest($instance);
     });
 
-    it('finds token ThroughCorporationMemberTrackingFinder via character', function (){
+    it('finds token ThroughCorporationMemberTrackingFinder via character', function () {
         CorporationMemberTracking::factory()->create([
             'location_id' => test()->location_id,
             'character_id' => test()->character_id,
@@ -89,7 +89,7 @@ describe('filters through different finders', function () {
         executeFindStructureRefreshTokenTest($instance);
     });
 
-    it('finds token ThroughCorporationMemberTrackingFinder via director', function (){
+    it('finds token ThroughCorporationMemberTrackingFinder via director', function () {
         CorporationMemberTracking::factory()->create([
             'location_id' => test()->location_id,
             'character_id' => test()->character_id++, // just to make sure it is different
@@ -101,7 +101,7 @@ describe('filters through different finders', function () {
         executeFindStructureRefreshTokenTest($instance);
     });
 
-    it('finds token ThroughPreviouslyFailedRefreshTokenFinder', function (){
+    it('finds token ThroughPreviouslyFailedRefreshTokenFinder', function () {
         LocationRefreshToken::query()
             ->create([
                 'location_id' => test()->location_id,
@@ -115,13 +115,13 @@ describe('filters through different finders', function () {
         executeFindStructureRefreshTokenTest($instance);
     });
 
-    it('finds token ThroughRandomRefreshTokenFinder', function (){
+    it('finds token ThroughRandomRefreshTokenFinder', function () {
         $instance = new ThroughRandomRefreshTokenFinder();
 
         executeFindStructureRefreshTokenTest($instance);
     });
 
-    it('finds token ThroughWalletTransactionsFinder via character', function (){
+    it('finds token ThroughWalletTransactionsFinder via character', function () {
         WalletTransaction::factory()->create([
             'location_id' => test()->location_id,
             'wallet_transactionable_id' => test()->character_id,
@@ -133,7 +133,7 @@ describe('filters through different finders', function () {
         executeFindStructureRefreshTokenTest($instance);
     });
 
-    it('finds token ThroughWalletTransactionsFinder via director', function (){
+    it('finds token ThroughWalletTransactionsFinder via director', function () {
         WalletTransaction::factory()->create([
             'location_id' => test()->location_id,
             'wallet_transactionable_id' => test()->corporation_id,
@@ -165,7 +165,6 @@ it('allows shortcut findValidToken method', function () {
     $instance = new StructureRefreshTokenFinder(testCharacter()->refresh_token);
 
     $result = $instance->findValidToken(test()->location_id);
-
 
     expect($result)->toBeInstanceOf(RefreshToken::class)
         ->character_id->toBe(testCharacter()->character_id);

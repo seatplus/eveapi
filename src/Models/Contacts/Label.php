@@ -28,6 +28,7 @@ namespace Seatplus\Eveapi\Models\Contacts;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Label extends Model
 {
@@ -35,7 +36,7 @@ class Label extends Model
 
     protected $guarded = false;
 
-    public function labelable()
+    public function labelable(): MorphTo
     {
         return $this->morphTo();
     }

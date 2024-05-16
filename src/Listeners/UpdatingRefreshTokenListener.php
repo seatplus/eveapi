@@ -42,7 +42,7 @@ class UpdatingRefreshTokenListener
         if (array_diff($new_scopes, $original_scopes)) {
             UpdateCharacter::dispatch($refresh_token)->onQueue('high');
 
-            $corporation_id = $refresh_token?->character?->corporation?->corporation_id;
+            $corporation_id = data_get($refresh_token, 'character.corporation.corporation_id');
 
             if ($corporation_id) {
                 UpdateCorporation::dispatch($corporation_id)->onQueue('high');

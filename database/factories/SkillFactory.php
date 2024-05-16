@@ -33,11 +33,6 @@ use Seatplus\Eveapi\Models\Universe\Type;
 
 class SkillFactory extends Factory
 {
-    /**
-     * The name of the factory's corresponding model.
-     *
-     * @var string
-     */
     protected $model = Skill::class;
 
     public function definition()

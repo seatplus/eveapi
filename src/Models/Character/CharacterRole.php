@@ -28,16 +28,12 @@ namespace Seatplus\Eveapi\Models\Character;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CharacterRole extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
     protected $guarded = [];
 
     /**
@@ -45,11 +41,6 @@ class CharacterRole extends Model
      */
     protected $primaryKey = 'character_id';
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         'character_id' => 'integer',
         'roles' => 'array',
@@ -69,7 +60,7 @@ class CharacterRole extends Model
         'Security_Officer', 'Starbase_Defense_Operator', 'Starbase_Fuel_Technician', 'Station_Manager', 'Trader',
     ];
 
-    public function character()
+    public function character(): BelongsTo
     {
         return $this->belongsTo(CharacterInfo::class, 'character_id', 'character_id');
     }

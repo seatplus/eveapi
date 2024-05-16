@@ -26,7 +26,6 @@
 
 namespace Seatplus\Eveapi\Services\ResolveLocation\Resolver;
 
-use Closure;
 use Exception;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseStationByIdJob;
 use Seatplus\Eveapi\Models\Universe\Location;
@@ -51,6 +50,7 @@ class StationResolver implements ResolverInterface
 
         if ($this->isPotentialStation($location)) {
             $this->handlePotentialStation($location);
+
             return true;
         }
 

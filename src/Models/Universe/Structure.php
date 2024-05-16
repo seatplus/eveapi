@@ -28,17 +28,15 @@ namespace Seatplus\Eveapi\Models\Universe;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Seatplus\Eveapi\Events\UniverseStructureCreated;
 
-class Structure extends Model
+class Structure extends Model implements LocatableInterface
 {
     use HasFactory;
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
     protected $guarded = [];
 
     /**
@@ -62,11 +60,6 @@ class Structure extends Model
         'created' => UniverseStructureCreated::class,
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         'structure_id' => 'integer',
         'name' => 'string',
@@ -75,17 +68,17 @@ class Structure extends Model
         'type_id' => 'integer',
     ];
 
-    public function location()
+    public function location(): MorphOne
     {
         return $this->morphOne(Location::class, 'locatable');
     }
 
-    public function type()
+    public function type(): HasOne
     {
         return $this->hasOne(Type::class, 'type_id', 'type_id');
     }
 
-    public function system()
+    public function system(): BelongsTo
     {
         return $this->belongsTo(System::class, 'solar_system_id', 'system_id');
     }

@@ -27,6 +27,7 @@
 namespace Seatplus\Eveapi\Models\Contacts;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ContactLabel extends Model
 {
@@ -36,12 +37,12 @@ class ContactLabel extends Model
 
     protected $appends = ['label_name'];
 
-    public function contact()
+    public function contact(): BelongsTo
     {
         return $this->belongsTo(Contact::class, 'contact_id');
     }
 
-    public function getLabelNameAttribute()
+    public function getLabelNameAttribute(): ?string
     {
         return $this->contact->contactable->labels->first(fn ($label) => $label->label_id === $this->label_id)->label_name ?? null;
     }

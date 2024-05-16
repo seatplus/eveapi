@@ -28,16 +28,12 @@ namespace Seatplus\Eveapi\Models\Universe;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Location extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
     protected $guarded = [];
 
     /**
@@ -56,7 +52,7 @@ class Location extends Model
      */
     protected $table = 'universe_locations';
 
-    public function locatable()
+    public function locatable(): MorphTo
     {
         return $this->morphTo();
     }

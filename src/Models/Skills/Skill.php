@@ -28,20 +28,16 @@ namespace Seatplus\Eveapi\Models\Skills;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Seatplus\Eveapi\Models\Universe\Type;
 
 class Skill extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
     protected $guarded = [];
 
-    public function type()
+    public function type(): BelongsTo
     {
         return $this->belongsTo(Type::class, 'skill_id');
     }

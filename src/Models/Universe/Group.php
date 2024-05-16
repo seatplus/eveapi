@@ -35,11 +35,6 @@ class Group extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
     protected $guarded = [];
 
     /**
@@ -61,11 +56,6 @@ class Group extends Model
      */
     protected $table = 'universe_groups';
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         'group_id' => 'integer',
         'category_id' => 'integer',

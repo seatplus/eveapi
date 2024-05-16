@@ -3,12 +3,11 @@
 
 use Seatplus\Eveapi\Services\ResolveLocation\ResolveLocationService;
 
-beforeEach(function () {
-    \Illuminate\Support\Facades\Event::fake();
-    \Illuminate\Support\Facades\Queue::fake();
-});
 
 it('runs through resolvers', function () {
+    \Illuminate\Support\Facades\Event::fake();
+    \Illuminate\Support\Facades\Queue::fake();
+
     // Arrange
     $location_id = 100; // use low number to avoid being a potential structure or station
 

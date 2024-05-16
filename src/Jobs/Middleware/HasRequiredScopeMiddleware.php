@@ -26,36 +26,32 @@
 
 namespace Seatplus\Eveapi\Jobs\Middleware;
 
+use Closure;
 use Exception;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 
 class HasRequiredScopeMiddleware
 {
-    /**
-     * Process the queued job.
-     *
-     * @param  mixed  $job
-     * @param  callable  $next
-     * @return mixed|void
-     */
-    public function handle(EsiBase $job, $next)
+    public function handle(EsiBase $job, Closure $next): void
     {
         // if job does not extend HasRequiredScopeInterface, continue
         if (! $job instanceof HasRequiredScopeInterface) {
-            return $next($job);
+            $next($job);
+
+            return;
         }
 
         // try to get refresh token
         try {
             // getting the refresh token from the job checks first the scopes and then the token
             $job->getRefreshToken();
-
-            return $next($job);
+            $next($job);
         } catch (Exception $exception) {
             // if the refresh token is not found, the getRefreshToken method throws an exception,
             // use the fail method to mark the job as failed with the exception
             $job->fail($exception);
         }
+
     }
 }

@@ -28,6 +28,8 @@ namespace Seatplus\Eveapi\Models\Killmails;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Seatplus\Eveapi\Models\Universe\System;
 use Seatplus\Eveapi\Models\Universe\Type;
 
@@ -35,11 +37,6 @@ class Killmail extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
     protected $guarded = [];
 
     /**
@@ -49,27 +46,27 @@ class Killmail extends Model
 
     public $incrementing = false;
 
-    public function ship()
+    public function ship(): HasOne
     {
         return $this->hasOne(Type::class, 'type_id', 'ship_type_id');
     }
 
-    public function system()
+    public function system(): HasOne
     {
         return $this->hasOne(System::class, 'system_id', 'solar_system_id');
     }
 
-    public function attackers()
+    public function attackers(): HasMany
     {
         return $this->hasMany(KillmailAttacker::class, 'killmail_id', 'killmail_id');
     }
 
-    public function items()
+    public function items(): HasMany
     {
         return $this->hasMany(KillmailItem::class, 'location_id', 'killmail_id');
     }
 
-    public function delete()
+    public function delete(): ?bool
     {
         $this->items()->delete();
         $this->attackers()->delete();

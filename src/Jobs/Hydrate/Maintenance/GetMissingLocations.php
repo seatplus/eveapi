@@ -24,19 +24,28 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Events;
+namespace Seatplus\Eveapi\Jobs\Hydrate\Maintenance;
 
-use Illuminate\Queue\SerializesModels;
-use Seatplus\Eveapi\Models\Assets\Asset;
+use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
+use Seatplus\Eveapi\Models\Universe\Location;
 
-class AssetUpdating
+class GetMissingLocations extends HydrateMaintenanceBase
 {
-    use SerializesModels;
+    public function handle()
+    {
+        if ($this->batch()->cancelled()) {
+            // Determine if the batch has been cancelled...
 
-    public function __construct(
-        private Asset $character_asset
-    ) {
+            return;
+        }
+
+        // resolve missing locations
+        $jobs = Location::query()
+            ->whereDoesntHave('locatable')
+            ->pluck('location_id')
+            ->map(fn ($location_id) => new ResolveLocationJob($location_id));
+
+        $this->batch()->add($jobs);
+
     }
-
-    //TODO implement Listener to track item transactions https://stackoverflow.com/a/48793801
 }

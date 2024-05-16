@@ -133,7 +133,7 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
 
         // see https://divinglaravel.com/avoiding-memory-leaks-when-running-laravel-queue-workers
         // This job is very memory consuming hence avoiding memory leaks, the worker should restart
-        app('queue.worker')->shouldQuit = 1;
+        app('queue.worker')->shouldQuit = true;
     }
 
     private function cleanup()
@@ -196,10 +196,8 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
             return;
         }
 
-        $refresh_token = RefreshToken::find($this->character_id);
-
         $unknown_type_ids->each(
-            fn ($type_id) => ResolveUniverseTypeByIdJob::dispatch($type_id, $refresh_token)
+            fn ($type_id) => ResolveUniverseTypeByIdJob::dispatch($type_id)
                 ->onQueue('high')
         );
     }

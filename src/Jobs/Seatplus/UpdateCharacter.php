@@ -101,16 +101,18 @@ class UpdateCharacter implements ShouldQueue
         if (! isset($this->interval_in_minutes)) {
             $expression = Schedules::firstWhere('job', UpdateCharacter::class)?->expression;
 
-            $this->interval_in_minutes = match ($expression) {
-                is_string($expression) => call_user_func(function ($expression) {
-                    $cron = new CronExpression($expression);
-
-                    return carbon($cron->getPreviousRunDate())->diffInMinutes($cron->getNextRunDate(null));
-                }, $expression),
-                default => 60,
-            };
+            $this->interval_in_minutes = $expression
+                ? $this->calculateInterval($expression)
+                : 60;
         }
 
         return $this->interval_in_minutes;
+    }
+
+    private function calculateInterval(string $expression): int
+    {
+        $cron = new CronExpression($expression);
+
+        return carbon($cron->getPreviousRunDate())->diffInMinutes($cron->getNextRunDate(null));
     }
 }

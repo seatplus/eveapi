@@ -2,8 +2,8 @@
 
 namespace Seatplus\Eveapi\Services\ResolveLocation\Finders;
 
-use Seatplus\Eveapi\Models\RefreshToken;
 use Illuminate\Database\Eloquent\Collection;
+use Seatplus\Eveapi\Models\RefreshToken;
 
 interface FinderInterface
 {

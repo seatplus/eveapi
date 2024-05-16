@@ -58,6 +58,7 @@ trait HasRequiredScopes
                 'character_id' => RefreshToken::firstWhere('character_id', $value),
                 'corporation_id' => $this->getCorporateRefreshToken($value),
                 'alliance_id' => $this->getAllianceRefreshToken($value),
+                default => throw new \Exception("Unexpected key: {$key}")
             });
 
         // throw error if length of collection is not 1
@@ -97,11 +98,7 @@ trait HasRequiredScopes
         $corporation_ids = CorporationInfo::query()->where('alliance_id', $alliance_id)->pluck('corporation_id');
 
         foreach ($corporation_ids as $corporation_id) {
-            $refresh_token = $this->getCorporateRefreshToken($corporation_id);
-
-            if ($refresh_token) {
-                return $refresh_token;
-            }
+            return $this->getCorporateRefreshToken($corporation_id);
         }
 
         throw new Exception('Could not find refresh token for alliance_id');

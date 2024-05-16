@@ -42,7 +42,7 @@ class ContractItemFactory extends Factory
             'is_included' => $this->faker->boolean,
             'is_singleton' => $this->faker->boolean,
             'type_id' => Type::factory(),
-            'quantity' => $this->faker->randomDigit,
+            'quantity' => $this->faker->randomDigit(),
         ];
     }
 

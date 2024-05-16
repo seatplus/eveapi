@@ -35,9 +35,6 @@ trait HasPages
         return $this->page;
     }
 
-    /**
-     * @param  int  $page
-     */
     public function incrementPage(): void
     {
         $this->page++;

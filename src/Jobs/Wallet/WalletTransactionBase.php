@@ -4,7 +4,7 @@ namespace Seatplus\Eveapi\Jobs\Wallet;
 
 use Illuminate\Support\Arr;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Esi\HasQueryStringInterface;
+use Seatplus\Eveapi\Esi\HasQueryParametersInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
@@ -16,7 +16,7 @@ use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasQueryValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-abstract class WalletTransactionBase extends EsiBase implements HasPathValuesInterface, HasQueryStringInterface, HasRequiredScopeInterface
+abstract class WalletTransactionBase extends EsiBase implements HasPathValuesInterface, HasQueryParametersInterface, HasRequiredScopeInterface
 {
     use HasPathValues;
     use HasQueryValues;
@@ -49,7 +49,7 @@ abstract class WalletTransactionBase extends EsiBase implements HasPathValuesInt
         }
 
         while (true) {
-            $this->setQueryString([
+            $this->setQueryParameters([
                 'from_id' => $this->from_id,
             ]);
 
@@ -103,7 +103,7 @@ abstract class WalletTransactionBase extends EsiBase implements HasPathValuesInt
 
         // see https://divinglaravel.com/avoiding-memory-leaks-when-running-laravel-queue-workers
         // This job is very memory consuming hence avoiding memory leaks, the worker should restart
-        app('queue.worker')->shouldQuit = 1;
+        app('queue.worker')->shouldQuit = true;
     }
 
     private function persistTransactions()

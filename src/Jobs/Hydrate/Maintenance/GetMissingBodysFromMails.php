@@ -40,33 +40,29 @@ class GetMissingBodysFromMails extends HydrateMaintenanceBase
             return;
         }
 
-        $jobs = collect();
-
-        Mail::where('body', null)
+        $jobs = Mail::query()
+            ->whereNull('body')
             ->pluck('id')
-            ->each(function ($mail_id) use ($jobs) {
+            ->map(fn ($mail_id) => $this->createMailBodyJob($mail_id))
+            ->filter();
 
-                $refresh_tokens = RefreshToken::whereHas('character.mails', fn ($query) => $query->where('mails.id', $mail_id))->get();
+        $this->batch()->add($jobs->toArray());
+    }
 
-                // if no refresh token is found, we can not hydrate the mail body and skip it
-                if ($refresh_tokens->isEmpty()) {
-                    return;
-                }
+    private function createMailBodyJob($mail_id): ?MailBodyJob
+    {
+        $refresh_tokens = RefreshToken::whereHas('character.mails', fn ($query) => $query->where('mails.id', $mail_id))->get();
 
-                $refresh_token = $refresh_tokens
-                    ->filter(fn (RefreshToken $token) => $token->hasScope('esi-mail.read_mail.v1'))
-                    ->random();
+        // if no refresh token is found, we can not hydrate the mail body and skip it
+        if ($refresh_tokens->isEmpty()) {
+            return null;
+        }
 
-                // if no refresh token with the required scope is found, we can not hydrate the mail body and skip it
-                if (is_null($refresh_token)) {
-                    return;
-                }
-
-                $jobs->push(new MailBodyJob($refresh_token->character_id, $mail_id));
-            });
-
-        $this->batch()->add(
-            $jobs->toArray()
-        );
+        return $refresh_tokens
+            ->filter(fn (RefreshToken $token) => $token->hasScope('esi-mail.read_mail.v1'))
+            // limit to one refresh token
+            ->take(1)
+            ->map(fn (RefreshToken $token) => new MailBodyJob($token->character_id, $mail_id))
+            ->first();
     }
 }

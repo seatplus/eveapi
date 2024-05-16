@@ -2,11 +2,11 @@
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\Structure;
 use Seatplus\Eveapi\Services\ResolveLocation\Resolver\StationResolver;
-use Illuminate\Support\Facades\Queue;
 
 beforeEach(function () {
     Queue::fake();
@@ -151,7 +151,8 @@ describe('is potential station', function () {
             'location_id' => $location_id,
         ]);
 
-        $test_class = new class extends StationResolver {
+        $test_class = new class extends StationResolver
+        {
             protected function dispatchStationResolutionJob(Location $location): void
             {
                 throw new \Exception('test');
@@ -168,5 +169,3 @@ describe('is potential station', function () {
     })->throws(\Exception::class);
 
 });
-
-

@@ -2,7 +2,6 @@
 
 namespace Seatplus\Eveapi\Services\ResolveLocation\Finders;
 
-use Closure;
 use Illuminate\Database\Eloquent\Collection;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;

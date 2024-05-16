@@ -193,11 +193,11 @@ class EveapiServiceProvider extends ServiceProvider
 
     private function addEventListeners()
     {
-        $this->app->events->subscribe(DispatchGetSystemJobSubscriber::class);
-        $this->app->events->listen(UniverseSystemCreated::class, DispatchGetConstellationById::class);
-        $this->app->events->listen(UniverseConstellationCreated::class, DispatchGetRegionById::class);
-        $this->app->events->listen(RefreshTokenCreated::class, ReactOnFreshRefreshToken::class);
-        $this->app->events->listen(UpdatingRefreshTokenEvent::class, UpdatingRefreshTokenListener::class);
+        app('events')->subscribe(DispatchGetSystemJobSubscriber::class);
+        app('events')->listen(UniverseSystemCreated::class, DispatchGetConstellationById::class);
+        app('events')->listen(UniverseConstellationCreated::class, DispatchGetRegionById::class);
+        app('events')->listen(RefreshTokenCreated::class, ReactOnFreshRefreshToken::class);
+        app('events')->listen(UpdatingRefreshTokenEvent::class, UpdatingRefreshTokenListener::class);
 
         Type::observe(TypeObserver::class);
         Group::observe(GroupObserver::class);

@@ -28,6 +28,13 @@ namespace Seatplus\Eveapi\Models\Character;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Application;
 use Seatplus\Eveapi\Models\Assets\Asset;
@@ -45,18 +52,10 @@ use Seatplus\Eveapi\Models\Wallet\Balance;
 use Seatplus\Eveapi\Models\Wallet\WalletJournal;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 
-/**
- * @property ?CharacterRole $roles
- */
 class CharacterInfo extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
     protected $guarded = [];
 
     public $incrementing = false;
@@ -66,22 +65,17 @@ class CharacterInfo extends Model
      */
     protected $primaryKey = 'character_id';
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         'character_id' => 'integer',
         'corporation_id' => 'integer',
     ];
 
-    public function refresh_token()
+    public function refresh_token(): HasOne
     {
         return $this->hasOne(RefreshToken::class, 'character_id', 'character_id');
     }
 
-    public function corporation()
+    public function corporation(): HasOneThrough
     {
         return $this->hasOneThrough(
             CorporationInfo::class,
@@ -93,7 +87,7 @@ class CharacterInfo extends Model
         );
     }
 
-    public function alliance()
+    public function alliance(): HasOneThrough
     {
         return $this->hasOneThrough(
             AllianceInfo::class,
@@ -105,57 +99,57 @@ class CharacterInfo extends Model
         );
     }
 
-    public function roles()
+    public function roles(): HasOne
     {
         return $this->hasOne(CharacterRole::class, 'character_id', 'character_id')->withDefault();
     }
 
-    public function character_affiliation()
+    public function character_affiliation(): HasOne
     {
         return $this->hasOne(CharacterAffiliation::class, 'character_id', 'character_id');
     }
 
-    public function application()
+    public function application(): MorphOne
     {
         return $this->morphOne(Application::class, 'applicationable')->whereStatus('open');
     }
 
-    public function getCorporationIdAttribute()
+    public function getCorporationIdAttribute(): ?int
     {
         return $this->character_affiliation?->corporation_id;
     }
 
-    public function getAllianceIdAttribute()
+    public function getAllianceIdAttribute(): ?int
     {
         return $this->character_affiliation?->alliance_id;
     }
 
-    public function assets()
+    public function assets(): MorphMany
     {
         return $this->morphMany(Asset::class, 'assetable');
     }
 
-    public function contacts()
+    public function contacts(): MorphMany
     {
         return $this->morphMany(Contact::class, 'contactable');
     }
 
-    public function labels()
+    public function labels(): MorphMany
     {
         return $this->morphMany(Label::class, 'labelable');
     }
 
-    public function wallet_journals()
+    public function wallet_journals(): MorphMany
     {
         return $this->morphMany(WalletJournal::class, 'wallet_journable');
     }
 
-    public function wallet_transactions()
+    public function wallet_transactions(): MorphMany
     {
         return $this->morphMany(WalletTransaction::class, 'wallet_transactionable');
     }
 
-    public function contracts()
+    public function contracts(): MorphToMany
     {
         return $this->morphToMany(
             Contract::class,
@@ -166,22 +160,22 @@ class CharacterInfo extends Model
         );
     }
 
-    public function corporation_history()
+    public function corporation_history(): HasMany
     {
         return $this->hasMany(CorporationHistory::class, 'character_id');
     }
 
-    public function skills()
+    public function skills(): HasMany
     {
         return $this->hasMany(Skill::class, 'character_id');
     }
 
-    public function skill_queues()
+    public function skill_queues(): HasMany
     {
         return $this->hasMany(SkillQueue::class, 'character_id');
     }
 
-    public function mails()
+    public function mails(): HasManyThrough
     {
         return $this->hasManyThrough(
             Mail::class,
@@ -193,12 +187,12 @@ class CharacterInfo extends Model
         );
     }
 
-    public function balance()
+    public function balance(): MorphOne
     {
         return $this->morphOne(Balance::class, 'balanceable');
     }
 
-    public function batch_update()
+    public function batch_update(): MorphOne
     {
         return $this->morphOne(BatchUpdate::class, 'batchable');
     }

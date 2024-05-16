@@ -30,6 +30,8 @@ use Carbon\Carbon;
 use Firebase\JWT\JWT;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Seatplus\Eveapi\Events\RefreshTokenCreated;
 use Seatplus\Eveapi\Events\UpdatingRefreshTokenEvent;
@@ -42,9 +44,6 @@ class RefreshToken extends Model
     use HasFactory;
     use SoftDeletes;
 
-    /**
-     * @var array
-     */
     protected $casts = [
         'expires_on' => 'datetime',
         'deleted_at' => 'datetime',
@@ -62,11 +61,6 @@ class RefreshToken extends Model
      */
     public $incrementing = false;
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
     protected $guarded = [];
 
     protected $dispatchesEvents = [
@@ -87,15 +81,12 @@ class RefreshToken extends Model
         return null;
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function character()
+    public function character(): BelongsTo
     {
         return $this->belongsTo(CharacterInfo::class, 'character_id', 'character_id');
     }
 
-    public function corporation()
+    public function corporation(): HasOneThrough
     {
         return $this->hasOneThrough(
             CorporationInfo::class,
@@ -107,12 +98,12 @@ class RefreshToken extends Model
         );
     }
 
-    public function getCorporationIdAttribute()
+    public function getCorporationIdAttribute(): int
     {
         return $this->corporation->corporation_id;
     }
 
-    public function getScopesAttribute()
+    public function getScopesAttribute(): array
     {
         $jwt = $this->getRawOriginal('token');
         $jwt_payload_base64_encoded = explode('.', $jwt)[1];

@@ -45,6 +45,7 @@ class StructureResolver implements ResolverInterface
         // if args is StructureRefreshTokenFinder, set it as tokenService
         if ($args instanceof StructureRefreshTokenFinder) {
             $this->tokenService = $args;
+
             return;
         }
 
@@ -74,8 +75,9 @@ class StructureResolver implements ResolverInterface
             // find valid refresh token for structure
             $this->findValidRefreshToken($location);
 
-            if($this->hasRefreshToken()) {
+            if ($this->hasRefreshToken()) {
                 $this->resolveStructure($location);
+
                 return true;
             }
         }

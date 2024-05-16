@@ -3,20 +3,21 @@
 namespace Seatplus\Eveapi\Services\ResolveLocation\Resolver;
 
 use Illuminate\Database\Eloquent\Collection;
-use Seatplus\Eveapi\Models\LocationRefreshTokens;
+use Seatplus\Eveapi\Models\LocationRefreshToken;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\ResolveLocation\Finders\FinderInterface;
-use Seatplus\Eveapi\Services\ResolveLocation\Finders\ThroughSuccessfulRefreshTokenFinder;
 use Seatplus\Eveapi\Services\ResolveLocation\Finders\ThroughCharacterAssetsFinder;
 use Seatplus\Eveapi\Services\ResolveLocation\Finders\ThroughContractsFinder;
 use Seatplus\Eveapi\Services\ResolveLocation\Finders\ThroughCorporationMemberTrackingFinder;
 use Seatplus\Eveapi\Services\ResolveLocation\Finders\ThroughPreviouslyFailedRefreshTokenFinder;
 use Seatplus\Eveapi\Services\ResolveLocation\Finders\ThroughRandomRefreshTokenFinder;
+use Seatplus\Eveapi\Services\ResolveLocation\Finders\ThroughSuccessfulRefreshTokenFinder;
 use Seatplus\Eveapi\Services\ResolveLocation\Finders\ThroughWalletTransactionsFinder;
 
 class StructureRefreshTokenFinder
 {
     private int $location_id;
+
     public function __construct(
         public ?RefreshToken $refreshToken = null,
     ) {
@@ -49,7 +50,7 @@ class StructureRefreshTokenFinder
 
     private function updateOrCreateLocationRefreshToken(bool $resolved): void
     {
-        LocationRefreshTokens::query()
+        LocationRefreshToken::query()
             ->updateOrCreate([
                 'location_id' => $this->location_id,
                 'character_id' => $this->refreshToken->character_id,
@@ -66,7 +67,7 @@ class StructureRefreshTokenFinder
 
     private function incrementAttempts(): void
     {
-        LocationRefreshTokens::query()
+        LocationRefreshToken::query()
             ->where('location_id', $this->location_id)
             ->where('character_id', $this->refreshToken->character_id)
             ->increment('attempts');
@@ -74,7 +75,7 @@ class StructureRefreshTokenFinder
 
     private function resetAttempts(): void
     {
-        LocationRefreshTokens::query()
+        LocationRefreshToken::query()
             ->where('location_id', $this->location_id)
             ->where('character_id', $this->refreshToken->character_id)
             ->update(['attempts' => 0]);
@@ -95,7 +96,7 @@ class StructureRefreshTokenFinder
 
     private function getLocationRefreshTokens(): Collection
     {
-        return LocationRefreshTokens::query()
+        return LocationRefreshToken::query()
             ->where('location_id', $this->location_id)
             ->inRandomOrder()
             ->get();

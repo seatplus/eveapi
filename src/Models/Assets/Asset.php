@@ -32,7 +32,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Seatplus\Eveapi\Events\AssetUpdating;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Traits\HasWatchlist;
@@ -46,11 +46,6 @@ class Asset extends Model
 
     protected array $affiliated_ids = [];
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
     protected $guarded = [];
 
     /**
@@ -65,26 +60,12 @@ class Asset extends Model
      */
     public $incrementing = false;
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         'assetable_id' => 'integer',
         'type_id' => 'integer',
     ];
 
-    /**
-     * The event map for the model.
-     *
-     * @var array
-     */
-    protected $dispatchesEvents = [
-        'updating' => AssetUpdating::class,
-    ];
-
-    public function assetable()
+    public function assetable(): MorphTo
     {
         return $this->morphTo();
     }
@@ -156,7 +137,7 @@ class Asset extends Model
         return $query->whereIn('category_id', $category_ids);
     }
 
-    public function scopeSearch(Builder $query, ?string $terms = null)
+    public function scopeSearch(Builder $query, ?string $terms = null): void
     {
         collect(str_getcsv($terms, ' ', '"'))->filter()
             ->each(function ($term) use ($query) {
@@ -176,6 +157,8 @@ class Asset extends Model
                 $this->newQuery()->select('assets.*')->join('tree', 'tree.location_id', '=', 'assets.item_id')
             );
 
-        return $this->newQuery()->from('tree')->withRecursiveExpression('tree', $sub_query);
+        return $this->newQuery() // @phpstan-ignore-line
+            ->from('tree')
+            ->withRecursiveExpression('tree', $sub_query);
     }
 }

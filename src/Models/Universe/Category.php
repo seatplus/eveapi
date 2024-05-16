@@ -33,11 +33,6 @@ class Category extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
     protected $guarded = [];
 
     /**
@@ -59,11 +54,6 @@ class Category extends Model
      */
     protected $table = 'universe_categories';
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         'category_id' => 'integer',
         'name' => 'string',

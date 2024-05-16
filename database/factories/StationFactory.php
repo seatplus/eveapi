@@ -46,7 +46,7 @@ class StationFactory extends Factory
             'reprocessing_efficiency' => $this->faker->randomNumber(),
             'reprocessing_stations_take' => $this->faker->randomNumber(),
             'max_dockable_ship_volume' => $this->faker->randomNumber(),
-            'office_rental_cost' => $this->faker->randomDigit,
+            'office_rental_cost' => $this->faker->randomDigit(),
         ];
     }
 

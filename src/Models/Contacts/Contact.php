@@ -31,6 +31,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 
 class Contact extends Model
@@ -39,7 +40,7 @@ class Contact extends Model
 
     use HasFactory;
 
-    public function contactable()
+    public function contactable(): MorphTo
     {
         return $this->morphTo();
     }
@@ -47,15 +48,6 @@ class Contact extends Model
     public function labels(): HasMany
     {
         return $this->hasMany(ContactLabel::class);
-    }
-
-    public function scopeAffiliated(Builder $query, array $affiliated_ids, ?array $contactable_ids = null): Builder
-    {
-        return $query->when($contactable_ids, function ($query, $contactable_ids) use ($affiliated_ids) {
-            return $query->entityFilter(collect($contactable_ids)->map(fn ($character_id) => intval($character_id))->intersect($affiliated_ids)->toArray());
-        }, function ($query) {
-            return $query->entityFilter(auth()->user()->characters->pluck('character_id')->toArray());
-        });
     }
 
     public function scopeEntityFilter(Builder $query, array $contactable_ids): Builder

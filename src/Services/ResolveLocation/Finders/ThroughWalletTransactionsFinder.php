@@ -2,9 +2,7 @@
 
 namespace Seatplus\Eveapi\Services\ResolveLocation\Finders;
 
-use Closure;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Pipeline\Pipeline;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
