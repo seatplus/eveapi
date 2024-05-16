@@ -1,8 +1,6 @@
 <?php
 
-
 use Seatplus\Eveapi\Services\ResolveLocation\ResolveLocationService;
-
 
 it('runs through resolvers', function () {
     \Illuminate\Support\Facades\Event::fake();
