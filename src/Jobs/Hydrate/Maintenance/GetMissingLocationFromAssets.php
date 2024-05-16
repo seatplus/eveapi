@@ -28,8 +28,6 @@ namespace Seatplus\Eveapi\Jobs\Hydrate\Maintenance;
 
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\Structure;
 
@@ -43,30 +41,17 @@ class GetMissingLocationFromAssets extends HydrateMaintenanceBase
             return;
         }
 
-        // First do the character assets
-
-        Asset::whereDoesntHave('location', fn ($query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]))
-            // limit result to assetable_type CharacterInfo
-            ->where('assetable_type', CharacterInfo::class)
+        // First do the assets
+        $jobs = Asset::whereDoesntHave('location', fn ($query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]))
             ->AssetsLocationIds()
             ->inRandomOrder()
-            ->addSelect('assetable_id')
-            ->get()
-            ->unique('location_id')
+            ->select('location_id')
+            ->pluck('location_id')
+            ->unique()
             ->filter()
-            ->each(function ($asset) {
-                $refresh_token = RefreshToken::find($asset->assetable_id);
+            ->map(fn ($location_id) => new ResolveLocationJob($location_id));
 
-                if (is_null($refresh_token)) {
-                    return;
-                }
+        $this->batch()->add($jobs->toArray());
 
-                $this->batch()->add([
-                    new ResolveLocationJob($asset->location_id, $refresh_token),
-                ]);
-            });
-
-        // Then do the corporation assets
-        // TODO: Implement GetMissingLocationFromAssets for corporation assets
     }
 }

@@ -28,6 +28,8 @@ namespace Seatplus\Eveapi\Models\Wallet;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Type;
 
@@ -37,26 +39,21 @@ class WalletTransaction extends Model
 
     protected $guarded = false;
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array
-     */
     protected $casts = [
         'date' => 'datetime',
     ];
 
-    public function wallet_transactionable()
+    public function wallet_transactionable(): MorphTo
     {
         return $this->morphTo();
     }
 
-    public function type()
+    public function type(): HasOne
     {
         return $this->hasOne(Type::class, 'type_id', 'type_id');
     }
 
-    public function location()
+    public function location(): HasOne
     {
         return $this->hasOne(Location::class, 'location_id', 'location_id');
     }

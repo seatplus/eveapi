@@ -28,6 +28,8 @@ namespace Seatplus\Eveapi\Models\Character;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
@@ -35,11 +37,6 @@ class CharacterAffiliation extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
     protected $guarded = [];
 
     /**
@@ -56,11 +53,6 @@ class CharacterAffiliation extends Model
      */
     protected $table = 'character_affiliations';
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         'character_id' => 'integer',
         'corporation_id' => 'integer',
@@ -69,17 +61,17 @@ class CharacterAffiliation extends Model
         'last_pulled' => 'datetime',
     ];
 
-    public function alliance()
+    public function alliance(): BelongsTo
     {
         return $this->belongsTo(AllianceInfo::class, 'alliance_id', 'alliance_id');
     }
 
-    public function corporation()
+    public function corporation(): BelongsTo
     {
         return $this->belongsTo(CorporationInfo::class, 'corporation_id', 'corporation_id');
     }
 
-    public function character()
+    public function character(): HasOne
     {
         return $this->hasOne(CharacterInfo::class, 'character_id', 'character_id');
     }

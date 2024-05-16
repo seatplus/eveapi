@@ -38,21 +38,12 @@ class CharacterInfoFactory extends Factory
 {
     protected $model = CharacterInfo::class;
 
-    /**
-     * Configure the model factory.
-     *
-     * @return $this
-     */
     public function configure()
     {
         return $this->afterCreating(function (CharacterInfo $character_info) {
             $character_affiliation = $character_info
                 ->character_affiliation()
                 ->save(CharacterAffiliation::factory()->withAlliance()->create());
-
-            /*$alliance = AllianceInfo::factory()->create([
-                'alliance_id' => $character_affiliation->alliance_id
-            ]);*/
 
             $character_affiliation->corporation()->associate(CorporationInfo::factory()->create([
                 'corporation_id' => $character_affiliation->corporation_id,
@@ -81,7 +72,7 @@ class CharacterInfoFactory extends Factory
             'bloodline_id' => $this->faker->randomDigitNotNull,
             'description' => $this->faker->optional()->realText(),
             'security_status' => $this->faker->optional()->randomFloat(null, -10, +10),
-            'title' => $this->faker->optional()->bs,
+            'title' => $this->faker->optional()->jobTitle(),
         ];
     }
 }

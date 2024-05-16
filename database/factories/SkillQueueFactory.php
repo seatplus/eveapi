@@ -33,11 +33,6 @@ use Seatplus\Eveapi\Models\Universe\Type;
 
 class SkillQueueFactory extends Factory
 {
-    /**
-     * The name of the factory's corresponding model.
-     *
-     * @var string
-     */
     protected $model = SkillQueue::class;
 
     public function definition()
@@ -49,9 +44,9 @@ class SkillQueueFactory extends Factory
             'finished_level' => $this->faker->numberBetween(0, 5),
             'start_date' => $this->faker->dateTime('now', null)->format('Y-m-d H:i:s'),
             'finish_date' => $this->faker->dateTime('now', null)->format('Y-m-d H:i:s'),
-            'training_start_sp' => $this->faker->randomNumber,
-            'level_start_sp' => $this->faker->randomNumber,
-            'level_end_sp' => $this->faker->randomNumber,
+            'training_start_sp' => $this->faker->randomNumber(),
+            'level_start_sp' => $this->faker->randomNumber(),
+            'level_end_sp' => $this->faker->randomNumber(),
         ];
     }
 }

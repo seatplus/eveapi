@@ -29,7 +29,6 @@ namespace Seatplus\Eveapi\Jobs\Hydrate\Maintenance;
 use Illuminate\Database\Eloquent\Builder;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Contracts\Contract;
-use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\Structure;
 
@@ -43,7 +42,7 @@ class GetMissingLocationFromContracts extends HydrateMaintenanceBase
             return;
         }
 
-        Contract::query()
+        $jobs = Contract::query()
             ->where(function (Builder $query) {
                 $query->whereNotNull('start_location_id')
                     ->whereDoesntHave('start_location', fn ($query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]));
@@ -52,42 +51,16 @@ class GetMissingLocationFromContracts extends HydrateMaintenanceBase
                 $query->whereNotNull('end_location_id')
                     ->whereDoesntHave('end_location', fn ($query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]));
             })
-            //->whereDoesntHave('start_location', fn ($query) => $query->whereNotNull('start_location_id'))
-            //->orWhereDoesntHave('end_location', fn ($query) => $query->whereNotNull('end_location_id'))
+            ->select('start_location_id', 'end_location_id')
             ->inRandomOrder()
             ->get()
-            ->each(function ($contract) {
-                $unknown_location_ids = collect();
+            // receive flat array of location ids
+            ->map(fn ($contract) => collect([$contract->start_location_id, $contract->end_location_id]))
+            ->flatten()
+            ->unique()
+            ->filter()
+            ->map(fn (int $location_id) => new ResolveLocationJob($location_id));
 
-                if (is_null($contract->start_location) || $this->isNotStationOrStructure($contract->start_location)) {
-                    $unknown_location_ids->push($contract->start_location_id);
-                }
-
-                if (is_null($contract->end_location) || $this->isNotStationOrStructure($contract->end_location)) {
-                    $unknown_location_ids->push($contract->end_location_id);
-                }
-
-                $refresh_token = RefreshToken::find($contract->issuer_id) ?? RefreshToken::find($contract->assignee_id);
-
-                if (is_null($refresh_token)) {
-                    return;
-                }
-
-                $unknown_location_ids
-                    ->filter()
-                    ->unique()
-                    ->each(
-                        fn ($location_id) => $this
-                            ->batch()
-                            ->add([
-                                new ResolveLocationJob($location_id, $refresh_token),
-                            ])
-                    );
-            });
-    }
-
-    private function isNotStationOrStructure($location): bool
-    {
-        return ! (is_a($location, Structure::class) || is_a($location, Structure::class));
+        $this->batch()->add($jobs->toArray());
     }
 }

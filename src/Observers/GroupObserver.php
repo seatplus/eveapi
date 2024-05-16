@@ -34,18 +34,9 @@ use Seatplus\Eveapi\Models\Universe\Group;
 
 class GroupObserver
 {
-    /**
-     * @var \Seatplus\Eveapi\Models\Universe\Group|null
-     */
     private Group $group;
 
-    /**
-     * Handle the User "created" event.
-     *
-     *
-     * @return void
-     */
-    public function created(Group $group)
+    public function created(Group $group): void
     {
         $this->group = $group;
 
@@ -53,7 +44,7 @@ class GroupObserver
         $this->handleAssetsName();
     }
 
-    private function handleCategory()
+    private function handleCategory(): void
     {
         if ($this->group->category) {
             return;
@@ -62,7 +53,7 @@ class GroupObserver
         ResolveUniverseCategoryByIdJob::dispatch($this->group->category_id)->onQueue('high');
     }
 
-    private function handleAssetsName()
+    private function handleAssetsName(): void
     {
         if (! in_array($this->group->category_id, [2, 6, 22, 23, 46, 65])) {
             return;

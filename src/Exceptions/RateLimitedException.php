@@ -27,6 +27,7 @@
 namespace Seatplus\Eveapi\Exceptions;
 
 use Exception;
+use Throwable;
 
 class RateLimitedException extends Exception
 {

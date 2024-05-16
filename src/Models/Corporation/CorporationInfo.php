@@ -28,6 +28,10 @@ namespace Seatplus\Eveapi\Models\Corporation;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Application;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
@@ -43,11 +47,6 @@ class CorporationInfo extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
     protected $guarded = [];
 
     /**
@@ -55,11 +54,6 @@ class CorporationInfo extends Model
      */
     protected $primaryKey = 'corporation_id';
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         'corporation_id' => 'integer',
         'alliance_id' => 'integer',
@@ -77,47 +71,47 @@ class CorporationInfo extends Model
         );
     }
 
-    public function ssoScopes()
+    public function ssoScopes(): MorphOne
     {
         return $this->morphOne(SsoScopes::class, 'morphable');
     }
 
-    public function alliance()
+    public function alliance(): BelongsTo
     {
         return $this->belongsTo(AllianceInfo::class, 'alliance_id', 'alliance_id');
     }
 
-    public function candidates()
+    public function candidates(): HasMany
     {
         return $this->hasMany(Application::class, 'corporation_id', 'corporation_id');
     }
 
-    public function contacts()
+    public function contacts(): MorphMany
     {
         return $this->morphMany(Contact::class, 'contactable');
     }
 
-    public function labels()
+    public function labels(): MorphMany
     {
         return $this->morphMany(Label::class, 'labelable');
     }
 
-    public function members()
+    public function members(): HasMany
     {
         return $this->hasMany(CorporationMemberTracking::class, 'corporation_id', 'corporation_id');
     }
 
-    public function wallets()
+    public function wallets(): MorphMany
     {
         return $this->morphMany(Balance::class, 'balanceable');
     }
 
-    public function wallet_journals()
+    public function wallet_journals(): MorphMany
     {
         return $this->morphMany(WalletJournal::class, 'wallet_journable');
     }
 
-    public function wallet_transactions()
+    public function wallet_transactions(): MorphMany
     {
         return $this->morphMany(WalletTransaction::class, 'wallet_transactionable');
     }

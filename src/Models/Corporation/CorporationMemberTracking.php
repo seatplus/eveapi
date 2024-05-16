@@ -26,9 +26,10 @@
 
 namespace Seatplus\Eveapi\Models\Corporation;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Type;
@@ -37,51 +38,30 @@ class CorporationMemberTracking extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
     protected $guarded = [];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         'corporation_id' => 'integer',
         'character_id' => 'integer',
     ];
 
-    public function character()
+    public function character(): BelongsTo
     {
         return $this->belongsTo(CharacterInfo::class, 'character_id', 'character_id');
     }
 
-    public function corporation()
+    public function corporation(): BelongsTo
     {
         return $this->belongsTo(CorporationInfo::class, 'corporation_id', 'corporation_id');
     }
 
-    public function location()
+    public function location(): HasOne
     {
         return $this->hasOne(Location::class, 'location_id', 'location_id');
     }
 
-    public function ship()
+    public function ship(): HasOne
     {
         return $this->hasOne(Type::class, 'type_id', 'ship_type_id');
-    }
-
-    public function scopeAffiliated(Builder $query, ?array $corporation_ids = []): Builder
-    {
-        $affiliated_ids = getAffiliatedIdsByClass($this::class, 'Director');
-
-        if ($corporation_ids) {
-            return $query->whereIn('corporation_id', collect($corporation_ids)->map(fn ($corporation_id) => intval($corporation_id))->intersect($affiliated_ids)->toArray());
-        }
-
-        return $query->whereIn('corporation_id', $affiliated_ids);
     }
 }

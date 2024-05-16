@@ -37,7 +37,7 @@ class BalanceFactory extends Factory
     public function definition()
     {
         return [
-            'id' => $this->faker->unique()->randomNumber,
+            'id' => $this->faker->unique()->randomNumber(),
             'balanceable_id' => $this->faker->numberBetween(90_000_000, 98_000_000),
             'balanceable_type' => CharacterInfo::class,
             'balance' => $this->faker->randomFloat(2),

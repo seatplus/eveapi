@@ -27,6 +27,7 @@
 namespace Seatplus\Eveapi\Esi;
 
 use Exception;
+use GuzzleHttp\Exception\ClientException;
 use Illuminate\Queue\InteractsWithQueue;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
@@ -66,7 +67,7 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
         );
     }
 
-    private function builldEsiRequestContainer(?int $page)
+    private function builldEsiRequestContainer(?int $page): void
     {
         $this->esi_request_container = $this->getBaseEsiReuestContainer();
 
@@ -83,8 +84,8 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
                 $this->esi_request_container->request_body = $this->getRequestBody();
             }
 
-            if ($this instanceof HasQueryStringInterface) {
-                $this->esi_request_container->query_string = $this->getQueryString();
+            if ($this instanceof HasQueryParametersInterface) {
+                $this->esi_request_container->query_parameters = $this->getQueryParameters();
             }
         } catch (Exception $exception) {
             // fail job
@@ -94,16 +95,22 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
         $this->esi_request_container->page = $page;
     }
 
-    private function handleException(RequestFailedException $exception)
+    private function handleException(RequestFailedException $exception): void
     {
-        // if access is forbidden
-        if ($exception->getOriginalException()?->getResponse()?->getReasonPhrase() === 'Forbidden') {
-            match ($this->esi_request_container->endpoint) {
-                // if attempt was made for structure endpoint
-                '/universe/structures/{structure_id}/' => $this->delete(),
-                // by default fail a forbidden request
-                default => $this->fail($exception)
-            };
+
+        $original_exception = $exception->getOriginalException();
+
+        // if original exception is ClientException check if it is forbidden
+        if ($original_exception instanceof ClientException) {
+
+            if ($original_exception->getResponse()->getReasonPhrase() === 'Forbidden') {
+                match ($this->esi_request_container->endpoint) {
+                    // if attempt was made for structure endpoint
+                    '/universe/structures/{structure_id}/' => $this->delete(),
+                    // by default fail a forbidden request
+                    default => $this->fail($exception)
+                };
+            }
         }
     }
 }

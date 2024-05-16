@@ -12,7 +12,7 @@ class UpdateRefreshTokenService
 
     public static function make()
     {
-        return new static();
+        return new self();
     }
 
     public function update(RefreshToken $refreshToken): RefreshToken

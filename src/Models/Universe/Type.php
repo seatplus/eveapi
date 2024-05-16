@@ -38,7 +38,7 @@ class Type extends Model
     /**
      * The attributes that aren't mass assignable.
      *
-     * @var array
+     * @var array<string>|bool
      */
     protected $guarded = [];
 
@@ -56,11 +56,6 @@ class Type extends Model
      */
     protected $table = 'universe_types';
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         'type_id' => 'integer',
         'group_id' => 'integer',

@@ -28,17 +28,13 @@ namespace Seatplus\Eveapi\Models\Contracts;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Seatplus\Eveapi\Models\Universe\Type;
 
 class ContractItem extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
     protected $guarded = [];
 
     /**
@@ -53,7 +49,7 @@ class ContractItem extends Model
      */
     public $incrementing = false;
 
-    public function type()
+    public function type(): HasOne
     {
         return $this->hasOne(Type::class, 'type_id', 'type_id');
     }

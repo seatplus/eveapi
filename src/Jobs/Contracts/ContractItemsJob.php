@@ -41,6 +41,8 @@ abstract class ContractItemsJob extends EsiBase implements HasPathValuesInterfac
     use HasPathValues;
     use HasRequiredScopes;
 
+    public int $contract_id;
+
     public function middleware(): array
     {
         return [

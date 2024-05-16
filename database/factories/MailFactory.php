@@ -32,11 +32,6 @@ use Seatplus\Eveapi\Models\Mail\Mail;
 
 class MailFactory extends Factory
 {
-    /**
-     * The name of the factory's corresponding model.
-     *
-     * @var string
-     */
     protected $model = Mail::class;
 
     public function definition(): array

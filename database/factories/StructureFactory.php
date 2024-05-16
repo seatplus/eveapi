@@ -34,14 +34,14 @@ class StructureFactory extends Factory
 {
     protected $model = Structure::class;
 
-    public function definition()
+    public function definition(): array
     {
         return [
-            'structure_id' => $this->faker->numberBetween(0, 10000),
+            'structure_id' => $this->faker->unique()->numberBetween(100_000_000, 200_000_000),
             'name' => $this->faker->name,
             'owner_id' => $this->faker->numberBetween(98000000, 99000000),
             'solar_system_id' => System::factory(),
-            'type_id' => $this->faker->optional()->numberBetween(0, 10000),
+            'type_id' => $this->faker->optional()->numberBetween(1, 10000),
         ];
     }
 }

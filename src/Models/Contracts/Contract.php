@@ -29,6 +29,10 @@ namespace Seatplus\Eveapi\Models\Contracts;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Universe\Location;
@@ -39,11 +43,6 @@ class Contract extends Model
     use HasFactory;
     use HasWatchlist;
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
     protected $guarded = [];
 
     /**
@@ -68,42 +67,42 @@ class Contract extends Model
         return $this->assignee_character ?? $this->assignee_corporation;
     }
 
-    public function items()
+    public function items(): HasMany
     {
         return $this->hasMany(ContractItem::class, 'contract_id', 'contract_id');
     }
 
-    public function start_location()
+    public function start_location(): HasOne
     {
         return $this->hasOne(Location::class, 'location_id', 'start_location_id');
     }
 
-    public function end_location()
+    public function end_location(): HasOne
     {
         return $this->hasOne(Location::class, 'location_id', 'end_location_id');
     }
 
-    public function assignee_character()
+    public function assignee_character(): BelongsTo
     {
         return $this->belongsTo(CharacterInfo::class, 'assignee_id', 'character_id');
     }
 
-    public function assignee_corporation()
+    public function assignee_corporation(): BelongsTo
     {
         return $this->belongsTo(CorporationInfo::class, 'assignee_id', 'corporation_id');
     }
 
-    public function issuer_character()
+    public function issuer_character(): BelongsTo
     {
         return $this->belongsTo(CharacterInfo::class, 'issuer_id', 'character_id');
     }
 
-    public function issuer_corporation()
+    public function issuer_corporation(): BelongsTo
     {
         return $this->belongsTo(CorporationInfo::class, 'issuer_corporation_id', 'corporation_id');
     }
 
-    public function characters()
+    public function characters(): MorphToMany
     {
         return $this->morphedByMany(CharacterInfo::class, 'contractable', null, 'contract_id');
     }

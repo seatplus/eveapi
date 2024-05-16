@@ -22,7 +22,7 @@ class UpdateAssetSystemRegionJob extends HydrateMaintenanceBase
         // get all assets with missing system_id and region_id
         $assets = $this->getAssetsWithMissingSystemAndRegionInfo();
 
-        $assets->each(fn ($asset) => $asset->update([
+        $assets->each(fn (Asset $asset) => $asset->update([
             'solar_system_id' => $asset->location->locatable->system->system_id,
             'region_id' => $asset->location->locatable->system->region->region_id,
         ]));

@@ -19,7 +19,7 @@ class EnrichAssetTypeGroupCategoryJob extends HydrateMaintenanceBase
         // get all assets with missing group_id and category_id
         $assets = $this->getAssetsWithMissingGroupAndCategoryInfo();
 
-        $assets->each(fn ($asset) => $asset->update([
+        $assets->each(fn (Asset $asset) => $asset->update([
             'type_name_normalized' => $asset->type->name_normalized,
             'group_id' => $asset->type->group->group_id,
             'group_name_normalized' => $asset->type->group->name_normalized,

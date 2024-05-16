@@ -24,15 +24,11 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Services\ResolveLocation;
+namespace Seatplus\Eveapi\Esi;
 
-use Seatplus\Eveapi\Models\Universe\Location;
-
-class ResolveLocationDTO
+interface HasQueryParametersInterface
 {
-    public function __construct(
-        public Location $location,
-        public string $log_message
-    ) {
-    }
+    public function getQueryParameters(): array;
+
+    public function setQueryParameters(array $array): void;
 }

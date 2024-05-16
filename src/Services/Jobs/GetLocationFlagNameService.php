@@ -34,7 +34,7 @@ class GetLocationFlagNameService
 
     public static function make()
     {
-        return new static();
+        return new self();
     }
 
     public function get(int $flag_id): string

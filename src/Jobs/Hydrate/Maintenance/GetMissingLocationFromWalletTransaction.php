@@ -27,13 +27,9 @@
 namespace Seatplus\Eveapi\Jobs\Hydrate\Maintenance;
 
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
-use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\Structure;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
-use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 
 class GetMissingLocationFromWalletTransaction extends HydrateMaintenanceBase
 {
@@ -45,35 +41,14 @@ class GetMissingLocationFromWalletTransaction extends HydrateMaintenanceBase
             return;
         }
 
-        WalletTransaction::whereDoesntHave('location', fn ($query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]))
+        $jobs = WalletTransaction::whereDoesntHave('location', fn ($query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]))
+            ->select('location_id')
             ->inRandomOrder()
-            ->get()
-            ->unique('location_id')
-            ->each(function ($wallet_transaction) {
-                $refresh_token = null;
+            ->pluck('location_id')
+            ->unique()
+            ->filter()
+            ->map(fn ($location_id) => new ResolveLocationJob($location_id));
 
-                if ($wallet_transaction->wallet_transactionable_type === CharacterInfo::class) {
-                    $refresh_token = RefreshToken::find($wallet_transaction->wallet_transactionable_id);
-                }
-
-                if ($wallet_transaction->wallet_transactionable_type === CorporationInfo::class) {
-                    $find_corporation_refresh_token = new FindCorporationRefreshToken;
-
-                    $refresh_token = $find_corporation_refresh_token($this->wallet_transaction->wallet_transactionable_id, 'esi-universe.read_structures.v1', 'Director') ?? $this->getRandomRefreshToken($wallet_transaction);
-                }
-
-                if ($refresh_token) {
-                    $this->batch()->add([
-                        new ResolveLocationJob($wallet_transaction->location_id, $refresh_token),
-                    ]);
-                }
-            });
-    }
-
-    private function getRandomRefreshToken(WalletTransaction $wallet_transaction)
-    {
-        $random_character = $wallet_transaction->wallet_transactionable->characters->random();
-
-        return RefreshToken::find($random_character->character_id);
+        $this->batch()->add($jobs->toArray());
     }
 }

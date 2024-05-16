@@ -3,6 +3,9 @@ includes:
     - phpstan-baseline.neon
 
 parameters:
+    databaseMigrationsPath:
+        - database/migrations
+        - vendor/seatplus/auth/database/migrations
     level: 4
     paths:
         - src
@@ -12,4 +15,7 @@ parameters:
     checkOctaneCompatibility: true
     checkModelProperties: true
     checkMissingIterableValueType: false
+    ignoreErrors:
+        - '#^Access to an undefined property Seatplus\\EsiClient\\DataTransferObjects\\EsiResponse\:\:\$[a-zA-Z0-9\\_]+\.$#'
+
 

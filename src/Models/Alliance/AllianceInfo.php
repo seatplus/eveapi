@@ -28,6 +28,9 @@ namespace Seatplus\Eveapi\Models\Alliance;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contacts\Contact;
@@ -39,11 +42,6 @@ class AllianceInfo extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
     protected $guarded = [];
 
     /**
@@ -53,11 +51,6 @@ class AllianceInfo extends Model
 
     public $incrementing = false;
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         'alliance_id' => 'integer',
     ];
@@ -74,22 +67,22 @@ class AllianceInfo extends Model
         );
     }
 
-    public function corporations()
+    public function corporations(): HasMany
     {
         return $this->hasMany(CorporationInfo::class, 'alliance_id', 'alliance_id');
     }
 
-    public function ssoScopes()
+    public function ssoScopes(): MorphOne
     {
         return $this->morphOne(SsoScopes::class, 'morphable');
     }
 
-    public function contacts()
+    public function contacts(): MorphMany
     {
         return $this->morphMany(Contact::class, 'contactable');
     }
 
-    public function labels()
+    public function labels(): MorphMany
     {
         return $this->morphMany(Label::class, 'labelable');
     }

@@ -179,7 +179,7 @@ it('adds resolve location job for missing assets location to batch', function ()
     $mock->shouldReceive('batch->add')
         ->once()
         ->with([
-            new ResolveLocationJob($asset->location_id, $this->test_character->refresh_token),
+            new ResolveLocationJob($asset->location_id),
         ]);
 
     $mock->handle();
@@ -210,7 +210,7 @@ test('get missing location from assets pipe can handle non station or structure 
     $mock->shouldReceive('batch->add')
         ->once()
         ->with([
-            new ResolveLocationJob($type->type_id, $this->test_character->refresh_token),
+            new ResolveLocationJob($asset->location_id),
         ]);
 
     $mock->handle();
@@ -242,7 +242,7 @@ it('dispatch resolve location job for missing corporation member tracking locati
     $mock->shouldReceive('batch->add')
         ->once()
         ->with([
-            new ResolveLocationJob($corporation_member_tracking->location_id, $this->test_character->refresh_token),
+            new ResolveLocationJob($corporation_member_tracking->location_id),
         ]);
 
     $mock->handle();
@@ -261,7 +261,7 @@ test('get missing location from corporation member tracking pipe can handle non 
 
     expect(Location::all())->toHaveCount(1);
 
-    Event::fakeFor(fn () => CorporationMemberTracking::factory()->create([
+    $corporation_member_tracking = Event::fakeFor(fn () => CorporationMemberTracking::factory()->create([
         'character_id' => $this->test_character->character_id,
         'location_id' => $type->type_id,
     ]));
@@ -275,7 +275,7 @@ test('get missing location from corporation member tracking pipe can handle non 
     $mock->shouldReceive('batch->add')
         ->once()
         ->with([
-            new ResolveLocationJob($type->type_id, $this->test_character->refresh_token),
+            new ResolveLocationJob($corporation_member_tracking->location_id),
         ]);
 
     $mock->handle();
@@ -309,7 +309,7 @@ it('dispatch resolve location job for missing wallet transaction location', func
     $mock->shouldReceive('batch->add')
         ->once()
         ->with([
-            new ResolveLocationJob($wallet_transaction->location_id, $this->test_character->refresh_token),
+            new ResolveLocationJob($wallet_transaction->location_id),
         ]);
 
     $mock->handle();
@@ -339,7 +339,7 @@ test('get missing location from wallet transaction pipe can handle non station o
     $mock->shouldReceive('batch->add')
         ->once()
         ->with([
-            new ResolveLocationJob($type->type_id, $this->test_character->refresh_token),
+            new ResolveLocationJob($type->type_id),
         ]);
 
     $mock->handle();
@@ -396,7 +396,7 @@ it('dispatches resolve location job for missing contract locations', function ()
     $mock->shouldReceive('batch->add')
         ->once()
         ->with([
-            new ResolveLocationJob($contract->start_location_id, $this->test_character->refresh_token),
+            new ResolveLocationJob($contract->start_location_id),
         ]);
 
     $mock->handle();
@@ -427,7 +427,7 @@ test('get missing start location from contracts pipe can handle non station or s
     $mock->shouldReceive('batch->add')
         ->once()
         ->with([
-            new ResolveLocationJob($contract->start_location_id, $this->test_character->refresh_token),
+            new ResolveLocationJob($contract->start_location_id),
         ]);
 
     $mock->handle();

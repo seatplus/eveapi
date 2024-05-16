@@ -159,7 +159,7 @@ class RetrieveEsiData
 
     private function updateRefreshToken()
     {
-        if (is_null($this->getClient()) || $this->request->isPublic()) {
+        if ($this->request->isPublic()) {
             return;
         }
 

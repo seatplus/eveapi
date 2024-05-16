@@ -33,11 +33,6 @@ class Name extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
     protected $guarded = [];
 
     /**
@@ -52,11 +47,6 @@ class Name extends Model
      */
     protected $table = 'universe_names';
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         'id' => 'integer',
         'category' => 'string',

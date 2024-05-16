@@ -34,16 +34,8 @@ class SsoScopes extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = ['selected_scopes', 'morphable_type', 'morphable_id', 'type'];
 
-    /**
-     * @var array
-     */
     protected $casts = [
         'selected_scopes' => 'array',
     ];
