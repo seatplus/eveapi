@@ -15,4 +15,4 @@ it('runs through resolvers', function () {
     ResolveLocationService::make()->handle($location_id);
 
     expect(\Seatplus\Eveapi\Models\Universe\Location::count())->toBe(0);
-})->only();
+});

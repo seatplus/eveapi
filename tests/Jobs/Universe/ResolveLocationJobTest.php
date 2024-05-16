@@ -12,7 +12,7 @@ use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\Structure;
-use Seatplus\Eveapi\Services\ResolveLocation\ResolveLocationService;
+use Seatplus\Eveapi\Services\ResolveLocation\Resolver\Resolver\ResolveLocationService;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 uses(MockRetrieveEsiDataAction::class);
