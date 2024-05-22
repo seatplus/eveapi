@@ -28,7 +28,9 @@ namespace Seatplus\Eveapi\Models\Universe;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Seatplus\Eveapi\Models\Assets\Asset;
 
 class Location extends Model
 {
@@ -55,5 +57,10 @@ class Location extends Model
     public function locatable(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    public function assets(): HasMany
+    {
+        return $this->hasMany(Asset::class, 'location_id', 'location_id');
     }
 }

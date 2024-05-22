@@ -35,12 +35,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Type;
-use Seatplus\Eveapi\Traits\HasWatchlist;
+use Seatplus\Eveapi\Models\WatchListInterface;
 
-class Asset extends Model
+class Asset extends Model implements WatchListInterface
 {
     use HasFactory;
-    use HasWatchlist;
 
     const ASSET_SAFETY = 2004;
 
@@ -102,63 +101,38 @@ class Asset extends Model
         return $query->where('location_id', '<>', self::ASSET_SAFETY);
     }
 
-    public function scopeInRegion(Builder $query, int|array $regions): Builder
+    public function scopeFilterByRegionIds(Builder $query, int|array $regions): Builder
     {
         $region_ids = is_array($regions) ? $regions : [$regions];
 
         return $query->whereIn('region_id', $region_ids);
     }
 
-    public function scopeInSystems(Builder $query, int|array $systems): Builder
+    public function scopeFilterBySystemIds(Builder $query, int|array $systems): Builder
     {
         $system_ids = is_array($systems) ? $systems : [$systems];
 
         return $query->whereIn('solar_system_id', $system_ids);
     }
 
-    public function scopeOfTypes(Builder $query, int|array $types): Builder
+    public function scopeFilterByTypeIds(Builder $query, int|array $types): Builder
     {
         $type_ids = is_array($types) ? $types : [$types];
 
         return $query->whereIn('type_id', $type_ids);
     }
 
-    public function scopeOfGroups(Builder $query, int|array $groups): Builder
+    public function scopeFilterByGroupIds(Builder $query, int|array $groups): Builder
     {
         $group_ids = is_array($groups) ? $groups : [$groups];
 
         return $query->whereIn('group_id', $group_ids);
     }
 
-    public function scopeOfCategories(Builder $query, int|array $categories): Builder
+    public function scopeFilterByCategoryIds(Builder $query, int|array $categories): Builder
     {
         $category_ids = is_array($categories) ? $categories : [$categories];
 
         return $query->whereIn('category_id', $category_ids);
-    }
-
-    public function scopeSearch(Builder $query, ?string $terms = null): void
-    {
-        collect(str_getcsv($terms, ' ', '"'))->filter()
-            ->each(function ($term) use ($query) {
-                $term = $term.'%';
-
-                $query->where('name_normalized', 'like', $term)
-                    ->orWhere('type_name_normalized', 'like', $term)
-                    ->orWhere('group_name_normalized', 'like', $term)
-                    ->orWhere('category_name_normalized', 'like', $term);
-            });
-    }
-
-    public function scopeWithRecursiveContent(Builder $query): Builder
-    {
-        $sub_query = $query
-            ->unionAll(
-                $this->newQuery()->select('assets.*')->join('tree', 'tree.location_id', '=', 'assets.item_id')
-            );
-
-        return $this->newQuery() // @phpstan-ignore-line
-            ->from('tree')
-            ->withRecursiveExpression('tree', $sub_query);
     }
 }
