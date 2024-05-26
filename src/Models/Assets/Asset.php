@@ -101,20 +101,6 @@ class Asset extends Model implements WatchListInterface
         return $query->where('location_id', '<>', self::ASSET_SAFETY);
     }
 
-    public function scopeFilterByRegionIds(Builder $query, int|array $regions): Builder
-    {
-        $region_ids = is_array($regions) ? $regions : [$regions];
-
-        return $query->whereIn('region_id', $region_ids);
-    }
-
-    public function scopeFilterBySystemIds(Builder $query, int|array $systems): Builder
-    {
-        $system_ids = is_array($systems) ? $systems : [$systems];
-
-        return $query->whereIn('solar_system_id', $system_ids);
-    }
-
     public function scopeFilterByTypeIds(Builder $query, int|array $types): Builder
     {
         $type_ids = is_array($types) ? $types : [$types];

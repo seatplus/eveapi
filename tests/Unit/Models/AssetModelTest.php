@@ -158,36 +158,6 @@ it('has container relationship', function () {
     expect($test_asset->content->first()->container)->toBeInstanceOf(Asset::class);
 });
 
-it('has in region scope', function () {
-    expect(Asset::all())->toHaveCount(0);
-
-    $region = Event::fakeFor(fn () => Region::factory()->create());
-
-    $test_asset = Event::fakeFor(fn () => Asset::factory()->create([
-        'region_id' => $region->region_id,
-    ]));
-
-    $region_id = $test_asset->region_id;
-
-    expect(Asset::inRegion($region_id)->get())->toHaveCount(1);
-    expect(Asset::inRegion($region_id + 1)->get())->toHaveCount(0);
-});
-
-it('has in system scope', function () {
-    expect(Asset::all())->toHaveCount(0);
-
-    $system = Event::fakeFor(fn () => System::factory()->create());
-
-    $test_asset = Event::fakeFor(fn () => Asset::factory()->create([
-        'solar_system_id' => $system->system_id,
-    ]));
-
-    $system_id = $test_asset->solar_system_id;
-
-    expect(Asset::inSystems($system_id)->get())->toHaveCount(1);
-    expect(Asset::inSystems($system_id + 1)->get())->toHaveCount(0);
-});
-
 it('has in scope', function (string $scope) {
     expect(Asset::all())->toHaveCount(0);
 

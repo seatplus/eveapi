@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Assets\EnrichAssetTypeGroupCategoryJob;
-use Seatplus\Eveapi\Jobs\Assets\UpdateAssetSystemRegionJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterRoleJob;
 use Seatplus\Eveapi\Jobs\Character\CorporationHistoryJob;
@@ -89,7 +88,7 @@ it('contains jobs if refresh_token has scope', function (string $scope, array $c
         }
     }
 })->with([
-    ['esi-assets.read_assets.v1', [[CharacterAssetJob::class, CharacterAssetsNameJob::class, EnrichAssetTypeGroupCategoryJob::class, UpdateAssetSystemRegionJob::class]]],
+    ['esi-assets.read_assets.v1', [[CharacterAssetJob::class, CharacterAssetsNameJob::class, EnrichAssetTypeGroupCategoryJob::class]]],
     ['esi-characters.read_corporation_roles.v1', [CharacterRoleJob::class]],
     ['esi-characters.read_contacts.v1', [[CharacterContactJob::class, CharacterContactLabelJob::class]]],
     ['esi-corporations.read_contacts.v1', [[CorporationContactJob::class, CorporationContactLabelJob::class]]],
