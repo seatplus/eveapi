@@ -1,0 +1,44 @@
+<?php
+
+use Seatplus\Eveapi\Models\Universe\Location;
+use Seatplus\Eveapi\Models\Universe\Region;
+use Seatplus\Eveapi\Models\Universe\Station;
+use Seatplus\Eveapi\Models\Universe\System;
+
+it('has filter by region ids scope', function () {
+
+    // Arrange
+    $system = System::factory()->create();
+    $station = Station::factory()->create([
+        'system_id' => $system->system_id,
+    ]);
+    $location = Location::factory()->create([
+        'locatable_id' => $station->station_id,
+        'locatable_type' => Station::class,
+    ]);
+
+    // Act
+    $locations = Location::filterByRegionIds($system->region->region_id)->get();
+
+    // Assert
+    expect($locations->count())->toBeGreaterThan(0);
+});
+
+it('has filter by system ids scope', function () {
+
+    // Arrange
+    $system = System::factory()->create();
+    $station = Station::factory()->create([
+        'system_id' => $system->system_id,
+    ]);
+    $location = Location::factory()->create([
+        'locatable_id' => $station->station_id,
+        'locatable_type' => Station::class,
+    ]);
+
+    // Act
+    $locations = Location::filterBySystemIds($system->system_id)->get();
+
+    // Assert
+    expect($locations->count())->toBeGreaterThan(0);
+});
