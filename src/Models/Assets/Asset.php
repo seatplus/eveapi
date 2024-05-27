@@ -33,9 +33,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Seatplus\Eveapi\Models\TypeWatchListInterface;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Type;
-use Seatplus\Eveapi\Models\TypeWatchListInterface;
 
 class Asset extends Model implements TypeWatchListInterface
 {

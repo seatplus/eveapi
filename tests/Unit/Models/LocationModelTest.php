@@ -1,7 +1,6 @@
 <?php
 
 use Seatplus\Eveapi\Models\Universe\Location;
-use Seatplus\Eveapi\Models\Universe\Region;
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\System;
 

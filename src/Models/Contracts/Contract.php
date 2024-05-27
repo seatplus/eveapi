@@ -36,12 +36,11 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\LocationWatchListInterface;
-use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\TypeWatchListInterface;
+use Seatplus\Eveapi\Models\Universe\Location;
 
-class Contract extends Model implements TypeWatchListInterface, LocationWatchListInterface
+class Contract extends Model implements LocationWatchListInterface, TypeWatchListInterface
 {
-
     use HasFactory;
 
     protected $guarded = [];

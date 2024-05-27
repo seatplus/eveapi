@@ -7,8 +7,6 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Universe\Category;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Location;
-use Seatplus\Eveapi\Models\Universe\Region;
-use Seatplus\Eveapi\Models\Universe\System;
 use Seatplus\Eveapi\Models\Universe\Type;
 
 beforeEach(function () {
