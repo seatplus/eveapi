@@ -35,10 +35,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
+use Seatplus\Eveapi\Models\LocationWatchListInterface;
 use Seatplus\Eveapi\Models\Universe\Location;
-use Seatplus\Eveapi\Models\WatchListInterface;
+use Seatplus\Eveapi\Models\TypeWatchListInterface;
 
-class Contract extends Model implements WatchListInterface
+class Contract extends Model implements TypeWatchListInterface, LocationWatchListInterface
 {
 
     use HasFactory;
@@ -109,11 +110,11 @@ class Contract extends Model implements WatchListInterface
 
     public function scopeFilterByRegionIds(Builder $query, int|array $regions): Builder
     {
-        $regions = is_array($regions) ? $regions : [$regions];
+        $region_ids = is_array($regions) ? $regions : [$regions];
 
         return $query // TODO merge tables like assets for improved db performance
-            ->whereHas('start_location.locatable', fn (Builder $query) => $query->whereHas('system.region', fn ($query) => $query->whereIn('universe_regions.region_id', $regions)))
-            ->orWhereHas('end_location.locatable', fn (Builder $query) => $query->whereHas('system.region', fn ($query) => $query->whereIn('universe_regions.region_id', $regions)));
+            ->whereHas('start_location.locatable.system.region', fn (Builder $query) => $query->whereIn('universe_regions.region_id', $region_ids))
+            ->orWhereHas('end_location.locatable.system.region', fn (Builder $query) => $query->whereIn('universe_regions.region_id', $region_ids));
     }
 
     public function scopeFilterBySystemIds(Builder $query, int|array $systems): Builder
@@ -121,8 +122,8 @@ class Contract extends Model implements WatchListInterface
         $system_ids = is_array($systems) ? $systems : [$systems];
 
         return $query
-            ->whereHas('start_location.locatable', fn (Builder $query) => $query->whereHas('system', fn ($query) => $query->whereIn('system_id', $system_ids)))
-            ->orWhereHas('end_location.locatable', fn (Builder $query) => $query->whereHas('system', fn ($query) => $query->whereIn('system_id', $system_ids)));
+            ->whereHas('start_location.locatable.system', fn (Builder $query) => $query->whereIn('system_id', $system_ids))
+            ->orWhereHas('end_location.locatable.system', fn (Builder $query) => $query->whereIn('system_id', $system_ids));
     }
 
     public function scopeFilterByTypeIds(Builder $query, int|array $types): Builder

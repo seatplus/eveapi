@@ -26,13 +26,15 @@
 
 namespace Seatplus\Eveapi\Models\Universe;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Seatplus\Eveapi\Models\Assets\Asset;
+use Seatplus\Eveapi\Models\LocationWatchListInterface;
 
-class Location extends Model
+class Location extends Model implements LocationWatchListInterface
 {
     use HasFactory;
 
@@ -44,8 +46,6 @@ class Location extends Model
     protected $primaryKey = 'location_id';
 
     public $incrementing = false;
-
-    protected $with = ['locatable'];
 
     /**
      * The table associated with the model.
@@ -62,5 +62,23 @@ class Location extends Model
     public function assets(): HasMany
     {
         return $this->hasMany(Asset::class, 'location_id', 'location_id');
+    }
+
+    public function scopeFilterByRegionIds(Builder $query, int|array $regions): Builder
+    {
+        $region_ids = is_array($regions) ? $regions : [$regions];
+
+        return $query->whereHas('locatable.system.constellation', function ($query) use ($region_ids) {
+            $query->whereIn('region_id', $region_ids);
+        });
+    }
+
+    public function scopeFilterBySystemIds(Builder $query, int|array $systems): Builder
+    {
+        $system_ids = is_array($systems) ? $systems : [$systems];
+
+        return $query->whereHas('locatable.system', function ($query) use ($system_ids) {
+            $query->whereIn('system_id', $system_ids);
+        });
     }
 }

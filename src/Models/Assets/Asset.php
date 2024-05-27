@@ -35,9 +35,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Type;
-use Seatplus\Eveapi\Models\WatchListInterface;
+use Seatplus\Eveapi\Models\TypeWatchListInterface;
 
-class Asset extends Model implements WatchListInterface
+class Asset extends Model implements TypeWatchListInterface
 {
     use HasFactory;
 
