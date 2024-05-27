@@ -58,8 +58,6 @@ it('contains jobs if refresh_token has scope', function (string $scope, array $c
 
     $batch = new CharacterBatchJob(testCharacter()->character_id);
 
-    //dd($batch->batch_jobs);
-
     // loop through classes and check if jobs that are instance of class are in batch
     foreach ($classes as $class) {
         // if class is of type array

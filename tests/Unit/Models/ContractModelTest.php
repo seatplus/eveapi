@@ -32,8 +32,8 @@ it('has inRegionScope', function (string $location_id) {
         'end_location_id' => $test_contract->end_location->locatable->system->region->region_id
     };
 
-    expect(Contract::inRegion($region_id)->get())->toHaveCount(1);
-    expect(Contract::inRegion($region_id + 1)->get())->toHaveCount(0);
+    expect(Contract::filterByRegionIds($region_id)->get())->toHaveCount(1)
+        ->and(Contract::filterByRegionIds($region_id + 1)->get())->toHaveCount(0);
 })->with([
     'start_location_id',
     'end_location_id',
@@ -56,8 +56,8 @@ it('has inSystemScope', function (string $location_id) {
         'end_location_id' => $test_contract->end_location->locatable->system->system_id
     };
 
-    expect(Contract::inSystems($system_id)->get())->toHaveCount(1);
-    expect(Contract::inSystems($system_id + 1)->get())->toHaveCount(0);
+    expect(Contract::filterBySystemIds($system_id)->get())->toHaveCount(1)
+        ->and(Contract::filterBySystemIds($system_id + 1)->get())->toHaveCount(0);
 })->with([
     'start_location_id',
     'end_location_id',
@@ -72,10 +72,10 @@ it('has ofTypes scope', function () {
 
     expect($item)
         ->type
-        ->toBeInstanceOf(Type::class);
+        ->toBeInstanceOf(Type::class)
+        ->and(Contract::filterByTypeIds($item->type->type_id)->get())->toHaveCount(1)
+        ->and(Contract::filterByTypeIds($item->type->type_id + 1)->get())->toHaveCount(0);
 
-    expect(Contract::ofTypes($item->type->type_id)->get())->toHaveCount(1);
-    expect(Contract::ofTypes($item->type->type_id + 1)->get())->toHaveCount(0);
 });
 
 it('has ofGroups scope', function () {
@@ -87,10 +87,10 @@ it('has ofGroups scope', function () {
 
     expect($item)
         ->type->toBeInstanceOf(Type::class)
-        ->type->group_id->toBeInt();
+        ->type->group_id->toBeInt()
+        ->and(Contract::filterByGroupIds($item->type->group_id)->get())->toHaveCount(1)
+        ->and(Contract::filterByGroupIds($item->type->group_id + 1)->get())->toHaveCount(0);
 
-    expect(Contract::ofGroups($item->type->group_id)->get())->toHaveCount(1);
-    expect(Contract::ofGroups($item->type->group_id + 1)->get())->toHaveCount(0);
 });
 
 it('has ofCategories scope', function () {
@@ -106,8 +106,8 @@ it('has ofCategories scope', function () {
     expect($item)
         ->type->toBeInstanceOf(Type::class)
         ->type->group->toBeInstanceOf(Group::class)
-        ->type->group->category->toBeInstanceOf(Category::class);
+        ->type->group->category->toBeInstanceOf(Category::class)
+        ->and(Contract::filterByCategoryIds($item->type->group->category->category_id)->get())->toHaveCount(1)
+        ->and(Contract::filterByCategoryIds($item->type->group->category->category_id + 1)->get())->toHaveCount(0);
 
-    expect(Contract::ofCategories($item->type->group->category->category_id)->get())->toHaveCount(1);
-    expect(Contract::ofCategories($item->type->group->category->category_id + 1)->get())->toHaveCount(0);
 });
