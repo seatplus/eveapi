@@ -35,13 +35,13 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
+use Seatplus\Eveapi\Models\LocationWatchListInterface;
+use Seatplus\Eveapi\Models\TypeWatchListInterface;
 use Seatplus\Eveapi\Models\Universe\Location;
-use Seatplus\Eveapi\Traits\HasWatchlist;
 
-class Contract extends Model
+class Contract extends Model implements LocationWatchListInterface, TypeWatchListInterface
 {
     use HasFactory;
-    use HasWatchlist;
 
     protected $guarded = [];
 
@@ -107,41 +107,41 @@ class Contract extends Model
         return $this->morphedByMany(CharacterInfo::class, 'contractable', null, 'contract_id');
     }
 
-    public function scopeInRegion(Builder $query, int|array $regions): Builder
+    public function scopeFilterByRegionIds(Builder $query, int|array $regions): Builder
     {
         $region_ids = is_array($regions) ? $regions : [$regions];
 
-        return $query
-            ->whereHas('start_location.locatable', fn (Builder $query) => $query->whereHas('system.region', fn ($query) => $query->whereIn('universe_regions.region_id', $region_ids)))
-            ->orWhereHas('end_location.locatable', fn (Builder $query) => $query->whereHas('system.region', fn ($query) => $query->whereIn('universe_regions.region_id', $region_ids)));
+        return $query // TODO merge tables like assets for improved db performance
+            ->whereHas('start_location.locatable.system.region', fn (Builder $query) => $query->whereIn('universe_regions.region_id', $region_ids))
+            ->orWhereHas('end_location.locatable.system.region', fn (Builder $query) => $query->whereIn('universe_regions.region_id', $region_ids));
     }
 
-    public function scopeInSystems(Builder $query, int|array $systems): Builder
+    public function scopeFilterBySystemIds(Builder $query, int|array $systems): Builder
     {
         $system_ids = is_array($systems) ? $systems : [$systems];
 
         return $query
-            ->whereHas('start_location.locatable', fn (Builder $query) => $query->whereHas('system', fn ($query) => $query->whereIn('system_id', $system_ids)))
-            ->orWhereHas('end_location.locatable', fn (Builder $query) => $query->whereHas('system', fn ($query) => $query->whereIn('system_id', $system_ids)));
+            ->whereHas('start_location.locatable.system', fn (Builder $query) => $query->whereIn('system_id', $system_ids))
+            ->orWhereHas('end_location.locatable.system', fn (Builder $query) => $query->whereIn('system_id', $system_ids));
     }
 
-    public function scopeOfTypes(Builder $query, int|array $types): Builder
+    public function scopeFilterByTypeIds(Builder $query, int|array $types): Builder
     {
         $type_ids = is_array($types) ? $types : [$types];
 
-        return $query->whereHas('items.type', fn (Builder $query) => $query->whereIn('type_id', $type_ids));
+        return $query->whereHas('items', fn (Builder $query) => $query->whereIn('type_id', $type_ids));
     }
 
-    public function scopeOfGroups(Builder $query, int|array $groups): Builder
+    public function scopeFilterByGroupIds(Builder $query, int|array $groups): Builder
     {
         $group_ids = is_array($groups) ? $groups : [$groups];
 
         return $query->whereHas('items.type', fn (Builder $query) => $query->whereIn('group_id', $group_ids));
     }
 
-    public function scopeOfCategories(Builder $query, int|array $categories): Builder
+    public function scopeFilterByCategoryIds(Builder $query, int|array $category): Builder
     {
-        $category_ids = is_array($categories) ? $categories : [$categories];
+        $category_ids = is_array($category) ? $category : [$category];
 
         return $query->whereHas('items.type.group', fn (Builder $query) => $query->whereIn('category_id', $category_ids));
     }

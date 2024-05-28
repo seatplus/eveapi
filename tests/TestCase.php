@@ -9,7 +9,6 @@ use Laravel\Horizon\HorizonServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use Seatplus\Eveapi\EveapiServiceProvider;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Staudenmeir\LaravelCte\DatabaseServiceProvider;
 
 abstract class TestCase extends OrchestraTestCase
 {
@@ -42,7 +41,6 @@ abstract class TestCase extends OrchestraTestCase
         return [
             EveapiServiceProvider::class,
             HorizonServiceProvider::class,
-            DatabaseServiceProvider::class,
         ];
     }
 

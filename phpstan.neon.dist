@@ -14,7 +14,6 @@ parameters:
     tmpDir: build/phpstan
     checkOctaneCompatibility: true
     checkModelProperties: true
-    checkMissingIterableValueType: false
     ignoreErrors:
         - '#^Access to an undefined property Seatplus\\EsiClient\\DataTransferObjects\\EsiResponse\:\:\$[a-zA-Z0-9\\_]+\.$#'
 

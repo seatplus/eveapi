@@ -4,7 +4,6 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Seatplus\Eveapi\Jobs\Assets\EnrichAssetTypeGroupCategoryJob;
-use Seatplus\Eveapi\Jobs\Assets\UpdateAssetSystemRegionJob;
 
 return new class extends Migration
 {
@@ -14,12 +13,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('assets', function (Blueprint $table) {
-
-            // add solar_system_id and region_id columns after location_id column
-            $table->after('location_id', function (Blueprint $table) {
-                $table->integer('solar_system_id')->nullable()->index();
-                $table->integer('region_id')->nullable()->index();
-            });
 
             // add new columns after name_normalized column
             $table->after('name_normalized', function (Blueprint $table) {
@@ -44,6 +37,5 @@ return new class extends Migration
         });
 
         EnrichAssetTypeGroupCategoryJob::dispatch()->onQueue('high');
-        UpdateAssetSystemRegionJob::dispatch()->onQueue('high');
     }
 };
