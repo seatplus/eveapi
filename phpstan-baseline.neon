@@ -1,7 +1,1 @@
-parameters:
-	ignoreErrors:
-		-
-			message: "#^Call to static method whereId\\(\\) on an unknown class Seatplus\\\\Auth\\\\Models\\\\User\\.$#"
-			count: 1
-			path: src/Services/GetOwnedIds.php
 
