@@ -47,7 +47,7 @@ class EsiRequestContainer
         return is_null($this->refresh_token);
     }
 
-    public function setRequestBody(array $request_body)
+    public function setRequestBody(array $request_body): self
     {
         $this->request_body = $request_body;
 

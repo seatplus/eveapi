@@ -37,7 +37,7 @@ class KillmailItem extends Model
 
     protected $guarded = [];
 
-    public function getHasContentAttribute()
+    public function getHasContentAttribute(): bool
     {
         return $this->content()->exists();
     }
@@ -52,7 +52,7 @@ class KillmailItem extends Model
         return $this->hasOne(Type::class, 'type_id', 'type_id');
     }
 
-    public function delete()
+    public function delete(): bool
     {
         $this->content()->delete();
 

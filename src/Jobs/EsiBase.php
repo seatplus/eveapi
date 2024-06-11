@@ -51,27 +51,21 @@ abstract class EsiBase extends RetrieveFromEsiBase implements BaseJobInterface, 
 
     /**
      * The number of times the job may be attempted.
-     *
-     * @var int
      */
-    public $tries = 3;
+    public int $tries = 3;
 
     /**
      * Calculate the number of seconds to wait before retrying the job.
-     *
-     * @return array
      */
-    public function backoff()
+    public function backoff(): array
     {
         return [1 * 60, 5 * 60, 10 * 60];
     }
 
     /**
      * The unique ID of the job.
-     *
-     * @return string
      */
-    public function uniqueId()
+    public function uniqueId(): string
     {
         return implode(', ', $this->tags());
     }

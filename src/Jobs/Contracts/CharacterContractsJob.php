@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Contracts;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
@@ -89,7 +90,7 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
                 return;
             }
 
-            collect($response)->each(fn ($contract) => $contracts->push([
+            collect($response)->each(fn (object $contract) => $contracts->push([
                 // primary
                 'contract_id' => $contract->contract_id,
                 // other columns
@@ -131,7 +132,7 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
         $this->dispatchFollowUpJobs($contracts);
     }
 
-    private function persist(Collection $contracts)
+    private function persist(Collection $contracts): void
     {
         Contract::upsert(
             $contracts->toArray(),
@@ -173,7 +174,7 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
         }
     }
 
-    private function dispatchFollowUpJobs(Collection $contracts)
+    private function dispatchFollowUpJobs(Collection $contracts): void
     {
         $contract_ids = $contracts->pluck('contract_id')->toArray();
 
@@ -200,7 +201,7 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
             ->where('status', '<>', 'deleted')
             ->where('type', '<>', 'courier')
             ->get()
-            ->map(fn ($contract) => new CharacterContractItemsJob($this->character_id, $contract->contract_id));
+            ->map(fn (Contract $contract) => new CharacterContractItemsJob($this->character_id, $contract->contract_id));
     }
 
     private function getLocationJobs(array $contract_ids): Collection
@@ -210,14 +211,14 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
         return Contract::query()
             ->whereIn('contract_id', $contract_ids)
             // where has start_location_id or end_location_id
-            ->where(fn ($query) => $query->whereNotNull('start_location_id')->orWhereNotNull('end_location_id'))
+            ->where(fn (Builder $query) => $query->whereNotNull('start_location_id')->orWhereNotNull('end_location_id')) // @phpstan-ignore-line
             // where doesn't have start_location or end_location
-            ->where(fn ($query) => $query->doesntHave('start_location')->orDoesntHave('end_location'))
+            ->where(fn (Builder $query) => $query->doesntHave('start_location')->orDoesntHave('end_location'))
             ->select('start_location_id', 'end_location_id')
             ->get()
-            ->map(fn ($contract) => [$contract->start_location_id, $contract->end_location_id])
+            ->map(fn (Contract $contract) => [$contract->start_location_id, $contract->end_location_id])
             ->flatten()
             ->unique()
-            ->map(fn ($location_id) => new ResolveLocationJob($location_id, $refresh_token));
+            ->map(fn (int $location_id) => new ResolveLocationJob($location_id, $refresh_token));
     }
 }

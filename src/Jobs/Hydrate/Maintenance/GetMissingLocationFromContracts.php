@@ -34,7 +34,7 @@ use Seatplus\Eveapi\Models\Universe\Structure;
 
 class GetMissingLocationFromContracts extends HydrateMaintenanceBase
 {
-    public function handle()
+    public function handle(): void
     {
         if ($this->batch()->cancelled()) {
             // Determine if the batch has been cancelled...
@@ -45,17 +45,17 @@ class GetMissingLocationFromContracts extends HydrateMaintenanceBase
         $jobs = Contract::query()
             ->where(function (Builder $query) {
                 $query->whereNotNull('start_location_id')
-                    ->whereDoesntHave('start_location', fn ($query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]));
+                    ->whereDoesntHave('start_location', fn (Builder $query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]));
             })
             ->orWhere(function (Builder $query) {
                 $query->whereNotNull('end_location_id')
-                    ->whereDoesntHave('end_location', fn ($query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]));
+                    ->whereDoesntHave('end_location', fn (Builder $query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]));
             })
             ->select('start_location_id', 'end_location_id')
             ->inRandomOrder()
             ->get()
             // receive flat array of location ids
-            ->map(fn ($contract) => collect([$contract->start_location_id, $contract->end_location_id]))
+            ->map(fn (Contract $contract) => collect([$contract->start_location_id, $contract->end_location_id]))
             ->flatten()
             ->unique()
             ->filter()

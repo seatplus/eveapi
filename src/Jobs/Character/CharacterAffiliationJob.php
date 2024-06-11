@@ -93,7 +93,7 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
                         ->merge($this->getIdsToUpdateFromCache())
                         ->merge($this->getIdsToUpdateFromDatabase())
                         ->chunk(1000)
-                        ->each(fn ($chunk) => $this->updateOrCreateCharacterAffiliations($chunk->toArray()));
+                        ->each(fn (Collection $chunk) => $this->updateOrCreateCharacterAffiliations($chunk->toArray()));
                 }, fn () => $this->delete());
         }
     }
@@ -126,7 +126,7 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
             $response = $this->retrieve();
 
             collect($response)
-                ->each(fn ($result) => $character_affiliations->push(
+                ->each(fn (object $result) => $character_affiliations->push(
                     [
                         'character_id' => $result->character_id,
                         'corporation_id' => $result->corporation_id,
@@ -187,7 +187,7 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
         $this->manual_ids = $manual_ids;
     }
 
-    private function followUp()
+    private function followUp(): void
     {
         $this->getMissingCorporations();
         $this->getMissingAlliances();
@@ -200,7 +200,7 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
             ->whereDoesntHave('corporation')
             ->pluck('corporation_id')
             ->unique()
-            ->each(fn ($corporation_id) => CorporationInfoJob::dispatch($corporation_id)->onQueue('high'));
+            ->each(fn (int $corporation_id) => CorporationInfoJob::dispatch($corporation_id)->onQueue('high'));
     }
 
     private function getMissingAlliances(): void
@@ -211,6 +211,6 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
             ->whereDoesntHave('alliance')
             ->pluck('alliance_id')
             ->unique()
-            ->each(fn ($alliance_id) => AllianceInfoJob::dispatch($alliance_id)->onQueue('high'));
+            ->each(fn (int $alliance_id) => AllianceInfoJob::dispatch($alliance_id)->onQueue('high'));
     }
 }

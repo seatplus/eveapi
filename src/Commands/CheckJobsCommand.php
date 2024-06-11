@@ -67,14 +67,14 @@ class CheckJobsCommand extends Command
 
     const URL = 'https://esi.evetech.net/latest/swagger.json';
 
-    public function handle()
+    public function handle(): int
     {
         $this->getAllJobs()
-            ->map(function ($job) {
+            ->map(function (EsiBase $job) {
                 $assertions = $this->checkJob($job);
 
-                $has_errors = $assertions->contains(fn ($assertion) => $assertion['status'] === 'error');
-                $has_warnings = $assertions->contains(fn ($assertion) => $assertion['status'] === 'warning');
+                $has_errors = $assertions->contains(fn (array $assertion) => $assertion['status'] === 'error');
+                $has_warnings = $assertions->contains(fn (array $assertion) => $assertion['status'] === 'warning');
 
                 return [
                     'class' => get_class($job),
@@ -83,8 +83,8 @@ class CheckJobsCommand extends Command
                 ];
             })
             // sort by status, pass first, warning second, error last
-            ->sortBy(fn ($job) => $job['status'] === 'error' ? 2 : ($job['status'] === 'warning' ? 1 : 0))
-            ->each(function ($job) {
+            ->sortBy(fn (array $job) => $job['status'] === 'error' ? 2 : ($job['status'] === 'warning' ? 1 : 0))
+            ->each(function (array $job) {
                 // check if any assertion failed
                 if ($job['status'] === 'error') {
                     //$this->writeAssertionOutput(get_class($job), 'px-2', '<span class="px-2 bg-red text-gray-400 uppercase">error</span>');
@@ -95,7 +95,7 @@ class CheckJobsCommand extends Command
                     $this->writeAssertionHeader($job['class'], 'px-2 bg-green text-black uppercase', 'pass');
                 }
 
-                $job['assertions']->each(function ($assertion) {
+                $job['assertions']->each(function (array $assertion) {
                     match ($assertion['status']) {
                         'success' => $this->writeSuccess($assertion['message']),
                         'warning' => $this->writeWarning($assertion['message']),
@@ -116,21 +116,20 @@ class CheckJobsCommand extends Command
 
     private function getAllJobs(): Collection
     {
-        $jobs = glob(__DIR__.'/../Jobs/*/*.php');
+        $job_strings = glob(__DIR__.'/../Jobs/*/*.php');
 
-        return collect($jobs)
-            ->map(function ($job) {
-                $job = str_replace(__DIR__.'/../Jobs/', '', $job);
-                $job = str_replace('.php', '', $job);
-                $job = str_replace('/', '\\', $job);
-                $job = 'Seatplus\\Eveapi\\Jobs\\'.$job;
+        return collect($job_strings)
+            ->map(function (string $job_string) {
+                $job_string = str_replace(__DIR__.'/../Jobs/', '', $job_string);
+                $job_string = str_replace('.php', '', $job_string);
+                $job_string = str_replace('/', '\\', $job_string);
 
-                return $job;
+                return 'Seatplus\\Eveapi\\Jobs\\'.$job_string;
             })
-            ->filter(fn ($job) => is_subclass_of($job, EsiBase::class))
+            ->filter(fn (string $job) => is_subclass_of($job, EsiBase::class))
             // filter out abstract classes
-            ->filter(fn ($job) => ! (new ReflectionClass($job))->isAbstract())
-            ->map(function ($job) {
+            ->filter(fn (string $job) => ! (new ReflectionClass($job))->isAbstract())
+            ->map(function (string $job) {
                 $constructor_parameters = (new ReflectionClass($job))->getConstructor()?->getParameters();
                 $constructor_parameters = collect($constructor_parameters)
                     ->map(function (\ReflectionParameter $parameter) {
@@ -139,7 +138,7 @@ class CheckJobsCommand extends Command
                         if ($parameter->getType() instanceof \ReflectionUnionType) {
                             // get the first type that is not array or null
                             $type = collect($parameter->getType()->getTypes())
-                                ->filter(fn ($type) => ! in_array($type->getName(), ['array', 'null']))
+                                ->filter(fn (\ReflectionType $type) => ! in_array($type->getName(), ['array', 'null']))
                                 ->first()?->getName();
                         }
 
@@ -158,7 +157,7 @@ class CheckJobsCommand extends Command
             });
     }
 
-    private function checkJob($job): Collection
+    private function checkJob(EsiBase $job): Collection
     {
         return collect([])
             ->push($this->checkVersion($job))
@@ -265,14 +264,14 @@ class CheckJobsCommand extends Command
         $used_middlewares = collect($job->middleware());
 
         // first we check if ThrottlesExceptionsWithRedis Middleware is used
-        if (! $used_middlewares->first(fn ($middleware) => get_class($middleware) === ThrottlesExceptionsWithRedis::class)) {
+        if (! $used_middlewares->first(fn (object $middleware) => get_class($middleware) === ThrottlesExceptionsWithRedis::class)) {
             return $this->assertionResult('error', 'ThrottlesExceptionsWithRedis Middleware is not used');
         }
 
         // now check all jobs that require authentication implementing HasRequiredScopeMiddleware
         if ($job instanceof HasRequiredScopeInterface) {
             // check if the required scope middleware is used
-            if (! $used_middlewares->first(fn ($middleware) => get_class($middleware) === HasRequiredScopeMiddleware::class)) {
+            if (! $used_middlewares->first(fn (object $middleware) => get_class($middleware) === HasRequiredScopeMiddleware::class)) {
                 return $this->assertionResult('error', 'HasRequiredScopeMiddleware is not used even though job requires authentication');
             }
         }

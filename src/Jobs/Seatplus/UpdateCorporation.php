@@ -58,27 +58,27 @@ class UpdateCorporation implements ShouldQueue
         $this->findCorporationRefreshToken = new FindCorporationRefreshToken();
     }
 
-    public function middleware()
+    public function middleware(): array
     {
         return [
             (new RateLimitedWithRedis('corporation_batch'))->dontRelease(),
         ];
     }
 
-    public function handle()
+    public function handle(): void
     {
         if ($this->corporation_id) {
             $this->execute($this->corporation_id, 'high');
         } else {
             RefreshToken::with('corporation', 'character.roles')
                 ->cursor()
-                ->map(fn ($token) => $token->corporation->corporation_id)
+                ->map(fn (RefreshToken $token) => $token->corporation->corporation_id)
                 ->unique()
-                ->each(fn ($corporation_id) => $this->execute($corporation_id));
+                ->each(fn (int $corporation_id) => $this->execute($corporation_id));
         }
     }
 
-    private function execute(int $corporation_id, string $queue = 'default')
+    private function execute(int $corporation_id, string $queue = 'default'): void
     {
         $corporation = optional(CorporationInfo::find($corporation_id))->name ?? $corporation_id;
 

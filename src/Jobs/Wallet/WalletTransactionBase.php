@@ -65,7 +65,7 @@ abstract class WalletTransactionBase extends EsiBase implements HasPathValuesInt
             }
 
             $transactions = collect($response)
-                ->map(fn ($entry) => [
+                ->map(fn (object $entry) => [
                     'transaction_id' => $entry->transaction_id,
 
                     'wallet_transactionable_id' => $wallet_transactionable_id,
@@ -106,27 +106,27 @@ abstract class WalletTransactionBase extends EsiBase implements HasPathValuesInt
         app('queue.worker')->shouldQuit = true;
     }
 
-    private function persistTransactions()
+    private function persistTransactions(): void
     {
         WalletTransaction::upsert($this->transactions, ['transaction_id']);
     }
 
-    private function dispatchFollowUpJobs()
+    private function dispatchFollowUpJobs(): void
     {
         $this->dispatchMissingTypeJobs();
         $this->dispatchMissingLocationJobs();
     }
 
-    private function dispatchMissingTypeJobs()
+    private function dispatchMissingTypeJobs(): void
     {
         WalletTransaction::query()
             ->doesntHave('type')
             ->pluck('type_id')
             ->unique()
-            ->each(fn ($type_id) => ResolveUniverseTypeByIdJob::dispatch($type_id)->onQueue('high'));
+            ->each(fn (int $type_id) => ResolveUniverseTypeByIdJob::dispatch($type_id)->onQueue('high'));
     }
 
-    private function dispatchMissingLocationJobs()
+    private function dispatchMissingLocationJobs(): void
     {
         $refresh_token = $this->getRefreshToken();
 
@@ -134,6 +134,6 @@ abstract class WalletTransactionBase extends EsiBase implements HasPathValuesInt
             ->doesntHave('location')
             ->pluck('location_id')
             ->unique()
-            ->each(fn ($location_id) => ResolveLocationJob::dispatch($location_id, $refresh_token)->onQueue('high'));
+            ->each(fn (int $location_id) => ResolveLocationJob::dispatch($location_id, $refresh_token)->onQueue('high'));
     }
 }

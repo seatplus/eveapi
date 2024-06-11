@@ -31,7 +31,7 @@ use Seatplus\Eveapi\Models\Universe\Constellation;
 
 class GetMissingRegions extends HydrateMaintenanceBase
 {
-    public function handle()
+    public function handle(): void
     {
         if ($this->batch()->cancelled()) {
             // Determine if the batch has been cancelled...
@@ -41,7 +41,7 @@ class GetMissingRegions extends HydrateMaintenanceBase
 
         $unknown_region_ids = Constellation::whereDoesntHave('region')->pluck('region_id')->unique()->values();
 
-        $jobs = $unknown_region_ids->map(fn ($id) => new ResolveUniverseRegionByRegionIdJob($id));
+        $jobs = $unknown_region_ids->map(fn (int $id) => new ResolveUniverseRegionByRegionIdJob($id));
 
         $this->batch()->add(
             $jobs->toArray()

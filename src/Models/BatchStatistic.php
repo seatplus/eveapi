@@ -23,12 +23,12 @@ class BatchStatistic extends Model
         'finished_at' => 'datetime',
     ];
 
-    public function getDurationAttribute()
+    public function getDurationAttribute(): int
     {
         return $this->finished_at->diffInSeconds($this->started_at);
     }
 
-    public static function createEntry(Batch $batch)
+    public static function createEntry(Batch $batch): self
     {
         $attributes = [
             'started_at' => now(),
@@ -49,6 +49,6 @@ class BatchStatistic extends Model
         // add to attributes
         $attributes['queue_balancing_configuration'] = $queue_balancing_configuration;
 
-        return parent::create($attributes);
+        return self::create($attributes);
     }
 }

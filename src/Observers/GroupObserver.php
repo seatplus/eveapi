@@ -27,6 +27,7 @@
 namespace Seatplus\Eveapi\Observers;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseCategoryByIdJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
@@ -66,8 +67,8 @@ class GroupObserver
         })
             ->get()
             ->unique('assetable_id')
-            ->whenNotEmpty(function ($assets) {
-                $assets->each(function ($asset) {
+            ->whenNotEmpty(function (Collection $assets) {
+                $assets->each(function (Asset $asset) {
                     CharacterAssetsNameJob::dispatch($asset->assetable_id)->onQueue('high');
                 });
             });

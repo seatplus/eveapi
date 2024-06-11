@@ -31,7 +31,7 @@ use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 
 class GetMissingTypesFromWalletTransaction extends HydrateMaintenanceBase
 {
-    public function handle()
+    public function handle(): void
     {
         if ($this->batch()->cancelled()) {
             // Determine if the batch has been cancelled...
@@ -41,7 +41,7 @@ class GetMissingTypesFromWalletTransaction extends HydrateMaintenanceBase
 
         $type_ids = WalletTransaction::doesntHave('type')->pluck('type_id')->unique()->values();
 
-        $jobs = $type_ids->map(fn ($id) => new ResolveUniverseTypeByIdJob($id));
+        $jobs = $type_ids->map(fn (int $id) => new ResolveUniverseTypeByIdJob($id));
 
         $this->batch()->add(
             $jobs->toArray()

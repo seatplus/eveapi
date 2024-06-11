@@ -29,6 +29,7 @@ namespace Seatplus\Eveapi\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class SsoScopes extends Model
 {
@@ -40,7 +41,7 @@ class SsoScopes extends Model
         'selected_scopes' => 'array',
     ];
 
-    public function morphable()
+    public function morphable(): MorphTo
     {
         return $this->morphTo();
     }

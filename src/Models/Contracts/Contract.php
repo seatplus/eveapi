@@ -57,12 +57,12 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
      */
     public $incrementing = false;
 
-    public function getIssuerAttribute()
+    public function getIssuerAttribute(): CharacterInfo|CorporationInfo
     {
         return $this->for_corporation ? $this->issuer_corporation : $this->issuer_character;
     }
 
-    public function getAsigneeAttribute()
+    public function getAsigneeAttribute(): CharacterInfo|CorporationInfo
     {
         return $this->assignee_character ?? $this->assignee_corporation;
     }

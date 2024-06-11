@@ -124,7 +124,7 @@ class RetrieveEsiData
         $this->request = $request;
     }
 
-    private function buildClient()
+    private function buildClient(): void
     {
         unset($this->client);
 
@@ -138,7 +138,7 @@ class RetrieveEsiData
         }
     }
 
-    private function logWarnings(EsiResponse $response)
+    private function logWarnings(EsiResponse $response): void
     {
         $logger = Configuration::getInstance()->getLogger();
 
@@ -157,7 +157,7 @@ class RetrieveEsiData
         }
     }
 
-    private function updateRefreshToken()
+    private function updateRefreshToken(): void
     {
         if ($this->request->isPublic()) {
             return;
@@ -172,7 +172,7 @@ class RetrieveEsiData
         $refresh_token->save();
     }
 
-    private function handleException(RequestFailedException $exception)
+    private function handleException(RequestFailedException $exception): void
     {
         // If error is in 4xx or 5xx range increase esi rate limit
         if (($exception->getOriginalException()->getCode() >= 400) && ($exception->getOriginalException()->getCode() <= 599)) {

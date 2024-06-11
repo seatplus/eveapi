@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Skills;
 
+use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -73,6 +74,9 @@ class SkillsJob extends EsiBase implements HasPathValuesInterface, HasRequiredSc
         ];
     }
 
+    /**
+     * @throws RequestFailedException
+     */
     public function executeJob(): void
     {
         $response = $this->retrieve();
@@ -82,7 +86,7 @@ class SkillsJob extends EsiBase implements HasPathValuesInterface, HasRequiredSc
         }
 
         $skills = collect(data_get($response, 'skills'))
-            ->map(fn ($skill) => [
+            ->map(fn (object $skill) => [
                 'character_id' => $this->character_id,
                 'skill_id' => data_get($skill, 'skill_id'),
                 'active_skill_level' => data_get($skill, 'active_skill_level'),
@@ -105,12 +109,12 @@ class SkillsJob extends EsiBase implements HasPathValuesInterface, HasRequiredSc
         $this->dispatchMissingSkillTypeJobs();
     }
 
-    private function dispatchMissingSkillTypeJobs()
+    private function dispatchMissingSkillTypeJobs(): void
     {
         Skill::query()
             ->where('character_id', $this->character_id)
             ->doesntHave('type')
             ->pluck('skill_id')
-            ->each(fn ($skill_id) => ResolveUniverseTypeByIdJob::dispatch($skill_id)->onQueue('high'));
+            ->each(fn (int $skill_id) => ResolveUniverseTypeByIdJob::dispatch($skill_id)->onQueue('high'));
     }
 }

@@ -50,25 +50,25 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
 
     public function __construct(
         public int $character_id,
-        public $queue = 'default'
+        public $queue = 'default' // @pest-ignore-type
     ) {
         $this->refresh_token = RefreshToken::find($this->character_id);
         $this->createBatchJobs();
     }
 
-    public function middleware()
+    public function middleware(): array
     {
         return [
             (new RateLimitedWithRedis('character_batch'))->dontRelease(),
         ];
     }
 
-    public function uniqueId()
+    public function uniqueId(): string
     {
         return $this->character_id.':'.$this->queue;
     }
 
-    public function handle()
+    public function handle(): void
     {
         // 1. Get BatchUpdate Entry
         $batch_update = BatchUpdate::firstOrCreate([

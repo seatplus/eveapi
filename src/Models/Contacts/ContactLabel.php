@@ -44,6 +44,10 @@ class ContactLabel extends Model
 
     public function getLabelNameAttribute(): ?string
     {
-        return $this->contact->contactable->labels->first(fn ($label) => $label->label_id === $this->label_id)->label_name ?? null;
+        return $this->contact
+            ->contactable
+            ->labels
+            ->firstWhere('label_id', $this->label_id)
+            ?->label_name;
     }
 }

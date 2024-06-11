@@ -28,6 +28,7 @@ namespace Seatplus\Eveapi\Models\Wallet;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class WalletJournal extends Model
 {
@@ -42,7 +43,7 @@ class WalletJournal extends Model
         'date' => 'datetime',
     ];
 
-    public function wallet_journable()
+    public function wallet_journable(): MorphTo
     {
         return $this->morphTo();
     }

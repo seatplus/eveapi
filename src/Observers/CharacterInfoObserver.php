@@ -35,11 +35,10 @@ class CharacterInfoObserver
      * Handle the User "created" event.
      *
      *
-     * @return void
      *
      * @throws \Seatplus\Eveapi\Exceptions\InvalidContainerDataException
      */
-    public function created(CharacterInfo $character_info)
+    public function created(CharacterInfo $character_info): void
     {
         CharacterAffiliationJob::dispatch($character_info->character_id)->onQueue('high');
     }
@@ -48,11 +47,10 @@ class CharacterInfoObserver
      * Handle the User "updating" event.
      *
      *
-     * @return void
      *
      * @throws \Seatplus\Eveapi\Exceptions\InvalidContainerDataException
      */
-    public function updating(CharacterInfo $character_info)
+    public function updating(CharacterInfo $character_info): void
     {
         CharacterAffiliationJob::dispatch($character_info->character_id)->onQueue('high');
     }

@@ -31,7 +31,7 @@ use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 
 class GetMissingTypesFromCorporationMemberTracking extends HydrateMaintenanceBase
 {
-    public function handle()
+    public function handle(): void
     {
         if ($this->batch()->cancelled()) {
             // Determine if the batch has been cancelled...
@@ -44,7 +44,7 @@ class GetMissingTypesFromCorporationMemberTracking extends HydrateMaintenanceBas
             ->pluck('ship_type_id')
             ->unique()
             ->filter()
-            ->map(fn ($ship_type_id) => new ResolveUniverseTypeByIdJob($ship_type_id));
+            ->map(fn (int $ship_type_id) => new ResolveUniverseTypeByIdJob($ship_type_id));
 
         $this->batch()->add(
             $jobs->toArray()

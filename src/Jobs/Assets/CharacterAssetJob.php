@@ -101,7 +101,7 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
             // First update the
             collect($response)
                 ->each(
-                    fn ($asset) => $this->assets->push([
+                    fn (object $asset) => $this->assets->push([
                         'item_id' => $asset->item_id,
                         'assetable_id' => $this->character_id,
                         'assetable_type' => CharacterInfo::class,
@@ -136,7 +136,7 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
         app('queue.worker')->shouldQuit = true;
     }
 
-    private function cleanup()
+    private function cleanup(): void
     {
         Asset::query()
             ->where('assetable_id', $this->character_id)
@@ -144,7 +144,7 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
             ->delete();
     }
 
-    private function persist()
+    private function persist(): void
     {
         Asset::upsert(
             $this->assets->toArray(),
@@ -153,7 +153,7 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
         );
     }
 
-    private function dispatchFollowUpJobs()
+    private function dispatchFollowUpJobs(): void
     {
         // Resolve unknown locations
         $this->resolveUnknownLocations();
@@ -162,7 +162,7 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
         $this->resolveUnknownTypes();
     }
 
-    private function resolveUnknownLocations()
+    private function resolveUnknownLocations(): void
     {
         $unknown_location_ids = Asset::query()
             ->where('assetable_id', $this->character_id)
@@ -178,12 +178,12 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
         $refresh_token = RefreshToken::find($this->character_id);
 
         $unknown_location_ids->each(
-            fn ($location_id) => ResolveLocationJob::dispatch($location_id, $refresh_token)
+            fn (int $location_id) => ResolveLocationJob::dispatch($location_id, $refresh_token)
                 ->onQueue('high')
         );
     }
 
-    private function resolveUnknownTypes()
+    private function resolveUnknownTypes(): void
     {
         $unknown_type_ids = Asset::query()
             ->where('assetable_id', $this->character_id)
@@ -197,7 +197,7 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
         }
 
         $unknown_type_ids->each(
-            fn ($type_id) => ResolveUniverseTypeByIdJob::dispatch($type_id)
+            fn (int $type_id) => ResolveUniverseTypeByIdJob::dispatch($type_id)
                 ->onQueue('high')
         );
     }

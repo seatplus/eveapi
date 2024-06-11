@@ -41,7 +41,7 @@ class EsiClientSetup
         $client = new EsiClient;
 
         if ($authentication) {
-            tap($authentication, function ($auth) {
+            tap($authentication, function (EsiAuthentication $auth) {
                 $auth->client_id = config('eveapi.config.esi.eve_client_id');
                 $auth->secret = config('eveapi.config.esi.eve_client_secret');
             });

@@ -30,6 +30,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
@@ -59,7 +60,7 @@ class CorporationInfo extends Model
         'alliance_id' => 'integer',
     ];
 
-    public function characters()
+    public function characters(): HasManyThrough
     {
         return $this->hasManyThrough(
             CharacterInfo::class,

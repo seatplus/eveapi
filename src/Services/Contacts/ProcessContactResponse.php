@@ -37,9 +37,9 @@ class ProcessContactResponse
     {
     }
 
-    public function execute(EsiResponse $response)
+    public function execute(EsiResponse $response): Collection
     {
-        return collect($response)->each(function ($contact) {
+        return collect($response)->each(function (object $contact) {
             $contact_model = Contact::updateOrCreate([
                 'contact_id' => $contact->contact_id,
                 'contactable_id' => $this->contactable_id,
@@ -58,17 +58,17 @@ class ProcessContactResponse
 
                 $labels_to_save = collect($contact->label_ids)->diff($already_existing_label_ids);
 
-                $contact_model->labels()->createMany($labels_to_save->map(fn ($label_id) => ['label_id' => $label_id]));
+                $contact_model->labels()->createMany($labels_to_save->map(fn (int $label_id) => ['label_id' => $label_id]));
             }
         })->pipe(function (Collection $response) {
             CharacterAffiliationService::make()
-                ->queue($response->filter(fn ($contact) => $contact->contact_type === 'character')->pluck('contact_id')->toArray());
+                ->queue($response->filter(fn (object $contact) => $contact->contact_type === 'character')->pluck('contact_id')->toArray());
 
             return $response;
         })->pluck('contact_id');
     }
 
-    public function remove_old_contacts(array $known_ids)
+    public function remove_old_contacts(array $known_ids): void
     {
         // Cleanup
         Contact::where('contactable_id', $this->contactable_id)

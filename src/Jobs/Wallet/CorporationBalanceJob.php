@@ -99,7 +99,7 @@ class CorporationBalanceJob extends EsiBase implements HasCorporationRoleInterfa
 
         $corporation_balances = collect($response)
             ->map(
-                fn ($wallet) => [
+                fn (object $wallet) => [
                     'balanceable_id' => $this->corporation_id,
                     'balanceable_type' => CorporationInfo::class,
                     'division' => data_get($wallet, 'division'),
@@ -116,9 +116,9 @@ class CorporationBalanceJob extends EsiBase implements HasCorporationRoleInterfa
         $this->dispatchDivisionJobs($corporation_balances);
     }
 
-    private function dispatchDivisionJobs(Collection $corporation_balances)
+    private function dispatchDivisionJobs(Collection $corporation_balances): void
     {
-        $corporation_balances->each(function ($balance) {
+        $corporation_balances->each(function (array $balance) {
             CorporationWalletJournalByDivisionJob::dispatch($this->corporation_id, $balance['division'])->onQueue('high');
             CorporationWalletTransactionByDivisionJob::dispatch($this->corporation_id, $balance['division'])->onQueue('high');
         });

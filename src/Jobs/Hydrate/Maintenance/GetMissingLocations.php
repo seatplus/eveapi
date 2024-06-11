@@ -31,7 +31,7 @@ use Seatplus\Eveapi\Models\Universe\Location;
 
 class GetMissingLocations extends HydrateMaintenanceBase
 {
-    public function handle()
+    public function handle(): void
     {
         if ($this->batch()->cancelled()) {
             // Determine if the batch has been cancelled...
@@ -43,7 +43,7 @@ class GetMissingLocations extends HydrateMaintenanceBase
         $jobs = Location::query()
             ->whereDoesntHave('locatable')
             ->pluck('location_id')
-            ->map(fn ($location_id) => new ResolveLocationJob($location_id));
+            ->map(fn (int $location_id) => new ResolveLocationJob($location_id));
 
         $this->batch()->add($jobs);
 

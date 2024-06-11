@@ -85,7 +85,7 @@ class MailHeaderJob extends EsiBase implements HasPathValuesInterface, HasRequir
         }
 
         collect($response)
-            ->map(fn ($mail) => [
+            ->map(fn (object $mail) => [
                 'id' => data_get($mail, 'mail_id'),
                 'subject' => data_get($mail, 'subject'),
                 'from' => data_get($mail, 'from'),
@@ -96,10 +96,10 @@ class MailHeaderJob extends EsiBase implements HasPathValuesInterface, HasRequir
             ->each(fn (Collection $chunk) => Mail::upsert($chunk->toArray(), 'id'));
 
         collect($response)
-            ->each(function ($mail) {
+            ->each(function (object $mail) {
                 // create recipients
                 $recipients = collect(data_get($mail, 'recipients'))
-                    ->map(fn ($recipient) => [
+                    ->map(fn (object $recipient) => [
                         'mail_id' => data_get($mail, 'mail_id'),
                         'receivable_id' => data_get($recipient, 'recipient_id'),
                         'receivable_type' => $this->getReceivableType(data_get($recipient, 'recipient_type')),
@@ -134,7 +134,7 @@ class MailHeaderJob extends EsiBase implements HasPathValuesInterface, HasRequir
         app('queue.worker')->shouldQuit = true;
     }
 
-    private function getReceivableType(string $recipient_type)
+    private function getReceivableType(string $recipient_type): string
     {
         return match ($recipient_type) {
             'alliance' => AllianceInfo::class,

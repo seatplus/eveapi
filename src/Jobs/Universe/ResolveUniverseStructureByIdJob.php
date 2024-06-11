@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Universe;
 
+use GuzzleHttp\Exception\ClientException;
 use Illuminate\Queue\MaxAttemptsExceededException;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
@@ -37,6 +38,7 @@ use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Structure;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
+use Throwable;
 
 class ResolveUniverseStructureByIdJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
@@ -114,7 +116,7 @@ class ResolveUniverseStructureByIdJob extends EsiBase implements HasPathValuesIn
         ]);
     }
 
-    public function failed($exception): void
+    public function failed(Throwable $exception): void
     {
         if ($exception instanceof MaxAttemptsExceededException) {
             $this->delete();
@@ -123,11 +125,20 @@ class ResolveUniverseStructureByIdJob extends EsiBase implements HasPathValuesIn
             return;
         }
 
-        if ($exception?->getOriginalException()?->getResponse()?->getReasonPhrase() === 'Forbidden') {
-            logger()->info('Received Forbidden, going to delete the job');
-            $this->job->delete();
+        if ($exception instanceof RequestFailedException) {
 
-            return;
+            $guzzle_exception = $exception->getOriginalException();
+
+            if ($guzzle_exception instanceof ClientException) {
+                $response = $guzzle_exception->getResponse();
+
+                if ($response->getReasonPhrase() === 'Forbidden') {
+                    logger()->info('Received Forbidden, going to delete the job');
+                    $this->job->delete();
+
+                    return;
+                }
+            }
         }
 
         $this->delete();

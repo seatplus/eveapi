@@ -49,7 +49,7 @@ class ClearCache extends Command
      */
     protected $description = 'Clear caches used by SeAT plus.';
 
-    public function handle()
+    public function handle(): void
     {
         $this->line('SeAT plus Cache Clearing Tool');
         $this->line('');
@@ -73,7 +73,7 @@ class ClearCache extends Command
         $this->info('success');
     }
 
-    private function flushRedis()
+    private function flushRedis(): void
     {
         $this->info('Clearing the Redis Cache');
 
@@ -84,20 +84,20 @@ class ClearCache extends Command
         }
     }
 
-    private function clearArtisanCache()
+    private function clearArtisanCache(): void
     {
         $this->info('Clearing the Artisan Cache');
         Artisan::call('cache:clear');
         cache()->store('file')->flush();
     }
 
-    private function truncateBatch()
+    private function truncateBatch(): void
     {
         DB::table('job_batches')->truncate();
         BatchUpdate::query()->pending()->delete();
     }
 
-    private function cleanupBatchUpdate()
+    private function cleanupBatchUpdate(): void
     {
         $this->info('cleanup pending batch updates');
         BatchUpdate::query()->pending()->delete();

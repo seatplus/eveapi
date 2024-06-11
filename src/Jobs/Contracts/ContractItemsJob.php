@@ -74,7 +74,7 @@ abstract class ContractItemsJob extends EsiBase implements HasPathValuesInterfac
             return;
         }
 
-        $contract_items = collect($response)->map(fn ($item) => [
+        $contract_items = collect($response)->map(fn (object $item) => [
             // primary
             'record_id' => $item->record_id,
             //others
@@ -96,17 +96,17 @@ abstract class ContractItemsJob extends EsiBase implements HasPathValuesInterfac
         $this->dispatchFollowUpJobs();
     }
 
-    private function dispatchFollowUpJobs()
+    private function dispatchFollowUpJobs(): void
     {
         $this->getMissingTypes();
     }
 
-    private function getMissingTypes()
+    private function getMissingTypes(): void
     {
         // Dispatch Resolve Universe Type Jobs for missing Types
         ContractItem::doesntHave('type')
             ->pluck('type_id')
             ->unique()
-            ->each(fn ($type_id) => ResolveUniverseTypeByIdJob::dispatch($type_id)->onQueue('high'));
+            ->each(fn (int $type_id) => ResolveUniverseTypeByIdJob::dispatch($type_id)->onQueue('high'));
     }
 }

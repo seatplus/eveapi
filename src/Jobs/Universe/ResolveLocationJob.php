@@ -46,17 +46,13 @@ class ResolveLocationJob implements ShouldBeUnique, ShouldQueue
 
     /**
      * The number of times the job may be attempted.
-     *
-     * @var int
      */
-    public $tries = 1;
+    public int $tries = 1;
 
     /**
      * The number of seconds after which the job's unique lock will be released.
-     *
-     * @var int
      */
-    public $uniqueFor = 7200;
+    public int $uniqueFor = 7200;
 
     /**
      * The unique ID of the job.
@@ -72,7 +68,7 @@ class ResolveLocationJob implements ShouldBeUnique, ShouldQueue
     ) {
     }
 
-    public function tags()
+    public function tags(): array
     {
         if ($this->refresh_token) {
             return [

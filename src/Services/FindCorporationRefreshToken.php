@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Services;
 
+use Illuminate\Database\Eloquent\Builder;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 class FindCorporationRefreshToken
@@ -36,7 +37,7 @@ class FindCorporationRefreshToken
         $roles = is_string($role) ? [$role] : $role;
 
         return RefreshToken::with('corporation', 'character.roles')
-            ->whereHas('corporation', fn ($query) => $query->where('corporation_infos.corporation_id', $corporation_id))
+            ->whereHas('corporation', fn (Builder $query) => $query->where('corporation_infos.corporation_id', $corporation_id))
             ->cursor()
             ->shuffle()
             ->filter(function (RefreshToken $token) use ($scopes) {
@@ -48,7 +49,7 @@ class FindCorporationRefreshToken
 
                 return false;
             })
-            ->first(function ($token) use ($roles) {
+            ->first(function (RefreshToken $token) use ($roles) {
                 // if no roles are given, return the first token with the correct scope
                 if (empty($roles)) {
                     return true;

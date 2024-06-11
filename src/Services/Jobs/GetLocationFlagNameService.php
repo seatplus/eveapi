@@ -32,7 +32,7 @@ class GetLocationFlagNameService
     {
     }
 
-    public static function make()
+    public static function make(): self
     {
         return new self();
     }

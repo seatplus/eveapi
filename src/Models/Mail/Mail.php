@@ -28,6 +28,7 @@ namespace Seatplus\Eveapi\Models\Mail;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Mail extends Model
 {
@@ -40,7 +41,7 @@ class Mail extends Model
 
     protected $guarded = [];
 
-    public function recipients()
+    public function recipients(): HasMany
     {
         return $this->hasMany(MailRecipients::class, 'mail_id');
     }

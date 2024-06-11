@@ -29,6 +29,7 @@ namespace Seatplus\Eveapi;
 use Exception;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Schema;
@@ -67,7 +68,7 @@ class EveapiServiceProvider extends ServiceProvider
      */
     const QUEUE_BALANCING_WORKERS = 'QUEUE_WORKERS';
 
-    public function boot()
+    public function boot(): void
     {
         //Add Migrations
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations/');
@@ -94,7 +95,7 @@ class EveapiServiceProvider extends ServiceProvider
         $this->addRateLimiters();
     }
 
-    public function register()
+    public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/eveapi.config.php', 'eveapi.config');
 
@@ -118,10 +119,10 @@ class EveapiServiceProvider extends ServiceProvider
      * This includes the access rules for the dashboard, as
      * well as the number of workers to use for the job processor.
      */
-    public function configureHorizon()
+    public function configureHorizon(): void
     {
         // Require the queue_manager role to view the dashboard
-        Horizon::auth(function ($request) {
+        Horizon::auth(function (Request $request) {
             if (is_null($request->user())) {
                 return false;
             }
@@ -175,7 +176,7 @@ class EveapiServiceProvider extends ServiceProvider
         config(['horizon.defaults' => []]);
     }
 
-    private function addHorizonSnapshotSchedule()
+    private function addHorizonSnapshotSchedule(): void
     {
         $this->app->booted(function () {
             $schedule = $this->app->make(Schedule::class);
@@ -183,7 +184,7 @@ class EveapiServiceProvider extends ServiceProvider
         });
     }
 
-    private function addHorizonTerminateSchedule()
+    private function addHorizonTerminateSchedule(): void
     {
         $this->app->booted(function () {
             $schedule = $this->app->make(Schedule::class);
@@ -191,7 +192,7 @@ class EveapiServiceProvider extends ServiceProvider
         });
     }
 
-    private function addEventListeners()
+    private function addEventListeners(): void
     {
         app('events')->subscribe(DispatchGetSystemJobSubscriber::class);
         app('events')->listen(UniverseSystemCreated::class, DispatchGetConstellationById::class);
@@ -206,7 +207,7 @@ class EveapiServiceProvider extends ServiceProvider
         CharacterInfo::observe(CharacterInfoObserver::class);
     }
 
-    private function addSchedules()
+    private function addSchedules(): void
     {
         $this->app->booted(function () {
             $schedule = $this->app->make(Schedule::class);
@@ -226,7 +227,7 @@ class EveapiServiceProvider extends ServiceProvider
                 return;
             }
 
-            Schedules::cursor()->each(function ($entry) use ($schedule) {
+            Schedules::cursor()->each(function (Schedules $entry) use ($schedule) {
 
                 // Check if the job exists before adding it to the schedule
                 if (class_exists($entry->job)) {
@@ -250,17 +251,17 @@ class EveapiServiceProvider extends ServiceProvider
         ]);
     }
 
-    private function addRateLimiters()
+    private function addRateLimiters(): void
     {
         RateLimiter::for(
             'corporation_batch',
-            fn ($job) => Limit::perHour(1)
+            fn ($job) => Limit::perHour(1) // @pest-ignore-type
                 ->by($job->corporation_id ?? 'corporation_batch')
         );
 
         RateLimiter::for(
             'character_batch',
-            function ($job) {
+            function ($job) { // @pest-ignore-type
                 $character_id = $job?->refresh_token?->character_id;
                 $queue_name = $job?->queue;
 

@@ -72,7 +72,7 @@ class RefreshToken extends Model
      * Only return a token value if it is not already
      * considered expired.
      */
-    public function getTokenAttribute($value): ?string
+    public function getTokenAttribute(string $value): ?string
     {
         if ($this->expires_on->gt(Carbon::now())) {
             return $value;

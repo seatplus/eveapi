@@ -10,7 +10,7 @@ class UpdateRefreshTokenService
 {
     private EsiClientUpdateToken $refreshTokenService;
 
-    public static function make()
+    public static function make(): self
     {
         return new self();
     }

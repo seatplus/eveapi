@@ -28,5 +28,5 @@ namespace Seatplus\Eveapi\Jobs\Hydrate;
 
 interface Hydrate
 {
-    public function handle();
+    public function handle(): void;
 }

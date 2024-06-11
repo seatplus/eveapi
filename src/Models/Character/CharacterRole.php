@@ -49,7 +49,7 @@ class CharacterRole extends Model
         'roles_at_other' => 'array',
     ];
 
-    protected $roles_array = [
+    protected array $roles_array = [
         'Account_Take_1', 'Account_Take_2', 'Account_Take_3', 'Account_Take_4', 'Account_Take_5', 'Account_Take_6',
         'Account_Take_7', 'Accountant', 'Auditor', 'Communications_Officer', 'Config_Equipment', 'Config_Starbase_Equipment',
         'Container_Take_1', 'Container_Take_2', 'Container_Take_3', 'Container_Take_4', 'Container_Take_5', 'Container_Take_6',

@@ -31,7 +31,7 @@ use Seatplus\Eveapi\Models\Universe\Group;
 
 class GetMissingCategorys extends HydrateMaintenanceBase
 {
-    public function handle()
+    public function handle(): void
     {
         if ($this->batch()->cancelled()) {
             // Determine if the batch has been cancelled...
@@ -41,7 +41,7 @@ class GetMissingCategorys extends HydrateMaintenanceBase
 
         $unknown_type_ids = Group::whereDoesntHave('category')->pluck('category_id')->unique()->values();
 
-        $jobs = $unknown_type_ids->map(fn ($id) => new ResolveUniverseCategoryByIdJob($id));
+        $jobs = $unknown_type_ids->map(fn (int $id) => new ResolveUniverseCategoryByIdJob($id));
 
         $this->batch()->add(
             $jobs->toArray()
