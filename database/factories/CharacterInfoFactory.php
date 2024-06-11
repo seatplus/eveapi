@@ -31,7 +31,6 @@ use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Character\CharacterRole;
-use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 class CharacterInfoFactory extends Factory
@@ -41,16 +40,9 @@ class CharacterInfoFactory extends Factory
     public function configure()
     {
         return $this->afterCreating(function (CharacterInfo $character_info) {
-            $character_affiliation = $character_info
+            $character_info
                 ->character_affiliation()
                 ->save(CharacterAffiliation::factory()->withAlliance()->create());
-
-            $character_affiliation->corporation()->associate(CorporationInfo::factory()->create([
-                'corporation_id' => $character_affiliation->corporation_id,
-                'alliance_id' => $character_affiliation->alliance_id,
-            ]));
-
-            //$character_affiliation->alliance()->associate($alliance);
 
             Event::fakeFor(function () use ($character_info) {
                 $character_info->refresh_token()->save(RefreshToken::factory()->create());
@@ -63,7 +55,7 @@ class CharacterInfoFactory extends Factory
     public function definition()
     {
         return [
-            'character_id' => $this->faker->numberBetween(9000000, 98000000),
+            'character_id' => $this->faker->unique()->numberBetween(9000000, 98000000),
             'name' => $this->faker->name,
             //'corporation_id'  => $this->faker->numberBetween(98000000, 99000000),
             'birthday' => $this->faker->iso8601('now'),
