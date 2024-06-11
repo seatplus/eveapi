@@ -23,12 +23,10 @@ it('handles follow-up job', function (string $job_class, array $configuration = 
     $character_id = Arr::get($configuration, 'character_id', $character_id);
 
     // If config contains has_character, we create a character and use its id
-    if (Arr::get($configuration, 'has_character', true)) {
-        $character = CharacterInfo::factory()->create([
-            'character_id' => $character_id,
-        ]);
-        $character->character_affiliation()->delete();
-    }
+    $character = CharacterInfo::factory()->create([
+        'character_id' => $character_id,
+    ]);
+    $character->character_affiliation()->delete();
 
     $attributes = array_merge([
         'character_id' => $character_id,
@@ -40,6 +38,10 @@ it('handles follow-up job', function (string $job_class, array $configuration = 
     ]);
 
     mockRetrieveEsiDataAction([$character_affiliation->toArray()]);
+
+    if ($job_class === CorporationInfoJob::class && $pushed) {
+        $character_affiliation->corporation()->delete();
+    }
 
     // run the job
     (new CharacterAffiliationJob($character_id))->handle();

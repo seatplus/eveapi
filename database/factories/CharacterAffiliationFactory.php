@@ -29,12 +29,13 @@ namespace Seatplus\Eveapi\Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
+use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
 class CharacterAffiliationFactory extends Factory
 {
     protected $model = CharacterAffiliation::class;
 
-    public function definition()
+    public function definition(): array
     {
         return [
             'character_id' => $this->faker->numberBetween(9000000, 98000000),
@@ -45,12 +46,36 @@ class CharacterAffiliationFactory extends Factory
         ];
     }
 
-    public function withAlliance()
+    public function withAlliance(): CharacterAffiliationFactory
     {
         return $this->state(function () {
             return [
                 'alliance_id' => AllianceInfo::factory(),
             ];
+        });
+    }
+
+    public function configure()
+    {
+        return $this->afterCreating(function (CharacterAffiliation $character_affiliation) {
+
+            // if alliance_id is set, update alliance of corporation
+            if ($character_affiliation->alliance_id) {
+
+                // first check if corporation exists
+                $corporation = CorporationInfo::find($character_affiliation->corporation_id);
+                if ($corporation) {
+                    $corporation->alliance_id = $character_affiliation->alliance_id;
+                    $corporation->save();
+                } else {
+                    // if corporation does not exist, create it
+                    CorporationInfo::factory()->create([
+                        'corporation_id' => $character_affiliation->corporation_id,
+                        'alliance_id' => $character_affiliation->alliance_id,
+                    ]);
+                }
+            }
+
         });
     }
 }
