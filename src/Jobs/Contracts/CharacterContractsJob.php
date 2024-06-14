@@ -211,7 +211,7 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
         return Contract::query()
             ->whereIn('contract_id', $contract_ids)
             // where has start_location_id or end_location_id
-            ->where(fn (Builder $query) => $query->whereNotNull('start_location_id')->orWhereNotNull('end_location_id')) // @phpstan-ignore-line
+            ->where(fn (Builder $query) => $query->whereNotNull('start_location_id')->orWhereNotNull('end_location_id'))
             // where doesn't have start_location or end_location
             ->where(fn (Builder $query) => $query->doesntHave('start_location')->orDoesntHave('end_location'))
             ->select('start_location_id', 'end_location_id')

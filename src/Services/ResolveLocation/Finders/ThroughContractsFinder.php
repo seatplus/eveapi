@@ -22,7 +22,7 @@ class ThroughContractsFinder implements FinderInterface
                 ->whereHas('issuer_character.refresh_token')
                 ->orWhereHas('assignee_character.refresh_token')
             )
-            ->where(fn (Builder $query) => $query // @phpstan-ignore-line
+            ->where(fn (Builder $query) => $query
                 ->whereNotIn('issuer_id', $character_ids_to_ignore)
                 ->orWhereNotIn('assignee_id', $character_ids_to_ignore)
             )
