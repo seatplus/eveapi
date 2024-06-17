@@ -31,7 +31,7 @@ use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 
 class GetMissingCharacterInfosFromCorporationMemberTracking extends HydrateMaintenanceBase
 {
-    public function handle()
+    public function handle(): void
     {
         if ($this->batch()->cancelled()) {
             // Determine if the batch has been cancelled...
@@ -41,9 +41,7 @@ class GetMissingCharacterInfosFromCorporationMemberTracking extends HydrateMaint
 
         $character_ids = CorporationMemberTracking::doesntHave('character')->pluck('character_id')->unique()->values();
 
-        $jobs = $character_ids->map(function ($character_id) {
-            return new CharacterInfoJob($character_id);
-        });
+        $jobs = $character_ids->map(fn (int $character_id) => new CharacterInfoJob($character_id));
 
         $this->batch()->add(
             $jobs->toArray()

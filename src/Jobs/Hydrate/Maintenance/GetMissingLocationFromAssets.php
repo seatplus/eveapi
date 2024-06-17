@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Hydrate\Maintenance;
 
+use Illuminate\Database\Eloquent\Builder;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Universe\Station;
@@ -33,7 +34,7 @@ use Seatplus\Eveapi\Models\Universe\Structure;
 
 class GetMissingLocationFromAssets extends HydrateMaintenanceBase
 {
-    public function handle()
+    public function handle(): void
     {
         if ($this->batch()->cancelled()) {
             // Determine if the batch has been cancelled...
@@ -42,14 +43,14 @@ class GetMissingLocationFromAssets extends HydrateMaintenanceBase
         }
 
         // First do the assets
-        $jobs = Asset::whereDoesntHave('location', fn ($query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]))
+        $jobs = Asset::whereDoesntHave('location', fn (Builder $query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]))
             ->AssetsLocationIds()
             ->inRandomOrder()
             ->select('location_id')
             ->pluck('location_id')
             ->unique()
             ->filter()
-            ->map(fn ($location_id) => new ResolveLocationJob($location_id));
+            ->map(fn (int $location_id) => new ResolveLocationJob($location_id));
 
         $this->batch()->add($jobs->toArray());
 

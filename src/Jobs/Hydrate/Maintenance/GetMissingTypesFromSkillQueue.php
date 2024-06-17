@@ -31,7 +31,7 @@ use Seatplus\Eveapi\Models\Skills\SkillQueue;
 
 class GetMissingTypesFromSkillQueue extends HydrateMaintenanceBase
 {
-    public function handle()
+    public function handle(): void
     {
         if ($this->batch()->cancelled()) {
             // Determine if the batch has been cancelled...
@@ -42,7 +42,7 @@ class GetMissingTypesFromSkillQueue extends HydrateMaintenanceBase
         $type_ids = SkillQueue::doesntHave('type')->pluck('skill_id')->unique()->values();
 
         //$type_ids->each(fn ($id) => ResolveUniverseTypeByIdJob::dispatch($id)->onQueue('low'));
-        $jobs = $type_ids->map(fn ($id) => new ResolveUniverseTypeByIdJob($id));
+        $jobs = $type_ids->map(fn (int $id) => new ResolveUniverseTypeByIdJob($id));
 
         $this->batch()->add(
             $jobs->toArray()

@@ -40,7 +40,7 @@ class RetrieveEsiData extends Facade
      *
      * @see RetrieveEsiDataAlias
      */
-    protected static function getFacadeAccessor()
+    protected static function getFacadeAccessor(): string
     {
         return RetrieveEsiDataAlias::class;
     }

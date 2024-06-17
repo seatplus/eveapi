@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Listeners;
 
+use Illuminate\Events\Dispatcher;
 use Seatplus\Eveapi\Events\UniverseStationCreated;
 use Seatplus\Eveapi\Events\UniverseStructureCreated;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseSystemBySystemIdJob;
@@ -33,28 +34,23 @@ use Seatplus\Eveapi\Models\Universe\System;
 
 class DispatchGetSystemJobSubscriber
 {
-    private $system_id;
+    private int $system_id;
 
-    public function handleUniverseStationCreated($event)
+    public function handleUniverseStationCreated(UniverseStationCreated $event): void
     {
         $this->system_id = $event->station->system_id;
 
         $this->handleSystemId();
     }
 
-    public function handleUniverseStructureCreated($event)
+    public function handleUniverseStructureCreated(UniverseStructureCreated $event): void
     {
         $this->system_id = $event->structure->solar_system_id;
 
         $this->handleSystemId();
     }
 
-    /**
-     * Register the listeners for the subscriber.
-     *
-     * @param  \Illuminate\Events\Dispatcher  $events
-     */
-    public function subscribe($events)
+    public function subscribe(Dispatcher $events): void
     {
         $events->listen(
             UniverseStationCreated::class,
@@ -67,7 +63,7 @@ class DispatchGetSystemJobSubscriber
         );
     }
 
-    private function handleSystemId()
+    private function handleSystemId(): void
     {
         if (System::find($this->system_id)) {
             return;

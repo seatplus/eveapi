@@ -31,7 +31,7 @@ use Seatplus\Eveapi\Models\Universe\Type;
 
 class GetMissingGroups extends HydrateMaintenanceBase
 {
-    public function handle()
+    public function handle(): void
     {
         if ($this->batch()->cancelled()) {
             // Determine if the batch has been cancelled...
@@ -41,7 +41,7 @@ class GetMissingGroups extends HydrateMaintenanceBase
 
         $unknown_type_ids = Type::whereDoesntHave('group')->pluck('group_id')->unique()->values();
 
-        $jobs = $unknown_type_ids->map(fn ($id) => new ResolveUniverseGroupByIdJob($id));
+        $jobs = $unknown_type_ids->map(fn (int $id) => new ResolveUniverseGroupByIdJob($id));
 
         $this->batch()->add(
             $jobs->toArray()

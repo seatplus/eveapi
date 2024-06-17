@@ -21,17 +21,17 @@ class BatchUpdate extends Model
         return $this->morphTo();
     }
 
-    public function getIsPendingAttribute()
+    public function getIsPendingAttribute(): bool
     {
         return ! is_null($this->started_at) && is_null($this->finished_at);
     }
 
-    public function scopePending(Builder $query)
+    public function scopePending(Builder $query): void
     {
         $query->whereNotNull('started_at')->whereNull('finished_at');
     }
 
-    public function scopeCharacter(Builder $query)
+    public function scopeCharacter(Builder $query): void
     {
         $query->whereMorphedTo('batchable', CharacterInfo::class);
     }

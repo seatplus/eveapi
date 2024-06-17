@@ -96,7 +96,7 @@ class CorporationDivisionsJob extends EsiBase implements HasCorporationRoleInter
         $divisions = collect();
 
         collect($response)->each(fn (array $entries, string $division_type) => collect($entries)
-            ->each(fn ($entry) => $divisions->push(
+            ->each(fn (object $entry) => $divisions->push(
                 [
                     'corporation_id' => $this->corporation_id,
                     'division_type' => $division_type,

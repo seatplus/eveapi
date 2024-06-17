@@ -29,6 +29,8 @@ namespace Seatplus\Eveapi\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Str;
 use Seatplus\Auth\Models\User;
@@ -45,7 +47,7 @@ class Application extends Model
 
     public $incrementing = false;
 
-    protected static function booted()
+    protected static function booted(): void
     {
         static::creating(function (Model $model) {
             $model->setAttribute($model->getKeyName(), Str::uuid());
@@ -58,27 +60,27 @@ class Application extends Model
         'corporation_id' => 'integer',
     ];
 
-    public function corporation()
+    public function corporation(): BelongsTo
     {
         return $this->belongsTo(CorporationInfo::class, 'corporation_id', 'corporation_id');
     }
 
-    public function enlistment()
+    public function enlistment(): BelongsTo
     {
         return $this->belongsTo(Enlistments::class, 'corporation_id', 'corporation_id');
     }
 
-    public function applicationable()
+    public function applicationable(): MorphTo
     {
         return $this->morphTo();
     }
 
-    public function log_entries()
+    public function log_entries(): HasMany
     {
         return $this->hasMany(ApplicationLogs::class);
     }
 
-    public function getDecisionCountAttribute()
+    public function getDecisionCountAttribute(): int
     {
         return $this->log_entries()->where('type', 'decision')->count();
     }

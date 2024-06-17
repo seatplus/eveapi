@@ -24,6 +24,7 @@
  * SOFTWARE.
  */
 
+use Carbon\Carbon;
 use Seatplus\Eveapi\Exceptions\SettingException;
 use Seatplus\Eveapi\Models\Settings\GlobalSettings;
 
@@ -55,18 +56,13 @@ if (! function_exists('setting')) {
 }
 
 if (! function_exists('carbon')) {
-    /**
-     * A helper to get a fresh instance of Carbon.
-     *
-     * @param  null  $data
-     * @return \Carbon\Carbon
-     */
-    function carbon($data = null)
+
+    function carbon(DateTimeInterface|null|string $data = null): Carbon
     {
         if (! is_null($data)) {
-            return new \Carbon\Carbon($data);
+            return new Carbon($data);
         }
 
-        return new \Carbon\Carbon;
+        return new Carbon;
     }
 }

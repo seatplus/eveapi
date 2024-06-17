@@ -31,7 +31,7 @@ use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseRegionByRegionIdJob;
 
 class DispatchGetRegionById
 {
-    public function handle(UniverseConstellationCreated $universe_constellation_created)
+    public function handle(UniverseConstellationCreated $universe_constellation_created): void
     {
         if ($universe_constellation_created->constellation->region) {
             return;

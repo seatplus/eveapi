@@ -2,6 +2,7 @@
 
 namespace Seatplus\Eveapi\Services\ResolveLocation\Finders;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
@@ -21,15 +22,15 @@ class ThroughWalletTransactionsFinder implements FinderInterface
             ->whereHasMorph(
                 'wallet_transactionable',
                 CharacterInfo::class,
-                fn ($query) => $query->whereHas('refresh_token')
+                fn (Builder $query) => $query->whereHas('refresh_token')
             )
             ->where('wallet_transactionable_type', CharacterInfo::class)
             ->inRandomOrder()
             ->get()
-            ->map(fn ($wallet_transaction) => $wallet_transaction->wallet_transactionable->refresh_token)
+            ->map(fn (WalletTransaction $wallet_transaction) => $wallet_transaction->wallet_transactionable->refresh_token)
             ->unique()
             // filter refresh token that has scope esi-universe.read_structures.v1
-            ->filter(fn ($refresh_token) => $refresh_token->hasScope('esi-universe.read_structures.v1'))
+            ->filter(fn (RefreshToken $refresh_token) => $refresh_token->hasScope('esi-universe.read_structures.v1'))
             ->first();
 
         if ($refresh_token) {
@@ -42,7 +43,7 @@ class ThroughWalletTransactionsFinder implements FinderInterface
             ->inRandomOrder()
             ->pluck('wallet_transactionable_id')
             ->unique()
-            ->map(function ($corporation_id) {
+            ->map(function (int $corporation_id) {
 
                 $service = new FindCorporationRefreshToken;
 

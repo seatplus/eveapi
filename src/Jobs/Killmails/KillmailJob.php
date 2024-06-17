@@ -120,9 +120,9 @@ class KillmailJob extends EsiBase implements HasPathValuesInterface
         }
     }
 
-    private function createKillmailItems(array $items, ?int $location_id = null)
+    private function createKillmailItems(array $items, ?int $location_id = null): void
     {
-        collect($items)->each(function ($item) use ($location_id) {
+        collect($items)->each(function (object $item) use ($location_id) {
             $killmail_item = KillmailItem::create([
                 'location_id' => $location_id ?? $this->killmail_id,
                 'location_flag' => GetLocationFlagNameService::make()->get(data_get($item, 'flag')),
@@ -145,9 +145,9 @@ class KillmailJob extends EsiBase implements HasPathValuesInterface
         $this->getMissingTypeIds($unknown_type_ids);
     }
 
-    private function createKillmailAttackers(array $attackers)
+    private function createKillmailAttackers(array $attackers): void
     {
-        collect($attackers)->each(fn ($attacker) => KillmailAttacker::create([
+        collect($attackers)->each(fn (object $attacker) => KillmailAttacker::create([
             'killmail_id' => $this->killmail_id,
             'character_id' => data_get($attacker, 'character_id'),
             'corporation_id' => data_get($attacker, 'corporation_id'),
@@ -167,14 +167,14 @@ class KillmailJob extends EsiBase implements HasPathValuesInterface
         $this->getMissingTypeIds($unknown_type_ids);
     }
 
-    private function getMissingTypeIds(Collection $type_ids)
+    private function getMissingTypeIds(Collection $type_ids): void
     {
         $this->batching()
-            ? $this->batch()->add($type_ids->map(fn ($type_id) => new ResolveUniverseTypeByIdJob($type_id))->toArray())
-            : $type_ids->each(fn ($type_id) => ResolveUniverseTypeByIdJob::dispatch($type_id)->onQueue($this->queue));
+            ? $this->batch()->add($type_ids->map(fn (int $type_id) => new ResolveUniverseTypeByIdJob($type_id))->toArray())
+            : $type_ids->each(fn (int $type_id) => ResolveUniverseTypeByIdJob::dispatch($type_id)->onQueue($this->queue));
     }
 
-    private function cleanUp(Killmail $killmail)
+    private function cleanUp(Killmail $killmail): void
     {
         $killmail->attackers()->delete();
         $killmail->items()->delete();

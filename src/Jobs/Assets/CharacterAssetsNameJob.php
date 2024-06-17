@@ -121,7 +121,7 @@ class CharacterAssetsNameJob extends EsiBase implements HasPathValuesInterface, 
             ->select('item_id')
             ->where('is_singleton', true)
             ->pluck('item_id')
-            ->chunk(1000)->each(function ($item_ids) {
+            ->chunk(1000)->each(function (Collection $item_ids) {
                 $clean_item_ids = $item_ids->flatten()->toArray();
 
                 $this->setRequestBody($clean_item_ids);
@@ -135,10 +135,10 @@ class CharacterAssetsNameJob extends EsiBase implements HasPathValuesInterface, 
         // Update all assets in one go
         $this->asset_names
             // filter out "None" names
-            ->filter(fn ($asset_name) => $asset_name->name !== 'None')
+            ->filter(fn (object $asset_name) => $asset_name->name !== 'None')
             // update asset names
             ->each(
-                fn ($asset_name) => Asset::query()
+                fn (object $asset_name) => Asset::query()
                     ->where('assetable_id', $this->character_id)
                     ->where('item_id', $asset_name->item_id)
                     ->update(['name' => $asset_name->name])

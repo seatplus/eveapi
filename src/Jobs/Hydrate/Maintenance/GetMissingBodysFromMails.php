@@ -26,13 +26,14 @@
 
 namespace Seatplus\Eveapi\Jobs\Hydrate\Maintenance;
 
+use Illuminate\Database\Eloquent\Builder;
 use Seatplus\Eveapi\Jobs\Mail\MailBodyJob;
 use Seatplus\Eveapi\Models\Mail\Mail;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 class GetMissingBodysFromMails extends HydrateMaintenanceBase
 {
-    public function handle()
+    public function handle(): void
     {
         if ($this->batch()->cancelled()) {
             // Determine if the batch has been cancelled...
@@ -43,15 +44,15 @@ class GetMissingBodysFromMails extends HydrateMaintenanceBase
         $jobs = Mail::query()
             ->whereNull('body')
             ->pluck('id')
-            ->map(fn ($mail_id) => $this->createMailBodyJob($mail_id))
+            ->map(fn (int $mail_id) => $this->createMailBodyJob($mail_id))
             ->filter();
 
         $this->batch()->add($jobs->toArray());
     }
 
-    private function createMailBodyJob($mail_id): ?MailBodyJob
+    private function createMailBodyJob(int $mail_id): ?MailBodyJob
     {
-        $refresh_tokens = RefreshToken::whereHas('character.mails', fn ($query) => $query->where('mails.id', $mail_id))->get();
+        $refresh_tokens = RefreshToken::whereHas('character.mails', fn (Builder $query) => $query->where('mails.id', $mail_id))->get();
 
         // if no refresh token is found, we can not hydrate the mail body and skip it
         if ($refresh_tokens->isEmpty()) {

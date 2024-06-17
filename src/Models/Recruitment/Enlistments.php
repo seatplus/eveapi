@@ -27,6 +27,7 @@
 namespace Seatplus\Eveapi\Models\Recruitment;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
 class Enlistments extends Model
@@ -42,7 +43,7 @@ class Enlistments extends Model
 
     public $incrementing = false;
 
-    public function corporation()
+    public function corporation(): BelongsTo
     {
         return $this->belongsTo(CorporationInfo::class, 'corporation_id', 'corporation_id');
     }
@@ -52,7 +53,7 @@ class Enlistments extends Model
         return count($this->steps);
     }
 
-    public function getStepsAttribute($value): array
+    public function getStepsAttribute(?string $value): array
     {
 
         // if value is an empty string return array with 'open' as first element
@@ -63,11 +64,11 @@ class Enlistments extends Model
         return explode('; ', $value);
     }
 
-    public function setStepsAttribute($value)
+    public function setStepsAttribute(string $value): void
     {
         $this->attributes['steps'] = collect(explode(';', $value))
             ->filter()
-            ->map(fn ($step) => trim($step))
+            ->map(fn (string $step) => trim($step))
             ->implode('; ');
     }
 }

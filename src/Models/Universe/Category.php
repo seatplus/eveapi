@@ -28,6 +28,7 @@ namespace Seatplus\Eveapi\Models\Universe;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Category extends Model
 {
@@ -60,7 +61,7 @@ class Category extends Model
         'published' => 'boolean',
     ];
 
-    public function groups()
+    public function groups(): HasMany
     {
         return $this->hasMany(Group::class, 'group_id', 'group_id');
     }

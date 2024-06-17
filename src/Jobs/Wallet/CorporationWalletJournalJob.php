@@ -52,17 +52,13 @@ class CorporationWalletJournalJob implements ShouldBeUnique, ShouldQueue
 
     /**
      * The number of seconds after which the job's unique lock will be released.
-     *
-     * @var int
      */
-    public $uniqueFor = 3600;
+    public int $uniqueFor = 3600;
 
     /**
      * The unique ID of the job.
-     *
-     * @return string
      */
-    public function uniqueId()
+    public function uniqueId(): string
     {
         return sprintf(
             'Corporation wallet journal dispatcher for corporation_id %s ',
@@ -95,7 +91,7 @@ class CorporationWalletJournalJob implements ShouldBeUnique, ShouldQueue
             )
             ->get()
             ->each(
-                function ($wallet) {
+                function (Balance $wallet) {
                     $this->batching()
                         ? $this->handleBatching($wallet->division)
                         : $this->handleNonBatching($wallet->division);

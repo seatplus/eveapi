@@ -28,6 +28,8 @@ namespace Seatplus\Eveapi\Models\Mail;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class MailRecipients extends Model
 {
@@ -40,12 +42,12 @@ class MailRecipients extends Model
 
     protected $guarded = [];
 
-    public function mail()
+    public function mail(): BelongsTo
     {
         return $this->belongsTo(Mail::class, 'mail_id', 'id');
     }
 
-    public function receivable()
+    public function receivable(): MorphTo
     {
         return $this->morphTo();
     }

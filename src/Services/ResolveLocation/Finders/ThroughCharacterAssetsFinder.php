@@ -21,10 +21,10 @@ class ThroughCharacterAssetsFinder implements FinderInterface
             ->where('assetable_type', CharacterInfo::class)
             ->inRandomOrder()
             ->get()
-            ->map(fn ($asset) => $asset->assetable->refresh_token)
+            ->map(fn (Asset $asset) => $asset->assetable->refresh_token)
             ->unique()
             // filter refresh token that has scope esi-universe.read_structures.v1
-            ->filter(fn ($refresh_token) => $refresh_token->hasScope('esi-universe.read_structures.v1'))
+            ->filter(fn (RefreshToken $refresh_token) => $refresh_token->hasScope('esi-universe.read_structures.v1'))
             ->first();
 
     }

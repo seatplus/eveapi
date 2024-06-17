@@ -54,7 +54,7 @@ class UpdateCharacter implements ShouldQueue
     ) {
     }
 
-    public function handle()
+    public function handle(): void
     {
         // if refresh_token is set, we only want to update this character
         $this->refresh_token
@@ -93,7 +93,7 @@ class UpdateCharacter implements ShouldQueue
 
         // dispatch jobs for each RefreshToken
         $refresh_tokens
-            ->each(fn ($token) => CharacterBatchJob::dispatch($token->character_id)->onQueue('default'));
+            ->each(fn (RefreshToken $token) => CharacterBatchJob::dispatch($token->character_id)->onQueue('default'));
     }
 
     private function getIntervalInMinutes(): int

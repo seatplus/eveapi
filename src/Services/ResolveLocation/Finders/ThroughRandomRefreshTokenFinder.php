@@ -16,6 +16,6 @@ class ThroughRandomRefreshTokenFinder implements FinderInterface
             ->whereNotIn('character_id', $character_ids_to_ignore)
             ->inRandomOrder()
             ->cursor()
-            ->firstWhere(fn ($refresh_token) => $refresh_token->hasScope('esi-universe.read_structures.v1'));
+            ->firstWhere(fn (RefreshToken $refresh_token) => $refresh_token->hasScope('esi-universe.read_structures.v1'));
     }
 }

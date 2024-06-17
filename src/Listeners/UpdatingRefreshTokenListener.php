@@ -33,7 +33,7 @@ use Seatplus\Eveapi\Jobs\Seatplus\UpdateCorporation;
 
 class UpdatingRefreshTokenListener
 {
-    public function handle(UpdatingRefreshTokenEvent $refresh_token_event)
+    public function handle(UpdatingRefreshTokenEvent $refresh_token_event): void
     {
         $refresh_token = $refresh_token_event->refresh_token;
         $original_scopes = $refresh_token->getOriginal('scopes');
@@ -50,7 +50,7 @@ class UpdatingRefreshTokenListener
         }
     }
 
-    private function getScopes(string $jwt)
+    private function getScopes(string $jwt): array
     {
         $jwt_payload_base64_encoded = explode('.', $jwt)[1];
 

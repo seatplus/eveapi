@@ -33,11 +33,8 @@ class TypeObserver
 {
     /**
      * Handle the User "created" event.
-     *
-     *
-     * @return void
      */
-    public function created(Type $type)
+    public function created(Type $type): void
     {
         if ($type->group) {
             return;

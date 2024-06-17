@@ -31,7 +31,7 @@ use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseConstellationByConstellationIdJ
 
 class DispatchGetConstellationById
 {
-    public function handle(UniverseSystemCreated $universe_system_created)
+    public function handle(UniverseSystemCreated $universe_system_created): void
     {
         if ($universe_system_created->system->constellation) {
             return;

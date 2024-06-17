@@ -41,7 +41,7 @@ class GetMissingConstellations extends HydrateMaintenanceBase
 
         $unknown_constellation_ids = System::whereDoesntHave('constellation')->pluck('constellation_id')->unique()->values();
 
-        $jobs = $unknown_constellation_ids->map(fn ($id) => new ResolveUniverseConstellationByConstellationIdJob($id));
+        $jobs = $unknown_constellation_ids->map(fn (int $id) => new ResolveUniverseConstellationByConstellationIdJob($id));
 
         $this->batch()->add(
             $jobs->toArray()

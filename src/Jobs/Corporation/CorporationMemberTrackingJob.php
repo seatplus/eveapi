@@ -98,7 +98,7 @@ class CorporationMemberTrackingJob extends EsiBase implements HasCorporationRole
         }
 
         $members = collect($response)
-            ->map(fn ($member) => [
+            ->map(fn (object $member) => [
                 'corporation_id' => $this->corporation_id,
                 'character_id' => $member->character_id,
                 'start_date' => property_exists($member, 'start_date') ? carbon($member->start_date) : null,
@@ -117,21 +117,24 @@ class CorporationMemberTrackingJob extends EsiBase implements HasCorporationRole
         $this->getShipTypes();
     }
 
-    private function upsertMembers(\Illuminate\Support\Collection $members)
+    private function upsertMembers(\Illuminate\Support\Collection $members): void
     {
         CorporationMemberTracking::upsert($members->toArray(), ['corporation_id', 'character_id']);
     }
 
-    private function removeOldMembers(\Illuminate\Support\Collection $members)
+    private function removeOldMembers(\Illuminate\Support\Collection $members): void
     {
         CorporationMemberTracking::where('corporation_id', $this->corporation_id)
             ->whereNotIn('character_id', $members->pluck('character_id')->all())
             // in order to use model events we must actually receive the models and delete them individually
             ->get()
-            ->each(fn ($ex_member) => $ex_member->delete());
+            ->each(fn (CorporationMemberTracking $ex_member) => $ex_member->delete());
     }
 
-    private function getLocations()
+    /**
+     * @throws \Exception
+     */
+    private function getLocations(): void
     {
         $refresh_token = $this->getRefreshToken();
 
@@ -140,26 +143,26 @@ class CorporationMemberTrackingJob extends EsiBase implements HasCorporationRole
             ->doesntHave('location')
             ->pluck('location_id')
             ->unique()
-            ->each(fn ($location_id) => ResolveLocationJob::dispatch($location_id, $refresh_token)->onQueue('high'));
+            ->each(fn (int $location_id) => ResolveLocationJob::dispatch($location_id, $refresh_token)->onQueue('high'));
     }
 
-    private function getMemberCharacterInfo()
+    private function getMemberCharacterInfo(): void
     {
         CorporationMemberTracking::query()
             ->where('corporation_id', $this->corporation_id)
             ->doesntHave('character')
             ->pluck('character_id')
             ->unique()
-            ->each(fn ($character_id) => CharacterInfoJob::dispatch($character_id)->onQueue('high'));
+            ->each(fn (int $character_id) => CharacterInfoJob::dispatch($character_id)->onQueue('high'));
     }
 
-    private function getShipTypes()
+    private function getShipTypes(): void
     {
         CorporationMemberTracking::query()
             ->where('corporation_id', $this->corporation_id)
             ->doesntHave('ship')
             ->pluck('ship_type_id')
             ->unique()
-            ->each(fn ($ship_type_id) => ResolveUniverseTypeByIdJob::dispatch($ship_type_id)->onQueue('high'));
+            ->each(fn (int $ship_type_id) => ResolveUniverseTypeByIdJob::dispatch($ship_type_id)->onQueue('high'));
     }
 }

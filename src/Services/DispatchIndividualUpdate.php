@@ -38,7 +38,7 @@ class DispatchIndividualUpdate
     ) {
     }
 
-    public function execute(string $job_name)
+    public function execute(string $job_name): mixed
     {
         $job_class = config('eveapi.jobs')[$job_name];
 
