@@ -236,6 +236,7 @@ it('applies binary search and chaches it if one id is invalid', function () {
 it('runs for character_infos that doestHave character_affilations', function () {
 
     // arrange
+    // change something
 
     // Prevent any events from being dispatched
     \Illuminate\Support\Facades\Event::fake();
