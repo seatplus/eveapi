@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Assets\EnrichAssetTypeGroupCategoryJob;
+use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterRoleJob;
 use Seatplus\Eveapi\Jobs\Character\CorporationHistoryJob;
@@ -71,33 +72,19 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
     public function handle(): void
     {
         // 1. Get BatchUpdate Entry
-        $batch_update = BatchUpdate::firstOrCreate([
-            'batchable_id' => $this->character_id,
-            'batchable_type' => CharacterInfo::class,
-        ]);
+        $batch_update = $this->getBatchUpdate();
 
-        // Discard update if still pending
-        if ($batch_update->is_pending && now()->isSameHour($batch_update->started_at)) {
+        if ($this->shouldDiscardUpdate($batch_update)) {
             return;
         }
-
-        // Discard update if finished in last hour
-        if ($batch_update->finished_at && now()->isSameHour($batch_update->finished_at)) {
-            return;
-        }
-
-        // reset batch_id, finished_at and started_at
-        $batch_update->finished_at = null;
-        $batch_update->batch_id = null;
-        $batch_update->started_at = now();
+        $this->resetBatchUpdate($batch_update);
 
         // 3. Dispatch and Return Job
         $batch = $this->execute();
 
         BatchStatistic::createEntry($batch);
 
-        $batch_update->batch_id = $batch->id;
-        $batch_update->save();
+        $this->updateBatchId($batch, $batch_update);
     }
 
     private function execute(): Batch
@@ -118,22 +105,23 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
 
     private function createBatchJobs(): void
     {
-        $this->batch_jobs = collect()
-            // Add Public Endpoints
-            ->merge([
+        $this->batch_jobs = [
+            // Add Private Endpoints
+            [
+                // Chain character info and affiliation
                 new CharacterInfoJob($this->character_id),
-                new CorporationHistoryJob($this->character_id),
-            ])
-            ->merge($this->addAssetsJobs())
-            ->merge($this->addCharacterRolesJobs())
-            ->merge($this->addContactsJobs())
-            ->merge($this->addWalletJobs())
-            ->merge($this->addContractJobs())
-            ->merge($this->addSkillsJobs())
-            ->merge($this->addSkillQueueJobs())
-            ->merge($this->addMailsJobs())
-            ->values()
-            ->toArray();
+                new CharacterAffiliationJob($this->character_id),
+            ],
+            new CorporationHistoryJob($this->character_id),
+            ...$this->addAssetsJobs(),
+            ...$this->addCharacterRolesJobs(),
+            ...$this->addContactsJobs(),
+            ...$this->addWalletJobs(),
+            ...$this->addContractJobs(),
+            ...$this->addSkillsJobs(),
+            ...$this->addSkillQueueJobs(),
+            ...$this->addMailsJobs(),
+        ];
     }
 
     private function addAssetsJobs(): array
@@ -199,6 +187,11 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
 
         // Get corporation_id from character
         $corporation_id = $this->refresh_token->character->corporation_id;
+
+        // Return empty array if character has no corporation, this should never happen but just in case
+        if (! $corporation_id) {
+            return [];
+        }
 
         return [
             [
@@ -296,5 +289,41 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
     public function getBatchJobs(): array
     {
         return $this->batch_jobs;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBatchUpdate(): BatchUpdate
+    {
+        return BatchUpdate::firstOrCreate([
+            'batchable_id' => $this->character_id,
+            'batchable_type' => CharacterInfo::class,
+        ]);
+    }
+
+    private function shouldDiscardUpdate(mixed $batch_update): bool
+    {
+        // Discard update if still pending
+        return ($batch_update->is_pending && now()->isSameHour($batch_update->started_at)) ||
+            // Discard update if finished in last hour
+            ($batch_update->finished_at && now()->isSameHour($batch_update->finished_at));
+    }
+
+    /**
+     * @param  mixed  $batch_update
+     */
+    public function resetBatchUpdate(BatchUpdate $batch_update): void
+    {
+        // reset batch_id, finished_at and started_at
+        $batch_update->finished_at = null;
+        $batch_update->batch_id = null;
+        $batch_update->started_at = now();
+    }
+
+    public function updateBatchId(Batch $batch, mixed $batch_update): void
+    {
+        $batch_update->batch_id = $batch->id;
+        $batch_update->save();
     }
 }

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Assets\EnrichAssetTypeGroupCategoryJob;
+use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterRoleJob;
 use Seatplus\Eveapi\Jobs\Character\CorporationHistoryJob;
@@ -45,9 +46,10 @@ it('contains public jobs in batch', function ($public_job) {
 
     (new CharacterBatchJob(testCharacter()->character_id))->handle();
 
-    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof $public_job));
+    Bus::assertBatched(fn ($batch) => isInstanceOfClassInArray($batch->jobs, $public_job));
 })->with([
     CharacterInfoJob::class,
+    CharacterAffiliationJob::class,
     CorporationHistoryJob::class,
 ]);
 
@@ -57,40 +59,18 @@ it('contains jobs if refresh_token has scope', function (string $scope, array $c
     Bus::fake();
 
     $batch = new CharacterBatchJob(testCharacter()->character_id);
+    $jobs = $batch->getBatchJobs();
 
     // loop through classes and check if jobs that are instance of class are in batch
     foreach ($classes as $class) {
-        // if class is of type array
-        if (is_array($class)) {
-            $jobs = collect($batch->getBatchJobs())->first(fn ($job) => is_array($job));
-            $classes = $class;
-
-            // expect lenght of jobs to be equal to classes
-            expect($jobs)->toHaveCount(count($classes));
-
-            if (count($jobs) !== count($classes)) {
-                return false;
-            }
-
-            // loop through classes and check if jobs that are instance of class are in batch
-            foreach ($classes as $class) {
-                $collection = (collect($jobs)
-                    ->map(fn ($job) => $job instanceof $class)
-                    ->filter());
-
-                expect($collection)->toHaveCount(1);
-            }
-        } else {
-            $batched_jobs = collect($batch->getBatchJobs())->filter(fn ($job) => $job instanceof $class);
-            expect($batched_jobs)->toHaveCount(1);
-        }
+        expect(isInstanceOfClassInArray($jobs, $class))->toBeTrue();
     }
 })->with([
-    ['esi-assets.read_assets.v1', [[CharacterAssetJob::class, CharacterAssetsNameJob::class, EnrichAssetTypeGroupCategoryJob::class]]],
+    ['esi-assets.read_assets.v1', [CharacterAssetJob::class, CharacterAssetsNameJob::class, EnrichAssetTypeGroupCategoryJob::class]],
     ['esi-characters.read_corporation_roles.v1', [CharacterRoleJob::class]],
-    ['esi-characters.read_contacts.v1', [[CharacterContactJob::class, CharacterContactLabelJob::class]]],
-    ['esi-corporations.read_contacts.v1', [[CorporationContactJob::class, CorporationContactLabelJob::class]]],
-    ['esi-alliances.read_contacts.v1', [[AllianceContactJob::class, AllianceContactLabelJob::class]]],
+    ['esi-characters.read_contacts.v1', [CharacterContactJob::class, CharacterContactLabelJob::class]],
+    ['esi-corporations.read_contacts.v1', [CorporationContactJob::class, CorporationContactLabelJob::class]],
+    ['esi-alliances.read_contacts.v1', [AllianceContactJob::class, AllianceContactLabelJob::class]],
     ['esi-wallet.read_character_wallet.v1', [CharacterWalletJournalJob::class, CharacterWalletTransactionJob::class, CharacterBalanceJob::class]],
     ['esi-contracts.read_character_contracts.v1', [CharacterContractsJob::class]],
     ['esi-skills.read_skills.v1', [SkillsJob::class]],
@@ -108,3 +88,19 @@ it('Batch Statistics entry has been made', function () {
     expect(BatchStatistic::count())->toBe(1)
         ->and(BatchStatistic::first())->finished_at->toBeNull();
 });
+
+function isInstanceOfClassInArray($jobs, $class): bool
+{
+    foreach ($jobs as $job) {
+        if (is_array($job)) {
+            // Recursively check the sub-array
+            if (isInstanceOfClassInArray($job, $class)) {
+                return true;
+            }
+        } elseif ($job instanceof $class) {
+            return true;
+        }
+    }
+
+    return false;
+}
