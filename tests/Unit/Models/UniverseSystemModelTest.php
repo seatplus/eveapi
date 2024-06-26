@@ -5,8 +5,7 @@ use Seatplus\Eveapi\Models\Universe\Region;
 use Seatplus\Eveapi\Models\Universe\Structure;
 use Seatplus\Eveapi\Models\Universe\System;
 
-beforeEach(function () {
-});
+beforeEach(function () {});
 
 it('has constellation', function () {
     $system = System::factory()->create();

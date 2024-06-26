@@ -4,8 +4,7 @@ use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Wallet\Balance;
 
-beforeEach(function () {
-});
+beforeEach(function () {});
 
 it('has corporation releationship', function () {
     $balance = Event::fakeFor(fn () => Balance::factory()->withDivision()->create([

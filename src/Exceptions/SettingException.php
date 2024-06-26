@@ -28,6 +28,4 @@ namespace Seatplus\Eveapi\Exceptions;
 
 use Exception;
 
-class SettingException extends Exception
-{
-}
+class SettingException extends Exception {}

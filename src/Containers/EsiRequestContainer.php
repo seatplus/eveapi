@@ -39,8 +39,7 @@ class EsiRequestContainer
         public array $path_values = [],
         public array $request_body = [],
         public array $query_parameters = [],
-    ) {
-    }
+    ) {}
 
     public function isPublic(): bool
     {

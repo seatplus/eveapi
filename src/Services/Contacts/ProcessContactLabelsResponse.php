@@ -35,8 +35,7 @@ class ProcessContactLabelsResponse
     public function __construct(
         private int $labelable_id,
         private string $labelable_type
-    ) {
-    }
+    ) {}
 
     public function execute(EsiResponse $response): Collection
     {

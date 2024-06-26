@@ -33,7 +33,5 @@ class RefreshTokenCreated
 {
     use SerializesModels;
 
-    public function __construct(public RefreshToken $refresh_token)
-    {
-    }
+    public function __construct(public RefreshToken $refresh_token) {}
 }

@@ -51,8 +51,7 @@ class UpdateCharacter implements ShouldQueue
 
     public function __construct(
         public ?RefreshToken $refresh_token = null
-    ) {
-    }
+    ) {}
 
     public function handle(): void
     {

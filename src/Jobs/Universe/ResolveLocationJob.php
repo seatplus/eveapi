@@ -65,8 +65,7 @@ class ResolveLocationJob implements ShouldBeUnique, ShouldQueue
     public function __construct(
         public int $location_id,
         public ?RefreshToken $refresh_token = null
-    ) {
-    }
+    ) {}
 
     public function tags(): array
     {

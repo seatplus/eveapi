@@ -61,7 +61,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('character_assets', function (Blueprint $table) {
-        });
+        Schema::table('character_assets', function (Blueprint $table) {});
     }
 };

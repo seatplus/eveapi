@@ -47,8 +47,7 @@ class CorporationWalletJournalJob implements ShouldBeUnique, ShouldQueue
 
     public function __construct(
         private int $corporation_id
-    ) {
-    }
+    ) {}
 
     /**
      * The number of seconds after which the job's unique lock will be released.
