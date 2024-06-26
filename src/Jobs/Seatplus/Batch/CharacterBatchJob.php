@@ -291,9 +291,6 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
         return $this->batch_jobs;
     }
 
-    /**
-     * @return mixed
-     */
     public function getBatchUpdate(): BatchUpdate
     {
         return BatchUpdate::firstOrCreate([
@@ -310,9 +307,6 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
             ($batch_update->finished_at && now()->isSameHour($batch_update->finished_at));
     }
 
-    /**
-     * @param  mixed  $batch_update
-     */
     public function resetBatchUpdate(BatchUpdate $batch_update): void
     {
         // reset batch_id, finished_at and started_at
