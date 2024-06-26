@@ -77,8 +77,7 @@ abstract class EsiBase extends RetrieveFromEsiBase implements BaseJobInterface, 
         public string $method,
         public string $endpoint,
         public string $version,
-    ) {
-    }
+    ) {}
 
     abstract public function tags(): array;
 

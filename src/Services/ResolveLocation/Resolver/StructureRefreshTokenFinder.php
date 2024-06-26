@@ -20,8 +20,7 @@ class StructureRefreshTokenFinder
 
     public function __construct(
         public ?RefreshToken $refreshToken = null,
-    ) {
-    }
+    ) {}
 
     public function findValidToken(int $location_id): ?RefreshToken
     {

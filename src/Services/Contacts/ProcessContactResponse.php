@@ -33,9 +33,7 @@ use Seatplus\Eveapi\Services\Jobs\CharacterAffiliationService;
 
 class ProcessContactResponse
 {
-    public function __construct(private int $contactable_id, private string $contactable_type)
-    {
-    }
+    public function __construct(private int $contactable_id, private string $contactable_type) {}
 
     public function execute(EsiResponse $response): Collection
     {

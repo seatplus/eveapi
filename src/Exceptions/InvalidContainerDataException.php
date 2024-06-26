@@ -28,6 +28,4 @@ namespace Seatplus\Eveapi\Exceptions;
 
 use Exception;
 
-class InvalidContainerDataException extends Exception
-{
-}
+class InvalidContainerDataException extends Exception {}

@@ -35,6 +35,5 @@ class UniverseConstellationCreated
 
     public function __construct(
         public Constellation $constellation
-    ) {
-    }
+    ) {}
 }
