@@ -232,3 +232,39 @@ it('applies binary search and chaches it if one id is invalid', function () {
         ->and(CharacterAffiliation::first())->character_id
         ->toBe($mock_data->character_id);
 });
+
+it('runs for character_infos that doestHave character_affilations', function () {
+
+    // arrange
+
+    // Prevent any events from being dispatched
+    \Illuminate\Support\Facades\Event::fake();
+
+    // make CharacterAffilation
+    // we use the corporation and alliance of the test character to not create any events
+    $character_affiliation = CharacterAffiliation::factory()->make([
+        'corporation_id' => testCharacter()->corporation_id,
+        'alliance_id' => testCharacter()->alliance_id,
+    ]);
+    // create character
+    Event::fakeFor(fn () => CharacterInfo::factory()->create([
+        'character_id' => $character_affiliation->character_id,
+    ]));
+
+    CharacterAffiliation::where('character_id', $character_affiliation->character_id)->delete();
+
+    expect(CharacterInfo::all())->toHaveCount(2) // the test account and the newly created
+        ->and(CharacterAffiliation::where('character_id', $character_affiliation->character_id)->get())->toHaveCount(0);
+
+    // mock retrieveEsiDataAction
+    mockRetrieveEsiDataAction([$character_affiliation->toArray()]);
+
+    Redis::flushall();
+
+    // act
+    (new CharacterAffiliationJob)->handle();
+
+    // assert
+    expect(CharacterAffiliation::where('character_id', $character_affiliation->character_id)->get())->toHaveCount(1);
+
+});

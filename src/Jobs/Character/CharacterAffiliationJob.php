@@ -26,7 +26,6 @@
 
 namespace Seatplus\Eveapi\Jobs\Character;
 
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
@@ -35,6 +34,7 @@ use Seatplus\Eveapi\Jobs\Alliances\AllianceInfoJob;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationInfoJob;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Services\Jobs\CharacterAffiliationService;
 use Seatplus\Eveapi\Traits\HasRequestBody;
 
@@ -80,37 +80,29 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
      */
     public function executeJob(): void
     {
-        if ($this->manual_ids) {
-            $this->updateOrCreateCharacterAffiliations($this->manual_ids);
-        }
-
-        if (! $this->manual_ids) {
-            Redis::throttle('character_affiliations')
-                // allow one job to process every 5 minutes
-                ->block(0)->allow(1)->every(5 * 60)
-                ->then(function () {
-                    collect()
-                        ->merge($this->getIdsToUpdateFromCache())
-                        ->merge($this->getIdsToUpdateFromDatabase())
-                        ->chunk(1000)
-                        ->each(fn (Collection $chunk) => $this->updateOrCreateCharacterAffiliations($chunk->toArray()));
-                }, fn () => $this->delete());
-        }
+        match (true) {
+            ! empty($this->manual_ids) => $this->processAffiliations($this->manual_ids),
+            default => $this->throttleAndProcessAffiliations(),
+        };
     }
 
-    private function getIdsToUpdateFromCache(): Collection
+    private function getIdsArrayToUpdateFromCache(): array
     {
-        return CharacterAffiliationService::make()->retrieve()->unique();
+        return CharacterAffiliationService::make()
+            ->retrieve()
+            ->unique()
+            ->toArray();
     }
 
-    private function getIdsToUpdateFromDatabase(): Collection
+    private function getIdsArrayToUpdateFromDatabase(): array
     {
         return CharacterAffiliation::query()
             // only those who were not pulled within the last hour
             ->where('last_pulled', '<=', now()->subHour()->toDateTimeString())
             // and don't try doomheimed characters
             ->where('corporation_id', '<>', 1_000_001)
-            ->pluck('character_id');
+            ->pluck('character_id')
+            ->toArray();
     }
 
     private function updateOrCreateCharacterAffiliations(array $character_ids): void
@@ -212,5 +204,40 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
             ->pluck('alliance_id')
             ->unique()
             ->each(fn (int $alliance_id) => AllianceInfoJob::dispatch($alliance_id)->onQueue('high'));
+    }
+
+    private function getMissingIdsArrayFromCharacterInfo(): array
+    {
+        return CharacterInfo::query()
+            ->whereDoesntHave('character_affiliation')
+            ->pluck('character_id')
+            ->toArray();
+    }
+
+    private function processAffiliations(array $ids): void
+    {
+        $unique_ids = array_unique($ids);
+        $chunks = array_chunk($unique_ids, 1000);
+
+        foreach ($chunks as $chunk) {
+            $this->updateOrCreateCharacterAffiliations($chunk);
+        }
+    }
+
+    private function throttleAndProcessAffiliations(): void
+    {
+        Redis::throttle('character_affiliations')
+            // allow one job to process every 5 minutes
+            ->block(0)->allow(1)->every(5 * 60)
+            ->then(function () {
+
+                $ids = [
+                    ...$this->getIdsArrayToUpdateFromCache(),
+                    ...$this->getIdsArrayToUpdateFromDatabase(),
+                    ...$this->getMissingIdsArrayFromCharacterInfo(),
+                ];
+
+                $this->processAffiliations($ids);
+            }, fn () => $this->delete());
     }
 }
