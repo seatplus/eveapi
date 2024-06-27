@@ -92,6 +92,7 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
                     collect()
                         ->merge($this->getIdsToUpdateFromCache())
                         ->merge($this->getIdsToUpdateFromDatabase())
+                        ->merge([]) // utterly useless but just for the sake of demonstration
                         ->chunk(1000)
                         ->each(fn (Collection $chunk) => $this->updateOrCreateCharacterAffiliations($chunk->toArray()));
                 }, fn () => $this->delete());
