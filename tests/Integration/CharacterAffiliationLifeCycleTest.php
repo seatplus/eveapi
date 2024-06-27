@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Redis;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
@@ -239,7 +240,7 @@ it('runs for character_infos that doestHave character_affilations', function () 
     // change something
 
     // Prevent any events from being dispatched
-    \Illuminate\Support\Facades\Event::fake();
+    Event::fake();
 
     // make CharacterAffilation
     // we use the corporation and alliance of the test character to not create any events
@@ -266,6 +267,8 @@ it('runs for character_infos that doestHave character_affilations', function () 
     (new CharacterAffiliationJob)->handle();
 
     // assert
-    expect(CharacterAffiliation::where('character_id', $character_affiliation->character_id)->get())->toHaveCount(1);
+    expect(CharacterAffiliation::where('character_id', $character_affiliation->character_id)->get())->toHaveCount(1)
+        ->and(CharacterAffiliation::where('character_id', $character_affiliation->character_id)->first())->character_id
+        ->toBe($character_affiliation->character_id);
 
 });
