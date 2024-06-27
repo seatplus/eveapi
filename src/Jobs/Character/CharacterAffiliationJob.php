@@ -35,6 +35,7 @@ use Seatplus\Eveapi\Jobs\Alliances\AllianceInfoJob;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationInfoJob;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Services\Jobs\CharacterAffiliationService;
 use Seatplus\Eveapi\Traits\HasRequestBody;
 
@@ -92,7 +93,7 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
                     collect()
                         ->merge($this->getIdsToUpdateFromCache())
                         ->merge($this->getIdsToUpdateFromDatabase())
-                        ->merge([]) // utterly useless but just for the sake of demonstration
+                        ->merge($this->getIdsFromCharacterInfo()) // utterly useless but just for the sake of demonstration
                         ->chunk(1000)
                         ->each(fn (Collection $chunk) => $this->updateOrCreateCharacterAffiliations($chunk->toArray()));
                 }, fn () => $this->delete());
@@ -213,5 +214,12 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
             ->pluck('alliance_id')
             ->unique()
             ->each(fn (int $alliance_id) => AllianceInfoJob::dispatch($alliance_id)->onQueue('high'));
+    }
+
+    private function getIdsFromCharacterInfo(): Collection
+    {
+        return CharacterInfo::query()
+            ->whereDoesntHave('character_affiliation')
+            ->pluck('character_id');
     }
 }
