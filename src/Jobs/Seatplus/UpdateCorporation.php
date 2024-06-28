@@ -70,9 +70,10 @@ class UpdateCorporation implements ShouldQueue
         if ($this->corporation_id) {
             $this->execute($this->corporation_id, 'high');
         } else {
-            RefreshToken::with('corporation', 'character.roles')
+            RefreshToken::with(['corporation', 'character.roles'])
                 ->cursor()
-                ->map(fn (RefreshToken $token) => $token->corporation->corporation_id)
+                ->map(fn (RefreshToken $token) => $token->corporation?->corporation_id)
+                ->filter()
                 ->unique()
                 ->each(fn (int $corporation_id) => $this->execute($corporation_id));
         }
