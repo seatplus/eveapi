@@ -23,7 +23,7 @@ test('run character contact', function () {
 
     $job->handle();
 
-    $cached_ids = \Seatplus\Eveapi\Services\Jobs\CharacterAffiliationService::make()->retrieve();
+    $cached_ids = \Seatplus\Eveapi\Services\Jobs\CacheCharacterAffiliationIdsService::make()->retrieve();
 
     foreach ($mock_data as $data) {
         //Assert that character asset created
@@ -47,7 +47,7 @@ test('run corporation contact', function () {
 
     $job->handle();
 
-    $cached_ids = \Seatplus\Eveapi\Services\Jobs\CharacterAffiliationService::make()->retrieve();
+    $cached_ids = \Seatplus\Eveapi\Services\Jobs\CacheCharacterAffiliationIdsService::make()->retrieve();
 
     foreach ($mock_data as $data) {
         //Assert that character asset created
