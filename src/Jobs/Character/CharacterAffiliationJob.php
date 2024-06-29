@@ -160,7 +160,7 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
             ->each(fn (int $alliance_id) => AllianceInfoJob::dispatch($alliance_id)->onQueue('high'));
     }
 
-    private function handleFailedRequest(array $character_ids)
+    private function handleFailedRequest(array $character_ids): void
     {
         // if the request fails and the character ids are less than 2, we can assume that the character id is invalid
         if (count($character_ids) === 1) {
