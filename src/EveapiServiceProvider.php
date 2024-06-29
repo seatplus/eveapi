@@ -54,6 +54,7 @@ use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Observers\CharacterInfoObserver;
 use Seatplus\Eveapi\Observers\GroupObserver;
 use Seatplus\Eveapi\Observers\TypeObserver;
+use Seatplus\Eveapi\Services\Character\RefreshCharacterAffiliationsService;
 use Seatplus\Eveapi\Services\Esi\EsiClientSetup;
 
 class EveapiServiceProvider extends ServiceProvider
@@ -236,7 +237,8 @@ class EveapiServiceProvider extends ServiceProvider
             });
 
             // Run Character Affiliation Job every five minutes to updated outdated affiliations.
-            $schedule->job(new CharacterAffiliationJob)->everyFiveMinutes();
+            //$schedule->job(new CharacterAffiliationJob)->everyFiveMinutes();
+            $schedule->call(new RefreshCharacterAffiliationsService)->everyFiveMinutes();
 
             // Cleanup Batches Table
             $schedule->command('queue:prune-batches')->daily();
