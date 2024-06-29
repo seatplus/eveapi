@@ -43,6 +43,7 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
     use HasRequestBody;
 
     private array $manual_ids = [];
+
     private Collection $character_affiliations;
 
     /**
@@ -94,7 +95,7 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
     public function processResponse(EsiResponse $response, Carbon $timestamp): void
     {
         collect($response)
-            ->each(fn(object $result) => $this->character_affiliations->push(
+            ->each(fn (object $result) => $this->character_affiliations->push(
                 [
                     'character_id' => $result->character_id,
                     'corporation_id' => $result->corporation_id,
@@ -164,6 +165,7 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
         // if the request fails and the character ids are less than 2, we can assume that the character id is invalid
         if (count($character_ids) === 1) {
             $this->handleSingleIdException($character_ids[0]);
+
             return;
         }
 

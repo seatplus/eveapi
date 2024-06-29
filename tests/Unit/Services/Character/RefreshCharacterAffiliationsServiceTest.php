@@ -5,7 +5,7 @@ use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Services\Character\RefreshCharacterAffiliationsService;
 
-beforeEach(function() {
+beforeEach(function () {
     Queue::fake();
 
     // check that only one CharacterAffiliation exists and that it is the test character

@@ -9,7 +9,6 @@ use Seatplus\Eveapi\Services\Jobs\CacheCharacterAffiliationIdsService;
 
 class RefreshCharacterAffiliationsService
 {
-
     public function __invoke(): void
     {
 

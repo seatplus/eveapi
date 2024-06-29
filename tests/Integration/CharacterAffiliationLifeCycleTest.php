@@ -66,7 +66,6 @@ it('handles follow-up job', function (string $job_class, array $configuration = 
     ],
 ]);
 
-
 it('applies binary search and chaches it if one id is invalid', function () {
     Queue::fake();
 
