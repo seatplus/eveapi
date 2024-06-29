@@ -5,7 +5,7 @@ namespace Seatplus\Eveapi\Services\Jobs;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
-class CharacterAffiliationService
+class CacheCharacterAffiliationIdsService
 {
     public static function make(): self
     {
