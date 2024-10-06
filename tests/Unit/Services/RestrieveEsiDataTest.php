@@ -24,9 +24,7 @@ test('it returns client for an authenticated request', function () {
     ];
 
     config()->set('eveapi.config.esi', $esi_array);
-    $refresh_token = Event::fakeFor(function () {
-        return RefreshToken::factory()->create();
-    });
+    $refresh_token = Event::fakeFor(fn() => RefreshToken::factory()->create());
 
     $retrieve = new RetrieveEsiData();
 
@@ -41,7 +39,13 @@ test('it returns client for an authenticated request', function () {
 
     $esi_client = $retrieve->getClient();
     expect($esi_client)->toBeInstanceOf(\Seatplus\EsiClient\EsiClient::class);
-    expect($esi_client->getAuthentication())
+
+    $reflection = new ReflectionClass($esi_client);
+
+    $property = $reflection->getProperty('authentication');
+    $property->setAccessible(true);
+
+    expect($property->getValue($esi_client))
         ->toBeInstanceOf(\Seatplus\EsiClient\DataTransferObjects\EsiAuthentication::class)
         ->client_id->toBeString()->toBe($esi_array['eve_client_id'])
         ->secret->toBeString()->toBe($esi_array['eve_client_secret']);
@@ -83,7 +87,12 @@ it('updates outdated refresh_tokens', function () {
     $retrieve->getClient();
     $esi_client = $retrieve->getClient();
     expect($esi_client)->toBeInstanceOf(\Seatplus\EsiClient\EsiClient::class);
-    expect($esi_client->getAuthentication())
+
+    $reflection = new ReflectionClass($esi_client);
+    $property = $reflection->getProperty('authentication');
+    $property->setAccessible(true);
+
+    expect($property->getValue($esi_client))
         ->toBeInstanceOf(\Seatplus\EsiClient\DataTransferObjects\EsiAuthentication::class)
         ->token_expires->toBeString()->toBe($update_refresh_token->expires_on->toDateTimeString());
 

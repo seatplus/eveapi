@@ -54,6 +54,9 @@ abstract class TestCase extends OrchestraTestCase
     {
         // Setup default database to use sqlite :memory:
         $app['config']->set('database.default', 'mysql');
+
+        // setup batching database
+        app('config')->set('queue.batching.database', 'mysql');
     }
 
     protected function tearDown(): void
