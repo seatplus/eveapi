@@ -32,9 +32,7 @@ describe('dispatches CharacterAffiliationJob for ', function () {
         Queue::assertPushed(CharacterAffiliationJob::class);
 
         // assert that the job was dispatched with the correct id
-        Queue::assertPushed(CharacterAffiliationJob::class, function (CharacterAffiliationJob $job) {
-            return $job->getManualIds() === [testCharacter()->character_id];
-        });
+        Queue::assertPushed(CharacterAffiliationJob::class, fn(CharacterAffiliationJob $job) => $job->getManualIds() === [testCharacter()->character_id]);
 
     });
 
@@ -57,9 +55,7 @@ describe('dispatches CharacterAffiliationJob for ', function () {
         Queue::assertPushed(CharacterAffiliationJob::class);
 
         // assert that the job was dispatched with the correct id
-        Queue::assertPushed(CharacterAffiliationJob::class, function (CharacterAffiliationJob $job) {
-            return $job->getManualIds() === [testCharacter()->character_id];
-        });
+        Queue::assertPushed(CharacterAffiliationJob::class, fn(CharacterAffiliationJob $job) => $job->getManualIds() === [testCharacter()->character_id]);
 
     });
 
@@ -78,9 +74,7 @@ describe('dispatches CharacterAffiliationJob for ', function () {
         Queue::assertPushed(CharacterAffiliationJob::class);
 
         // assert that the job was dispatched with the correct id
-        Queue::assertPushed(CharacterAffiliationJob::class, function (CharacterAffiliationJob $job) {
-            return $job->getManualIds() === [testCharacter()->character_id];
-        });
+        Queue::assertPushed(CharacterAffiliationJob::class, fn(CharacterAffiliationJob $job) => $job->getManualIds() === [testCharacter()->character_id]);
 
     });
 

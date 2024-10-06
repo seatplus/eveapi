@@ -9,6 +9,7 @@ use Seatplus\Eveapi\Models\RefreshToken;
 
 class ThroughContractsFinder implements FinderInterface
 {
+    #[\Override]
     public function handle(int $location_id, Collection $tracings): ?RefreshToken
     {
         $character_ids_to_ignore = $tracings->pluck('character_id');

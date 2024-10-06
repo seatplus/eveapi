@@ -44,11 +44,6 @@ class RefreshToken extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $casts = [
-        'expires_on' => 'datetime',
-        'deleted_at' => 'datetime',
-    ];
-
     /**
      * @var string
      */
@@ -106,7 +101,7 @@ class RefreshToken extends Model
     public function getScopesAttribute(): array
     {
         $jwt = $this->getRawOriginal('token');
-        $jwt_payload_base64_encoded = explode('.', $jwt)[1];
+        $jwt_payload_base64_encoded = explode('.', (string) $jwt)[1];
 
         $jwt_payload = JWT::urlsafeB64Decode($jwt_payload_base64_encoded);
 
@@ -120,5 +115,13 @@ class RefreshToken extends Model
         $scopes = $this->getScopesAttribute();
 
         return in_array($scope, $scopes);
+    }
+    #[\Override]
+    protected function casts() : array
+    {
+        return [
+            'expires_on' => 'datetime',
+            'deleted_at' => 'datetime',
+        ];
     }
 }

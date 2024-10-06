@@ -62,6 +62,7 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
         $this->setRequiredScope(head(config('eveapi.scopes.character.contracts')));
     }
 
+    #[\Override]
     public function middleware(): array
     {
         return [
@@ -70,6 +71,7 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
         ];
     }
 
+    #[\Override]
     public function tags(): array
     {
         return [
@@ -79,6 +81,7 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
         ];
     }
 
+    #[\Override]
     public function executeJob(): void
     {
         $contracts = collect();

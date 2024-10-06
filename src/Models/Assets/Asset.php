@@ -59,11 +59,6 @@ class Asset extends Model implements TypeWatchListInterface
      */
     public $incrementing = false;
 
-    protected $casts = [
-        'assetable_id' => 'integer',
-        'type_id' => 'integer',
-    ];
-
     public function assetable(): MorphTo
     {
         return $this->morphTo();
@@ -101,6 +96,7 @@ class Asset extends Model implements TypeWatchListInterface
         return $query->where('location_id', '<>', self::ASSET_SAFETY);
     }
 
+    #[\Override]
     public function scopeFilterByTypeIds(Builder $query, int|array $types): Builder
     {
         $type_ids = is_array($types) ? $types : [$types];
@@ -108,6 +104,7 @@ class Asset extends Model implements TypeWatchListInterface
         return $query->whereIn('type_id', $type_ids);
     }
 
+    #[\Override]
     public function scopeFilterByGroupIds(Builder $query, int|array $groups): Builder
     {
         $group_ids = is_array($groups) ? $groups : [$groups];
@@ -115,10 +112,19 @@ class Asset extends Model implements TypeWatchListInterface
         return $query->whereIn('group_id', $group_ids);
     }
 
+    #[\Override]
     public function scopeFilterByCategoryIds(Builder $query, int|array $categories): Builder
     {
         $category_ids = is_array($categories) ? $categories : [$categories];
 
         return $query->whereIn('category_id', $category_ids);
+    }
+    #[\Override]
+    protected function casts() : array
+    {
+        return [
+            'assetable_id' => 'integer',
+            'type_id' => 'integer',
+        ];
     }
 }

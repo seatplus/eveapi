@@ -53,6 +53,7 @@ class CharacterWalletJournalJob extends WalletJournalBase
     /**
      * Get the middleware the job should pass through.
      */
+    #[\Override]
     public function middleware(): array
     {
         return [
@@ -61,6 +62,7 @@ class CharacterWalletJournalJob extends WalletJournalBase
         ];
     }
 
+    #[\Override]
     public function tags(): array
     {
         return [

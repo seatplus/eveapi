@@ -65,6 +65,7 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
         $this->character_affiliations = collect();
     }
 
+    #[\Override]
     public function tags(): array
     {
         return [
@@ -78,6 +79,7 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
      *
      * @throws \Exception
      */
+    #[\Override]
     public function executeJob(): void
     {
 
@@ -116,7 +118,7 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
             $response = $this->retrieve();
 
             $this->processResponse($response, $timestamp);
-        } catch (RequestFailedException $exception) {
+        } catch (RequestFailedException) {
             $this->handleFailedRequest($character_ids);
         }
     }

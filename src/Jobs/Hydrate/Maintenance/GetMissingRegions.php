@@ -31,6 +31,7 @@ use Seatplus\Eveapi\Models\Universe\Constellation;
 
 class GetMissingRegions extends HydrateMaintenanceBase
 {
+    #[\Override]
     public function handle(): void
     {
         if ($this->batch()->cancelled()) {

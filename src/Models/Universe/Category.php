@@ -55,14 +55,17 @@ class Category extends Model
      */
     protected $table = 'universe_categories';
 
-    protected $casts = [
-        'category_id' => 'integer',
-        'name' => 'string',
-        'published' => 'boolean',
-    ];
-
     public function groups(): HasMany
     {
         return $this->hasMany(Group::class, 'group_id', 'group_id');
+    }
+    #[\Override]
+    protected function casts() : array
+    {
+        return [
+            'category_id' => 'integer',
+            'name' => 'string',
+            'published' => 'boolean',
+        ];
     }
 }

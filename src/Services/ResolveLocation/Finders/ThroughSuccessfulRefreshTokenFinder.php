@@ -8,6 +8,7 @@ use Seatplus\Eveapi\Models\RefreshToken;
 
 class ThroughSuccessfulRefreshTokenFinder implements FinderInterface
 {
+    #[\Override]
     public function handle(int $location_id, Collection $tracings): ?RefreshToken
     {
         $record = $tracings->first(fn (LocationRefreshToken $tracking) => $tracking->resolved);

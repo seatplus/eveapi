@@ -69,14 +69,6 @@ class System extends Model
         'created' => UniverseSystemCreated::class,
     ];
 
-    protected $casts = [
-        'system_id' => 'integer',
-        'constellation_id' => 'integer',
-        'name' => 'string',
-        'security_class' => 'string',
-        'security_status' => 'double',
-    ];
-
     public function constellation(): BelongsTo
     {
         return $this->belongsTo(Constellation::class, 'constellation_id', 'constellation_id');
@@ -102,5 +94,16 @@ class System extends Model
     public function structures(): HasMany
     {
         return $this->hasMany(Structure::class, 'solar_system_id', 'system_id');
+    }
+    #[\Override]
+    protected function casts() : array
+    {
+        return [
+            'system_id' => 'integer',
+            'constellation_id' => 'integer',
+            'name' => 'string',
+            'security_class' => 'string',
+            'security_status' => 'double',
+        ];
     }
 }

@@ -35,7 +35,7 @@ class AllianceContactJob extends ContactBaseJob
 {
     private int $page = 1;
 
-    private Collection $known_ids;
+    private readonly Collection $known_ids;
 
     public function __construct(
         public int $alliance_id,
@@ -59,6 +59,7 @@ class AllianceContactJob extends ContactBaseJob
     /**
      * Get the middleware the job should pass through.
      */
+    #[\Override]
     public function middleware(): array
     {
         return [
@@ -67,6 +68,7 @@ class AllianceContactJob extends ContactBaseJob
         ];
     }
 
+    #[\Override]
     public function tags(): array
     {
         return [
@@ -81,6 +83,7 @@ class AllianceContactJob extends ContactBaseJob
      *
      * @throws \Exception
      */
+    #[\Override]
     public function executeJob(): void
     {
         $processor = new ProcessContactResponse($this->alliance_id, AllianceInfo::class);

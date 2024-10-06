@@ -16,6 +16,7 @@ abstract class TestCase extends OrchestraTestCase
 
     public CharacterInfo $test_character;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -36,6 +37,7 @@ abstract class TestCase extends OrchestraTestCase
      * @param  \Illuminate\Foundation\Application  $app
      * @return array
      */
+    #[\Override]
     protected function getPackageProviders($app)
     {
         return [
@@ -50,6 +52,7 @@ abstract class TestCase extends OrchestraTestCase
      * @param  \Illuminate\Foundation\Application  $app
      * @return void
      */
+    #[\Override]
     protected function defineEnvironment($app)
     {
         // Setup default database to use sqlite :memory:
@@ -59,6 +62,7 @@ abstract class TestCase extends OrchestraTestCase
         app('config')->set('queue.batching.database', 'mysql');
     }
 
+    #[\Override]
     protected function tearDown(): void
     {
         \Mockery::close();

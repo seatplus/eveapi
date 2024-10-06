@@ -58,6 +58,7 @@ class CharacterRoleJob extends EsiBase implements HasPathValuesInterface, HasReq
     /**
      * Get the middleware the job should pass through.
      */
+    #[\Override]
     public function middleware(): array
     {
         return [
@@ -66,6 +67,7 @@ class CharacterRoleJob extends EsiBase implements HasPathValuesInterface, HasReq
         ];
     }
 
+    #[\Override]
     public function tags(): array
     {
         return [
@@ -75,6 +77,7 @@ class CharacterRoleJob extends EsiBase implements HasPathValuesInterface, HasReq
         ];
     }
 
+    #[\Override]
     public function executeJob(): void
     {
         $response = $this->retrieve();

@@ -52,6 +52,7 @@ class ResolveUniverseRegionByRegionIdJob extends EsiBase implements HasPathValue
     /**
      * Get the middleware the job should pass through.
      */
+    #[\Override]
     public function middleware(): array
     {
         return [
@@ -59,6 +60,7 @@ class ResolveUniverseRegionByRegionIdJob extends EsiBase implements HasPathValue
         ];
     }
 
+    #[\Override]
     public function tags(): array
     {
         return [
@@ -70,6 +72,7 @@ class ResolveUniverseRegionByRegionIdJob extends EsiBase implements HasPathValue
     /**
      * Execute the job.
      */
+    #[\Override]
     public function executeJob(): void
     {
         $response = $this->retrieve();

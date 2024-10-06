@@ -11,6 +11,7 @@ use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 
 class ThroughCorporationMemberTrackingFinder implements FinderInterface
 {
+    #[\Override]
     public function handle(int $location_id, Collection $tracking): ?RefreshToken
     {
         $character_ids_to_ignore = $tracking->pluck('character_id');

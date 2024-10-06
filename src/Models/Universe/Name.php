@@ -47,9 +47,13 @@ class Name extends Model
      */
     protected $table = 'universe_names';
 
-    protected $casts = [
-        'id' => 'integer',
-        'category' => 'string',
-        'name' => 'string',
-    ];
+    #[\Override]
+    protected function casts() : array
+    {
+        return [
+            'id' => 'integer',
+            'category' => 'string',
+            'name' => 'string',
+        ];
+    }
 }

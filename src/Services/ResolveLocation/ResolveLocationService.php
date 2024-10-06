@@ -12,7 +12,7 @@ use Seatplus\Eveapi\Services\ResolveLocation\Resolver\StructureResolver;
 class ResolveLocationService
 {
     public function __construct(
-        private ?RefreshToken $refresh_token = null
+        private readonly ?RefreshToken $refresh_token = null
     ) {}
 
     public static function make(?RefreshToken $refresh_token = null): self

@@ -40,11 +40,6 @@ class CorporationMemberTracking extends Model
 
     protected $guarded = [];
 
-    protected $casts = [
-        'corporation_id' => 'integer',
-        'character_id' => 'integer',
-    ];
-
     public function character(): BelongsTo
     {
         return $this->belongsTo(CharacterInfo::class, 'character_id', 'character_id');
@@ -63,5 +58,13 @@ class CorporationMemberTracking extends Model
     public function ship(): HasOne
     {
         return $this->hasOne(Type::class, 'type_id', 'ship_type_id');
+    }
+    #[\Override]
+    protected function casts() : array
+    {
+        return [
+            'corporation_id' => 'integer',
+            'character_id' => 'integer',
+        ];
     }
 }

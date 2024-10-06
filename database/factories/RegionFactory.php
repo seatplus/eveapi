@@ -29,16 +29,20 @@ namespace Seatplus\Eveapi\Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Universe\Region;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Universe\Region>
+ */
 class RegionFactory extends Factory
 {
     protected $model = Region::class;
 
+    #[\Override]
     public function definition()
     {
         return [
-            'region_id' => $this->faker->numberBetween(10000000, 12000000),
-            'name' => $this->faker->name,
-            'description' => $this->faker->optional()->text(),
+            'region_id' => fake()->numberBetween(10000000, 12000000),
+            'name' => fake()->name,
+            'description' => fake()->optional()->text(),
         ];
     }
 }

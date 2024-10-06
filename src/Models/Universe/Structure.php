@@ -60,14 +60,7 @@ class Structure extends Model implements LocatableInterface
         'created' => UniverseStructureCreated::class,
     ];
 
-    protected $casts = [
-        'structure_id' => 'integer',
-        'name' => 'string',
-        'owner_id' => 'integer',
-        'solar_system_id' => 'integer',
-        'type_id' => 'integer',
-    ];
-
+    #[\Override]
     public function location(): MorphOne
     {
         return $this->morphOne(Location::class, 'locatable');
@@ -78,8 +71,20 @@ class Structure extends Model implements LocatableInterface
         return $this->hasOne(Type::class, 'type_id', 'type_id');
     }
 
+    #[\Override]
     public function system(): BelongsTo
     {
         return $this->belongsTo(System::class, 'solar_system_id', 'system_id');
+    }
+    #[\Override]
+    protected function casts() : array
+    {
+        return [
+            'structure_id' => 'integer',
+            'name' => 'string',
+            'owner_id' => 'integer',
+            'solar_system_id' => 'integer',
+            'type_id' => 'integer',
+        ];
     }
 }

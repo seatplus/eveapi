@@ -29,18 +29,22 @@ namespace Seatplus\Eveapi\Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Universe\Type;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Universe\Type>
+ */
 class TypeFactory extends Factory
 {
     protected $model = Type::class;
 
+    #[\Override]
     public function definition()
     {
         return [
-            'type_id' => $this->faker->numberBetween(0, 10000),
-            'group_id' => $this->faker->numberBetween(0, 10000),
-            'description' => $this->faker->company,
-            'name' => implode(' ', $this->faker->words(2)),
-            'published' => $this->faker->boolean,
+            'type_id' => fake()->numberBetween(0, 10000),
+            'group_id' => fake()->numberBetween(0, 10000),
+            'description' => fake()->company,
+            'name' => implode(' ', fake()->words(2)),
+            'published' => fake()->boolean,
         ];
     }
 }

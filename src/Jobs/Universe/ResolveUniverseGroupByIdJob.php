@@ -53,6 +53,7 @@ class ResolveUniverseGroupByIdJob extends EsiBase implements HasPathValuesInterf
     /**
      * Get the middleware the job should pass through.
      */
+    #[\Override]
     public function middleware(): array
     {
         return [
@@ -60,6 +61,7 @@ class ResolveUniverseGroupByIdJob extends EsiBase implements HasPathValuesInterf
         ];
     }
 
+    #[\Override]
     public function tags(): array
     {
         return [
@@ -72,6 +74,7 @@ class ResolveUniverseGroupByIdJob extends EsiBase implements HasPathValuesInterf
     /**
      * Execute the job.
      */
+    #[\Override]
     public function executeJob(): void
     {
         $response = $this->retrieve();

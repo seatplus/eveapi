@@ -31,42 +31,42 @@ use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Universe\Type;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Assets\Asset>
+ */
 class AssetFactory extends Factory
 {
     protected $model = Asset::class;
 
+    #[\Override]
     public function definition()
     {
         return [
-            'assetable_id' => $this->faker->numberBetween(), //factory(CharacterInfo::class),
+            'assetable_id' => fake()->numberBetween(), //factory(CharacterInfo::class),
             'assetable_type' => CharacterInfo::class, //$this->faker->randomElement([CharacterInfo::class, CorporationInfo::class]),
-            'item_id' => $this->faker->unique()->randomNumber(),
+            'item_id' => fake()->unique()->randomNumber(),
             'is_blueprint_copy' => false,
-            'is_singleton' => $this->faker->boolean,
-            'location_flag' => $this->faker->randomElement($this->getLocationFlagArray()),
-            'location_id' => $this->faker->randomNumber(),
-            'location_type' => $this->faker->randomElement(['station', 'solar_system', 'other']),
-            'quantity' => $this->faker->randomDigit(),
-            'type_id' => $this->faker->numberBetween(5, 10000),
+            'is_singleton' => fake()->boolean,
+            'location_flag' => fake()->randomElement($this->getLocationFlagArray()),
+            'location_id' => fake()->randomNumber(),
+            'location_type' => fake()->randomElement(['station', 'solar_system', 'other']),
+            'quantity' => fake()->randomDigit(),
+            'type_id' => fake()->numberBetween(5, 10000),
         ];
     }
 
     public function withName()
     {
-        return $this->state(function () {
-            return [
-                'name' => implode(' ', $this->faker->unique()->words(2)),
-            ];
-        });
+        return $this->state(fn() => [
+            'name' => implode(' ', fake()->unique()->words(2)),
+        ]);
     }
 
     public function withType()
     {
-        return $this->state(function () {
-            return [
-                'type_id' => Type::factory(),
-            ];
-        });
+        return $this->state(fn() => [
+            'type_id' => Type::factory(),
+        ]);
     }
 
     private function getLocationFlagArray(): array

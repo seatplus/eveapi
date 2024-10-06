@@ -33,6 +33,7 @@ use Seatplus\Eveapi\Models\RefreshToken;
 
 class GetMissingBodysFromMails extends HydrateMaintenanceBase
 {
+    #[\Override]
     public function handle(): void
     {
         if ($this->batch()->cancelled()) {

@@ -21,11 +21,13 @@ abstract class ContactBaseJob extends EsiBase implements HasPathValuesInterface,
         $this->required_scope = $required_scope;
     }
 
+    #[\Override]
     public function getRequiredScope(): string
     {
         return $this->required_scope;
     }
 
+    #[\Override]
     public function getRefreshToken(): RefreshToken
     {
         // throw exception if required scope is not set

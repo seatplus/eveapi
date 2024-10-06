@@ -11,11 +11,6 @@ class BatchUpdate extends Model
 {
     protected $guarded = [];
 
-    protected $casts = [
-        'started_at' => 'datetime',
-        'finished_at' => 'datetime',
-    ];
-
     public function batchable(): MorphTo
     {
         return $this->morphTo();
@@ -34,5 +29,13 @@ class BatchUpdate extends Model
     public function scopeCharacter(Builder $query): void
     {
         $query->whereMorphedTo('batchable', CharacterInfo::class);
+    }
+    #[\Override]
+    protected function casts() : array
+    {
+        return [
+            'started_at' => 'datetime',
+            'finished_at' => 'datetime',
+        ];
     }
 }

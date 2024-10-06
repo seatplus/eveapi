@@ -58,6 +58,7 @@ class CharacterBalanceJob extends EsiBase implements HasPathValuesInterface, Has
     /**
      * Get the middleware the job should pass through.
      */
+    #[\Override]
     public function middleware(): array
     {
         return [
@@ -66,6 +67,7 @@ class CharacterBalanceJob extends EsiBase implements HasPathValuesInterface, Has
         ];
     }
 
+    #[\Override]
     public function tags(): array
     {
         return [
@@ -81,6 +83,7 @@ class CharacterBalanceJob extends EsiBase implements HasPathValuesInterface, Has
      *
      * @throws \Exception
      */
+    #[\Override]
     public function executeJob(): void
     {
         $response = $this->retrieve();

@@ -30,30 +30,34 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\System;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Universe\Station>
+ */
 class StationFactory extends Factory
 {
     protected $model = Station::class;
 
+    #[\Override]
     public function definition()
     {
         return [
-            'station_id' => $this->faker->unique()->numberBetween(60000000, 64000000),
-            'name' => $this->faker->name,
-            'owner_id' => $this->faker->optional()->numberBetween(98000000, 99000000),
+            'station_id' => fake()->unique()->numberBetween(60000000, 64000000),
+            'name' => fake()->name,
+            'owner_id' => fake()->optional()->numberBetween(98000000, 99000000),
             'system_id' => System::factory(),
-            'type_id' => $this->faker->numberBetween(0, 10000),
-            'race_id' => $this->faker->optional()->numberBetween(98000000, 99000000),
-            'reprocessing_efficiency' => $this->faker->randomNumber(),
-            'reprocessing_stations_take' => $this->faker->randomNumber(),
-            'max_dockable_ship_volume' => $this->faker->randomNumber(),
-            'office_rental_cost' => $this->faker->randomDigit(),
+            'type_id' => fake()->numberBetween(0, 10000),
+            'race_id' => fake()->optional()->numberBetween(98000000, 99000000),
+            'reprocessing_efficiency' => fake()->randomNumber(),
+            'reprocessing_stations_take' => fake()->randomNumber(),
+            'max_dockable_ship_volume' => fake()->randomNumber(),
+            'office_rental_cost' => fake()->randomDigit(),
         ];
     }
 
     public function noSystem()
     {
         return $this->state(fn () => [
-            'system_id' => $this->faker->numberBetween(30000000, 31000000),
+            'system_id' => fake()->numberBetween(30000000, 31000000),
         ]);
     }
 }

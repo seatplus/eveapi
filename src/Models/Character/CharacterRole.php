@@ -41,14 +41,6 @@ class CharacterRole extends Model
      */
     protected $primaryKey = 'character_id';
 
-    protected $casts = [
-        'character_id' => 'integer',
-        'roles' => 'array',
-        'roles_at_base' => 'array',
-        'roles_at_hq' => 'array',
-        'roles_at_other' => 'array',
-    ];
-
     protected array $roles_array = [
         'Account_Take_1', 'Account_Take_2', 'Account_Take_3', 'Account_Take_4', 'Account_Take_5', 'Account_Take_6',
         'Account_Take_7', 'Accountant', 'Auditor', 'Communications_Officer', 'Config_Equipment', 'Config_Starbase_Equipment',
@@ -76,5 +68,16 @@ class CharacterRole extends Model
         }
 
         return false;
+    }
+    #[\Override]
+    protected function casts() : array
+    {
+        return [
+            'character_id' => 'integer',
+            'roles' => 'array',
+            'roles_at_base' => 'array',
+            'roles_at_hq' => 'array',
+            'roles_at_other' => 'array',
+        ];
     }
 }

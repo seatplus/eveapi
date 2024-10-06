@@ -35,7 +35,11 @@ class GlobalSettings extends Model
 
     protected $fillable = ['name', 'value'];
 
-    protected $casts = [
-        'value' => 'object',
-    ];
+    #[\Override]
+    protected function casts() : array
+    {
+        return [
+            'value' => 'object',
+        ];
+    }
 }

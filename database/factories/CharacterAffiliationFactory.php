@@ -31,30 +31,33 @@ use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Character\CharacterAffiliation>
+ */
 class CharacterAffiliationFactory extends Factory
 {
     protected $model = CharacterAffiliation::class;
 
+    #[\Override]
     public function definition(): array
     {
         return [
-            'character_id' => $this->faker->numberBetween(9000000, 98000000),
-            'corporation_id' => $this->faker->numberBetween(98000000, 99000000),
-            'alliance_id' => $this->faker->optional()->numberBetween(99000000, 100000000),
-            'faction_id' => $this->faker->optional()->numberBetween(500000, 1000000),
-            'last_pulled' => $this->faker->dateTime(),
+            'character_id' => fake()->numberBetween(9000000, 98000000),
+            'corporation_id' => fake()->numberBetween(98000000, 99000000),
+            'alliance_id' => fake()->optional()->numberBetween(99000000, 100000000),
+            'faction_id' => fake()->optional()->numberBetween(500000, 1000000),
+            'last_pulled' => fake()->dateTime(),
         ];
     }
 
     public function withAlliance(): CharacterAffiliationFactory
     {
-        return $this->state(function () {
-            return [
-                'alliance_id' => AllianceInfo::factory(),
-            ];
-        });
+        return $this->state(fn() => [
+            'alliance_id' => AllianceInfo::factory(),
+        ]);
     }
 
+    #[\Override]
     public function configure()
     {
         return $this->afterCreating(function (CharacterAffiliation $character_affiliation) {

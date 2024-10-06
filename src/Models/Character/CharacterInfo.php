@@ -65,11 +65,6 @@ class CharacterInfo extends Model
      */
     protected $primaryKey = 'character_id';
 
-    protected $casts = [
-        'character_id' => 'integer',
-        'corporation_id' => 'integer',
-    ];
-
     public function refresh_token(): HasOne
     {
         return $this->hasOne(RefreshToken::class, 'character_id', 'character_id');
@@ -195,5 +190,13 @@ class CharacterInfo extends Model
     public function batch_update(): MorphOne
     {
         return $this->morphOne(BatchUpdate::class, 'batchable');
+    }
+    #[\Override]
+    protected function casts() : array
+    {
+        return [
+            'character_id' => 'integer',
+            'corporation_id' => 'integer',
+        ];
     }
 }

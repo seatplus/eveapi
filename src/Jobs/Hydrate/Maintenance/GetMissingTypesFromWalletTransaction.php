@@ -31,6 +31,7 @@ use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 
 class GetMissingTypesFromWalletTransaction extends HydrateMaintenanceBase
 {
+    #[\Override]
     public function handle(): void
     {
         if ($this->batch()->cancelled()) {

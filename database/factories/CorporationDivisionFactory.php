@@ -29,16 +29,20 @@ namespace Seatplus\Eveapi\Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Corporation\CorporationDivision;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Corporation\CorporationDivision>
+ */
 class CorporationDivisionFactory extends Factory
 {
     protected $model = CorporationDivision::class;
 
+    #[\Override]
     public function definition()
     {
         return [
-            'corporation_id' => $this->faker->unique()->numberBetween(98000000, 99000000),
-            'division_id' => $this->faker->unique()->randomDigitNotNull,
-            'division_typ' => $this->faker->randomElement(['hangar', 'wallet']),
+            'corporation_id' => fake()->unique()->numberBetween(98000000, 99000000),
+            'division_id' => fake()->unique()->randomDigitNotNull,
+            'division_typ' => fake()->randomElement(['hangar', 'wallet']),
         ];
     }
 }

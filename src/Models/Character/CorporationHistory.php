@@ -42,8 +42,12 @@ class CorporationHistory extends Model
      */
     protected $primaryKey = 'record_id';
 
-    protected $casts = [
-        'character_id' => 'integer',
-        'corporation_id' => 'integer',
-    ];
+    #[\Override]
+    protected function casts() : array
+    {
+        return [
+            'character_id' => 'integer',
+            'corporation_id' => 'integer',
+        ];
+    }
 }

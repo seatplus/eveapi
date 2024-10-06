@@ -31,10 +31,14 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Mail\Mail;
 use Seatplus\Eveapi\Models\Mail\MailRecipients;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Mail\MailRecipients>
+ */
 class MailRecipientsFactory extends Factory
 {
     protected $model = MailRecipients::class;
 
+    #[\Override]
     public function definition()
     {
         return [

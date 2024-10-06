@@ -8,6 +8,7 @@ use Seatplus\Eveapi\Models\RefreshToken;
 
 class ThroughPreviouslyFailedRefreshTokenFinder implements FinderInterface
 {
+    #[\Override]
     public function handle(int $location_id, Collection $tracings): ?RefreshToken
     {
 

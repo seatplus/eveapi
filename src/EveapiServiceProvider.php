@@ -96,6 +96,7 @@ class EveapiServiceProvider extends ServiceProvider
         $this->addRateLimiters();
     }
 
+    #[\Override]
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/eveapi.config.php', 'eveapi.config');
@@ -109,9 +110,7 @@ class EveapiServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/eveapi.jobs.php', 'eveapi.jobs');
 
         // Eseye Singleton
-        $this->app->singleton('esi-client', function () {
-            return new EsiClientSetup;
-        });
+        $this->app->singleton('esi-client', fn() => new EsiClientSetup);
     }
 
     /**

@@ -29,17 +29,21 @@ namespace Seatplus\Eveapi\Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Universe\Group;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Universe\Group>
+ */
 class GroupFactory extends Factory
 {
     protected $model = Group::class;
 
+    #[\Override]
     public function definition()
     {
         return [
-            'group_id' => $this->faker->numberBetween(0, 10000),
-            'category_id' => $this->faker->numberBetween(0, 10000),
-            'name' => $this->faker->firstName,
-            'published' => $this->faker->boolean,
+            'group_id' => fake()->numberBetween(0, 10000),
+            'category_id' => fake()->numberBetween(0, 10000),
+            'name' => fake()->firstName,
+            'published' => fake()->boolean,
         ];
     }
 }

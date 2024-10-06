@@ -29,21 +29,25 @@ namespace Seatplus\Eveapi\Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Alliance\AllianceInfo>
+ */
 class AllianceInfoFactory extends Factory
 {
     protected $model = AllianceInfo::class;
 
+    #[\Override]
     public function definition()
     {
         return [
-            'alliance_id' => $this->faker->numberBetween(99000000, 100000000),
-            'creator_corporation_id' => $this->faker->numberBetween(98000000, 99000000),
-            'creator_id' => $this->faker->numberBetween(90000000, 98000000),
-            'date_founded' => $this->faker->date('Y-m-d', 'now'),
-            'executor_corporation_id' => $this->faker->optional()->numberBetween(98000000, 99000000),
-            'name' => $this->faker->name,
-            'ticker' => $this->faker->bothify('[##??]'),
-            'faction_id' => $this->faker->optional()->numberBetween(500000, 1000000),
+            'alliance_id' => fake()->numberBetween(99000000, 100000000),
+            'creator_corporation_id' => fake()->numberBetween(98000000, 99000000),
+            'creator_id' => fake()->numberBetween(90000000, 98000000),
+            'date_founded' => fake()->date('Y-m-d', 'now'),
+            'executor_corporation_id' => fake()->optional()->numberBetween(98000000, 99000000),
+            'name' => fake()->name,
+            'ticker' => fake()->bothify('[##??]'),
+            'faction_id' => fake()->optional()->numberBetween(500000, 1000000),
         ];
     }
 }

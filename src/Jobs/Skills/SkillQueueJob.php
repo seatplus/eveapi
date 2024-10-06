@@ -58,6 +58,7 @@ class SkillQueueJob extends EsiBase implements HasPathValuesInterface, HasRequir
         $this->setRequiredScope('esi-skills.read_skillqueue.v1');
     }
 
+    #[\Override]
     public function tags(): array
     {
         return [
@@ -66,6 +67,7 @@ class SkillQueueJob extends EsiBase implements HasPathValuesInterface, HasRequir
         ];
     }
 
+    #[\Override]
     public function middleware(): array
     {
         return [
@@ -77,6 +79,7 @@ class SkillQueueJob extends EsiBase implements HasPathValuesInterface, HasRequir
     /**
      * @throws RequestFailedException
      */
+    #[\Override]
     public function executeJob(): void
     {
         $response = $this->retrieve();

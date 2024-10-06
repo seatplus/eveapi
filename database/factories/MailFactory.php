@@ -30,18 +30,22 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Mail\Mail;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Mail\Mail>
+ */
 class MailFactory extends Factory
 {
     protected $model = Mail::class;
 
+    #[\Override]
     public function definition(): array
     {
         return [
-            'id' => $this->faker->unique()->randomNumber(),
-            'subject' => $this->faker->sentence,
+            'id' => fake()->unique()->randomNumber(),
+            'subject' => fake()->sentence,
             'from' => CharacterInfo::factory(),
-            'timestamp' => $this->faker->dateTime('now', null)->format('Y-m-d H:i:s'),
-            'is_read' => $this->faker->boolean,
+            'timestamp' => fake()->dateTime('now', null)->format('Y-m-d H:i:s'),
+            'is_read' => fake()->boolean,
         ];
     }
 }

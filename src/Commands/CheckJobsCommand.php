@@ -77,7 +77,7 @@ class CheckJobsCommand extends Command
                 $has_warnings = $assertions->contains(fn (array $assertion) => $assertion['status'] === 'warning');
 
                 return [
-                    'class' => get_class($job),
+                    'class' => $job::class,
                     'assertions' => $assertions,
                     'status' => $has_errors ? 'error' : ($has_warnings ? 'warning' : 'success'),
                 ];
@@ -264,14 +264,14 @@ class CheckJobsCommand extends Command
         $used_middlewares = collect($job->middleware());
 
         // first we check if ThrottlesExceptionsWithRedis Middleware is used
-        if (! $used_middlewares->first(fn (object $middleware) => get_class($middleware) === ThrottlesExceptionsWithRedis::class)) {
+        if (! $used_middlewares->first(fn (object $middleware) => $middleware::class === ThrottlesExceptionsWithRedis::class)) {
             return $this->assertionResult('error', 'ThrottlesExceptionsWithRedis Middleware is not used');
         }
 
         // now check all jobs that require authentication implementing HasRequiredScopeMiddleware
         if ($job instanceof HasRequiredScopeInterface) {
             // check if the required scope middleware is used
-            if (! $used_middlewares->first(fn (object $middleware) => get_class($middleware) === HasRequiredScopeMiddleware::class)) {
+            if (! $used_middlewares->first(fn (object $middleware) => $middleware::class === HasRequiredScopeMiddleware::class)) {
                 return $this->assertionResult('error', 'HasRequiredScopeMiddleware is not used even though job requires authentication');
             }
         }
@@ -320,7 +320,7 @@ class CheckJobsCommand extends Command
         // if method is post and has cached seconds, return warning
         if ($job->getMethod() === 'post' && $has_cached_seconds) {
             // if job is CharacterAffiliationJob, return success
-            if (get_class($job) === CharacterAffiliationJob::class) {
+            if ($job::class === CharacterAffiliationJob::class) {
                 return $this->assertionResult('success', 'CharacterAffiliationJob is a post request but has cached seconds');
             }
 
@@ -328,7 +328,7 @@ class CheckJobsCommand extends Command
         }
 
         // get filename of job class
-        $job_class = get_class($job);
+        $job_class = $job::class;
         $reflection_class = new ReflectionClass($job_class);
         $job_filename = $reflection_class->getFileName();
 
@@ -337,7 +337,7 @@ class CheckJobsCommand extends Command
             // check if base_job is abstract
             $reflection_class = new ReflectionClass($base_job);
 
-            throw_unless($reflection_class->isAbstract(), new Exception("${base_job} is not abstract but checker is overwriting job_filename"));
+            throw_unless($reflection_class->isAbstract(), new Exception("{$base_job} is not abstract but checker is overwriting job_filename"));
 
             if (is_subclass_of($job_class, $base_job)) {
                 $job_filename = $reflection_class->getFileName();

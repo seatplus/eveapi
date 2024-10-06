@@ -41,6 +41,7 @@ class StationResolver implements ResolverInterface
     /**
      * @throws Exception
      */
+    #[\Override]
     public function handle(Location $location): bool
     {
 

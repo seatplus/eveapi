@@ -79,8 +79,10 @@ abstract class EsiBase extends RetrieveFromEsiBase implements BaseJobInterface, 
         public string $version,
     ) {}
 
+    #[\Override]
     abstract public function tags(): array;
 
+    #[\Override]
     public function middleware(): array
     {
         return [
@@ -101,18 +103,22 @@ abstract class EsiBase extends RetrieveFromEsiBase implements BaseJobInterface, 
         }
     }
 
+    #[\Override]
     abstract public function executeJob(): void;
 
+    #[\Override]
     public function getMethod(): string
     {
         return $this->method;
     }
 
+    #[\Override]
     public function getVersion(): string
     {
         return $this->version;
     }
 
+    #[\Override]
     public function getEndpoint(): string
     {
         return $this->endpoint;

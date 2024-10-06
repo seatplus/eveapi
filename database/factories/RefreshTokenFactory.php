@@ -30,10 +30,14 @@ use Firebase\JWT\JWT;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\RefreshToken;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\RefreshToken>
+ */
 class RefreshTokenFactory extends Factory
 {
     protected $model = RefreshToken::class;
 
+    #[\Override]
     public function definition()
     {
         $jwt_payload = json_encode([
@@ -52,7 +56,7 @@ class RefreshTokenFactory extends Factory
         ]);
 
         return [
-            'character_id' => $this->faker->numberBetween(9000000, 98000000),
+            'character_id' => fake()->numberBetween(9000000, 98000000),
             'refresh_token' => 'MmLZC2vwExCby2vbdgEVpOxXPUG3mIGfkQM5gl9IPtA',
             'expires_on' => now()->addMinutes(10),
             'token' => $this->buildJWT($jwt_payload),
@@ -62,7 +66,7 @@ class RefreshTokenFactory extends Factory
     public function scopes(array $scopes)
     {
         return $this->state(function (array $attributes) use ($scopes) {
-            $token = json_decode(data_get($attributes, 'token'), true);
+            $token = json_decode((string) data_get($attributes, 'token'), true);
             data_set($token, 'scp', $scopes);
 
             return [
@@ -87,6 +91,6 @@ class RefreshTokenFactory extends Factory
             'test'
         );
 
-        return "${data}.${signature}";
+        return "{$data}.{$signature}";
     }
 }

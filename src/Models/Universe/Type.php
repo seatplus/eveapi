@@ -56,14 +56,6 @@ class Type extends Model
      */
     protected $table = 'universe_types';
 
-    protected $casts = [
-        'type_id' => 'integer',
-        'group_id' => 'integer',
-        'name' => 'string',
-        'description' => 'string',
-        'published' => 'boolean',
-    ];
-
     protected $with = ['group', 'category'];
 
     public function group(): HasOne
@@ -81,5 +73,16 @@ class Type extends Model
             'group_id',
             'category_id'
         );
+    }
+    #[\Override]
+    protected function casts() : array
+    {
+        return [
+            'type_id' => 'integer',
+            'group_id' => 'integer',
+            'name' => 'string',
+            'description' => 'string',
+            'published' => 'boolean',
+        ];
     }
 }

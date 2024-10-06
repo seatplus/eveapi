@@ -30,26 +30,30 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Wallet\WalletTransaction>
+ */
 class WalletTransactionFactory extends Factory
 {
     protected $model = WalletTransaction::class;
 
+    #[\Override]
     public function definition()
     {
         return [
-            'transaction_id' => $this->faker->unique()->randomNumber() + 1,
-            'wallet_transactionable_id' => $this->faker->numberBetween(90_000_000, 98_000_000),
+            'transaction_id' => fake()->unique()->randomNumber() + 1,
+            'wallet_transactionable_id' => fake()->numberBetween(90_000_000, 98_000_000),
             'wallet_transactionable_type' => CharacterInfo::class,
 
-            'client_id' => $this->faker->numberBetween(90_000_000, 98_000_000),
-            'date' => $this->faker->iso8601,
-            'is_buy' => $this->faker->boolean(),
-            'is_personal' => $this->faker->boolean(),
-            'journal_ref_id' => $this->faker->randomNumber(8),
-            'location_id' => $this->faker->randomNumber(6),
-            'quantity' => $this->faker->randomNumber(),
-            'type_id' => $this->faker->numberBetween(90_000_000, 98_000_000),
-            'unit_price' => $this->faker->randomFloat(2),
+            'client_id' => fake()->numberBetween(90_000_000, 98_000_000),
+            'date' => fake()->iso8601,
+            'is_buy' => fake()->boolean(),
+            'is_personal' => fake()->boolean(),
+            'journal_ref_id' => fake()->randomNumber(8),
+            'location_id' => fake()->randomNumber(6),
+            'quantity' => fake()->randomNumber(),
+            'type_id' => fake()->numberBetween(90_000_000, 98_000_000),
+            'unit_price' => fake()->randomFloat(2),
         ];
     }
 }

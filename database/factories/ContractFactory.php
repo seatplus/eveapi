@@ -31,37 +31,41 @@ use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Universe\Location;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Contracts\Contract>
+ */
 class ContractFactory extends Factory
 {
     protected $model = Contract::class;
 
+    #[\Override]
     public function definition()
     {
         return [
-            'contract_id' => $this->faker->numberBetween(60000000, 68000000),
-            'acceptor_id' => $this->faker->numberBetween(9000000, 98000000),
-            'assignee_id' => $this->faker->numberBetween(9000000, 98000000),
-            'availability' => $this->faker->randomElement(['public', 'personal', 'corporation', 'alliance']),
+            'contract_id' => fake()->numberBetween(60000000, 68000000),
+            'acceptor_id' => fake()->numberBetween(9000000, 98000000),
+            'assignee_id' => fake()->numberBetween(9000000, 98000000),
+            'availability' => fake()->randomElement(['public', 'personal', 'corporation', 'alliance']),
             'date_expired' => carbon()->addDay(),
             'date_issued' => carbon()->subDay(),
-            'for_corporation' => $this->faker->boolean,
+            'for_corporation' => fake()->boolean,
             'issuer_corporation_id' => CorporationInfo::factory(),
-            'issuer_id' => $this->faker->numberBetween(9000000, 98000000),
-            'status' => $this->faker->randomElement(['outstanding', 'in_progress', 'finished_issuer', 'finished_contractor', 'finished', 'cancelled', 'rejected', 'failed', 'deleted', 'reversed']),
-            'type' => $this->faker->randomElement(['unknown', 'item_exchange', 'auction', 'courier', 'loan']),
+            'issuer_id' => fake()->numberBetween(9000000, 98000000),
+            'status' => fake()->randomElement(['outstanding', 'in_progress', 'finished_issuer', 'finished_contractor', 'finished', 'cancelled', 'rejected', 'failed', 'deleted', 'reversed']),
+            'type' => fake()->randomElement(['unknown', 'item_exchange', 'auction', 'courier', 'loan']),
 
             //optionals
-            'buyout' => $this->faker->randomFloat(),
-            'collateral' => $this->faker->randomFloat(),
+            'buyout' => fake()->randomFloat(),
+            'collateral' => fake()->randomFloat(),
             'date_accepted' => carbon()->addHour(),
             'date_completed' => carbon()->addHours(2),
-            'days_to_complete' => $this->faker->randomDigitNotNull,
-            'price' => $this->faker->randomFloat(),
-            'reward' => $this->faker->randomFloat(),
+            'days_to_complete' => fake()->randomDigitNotNull,
+            'price' => fake()->randomFloat(),
+            'reward' => fake()->randomFloat(),
             'end_location_id' => Location::factory()->withStation(),
             'start_location_id' => Location::factory()->withStation(),
-            'title' => $this->faker->text(),
-            'volume' => $this->faker->randomFloat(),
+            'title' => fake()->text(),
+            'volume' => fake()->randomFloat(),
         ];
     }
 }

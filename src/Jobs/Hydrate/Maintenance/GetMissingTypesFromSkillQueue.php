@@ -31,6 +31,7 @@ use Seatplus\Eveapi\Models\Skills\SkillQueue;
 
 class GetMissingTypesFromSkillQueue extends HydrateMaintenanceBase
 {
+    #[\Override]
     public function handle(): void
     {
         if ($this->batch()->cancelled()) {

@@ -66,6 +66,7 @@ class CorporationMemberTrackingJob extends EsiBase implements HasCorporationRole
     /**
      * Get the middleware the job should pass through.
      */
+    #[\Override]
     public function middleware(): array
     {
         return [
@@ -74,6 +75,7 @@ class CorporationMemberTrackingJob extends EsiBase implements HasCorporationRole
         ];
     }
 
+    #[\Override]
     public function tags(): array
     {
         return [
@@ -89,6 +91,7 @@ class CorporationMemberTrackingJob extends EsiBase implements HasCorporationRole
      *
      * @throws \Exception
      */
+    #[\Override]
     public function executeJob(): void
     {
         $response = $this->retrieve();

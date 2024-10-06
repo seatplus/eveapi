@@ -29,6 +29,9 @@ namespace Seatplus\Eveapi\Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Character\CharacterRole;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Character\CharacterRole>
+ */
 class CharacterRoleFactory extends Factory
 {
     protected $model = CharacterRole::class;
@@ -44,14 +47,15 @@ class CharacterRoleFactory extends Factory
         'Security_Officer', 'Starbase_Defense_Operator', 'Starbase_Fuel_Technician', 'Station_Manager', 'Trader',
     ];
 
+    #[\Override]
     public function definition()
     {
         return [
-            'character_id' => $this->faker->numberBetween(99000000, 100000000),
-            'roles' => $this->faker->randomElements($this->roles_array, $this->faker->randomDigitNotNull, []),
-            'roles_at_base' => $this->faker->optional()->randomElements($this->roles_array, $this->faker->randomDigitNotNull),
-            'roles_at_hq' => $this->faker->optional()->randomElements($this->roles_array, $this->faker->randomDigitNotNull),
-            'roles_at_other' => $this->faker->optional()->randomElements($this->roles_array, $this->faker->randomDigitNotNull),
+            'character_id' => fake()->numberBetween(99000000, 100000000),
+            'roles' => fake()->randomElements($this->roles_array, fake()->randomDigitNotNull, []),
+            'roles_at_base' => fake()->optional()->randomElements($this->roles_array, fake()->randomDigitNotNull),
+            'roles_at_hq' => fake()->optional()->randomElements($this->roles_array, fake()->randomDigitNotNull),
+            'roles_at_other' => fake()->optional()->randomElements($this->roles_array, fake()->randomDigitNotNull),
         ];
     }
 }

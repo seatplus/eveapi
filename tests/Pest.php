@@ -74,7 +74,7 @@ function testCharacter()
 function updateRefreshTokenScopes(Seatplus\Eveapi\Models\RefreshToken $refreshToken, array $scopes): Seatplus\Eveapi\Models\RefreshToken
 {
     $jwt = $refreshToken->getRawOriginal('token');
-    $jwt_payload_base64_encoded = explode('.', $jwt)[1];
+    $jwt_payload_base64_encoded = explode('.', (string) $jwt)[1];
     // create an associative array
     $jwt_payload = json_decode(JWT::urlsafeB64Decode($jwt_payload_base64_encoded), true);
     // update scopes

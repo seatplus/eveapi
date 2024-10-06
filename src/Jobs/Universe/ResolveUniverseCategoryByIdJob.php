@@ -50,6 +50,7 @@ class ResolveUniverseCategoryByIdJob extends EsiBase implements HasPathValuesInt
         ]);
     }
 
+    #[\Override]
     public function tags(): array
     {
         return [
@@ -59,6 +60,7 @@ class ResolveUniverseCategoryByIdJob extends EsiBase implements HasPathValuesInt
         ];
     }
 
+    #[\Override]
     public function executeJob(): void
     {
         $response = $this->retrieve();

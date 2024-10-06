@@ -52,6 +52,7 @@ class AllianceInfoJob extends EsiBase implements HasPathValuesInterface
     /**
      * Get the middleware the job should pass through.
      */
+    #[\Override]
     public function middleware(): array
     {
         return [
@@ -59,6 +60,7 @@ class AllianceInfoJob extends EsiBase implements HasPathValuesInterface
         ];
     }
 
+    #[\Override]
     public function tags(): array
     {
         return [
@@ -73,6 +75,7 @@ class AllianceInfoJob extends EsiBase implements HasPathValuesInterface
      *
      * @throws \Seatplus\EsiClient\Exceptions\RequestFailedException
      */
+    #[\Override]
     public function executeJob(): void
     {
         if ($this->batching() && $this->batch()->cancelled()) {

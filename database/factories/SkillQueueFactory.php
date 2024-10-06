@@ -31,22 +31,26 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Skills\SkillQueue;
 use Seatplus\Eveapi\Models\Universe\Type;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Skills\SkillQueue>
+ */
 class SkillQueueFactory extends Factory
 {
     protected $model = SkillQueue::class;
 
+    #[\Override]
     public function definition()
     {
         return [
             'character_id' => CharacterInfo::factory(),
             'skill_id' => Type::factory(),
-            'queue_position' => $this->faker->unique()->randomDigitNotNull,
-            'finished_level' => $this->faker->numberBetween(0, 5),
-            'start_date' => $this->faker->dateTime('now', null)->format('Y-m-d H:i:s'),
-            'finish_date' => $this->faker->dateTime('now', null)->format('Y-m-d H:i:s'),
-            'training_start_sp' => $this->faker->randomNumber(),
-            'level_start_sp' => $this->faker->randomNumber(),
-            'level_end_sp' => $this->faker->randomNumber(),
+            'queue_position' => fake()->unique()->randomDigitNotNull,
+            'finished_level' => fake()->numberBetween(0, 5),
+            'start_date' => fake()->dateTime('now', null)->format('Y-m-d H:i:s'),
+            'finish_date' => fake()->dateTime('now', null)->format('Y-m-d H:i:s'),
+            'training_start_sp' => fake()->randomNumber(),
+            'level_start_sp' => fake()->randomNumber(),
+            'level_end_sp' => fake()->randomNumber(),
         ];
     }
 }

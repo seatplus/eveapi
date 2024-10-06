@@ -30,25 +30,29 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Universe\Constellation;
 use Seatplus\Eveapi\Models\Universe\System;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Universe\System>
+ */
 class SystemFactory extends Factory
 {
     protected $model = System::class;
 
+    #[\Override]
     public function definition()
     {
         return [
-            'system_id' => $this->faker->numberBetween(30000000, 32000000),
-            'name' => $this->faker->name,
+            'system_id' => fake()->numberBetween(30000000, 32000000),
+            'name' => fake()->name,
             'constellation_id' => Constellation::factory(),
-            'security_class' => $this->faker->optional()->word,
-            'security_status' => $this->faker->randomFloat(1, -1, 1),
+            'security_class' => fake()->optional()->word,
+            'security_status' => fake()->randomFloat(1, -1, 1),
         ];
     }
 
     public function noConstellation()
     {
         return $this->state(fn () => [
-            'constellation_id' => $this->faker->numberBetween(20000000, 22000000),
+            'constellation_id' => fake()->numberBetween(20000000, 22000000),
         ]);
     }
 

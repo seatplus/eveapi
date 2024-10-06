@@ -54,12 +54,12 @@ class DispatchGetSystemJobSubscriber
     {
         $events->listen(
             UniverseStationCreated::class,
-            $this::class.'@handleUniverseStationCreated'
+            static::class.'@handleUniverseStationCreated'
         );
 
         $events->listen(
             UniverseStructureCreated::class,
-            $this::class.'@handleUniverseStructureCreated'
+            static::class.'@handleUniverseStructureCreated'
         );
     }
 

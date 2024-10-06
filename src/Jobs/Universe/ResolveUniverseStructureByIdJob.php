@@ -64,6 +64,7 @@ class ResolveUniverseStructureByIdJob extends EsiBase implements HasPathValuesIn
         ]);
     }
 
+    #[\Override]
     public function tags(): array
     {
         return [
@@ -74,6 +75,7 @@ class ResolveUniverseStructureByIdJob extends EsiBase implements HasPathValuesIn
         ];
     }
 
+    #[\Override]
     public function middleware(): array
     {
         return [
@@ -85,11 +87,12 @@ class ResolveUniverseStructureByIdJob extends EsiBase implements HasPathValuesIn
         ];
     }
 
+    #[\Override]
     public function executeJob(): void
     {
         try {
             $result = $this->retrieve();
-        } catch (RequestFailedException $exception) {
+        } catch (RequestFailedException) {
             $this->delete();
 
             return;
@@ -116,6 +119,7 @@ class ResolveUniverseStructureByIdJob extends EsiBase implements HasPathValuesIn
         ]);
     }
 
+    #[\Override]
     public function failed(Throwable $exception): void
     {
         if ($exception instanceof MaxAttemptsExceededException) {

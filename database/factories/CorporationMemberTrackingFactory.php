@@ -31,17 +31,21 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking>
+ */
 class CorporationMemberTrackingFactory extends Factory
 {
     protected $model = CorporationMemberTracking::class;
 
+    #[\Override]
     public function definition()
     {
         return [
             'corporation_id' => CorporationInfo::factory(),
             'character_id' => CharacterInfo::factory(),
-            'location_id' => $this->faker->numberBetween(0, 10000),
-            'ship_type_id' => $this->faker->numberBetween(0, 10000),
+            'location_id' => fake()->numberBetween(0, 10000),
+            'ship_type_id' => fake()->numberBetween(0, 10000),
         ];
     }
 }

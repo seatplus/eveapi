@@ -29,16 +29,20 @@ namespace Seatplus\Eveapi\Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Settings\GlobalSettings;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Settings\GlobalSettings>
+ */
 class GlobalSettingsFactory extends Factory
 {
     protected $model = GlobalSettings::class;
 
+    #[\Override]
     public function definition()
     {
         return [
             'id' => 1,
-            'name' => $this->faker->name,
-            'value' => $this->faker->text(),
+            'name' => fake()->name,
+            'value' => fake()->text(),
         ];
     }
 }

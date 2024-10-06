@@ -31,18 +31,22 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Skills\Skill;
 use Seatplus\Eveapi\Models\Universe\Type;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Skills\Skill>
+ */
 class SkillFactory extends Factory
 {
     protected $model = Skill::class;
 
+    #[\Override]
     public function definition()
     {
         return [
             'character_id' => CharacterInfo::factory(),
-            'active_skill_level' => $this->faker->randomDigitNotNull(),
+            'active_skill_level' => fake()->randomDigitNotNull(),
             'skill_id' => Type::factory(),
-            'skillpoints_in_skill' => $this->faker->numberBetween(1000, 9000), // 8567,
-            'trained_skill_level' => $this->faker->randomDigitNotNull(),
+            'skillpoints_in_skill' => fake()->numberBetween(1000, 9000), // 8567,
+            'trained_skill_level' => fake()->randomDigitNotNull(),
         ];
     }
 }

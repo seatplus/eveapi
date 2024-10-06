@@ -30,26 +30,28 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Wallet\Balance;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Wallet\Balance>
+ */
 class BalanceFactory extends Factory
 {
     protected $model = Balance::class;
 
+    #[\Override]
     public function definition()
     {
         return [
-            'id' => $this->faker->unique()->randomNumber(),
-            'balanceable_id' => $this->faker->numberBetween(90_000_000, 98_000_000),
+            'id' => fake()->unique()->randomNumber(),
+            'balanceable_id' => fake()->numberBetween(90_000_000, 98_000_000),
             'balanceable_type' => CharacterInfo::class,
-            'balance' => $this->faker->randomFloat(2),
+            'balance' => fake()->randomFloat(2),
         ];
     }
 
     public function withDivision()
     {
-        return $this->state(function () {
-            return [
-                'division' => $this->faker->unique()->numberBetween(1, 7),
-            ];
-        });
+        return $this->state(fn() => [
+            'division' => fake()->unique()->numberBetween(1, 7),
+        ]);
     }
 }

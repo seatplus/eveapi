@@ -18,11 +18,6 @@ class BatchStatistic extends Model
         'duration',
     ];
 
-    protected $casts = [
-        'started_at' => 'datetime',
-        'finished_at' => 'datetime',
-    ];
-
     public function getDurationAttribute(): int
     {
         return $this->finished_at->diffInSeconds($this->started_at);
@@ -41,7 +36,7 @@ class BatchStatistic extends Model
         $env = config('app.env');
 
         // get horizon config
-        $horizon_config = config("horizon.environments.${env}.seatplus-workers");
+        $horizon_config = config("horizon.environments.{$env}.seatplus-workers");
 
         // convert array to string
         $queue_balancing_configuration = json_encode($horizon_config);
@@ -50,5 +45,13 @@ class BatchStatistic extends Model
         $attributes['queue_balancing_configuration'] = $queue_balancing_configuration;
 
         return self::create($attributes);
+    }
+    #[\Override]
+    protected function casts() : array
+    {
+        return [
+            'started_at' => 'datetime',
+            'finished_at' => 'datetime',
+        ];
     }
 }

@@ -29,6 +29,7 @@ abstract class WalletJournalBase extends EsiBase implements HasPathValuesInterfa
 
     private array $journal_entries = [];
 
+    #[\Override]
     public function executeJob(): void
     {
         // get path values

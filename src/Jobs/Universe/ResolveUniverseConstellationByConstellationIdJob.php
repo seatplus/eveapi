@@ -49,6 +49,7 @@ class ResolveUniverseConstellationByConstellationIdJob extends EsiBase implement
         ]);
     }
 
+    #[\Override]
     public function tags(): array
     {
         return [
@@ -60,6 +61,7 @@ class ResolveUniverseConstellationByConstellationIdJob extends EsiBase implement
     /**
      * Execute the job.
      */
+    #[\Override]
     public function executeJob(): void
     {
         $response = $this->retrieve();

@@ -58,6 +58,7 @@ class KillmailJob extends EsiBase implements HasPathValuesInterface
         ]);
     }
 
+    #[\Override]
     public function tags(): array
     {
         return [
@@ -66,6 +67,7 @@ class KillmailJob extends EsiBase implements HasPathValuesInterface
         ];
     }
 
+    #[\Override]
     public function middleware(): array
     {
         return [
@@ -73,6 +75,7 @@ class KillmailJob extends EsiBase implements HasPathValuesInterface
         ];
     }
 
+    #[\Override]
     public function executeJob(): void
     {
         $response = $this->retrieve();

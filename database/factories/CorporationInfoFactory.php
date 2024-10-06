@@ -30,30 +30,32 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Corporation\CorporationInfo>
+ */
 class CorporationInfoFactory extends Factory
 {
     protected $model = CorporationInfo::class;
 
+    #[\Override]
     public function definition()
     {
         return [
-            'corporation_id' => $this->faker->numberBetween(98000000, 99000000),
-            'ticker' => $this->faker->bothify('[##??]'),
-            'name' => $this->faker->name,
-            'member_count' => $this->faker->randomDigitNotNull,
-            'ceo_id' => $this->faker->numberBetween(90000000, 98000000),
-            'creator_id' => $this->faker->numberBetween(90000000, 98000000),
-            'tax_rate' => $this->faker->randomFloat(2, 0, 1),
-            'alliance_id' => $this->faker->optional()->numberBetween(99000000, 100000000),
+            'corporation_id' => fake()->numberBetween(98000000, 99000000),
+            'ticker' => fake()->bothify('[##??]'),
+            'name' => fake()->name,
+            'member_count' => fake()->randomDigitNotNull,
+            'ceo_id' => fake()->numberBetween(90000000, 98000000),
+            'creator_id' => fake()->numberBetween(90000000, 98000000),
+            'tax_rate' => fake()->randomFloat(2, 0, 1),
+            'alliance_id' => fake()->optional()->numberBetween(99000000, 100000000),
         ];
     }
 
     public function withAlliance()
     {
-        return $this->state(function () {
-            return [
-                'alliance_id' => AllianceInfo::factory(),
-            ];
-        });
+        return $this->state(fn() => [
+            'alliance_id' => AllianceInfo::factory(),
+        ]);
     }
 }

@@ -44,7 +44,7 @@ return new class extends Migration
             $table->enum('contact_type', ['character', 'corporation', 'alliance', 'faction']);
             $table->boolean('is_blocked')->nullable();
             $table->boolean('is_watched')->nullable();
-            $table->float('standing', 10, 2);
+            $table->float('standing', 10);
             $table->timestamps();
         });
 

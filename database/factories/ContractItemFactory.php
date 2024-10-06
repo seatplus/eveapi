@@ -30,24 +30,28 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Contracts\ContractItem;
 use Seatplus\Eveapi\Models\Universe\Type;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Contracts\ContractItem>
+ */
 class ContractItemFactory extends Factory
 {
     protected $model = ContractItem::class;
 
+    #[\Override]
     public function definition()
     {
         return [
-            'record_id' => $this->faker->unique()->randomNumber(8),
-            'contract_id' => $this->faker->numberBetween(60000000, 68000000),
-            'is_included' => $this->faker->boolean,
-            'is_singleton' => $this->faker->boolean,
+            'record_id' => fake()->unique()->randomNumber(8),
+            'contract_id' => fake()->numberBetween(60000000, 68000000),
+            'is_included' => fake()->boolean,
+            'is_singleton' => fake()->boolean,
             'type_id' => Type::factory(),
-            'quantity' => $this->faker->randomDigit(),
+            'quantity' => fake()->randomDigit(),
         ];
     }
 
     public function withoutType()
     {
-        return $this->state(fn () => ['type_id' => $this->faker->numberBetween(0, 10000)]);
+        return $this->state(fn () => ['type_id' => fake()->numberBetween(0, 10000)]);
     }
 }

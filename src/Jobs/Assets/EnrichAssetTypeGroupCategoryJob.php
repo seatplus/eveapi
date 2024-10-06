@@ -8,6 +8,7 @@ use Seatplus\Eveapi\Models\Assets\Asset;
 
 class EnrichAssetTypeGroupCategoryJob extends HydrateMaintenanceBase
 {
+    #[\Override]
     public function handle(): void
     {
 

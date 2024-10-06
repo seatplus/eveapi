@@ -12,11 +12,6 @@ class LocationRefreshToken extends Model
 
     protected $guarded = [];
 
-    protected $casts = [
-        'location_id' => 'integer',
-        'character_id' => 'integer',
-    ];
-
     public function location(): BelongsTo
     {
         return $this->belongsTo(Location::class, 'location_id', 'location_id');
@@ -25,5 +20,13 @@ class LocationRefreshToken extends Model
     public function refresh_token(): BelongsTo
     {
         return $this->belongsTo(RefreshToken::class, 'character_id', 'character_id');
+    }
+    #[\Override]
+    protected function casts() : array
+    {
+        return [
+            'location_id' => 'integer',
+            'character_id' => 'integer',
+        ];
     }
 }

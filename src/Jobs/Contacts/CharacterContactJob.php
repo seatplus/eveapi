@@ -35,7 +35,7 @@ class CharacterContactJob extends ContactBaseJob
 {
     private int $page = 1;
 
-    private Collection $known_ids;
+    private readonly Collection $known_ids;
 
     public function __construct(
         public int $character_id,
@@ -58,6 +58,7 @@ class CharacterContactJob extends ContactBaseJob
     /**
      * Get the middleware the job should pass through.
      */
+    #[\Override]
     public function middleware(): array
     {
         return [
@@ -66,6 +67,7 @@ class CharacterContactJob extends ContactBaseJob
         ];
     }
 
+    #[\Override]
     public function tags(): array
     {
         return [
@@ -80,6 +82,7 @@ class CharacterContactJob extends ContactBaseJob
      *
      * @throws \Exception
      */
+    #[\Override]
     public function executeJob(): void
     {
         $processor = new ProcessContactResponse($this->character_id, CharacterInfo::class);

@@ -36,15 +36,18 @@ class WalletJournal extends Model
 
     protected $guarded = false;
 
-    /**
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'date' => 'datetime',
-    ];
-
     public function wallet_journable(): MorphTo
     {
         return $this->morphTo();
+    }
+    /**
+     * @return array<string, string>
+     */
+    #[\Override]
+    protected function casts() : array
+    {
+        return [
+            'date' => 'datetime',
+        ];
     }
 }

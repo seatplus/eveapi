@@ -37,10 +37,6 @@ class SsoScopes extends Model
 
     protected $fillable = ['selected_scopes', 'morphable_type', 'morphable_id', 'type'];
 
-    protected $casts = [
-        'selected_scopes' => 'array',
-    ];
-
     public function morphable(): MorphTo
     {
         return $this->morphTo();
@@ -49,5 +45,12 @@ class SsoScopes extends Model
     public function scopeGlobal(Builder $query): Builder
     {
         return $query->where('type', 'global');
+    }
+    #[\Override]
+    protected function casts() : array
+    {
+        return [
+            'selected_scopes' => 'array',
+        ];
     }
 }

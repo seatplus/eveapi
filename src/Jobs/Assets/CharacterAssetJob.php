@@ -69,6 +69,7 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
     /**
      * Get the middleware the job should pass through.
      */
+    #[\Override]
     public function middleware(): array
     {
         return [
@@ -77,6 +78,7 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
         ];
     }
 
+    #[\Override]
     public function tags(): array
     {
         return [
@@ -89,6 +91,7 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
     /**
      * Execute the job.
      */
+    #[\Override]
     public function executeJob(): void
     {
         while (true) {

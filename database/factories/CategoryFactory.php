@@ -29,16 +29,20 @@ namespace Seatplus\Eveapi\Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Universe\Category;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Universe\Category>
+ */
 class CategoryFactory extends Factory
 {
     protected $model = Category::class;
 
+    #[\Override]
     public function definition()
     {
         return [
-            'category_id' => $this->faker->numberBetween(0, 10000),
-            'name' => $this->faker->name,
-            'published' => $this->faker->boolean,
+            'category_id' => fake()->numberBetween(0, 10000),
+            'name' => fake()->name,
+            'published' => fake()->boolean,
         ];
     }
 }

@@ -34,6 +34,7 @@ use Seatplus\Eveapi\Models\Universe\Structure;
 
 class GetMissingLocationFromContracts extends HydrateMaintenanceBase
 {
+    #[\Override]
     public function handle(): void
     {
         if ($this->batch()->cancelled()) {

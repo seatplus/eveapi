@@ -107,6 +107,7 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
         return $this->morphedByMany(CharacterInfo::class, 'contractable', null, 'contract_id');
     }
 
+    #[\Override]
     public function scopeFilterByRegionIds(Builder $query, int|array $regions): Builder
     {
         $region_ids = is_array($regions) ? $regions : [$regions];
@@ -116,6 +117,7 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
             ->orWhereHas('end_location.locatable.system.region', fn (Builder $query) => $query->whereIn('universe_regions.region_id', $region_ids));
     }
 
+    #[\Override]
     public function scopeFilterBySystemIds(Builder $query, int|array $systems): Builder
     {
         $system_ids = is_array($systems) ? $systems : [$systems];
@@ -125,6 +127,7 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
             ->orWhereHas('end_location.locatable.system', fn (Builder $query) => $query->whereIn('system_id', $system_ids));
     }
 
+    #[\Override]
     public function scopeFilterByTypeIds(Builder $query, int|array $types): Builder
     {
         $type_ids = is_array($types) ? $types : [$types];
@@ -132,6 +135,7 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
         return $query->whereHas('items', fn (Builder $query) => $query->whereIn('type_id', $type_ids));
     }
 
+    #[\Override]
     public function scopeFilterByGroupIds(Builder $query, int|array $groups): Builder
     {
         $group_ids = is_array($groups) ? $groups : [$groups];
@@ -139,6 +143,7 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
         return $query->whereHas('items.type', fn (Builder $query) => $query->whereIn('group_id', $group_ids));
     }
 
+    #[\Override]
     public function scopeFilterByCategoryIds(Builder $query, int|array $category): Builder
     {
         $category_ids = is_array($category) ? $category : [$category];

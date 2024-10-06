@@ -30,34 +30,36 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Wallet\WalletJournal;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Wallet\WalletJournal>
+ */
 class WalletJournalFactory extends Factory
 {
     protected $model = WalletJournal::class;
 
+    #[\Override]
     public function definition()
     {
         return [
-            'id' => $this->faker->unique()->randomNumber(),
-            'wallet_journable_id' => $this->faker->numberBetween(90_000_000, 98_000_000),
+            'id' => fake()->unique()->randomNumber(),
+            'wallet_journable_id' => fake()->numberBetween(90_000_000, 98_000_000),
             'wallet_journable_type' => CharacterInfo::class,
-            'date' => $this->faker->iso8601,
-            'description' => $this->faker->realText(),
-            'ref_type' => $this->faker->randomElement($this->getRefType()),
-            'amount' => $this->faker->optional()->randomFloat(2),
-            'balance' => $this->faker->optional()->randomFloat(2),
-            'reason' => $this->faker->optional()->text,
-            'first_party_id' => $this->faker->randomElement([1000132, 2, 23269]),
-            'second_party_id' => $this->faker->numberBetween(90_000_000, 98_000_000),
+            'date' => fake()->iso8601,
+            'description' => fake()->realText(),
+            'ref_type' => fake()->randomElement($this->getRefType()),
+            'amount' => fake()->optional()->randomFloat(2),
+            'balance' => fake()->optional()->randomFloat(2),
+            'reason' => fake()->optional()->text,
+            'first_party_id' => fake()->randomElement([1000132, 2, 23269]),
+            'second_party_id' => fake()->numberBetween(90_000_000, 98_000_000),
         ];
     }
 
     public function withLabels()
     {
-        return $this->state(function () {
-            return [
-                'label_ids' => [1, 2, 3],
-            ];
-        });
+        return $this->state(fn() => [
+            'label_ids' => [1, 2, 3],
+        ]);
     }
 
     private function getRefType(): array

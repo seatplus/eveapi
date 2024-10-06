@@ -47,6 +47,7 @@ class Application extends Model
 
     public $incrementing = false;
 
+    #[\Override]
     protected static function booted(): void
     {
         static::creating(function (Model $model) {
@@ -55,10 +56,6 @@ class Application extends Model
     }
 
     protected $guarded = [];
-
-    protected $casts = [
-        'corporation_id' => 'integer',
-    ];
 
     public function corporation(): BelongsTo
     {
@@ -96,5 +93,12 @@ class Application extends Model
                     CharacterInfo::class => ['refresh_token', 'application.corporation.ssoScopes', 'application.corporation.alliance.ssoScopes'],
                 ]),
             ]);
+    }
+    #[\Override]
+    protected function casts() : array
+    {
+        return [
+            'corporation_id' => 'integer',
+        ];
     }
 }

@@ -30,23 +30,27 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Universe\Constellation;
 use Seatplus\Eveapi\Models\Universe\Region;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Universe\Constellation>
+ */
 class ConstellationFactory extends Factory
 {
     protected $model = Constellation::class;
 
+    #[\Override]
     public function definition()
     {
         return [
             'region_id' => Region::factory(),
-            'name' => $this->faker->name,
-            'constellation_id' => $this->faker->numberBetween(20000000, 22000000),
+            'name' => fake()->name,
+            'constellation_id' => fake()->numberBetween(20000000, 22000000),
         ];
     }
 
     public function noRegion()
     {
         return $this->state(fn () => [
-            'region_id' => $this->faker->numberBetween(10000000, 12000000),
+            'region_id' => fake()->numberBetween(10000000, 12000000),
         ]);
     }
 }

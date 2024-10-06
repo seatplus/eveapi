@@ -52,6 +52,7 @@ class KillmailItem extends Model
         return $this->hasOne(Type::class, 'type_id', 'type_id');
     }
 
+    #[\Override]
     public function delete(): bool
     {
         $this->content()->delete();

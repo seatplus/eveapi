@@ -22,6 +22,7 @@ class CharacterContractItemsJob extends ContractItemsJob
         $this->setRequiredScope(head(config('eveapi.scopes.character.contracts')));
     }
 
+    #[\Override]
     public function tags(): array
     {
         return [

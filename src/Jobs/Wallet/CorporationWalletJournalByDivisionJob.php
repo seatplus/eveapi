@@ -57,6 +57,7 @@ class CorporationWalletJournalByDivisionJob extends WalletJournalBase implements
     /**
      * Get the middleware the job should pass through.
      */
+    #[\Override]
     public function middleware(): array
     {
         return [
@@ -65,6 +66,7 @@ class CorporationWalletJournalByDivisionJob extends WalletJournalBase implements
         ];
     }
 
+    #[\Override]
     public function tags(): array
     {
         return [

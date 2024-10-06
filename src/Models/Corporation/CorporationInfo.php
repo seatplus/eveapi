@@ -55,11 +55,6 @@ class CorporationInfo extends Model
      */
     protected $primaryKey = 'corporation_id';
 
-    protected $casts = [
-        'corporation_id' => 'integer',
-        'alliance_id' => 'integer',
-    ];
-
     public function characters(): HasManyThrough
     {
         return $this->hasManyThrough(
@@ -115,5 +110,13 @@ class CorporationInfo extends Model
     public function wallet_transactions(): MorphMany
     {
         return $this->morphMany(WalletTransaction::class, 'wallet_transactionable');
+    }
+    #[\Override]
+    protected function casts() : array
+    {
+        return [
+            'corporation_id' => 'integer',
+            'alliance_id' => 'integer',
+        ];
     }
 }

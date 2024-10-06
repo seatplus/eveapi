@@ -52,10 +52,6 @@ class AllianceInfo extends Model
 
     public $incrementing = false;
 
-    protected $casts = [
-        'alliance_id' => 'integer',
-    ];
-
     public function characters(): HasManyThrough
     {
         return $this->hasManyThrough(
@@ -86,5 +82,12 @@ class AllianceInfo extends Model
     public function labels(): MorphMany
     {
         return $this->morphMany(Label::class, 'labelable');
+    }
+    #[\Override]
+    protected function casts() : array
+    {
+        return [
+            'alliance_id' => 'integer',
+        ];
     }
 }

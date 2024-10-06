@@ -79,6 +79,7 @@ class CharacterAssetsNameJob extends EsiBase implements HasPathValuesInterface, 
     /**
      * Get the middleware the job should pass through.
      */
+    #[\Override]
     public function middleware(): array
     {
         return [
@@ -87,6 +88,7 @@ class CharacterAssetsNameJob extends EsiBase implements HasPathValuesInterface, 
         ];
     }
 
+    #[\Override]
     public function tags(): array
     {
         return [
@@ -100,6 +102,7 @@ class CharacterAssetsNameJob extends EsiBase implements HasPathValuesInterface, 
     /**
      * Execute the job.
      */
+    #[\Override]
     public function executeJob(): void
     {
         if ($this->batching() && $this->batch()->cancelled()) {

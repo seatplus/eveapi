@@ -56,13 +56,6 @@ class Group extends Model
      */
     protected $table = 'universe_groups';
 
-    protected $casts = [
-        'group_id' => 'integer',
-        'category_id' => 'integer',
-        'name' => 'string',
-        'published' => 'boolean',
-    ];
-
     public function types(): HasMany
     {
         return $this->hasMany(Type::class, 'group_id', 'group_id');
@@ -71,5 +64,15 @@ class Group extends Model
     public function category(): HasOne
     {
         return $this->hasOne(Category::class, 'category_id', 'category_id');
+    }
+    #[\Override]
+    protected function casts() : array
+    {
+        return [
+            'group_id' => 'integer',
+            'category_id' => 'integer',
+            'name' => 'string',
+            'published' => 'boolean',
+        ];
     }
 }

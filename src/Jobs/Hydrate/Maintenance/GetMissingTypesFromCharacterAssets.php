@@ -31,6 +31,7 @@ use Seatplus\Eveapi\Models\Assets\Asset;
 
 class GetMissingTypesFromCharacterAssets extends HydrateMaintenanceBase
 {
+    #[\Override]
     public function handle(): void
     {
         if ($this->batch()->cancelled()) {

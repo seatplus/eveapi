@@ -33,8 +33,8 @@ use Seatplus\Eveapi\Models\Contacts\Label;
 class ProcessContactLabelsResponse
 {
     public function __construct(
-        private int $labelable_id,
-        private string $labelable_type
+        private readonly int $labelable_id,
+        private readonly string $labelable_type
     ) {}
 
     public function execute(EsiResponse $response): Collection

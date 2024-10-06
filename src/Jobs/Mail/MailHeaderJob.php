@@ -59,6 +59,7 @@ class MailHeaderJob extends EsiBase implements HasPathValuesInterface, HasRequir
         ]);
     }
 
+    #[\Override]
     public function tags(): array
     {
         return [
@@ -68,6 +69,7 @@ class MailHeaderJob extends EsiBase implements HasPathValuesInterface, HasRequir
         ];
     }
 
+    #[\Override]
     public function middleware(): array
     {
         return [
@@ -76,6 +78,7 @@ class MailHeaderJob extends EsiBase implements HasPathValuesInterface, HasRequir
         ];
     }
 
+    #[\Override]
     public function executeJob(): void
     {
         $response = $this->retrieve();

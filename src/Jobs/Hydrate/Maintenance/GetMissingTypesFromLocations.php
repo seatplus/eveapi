@@ -34,6 +34,7 @@ use Seatplus\Eveapi\Models\Universe\Structure;
 
 class GetMissingTypesFromLocations extends HydrateMaintenanceBase
 {
+    #[\Override]
     public function handle(): void
     {
         if ($this->batch()->cancelled()) {
@@ -48,9 +49,7 @@ class GetMissingTypesFromLocations extends HydrateMaintenanceBase
             function (Builder $query) {
                 $query->whereDoesntHave('type')->addSelect('type_id');
             }
-        )->with('locatable')->get()->map(function (Location $location) {
-            return $location->locatable->type_id;
-        })->unique()->values();
+        )->with('locatable')->get()->map(fn(Location $location) => $location->locatable->type_id)->unique()->values();
 
         $jobs = $type_ids->map(fn (int $id) => new ResolveUniverseTypeByIdJob($id));
 

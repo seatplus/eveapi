@@ -36,13 +36,16 @@ class CorporationDivision extends Model
 
     protected $guarded = [];
 
-    protected $casts = [
-        'corporation_id' => 'integer',
-        'division_id' => 'integer',
-    ];
-
     public function corporation(): BelongsTo
     {
         return $this->belongsTo(CorporationInfo::class, 'corporation_id', 'corporation_id');
+    }
+    #[\Override]
+    protected function casts() : array
+    {
+        return [
+            'corporation_id' => 'integer',
+            'division_id' => 'integer',
+        ];
     }
 }

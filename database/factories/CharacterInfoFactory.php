@@ -33,10 +33,14 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Character\CharacterRole;
 use Seatplus\Eveapi\Models\RefreshToken;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Character\CharacterInfo>
+ */
 class CharacterInfoFactory extends Factory
 {
     protected $model = CharacterInfo::class;
 
+    #[\Override]
     public function configure()
     {
         return $this->afterCreating(function (CharacterInfo $character_info) {
@@ -52,19 +56,20 @@ class CharacterInfoFactory extends Factory
         });
     }
 
+    #[\Override]
     public function definition()
     {
         return [
-            'character_id' => $this->faker->unique()->numberBetween(9000000, 98000000),
-            'name' => $this->faker->name,
+            'character_id' => fake()->unique()->numberBetween(9000000, 98000000),
+            'name' => fake()->name,
             //'corporation_id'  => $this->faker->numberBetween(98000000, 99000000),
-            'birthday' => $this->faker->iso8601('now'),
-            'gender' => $this->faker->randomElement(['male', 'female']),
-            'race_id' => $this->faker->randomDigitNotNull,
-            'bloodline_id' => $this->faker->randomDigitNotNull,
-            'description' => $this->faker->optional()->realText(),
-            'security_status' => $this->faker->optional()->randomFloat(null, -10, +10),
-            'title' => $this->faker->optional()->jobTitle(),
+            'birthday' => fake()->iso8601('now'),
+            'gender' => fake()->randomElement(['male', 'female']),
+            'race_id' => fake()->randomDigitNotNull,
+            'bloodline_id' => fake()->randomDigitNotNull,
+            'description' => fake()->optional()->realText(),
+            'security_status' => fake()->optional()->randomFloat(null, -10, +10),
+            'title' => fake()->optional()->jobTitle(),
         ];
     }
 }

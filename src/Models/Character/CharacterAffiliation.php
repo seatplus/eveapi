@@ -53,14 +53,6 @@ class CharacterAffiliation extends Model
      */
     protected $table = 'character_affiliations';
 
-    protected $casts = [
-        'character_id' => 'integer',
-        'corporation_id' => 'integer',
-        'alliance_id' => 'integer',
-        'faction_id' => 'integer',
-        'last_pulled' => 'datetime',
-    ];
-
     public function alliance(): BelongsTo
     {
         return $this->belongsTo(AllianceInfo::class, 'alliance_id', 'alliance_id');
@@ -74,5 +66,16 @@ class CharacterAffiliation extends Model
     public function character(): HasOne
     {
         return $this->hasOne(CharacterInfo::class, 'character_id', 'character_id');
+    }
+    #[\Override]
+    protected function casts() : array
+    {
+        return [
+            'character_id' => 'integer',
+            'corporation_id' => 'integer',
+            'alliance_id' => 'integer',
+            'faction_id' => 'integer',
+            'last_pulled' => 'datetime',
+        ];
     }
 }

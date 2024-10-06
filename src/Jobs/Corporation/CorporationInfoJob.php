@@ -49,6 +49,7 @@ class CorporationInfoJob extends EsiBase implements HasPathValuesInterface
         ]);
     }
 
+    #[\Override]
     public function tags(): array
     {
         return [
@@ -61,6 +62,7 @@ class CorporationInfoJob extends EsiBase implements HasPathValuesInterface
     /**
      * Execute the job.
      */
+    #[\Override]
     public function executeJob(): void
     {
         $response = $this->retrieve();

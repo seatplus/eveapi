@@ -32,27 +32,29 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contacts\Contact;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Contacts\Contact>
+ */
 class ContactFactory extends Factory
 {
     protected $model = Contact::class;
 
+    #[\Override]
     public function definition()
     {
         return [
-            'contactable_id' => $this->faker->numberBetween(),
-            'contactable_type' => $this->faker->randomElement([CharacterInfo::class, CorporationInfo::class, AllianceInfo::class]),
-            'contact_id' => $this->faker->numberBetween(),
-            'contact_type' => $this->faker->randomElement(['character', 'corporation', 'alliance', 'faction']),
-            'standing' => $this->faker->randomFloat(2, -10, 10),
+            'contactable_id' => fake()->numberBetween(),
+            'contactable_type' => fake()->randomElement([CharacterInfo::class, CorporationInfo::class, AllianceInfo::class]),
+            'contact_id' => fake()->numberBetween(),
+            'contact_type' => fake()->randomElement(['character', 'corporation', 'alliance', 'faction']),
+            'standing' => fake()->randomFloat(2, -10, 10),
         ];
     }
 
     public function withLabels()
     {
-        return $this->state(function () {
-            return [
-                'label_ids' => [1, 2, 3],
-            ];
-        });
+        return $this->state(fn() => [
+            'label_ids' => [1, 2, 3],
+        ]);
     }
 }

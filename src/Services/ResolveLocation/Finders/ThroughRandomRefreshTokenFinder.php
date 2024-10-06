@@ -7,6 +7,7 @@ use Seatplus\Eveapi\Models\RefreshToken;
 
 class ThroughRandomRefreshTokenFinder implements FinderInterface
 {
+    #[\Override]
     public function handle(int $location_id, Collection $tracings): ?RefreshToken
     {
 

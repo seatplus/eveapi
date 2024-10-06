@@ -66,6 +66,7 @@ class Killmail extends Model
         return $this->hasMany(KillmailItem::class, 'location_id', 'killmail_id');
     }
 
+    #[\Override]
     public function delete(): ?bool
     {
         $this->items()->delete();

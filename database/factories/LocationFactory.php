@@ -30,14 +30,18 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Universe\Location>
+ */
 class LocationFactory extends Factory
 {
     protected $model = Location::class;
 
+    #[\Override]
     public function definition()
     {
         return [
-            'location_id' => $this->faker->numberBetween(0, 10000),
+            'location_id' => fake()->numberBetween(0, 10000),
         ];
     }
 

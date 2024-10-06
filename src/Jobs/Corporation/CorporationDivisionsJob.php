@@ -63,6 +63,7 @@ class CorporationDivisionsJob extends EsiBase implements HasCorporationRoleInter
     /**
      * Get the middleware the job should pass through.
      */
+    #[\Override]
     public function middleware(): array
     {
         return [
@@ -71,6 +72,7 @@ class CorporationDivisionsJob extends EsiBase implements HasCorporationRoleInter
         ];
     }
 
+    #[\Override]
     public function tags(): array
     {
         return [
@@ -85,6 +87,7 @@ class CorporationDivisionsJob extends EsiBase implements HasCorporationRoleInter
      *
      * @throws \Exception
      */
+    #[\Override]
     public function executeJob(): void
     {
         $response = $this->retrieve();

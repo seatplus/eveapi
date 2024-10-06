@@ -43,6 +43,7 @@ abstract class ContractItemsJob extends EsiBase implements HasPathValuesInterfac
 
     public int $contract_id;
 
+    #[\Override]
     public function middleware(): array
     {
         return [
@@ -51,6 +52,7 @@ abstract class ContractItemsJob extends EsiBase implements HasPathValuesInterfac
         ];
     }
 
+    #[\Override]
     public function tags(): array
     {
         return [
@@ -60,6 +62,7 @@ abstract class ContractItemsJob extends EsiBase implements HasPathValuesInterfac
         ];
     }
 
+    #[\Override]
     public function executeJob(): void
     {
         if ($this->batching() && $this->batch()->cancelled()) {

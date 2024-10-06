@@ -31,16 +31,20 @@ use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\SsoScopes;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\SsoScopes>
+ */
 class SsoScopesFactory extends Factory
 {
     protected $model = SsoScopes::class;
 
+    #[\Override]
     public function definition()
     {
         return [
             'selected_scopes' => collect()->toJson(),
             'morphable_id' => 1,
-            'morphable_type' => $this->faker->randomElement([AllianceInfo::class, CorporationInfo::class]),
+            'morphable_type' => fake()->randomElement([AllianceInfo::class, CorporationInfo::class]),
             'type' => 'default',
         ];
     }

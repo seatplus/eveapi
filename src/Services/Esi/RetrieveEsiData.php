@@ -33,7 +33,9 @@ use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiClient\Exceptions\EsiScopeAccessDeniedException;
+use Seatplus\EsiClient\Exceptions\InvalidAuthenticationException;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
+use Seatplus\EsiClient\Exceptions\UriDataMissingException;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
@@ -96,14 +98,24 @@ class RetrieveEsiData
     {
         $this->request = $request;
 
-        $this->buildClient();
+        $method = $this->request->method;
+        $endpoint = $this->request->endpoint;
+        $path_values = $this->request->path_values;
+        $version = $this->request->version;
+        $request_body = $this->request->request_body;
+        $query_parameters = $this->getQueryParameters($request);
 
         try {
-            $result = $this->getClient()->invoke($this->request->method, $this->request->endpoint, $this->request->path_values);
+            $result = $this->getClient()->invoke($method, $endpoint, $path_values, $version, $query_parameters, $request_body);
         } catch (RequestFailedException $exception) {
             $this->handleException($exception);
             // Rethrow the exception
             throw $exception;
+        } catch (EsiScopeAccessDeniedException | InvalidAuthenticationException | UriDataMissingException | \Throwable $e) {
+
+            $logger = Configuration::getInstance()->getLogger();
+            $logger->error($e->getMessage());
+
         }
 
         // If this is a cached load, don't bother with any further
@@ -124,20 +136,6 @@ class RetrieveEsiData
         $this->request = $request;
     }
 
-    private function buildClient(): void
-    {
-        unset($this->client);
-
-        $this->getClient()->setVersion($this->request->version);
-        $this->getClient()->setRequestBody($this->request->request_body);
-        $this->getClient()->setQueryParameters($this->request->query_parameters);
-
-        // Configure the page to get
-        if (! is_null($this->request->page)) {
-            $this->getClient()->setQueryParameters(['page' => $this->request->page]);
-        }
-    }
-
     private function logWarnings(EsiResponse $response): void
     {
         $logger = Configuration::getInstance()->getLogger();
@@ -153,7 +151,7 @@ class RetrieveEsiData
         if (array_key_exists('Warning', $response->parsed_headers)) {
             $warning = $response->parsed_headers['Warning'];
 
-            $logger->warning("Response contained a warning: ${warning}");
+            $logger->warning("Response contained a warning: {$warning}");
         }
     }
 
@@ -219,7 +217,7 @@ class RetrieveEsiData
     {
         $character_id = $this->request->refresh_token->character_id;
 
-        return Cache::lock("get up to date refresh_token of character_id: ${character_id}", 10)
+        return Cache::lock("get up to date refresh_token of character_id: {$character_id}", 10)
             ->get(function () {
                 $token = $this->request->refresh_token->refresh();
 
@@ -229,5 +227,17 @@ class RetrieveEsiData
 
                 return UpdateRefreshTokenService::make()->update($token);
             });
+    }
+
+    private function getQueryParameters(EsiRequestContainer $request): array
+    {
+        $query_parameters = $request->query_parameters;
+
+        // Configure the page to get
+        if ($request->page !== null) {
+            $query_parameters['page'] = $request->page;
+        }
+
+        return $query_parameters;
     }
 }

@@ -65,14 +65,17 @@ class Constellation extends Model
         'created' => UniverseConstellationCreated::class,
     ];
 
-    protected $casts = [
-        'constellation_id' => 'integer',
-        'region_id' => 'integer',
-        'name' => 'string',
-    ];
-
     public function region(): HasOne
     {
         return $this->hasOne(Region::class, 'region_id', 'region_id');
+    }
+    #[\Override]
+    protected function casts() : array
+    {
+        return [
+            'constellation_id' => 'integer',
+            'region_id' => 'integer',
+            'name' => 'string',
+        ];
     }
 }

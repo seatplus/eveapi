@@ -29,10 +29,14 @@ namespace Seatplus\Eveapi\Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\BatchStatistic;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\BatchStatistic>
+ */
 class BatchStatisticFactory extends Factory
 {
     protected $model = BatchStatistic::class;
 
+    #[\Override]
     public function definition()
     {
 
@@ -40,12 +44,12 @@ class BatchStatisticFactory extends Factory
         $env = config('app.env');
 
         // get horizon config
-        $horizon_config = config("horizon.environments.${env}.seatplus-workers");
+        $horizon_config = config("horizon.environments.{$env}.seatplus-workers");
 
         return [
-            'batch_id' => $this->faker->uuid(),
-            'batch_name' => $this->faker->name(),
-            'total_jobs' => $this->faker->numberBetween(1, 100),
+            'batch_id' => fake()->uuid(),
+            'batch_name' => fake()->name(),
+            'total_jobs' => fake()->numberBetween(1, 100),
             'queue_balancing_configuration' => json_encode($horizon_config),
         ];
     }
@@ -54,8 +58,8 @@ class BatchStatisticFactory extends Factory
     {
         return $this->state(function () {
 
-            $started_at = $this->faker->dateTimeBetween('-1 week', 'now');
-            $duration = $this->faker->numberBetween(3, 42);
+            $started_at = fake()->dateTimeBetween('-1 week', 'now');
+            $duration = fake()->numberBetween(3, 42);
 
             return [
                 'started_at' => $started_at,

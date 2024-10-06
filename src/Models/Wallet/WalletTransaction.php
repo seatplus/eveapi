@@ -39,10 +39,6 @@ class WalletTransaction extends Model
 
     protected $guarded = false;
 
-    protected $casts = [
-        'date' => 'datetime',
-    ];
-
     public function wallet_transactionable(): MorphTo
     {
         return $this->morphTo();
@@ -56,5 +52,12 @@ class WalletTransaction extends Model
     public function location(): HasOne
     {
         return $this->hasOne(Location::class, 'location_id', 'location_id');
+    }
+    #[\Override]
+    protected function casts() : array
+    {
+        return [
+            'date' => 'datetime',
+        ];
     }
 }

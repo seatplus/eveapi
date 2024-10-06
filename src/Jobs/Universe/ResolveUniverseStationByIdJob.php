@@ -52,6 +52,7 @@ class ResolveUniverseStationByIdJob extends EsiBase implements HasPathValuesInte
         ]);
     }
 
+    #[\Override]
     public function tags(): array
     {
         return [
@@ -62,6 +63,7 @@ class ResolveUniverseStationByIdJob extends EsiBase implements HasPathValuesInte
         ];
     }
 
+    #[\Override]
     public function middleware(): array
     {
         return [
@@ -69,6 +71,7 @@ class ResolveUniverseStationByIdJob extends EsiBase implements HasPathValuesInte
         ];
     }
 
+    #[\Override]
     public function executeJob(): void
     {
         // If rate limited or not within ids range skip execution

@@ -31,6 +31,7 @@ use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 
 class GetMissingCharacterInfosFromCorporationMemberTracking extends HydrateMaintenanceBase
 {
+    #[\Override]
     public function handle(): void
     {
         if ($this->batch()->cancelled()) {

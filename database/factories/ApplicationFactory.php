@@ -31,10 +31,14 @@ use Seatplus\Eveapi\Models\Application;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Application>
+ */
 class ApplicationFactory extends Factory
 {
     protected $model = Application::class;
 
+    #[\Override]
     public function definition()
     {
         return [

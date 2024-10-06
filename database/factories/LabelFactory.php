@@ -29,15 +29,19 @@ namespace Seatplus\Eveapi\Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Contacts\Label;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Contacts\Label>
+ */
 class LabelFactory extends Factory
 {
     protected $model = Label::class;
 
+    #[\Override]
     public function definition()
     {
         return [
-            'label_id' => $this->faker->randomDigitNotNull,
-            'label_name' => $this->faker->domainWord,
+            'label_id' => fake()->randomDigitNotNull,
+            'label_name' => fake()->domainWord,
         ];
     }
 }

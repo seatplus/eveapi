@@ -61,6 +61,7 @@ class CorporationWalletTransactionByDivisionJob extends WalletTransactionBase im
     /**
      * Get the middleware the job should pass through.
      */
+    #[\Override]
     public function middleware(): array
     {
         return [
@@ -69,6 +70,7 @@ class CorporationWalletTransactionByDivisionJob extends WalletTransactionBase im
         ];
     }
 
+    #[\Override]
     public function tags(): array
     {
         return [
