@@ -12,8 +12,15 @@ use Seatplus\Eveapi\Services\ResolveLocation\Resolver\StructureResolver;
 class ResolveLocationService
 {
     public function __construct(
-        private readonly ?RefreshToken $refresh_token = null
-    ) {}
+        private readonly ?RefreshToken $refresh_token = null,
+        private array $resolvers = []
+    )
+    {
+        $this->resolvers ??= [
+            new StationResolver,
+            new StructureResolver($this->refresh_token),
+        ];
+    }
 
     public static function make(?RefreshToken $refresh_token = null): self
     {
@@ -29,12 +36,7 @@ class ResolveLocationService
             'location_id' => $location_id,
         ]);
 
-        $resolvers = [
-            new StationResolver,
-            new StructureResolver($this->refresh_token),
-        ];
-
-        foreach ($resolvers as $resolver) {
+        foreach ($this->resolvers as $resolver) {
             if ($resolver instanceof ResolverInterface) {
                 $is_resolved = $resolver->handle($location);
 

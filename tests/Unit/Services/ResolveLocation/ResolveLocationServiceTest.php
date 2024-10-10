@@ -1,6 +1,9 @@
 <?php
 
 use Seatplus\Eveapi\Services\ResolveLocation\ResolveLocationService;
+use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Models\Universe\Location;
+use Seatplus\Eveapi\Services\ResolveLocation\Resolver\ResolverInterface;
 
 it('runs through resolvers', function () {
     \Illuminate\Support\Facades\Event::fake();
@@ -12,4 +15,25 @@ it('runs through resolvers', function () {
     ResolveLocationService::make()->handle($location_id);
 
     expect(\Seatplus\Eveapi\Models\Universe\Location::count())->toBe(0);
+});
+
+it('breaks the loop on successful resolution', function () {
+    $location_id = 12345;
+
+    // Mock the Location model
+    $locationMock = mock(Location::class)->makePartial();
+    $locationMock->shouldReceive('with')->andReturnSelf();
+    $locationMock->shouldReceive('firstOrNew')->andReturn($locationMock);
+
+    // Mock the ResolverInterface
+    $resolverMock = mock(ResolverInterface::class, function (\Mockery\MockInterface $mock) {
+        $mock->shouldReceive('handle')->once()->andReturn(true);
+    });
+
+    // Create the service with the mocked dependencies
+    $service = Mockery::mock(ResolveLocationService::class, [testCharacter()->refresh_token, [$resolverMock]])
+        ->makePartial();
+
+    // Call the handle method
+    $service->handle($location_id);
 });
