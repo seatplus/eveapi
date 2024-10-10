@@ -46,7 +46,6 @@ abstract class EsiBase extends RetrieveFromEsiBase implements BaseJobInterface, 
     use Dispatchable;
     use InteractsWithQueue;
     use Queueable;
-    use RateLimitsEsiCalls;
     use SerializesModels;
 
     /**
@@ -86,7 +85,7 @@ abstract class EsiBase extends RetrieveFromEsiBase implements BaseJobInterface, 
     public function middleware(): array
     {
         return [
-            (new ThrottlesExceptionsWithRedis(80, 5))
+            (new ThrottlesExceptionsWithRedis(80, 5 * 60))
                 ->by('esiratelimit')
                 ->backoff(5),
         ];

@@ -27,6 +27,7 @@
 namespace Seatplus\Eveapi\Services\Esi;
 
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 use Seatplus\EsiClient\Configuration;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
@@ -42,8 +43,6 @@ use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 
 class RetrieveEsiData
 {
-    use RateLimitsEsiCalls;
-
     protected EsiClient $client;
 
     protected EsiRequestContainer $request;
@@ -91,8 +90,13 @@ class RetrieveEsiData
     }
 
     /**
-     * @throws RequestFailedException
+     * @param EsiRequestContainer $request
+     * @return EsiResponse
      * @throws EsiScopeAccessDeniedException
+     * @throws InvalidAuthenticationException
+     * @throws RequestFailedException
+     * @throws UriDataMissingException
+     * @throws \Throwable
      */
     public function execute(EsiRequestContainer $request): EsiResponse
     {
@@ -111,11 +115,12 @@ class RetrieveEsiData
             $this->handleException($exception);
             // Rethrow the exception
             throw $exception;
-        } catch (EsiScopeAccessDeniedException | InvalidAuthenticationException | UriDataMissingException | \Throwable $e) {
+        } catch (EsiScopeAccessDeniedException | InvalidAuthenticationException | UriDataMissingException | \Throwable $exception) {
 
             $logger = Configuration::getInstance()->getLogger();
-            $logger->error($e->getMessage());
+            $logger->error($exception->getMessage());
 
+            throw $exception;
         }
 
         // If this is a cached load, don't bother with any further
@@ -172,14 +177,10 @@ class RetrieveEsiData
 
     private function handleException(RequestFailedException $exception): void
     {
-        // If error is in 4xx or 5xx range increase esi rate limit
-        if (($exception->getOriginalException()->getCode() >= 400) && ($exception->getOriginalException()->getCode() <= 599)) {
-            $this->incrementEsiRateLimit();
-        }
 
         // If RateLimited directly raise the EsiRateLimit to 80
         if (Str::contains($exception->getErrorMessage(), 'This software has exceeded the error limit for ESI.')) {
-            $this->incrementEsiRateLimit(80);
+            Redis::incrby('esiratelimit', 80);
         }
 
         // Sometimes CCP does funny stuff, such as: issue tokens that are valid for to long.
