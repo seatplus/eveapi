@@ -10,9 +10,17 @@ beforeEach(function () {
 
 it('returns refresh token for alliance_id', function () {
 
+    \Illuminate\Support\Facades\Event::fake();
     // arrange
     $alliance_id = testCharacter()->alliance_id;
     $refreshToken = testCharacter()->refresh_token;
+
+    // if no refresh token exists, create one
+    if (! $refreshToken) {
+        $refreshToken = \Seatplus\Eveapi\Models\RefreshToken::factory()->create([
+            'character_id' => testCharacter()->character_id,
+        ]);
+    }
 
     expect($refreshToken)->toBeInstanceOf(\Seatplus\Eveapi\Models\RefreshToken::class);
 
