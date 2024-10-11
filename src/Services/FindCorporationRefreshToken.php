@@ -38,30 +38,34 @@ class FindCorporationRefreshToken
 
         return RefreshToken::with('corporation', 'character.roles')
             ->whereHas('corporation', fn (Builder $query) => $query->where('corporation_infos.corporation_id', $corporation_id))
-            ->cursor()
+            ->get()
             ->shuffle()
-            ->filter(function (RefreshToken $token) use ($scopes) {
-                foreach ($scopes as $scope) {
-                    if ($token->hasScope($scope)) {
-                        return true;
-                    }
-                }
-
-                return false;
-            })
-            ->first(function (RefreshToken $token) use ($roles) {
-                // if no roles are given, return the first token with the correct scope
-                if (empty($roles)) {
-                    return true;
-                }
-
-                foreach ($roles as $role) {
-                    if ($token->character?->roles?->hasRole('roles', $role)) {
-                        return true;
-                    }
-                }
-
-                return false;
+            ->first(function (RefreshToken $token) use ($scopes, $roles) {
+                return $this->tokenHasScopes($token, $scopes) && $this->tokenHasRoles($token, $roles);
             });
+    }
+
+    private function tokenHasScopes(RefreshToken $token, array $scopes): bool
+    {
+        foreach ($scopes as $scope) {
+            if ($token->hasScope($scope)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private function tokenHasRoles(RefreshToken $token, array $roles): bool
+    {
+        if (empty($roles)) {
+            return true;
+        }
+
+        foreach ($roles as $role) {
+            if ($token->character?->roles?->hasRole('roles', $role)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
