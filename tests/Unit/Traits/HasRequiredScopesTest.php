@@ -14,6 +14,8 @@ it('returns refresh token for alliance_id', function () {
     $alliance_id = testCharacter()->alliance_id;
     $refreshToken = testCharacter()->refresh_token;
 
+    expect($refreshToken)->toBeInstanceOf(\Seatplus\Eveapi\Models\RefreshToken::class);
+
     \Illuminate\Support\Facades\Event::fakeFor(fn () => updateRefreshTokenScopes($refreshToken, ['scope'])->save());
 
 
