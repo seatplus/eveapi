@@ -169,3 +169,20 @@ describe('is potential station', function () {
     })->throws(\Exception::class);
 
 });
+
+it('returns false if location is not a potential station', function () {
+    $location = mock(Location::class, function (\Mockery\MockInterface $mock) {
+        $mock->shouldReceive('getAttribute')
+            ->with('location_id')
+            ->andReturn(59_000_000);
+
+        $mock->shouldReceive('getAttribute')
+            ->with('locatable')
+            ->andReturnNull();
+    });
+    //$location->location_id = 59_000_000;
+
+    $resolver = new StationResolver();
+
+    expect($resolver->handle($location))->toBeFalse();
+});
