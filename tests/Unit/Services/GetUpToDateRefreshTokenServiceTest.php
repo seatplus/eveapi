@@ -1,0 +1,63 @@
+<?php
+
+use Seatplus\Eveapi\Services\Esi\GetUpToDateRefreshTokenService;
+use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\EsiClient\Exceptions\RequestFailedException;
+use Illuminate\Support\Facades\Cache;
+use Seatplus\Eveapi\Services\Esi\UpdateRefreshTokenService;
+
+beforeEach(function () {
+    \Illuminate\Support\Facades\Event::fake();
+});
+
+it('retrieves up to date refresh token successfully', function () {
+
+    $refreshToken = RefreshToken::factory()->create([
+        'character_id' => 12345,
+        'expires_on' => now()->addMinutes(5),
+    ]);
+
+    $result = (new GetUpToDateRefreshTokenService())($refreshToken);
+
+    expect($result)->toBe($refreshToken);
+});
+
+it('updates refresh token if expiry is near', function () {
+
+    $refreshToken = RefreshToken::factory()->create([
+        'character_id' => 12345,
+        'expires_on' => now()->addSeconds(30),
+    ]);
+
+    $updateRefreshTokenService = mock(UpdateRefreshTokenService::class, function (\Mockery\MockInterface $mock) use ($refreshToken) {
+
+        $new_token = RefreshToken::factory()->make([
+            'character_id' => $refreshToken->character_id,
+            'expires_on' => now()->addMinutes(5),
+        ]);
+
+        $mock->shouldReceive('update')
+            ->with($refreshToken)
+            ->andReturn($new_token);
+    });
+
+    $service = new GetUpToDateRefreshTokenService($updateRefreshTokenService);
+
+    $result = ($service)($refreshToken);
+
+    expect($result->expires_on)->toBeGreaterThan(now()->addSeconds(30));
+});
+
+it('throws request failed exception', function () {
+
+    $refreshToken = mock(RefreshToken::class, function (\Mockery\MockInterface $mock) {
+
+        $mock->makePartial()
+            ->shouldReceive('refresh')
+            ->andThrow(new RequestFailedException('failed'));
+    });
+
+    $service = new GetUpToDateRefreshTokenService();
+
+    expect(fn() => ($service)($refreshToken))->toThrow(RequestFailedException::class);
+});
