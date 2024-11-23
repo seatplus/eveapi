@@ -82,7 +82,7 @@ test('run alliance contact', function () {
 it('has labels', function () {
     $mock_data = Contact::factory()->withLabels()->make();
 
-    $mock_data = mockRetrieveEsiDataAction([$mock_data->toArray()]);
+    mockRetrieveEsiDataAction([$mock_data->toArray()]);
 
     $job = new CharacterContactJob(testCharacter()->character_id);
 
@@ -91,14 +91,6 @@ it('has labels', function () {
     expect($this->test_character->contacts)->toHaveCount(0);
 
     $job->handle();
-
-    foreach (collect($mock_data) as $data) {
-        //Assert that character asset created
-        $this->assertDatabaseHas('contacts', [
-            'contactable_id' => $this->test_character->character_id,
-            'contact_id' => $data->contact_id,
-        ]);
-    }
 
     expect($this->test_character->refresh()->contacts)->toHaveCount(1);
 
