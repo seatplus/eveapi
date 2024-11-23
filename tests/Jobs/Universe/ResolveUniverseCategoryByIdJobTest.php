@@ -5,8 +5,6 @@ use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseCategoryByIdJob;
 use Seatplus\Eveapi\Models\Universe\Category;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
-uses(MockRetrieveEsiDataAction::class);
-
 it('creates category', function () {
     $mock_data = buildCategoryMockData();
 

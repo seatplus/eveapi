@@ -5,8 +5,6 @@ use Seatplus\Eveapi\Jobs\Corporation\CorporationInfoJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
-uses(MockRetrieveEsiDataAction::class);
-
 beforeEach(function () {
     $this->corporation_id = testCharacter()->corporation->corporation_id;
 });

@@ -10,8 +10,6 @@ use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
-uses(MockRetrieveEsiDataAction::class);
-
 beforeEach(function () {
     Queue::fake();
 
@@ -104,7 +102,7 @@ it('does not update for wrong category', function () {
         'name' => null,
     ]);
 
-    $this->assertRetrieveEsiDataIsNotCalled();
+    noRetrieveEsiDataAction();
 
     //Assert that character asset created has no name
     $this->assertDatabaseMissing('assets', [
@@ -138,7 +136,7 @@ it('does not run if category id is out of scope', function () {
         'name' => null,
     ]);
 
-    $this->assertRetrieveEsiDataIsNotCalled();
+    noRetrieveEsiDataAction();
 
     //Assert that character asset created has no name
     $this->assertDatabaseMissing('assets', [
@@ -169,7 +167,7 @@ it('does not run if group is missing', function () {
 
     $refresh_token = RefreshToken::factory()->make(['character_id' => $asset->assetable_id]);
 
-    $this->assertRetrieveEsiDataIsNotCalled();
+    noRetrieveEsiDataAction();
 
     //Assert that character asset created has no name
     $this->assertDatabaseMissing('assets', [

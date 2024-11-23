@@ -5,8 +5,6 @@ use Seatplus\Eveapi\Jobs\Wallet\CharacterBalanceJob;
 use Seatplus\Eveapi\Models\Wallet\Balance;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
-uses(MockRetrieveEsiDataAction::class);
-
 beforeEach(function () {
     // Prevent any auto dispatching of jobs
     Queue::fake();

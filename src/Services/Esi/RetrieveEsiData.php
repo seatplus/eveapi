@@ -26,71 +26,47 @@
 
 namespace Seatplus\Eveapi\Services\Esi;
 
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
-use Seatplus\EsiClient\Configuration;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiClient\EsiConfiguration;
 use Seatplus\EsiClient\Exceptions\EsiScopeAccessDeniedException;
 use Seatplus\EsiClient\Exceptions\InvalidAuthenticationException;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\EsiClient\Exceptions\UriDataMissingException;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
 use Seatplus\Eveapi\Models\RefreshToken;
-use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 
 class RetrieveEsiData
 {
-    protected EsiClient $client;
-
-    protected EsiRequestContainer $request;
-
-    private EsiClientSetup $esi_client;
-
-    public function getClient(): EsiClient
+    /**
+     * @throws RequestFailedException
+     */
+    public function __construct(
+        private readonly string                 $method = '',
+        private readonly string                 $endpoint = '',
+        private readonly string                 $version = '',
+        private readonly array                  $path_values = [],
+        private array                           $query_parameters = [],
+        private readonly ?array                 $request_body = [],
+        private ?RefreshToken                   $refresh_token = null,
+        private readonly ?int                   $page = null,
+        private ?EsiClient                      $client = null,
+        private ?GetUpToDateRefreshTokenService $getUpToDateRefreshTokenService = null
+    )
     {
-        if (! isset($this->client)) {
-            if (is_null($this->request->refresh_token)) {
-                $this->client = $this->esi_client->get();
+        $this->client = $client ?? $this->buildClient();
 
-                return $this->client;
-            }
-
-            // retrieve up-to-date token
-            try {
-                $refresh_token = $this->getUpToDateRefreshToken();
-            } catch (RequestFailedException $exception) {
-                $this->handleException($exception);
-
-                throw $exception;
-            }
-
-            $authentication = new EsiAuthentication(
-                access_token: $refresh_token->getRawOriginal('token'),
-                refresh_token: $refresh_token->refresh_token,
-                token_expires: $refresh_token->expires_on,
-            );
-
-            $this->client = $this->esi_client->get($authentication);
+        if($page) {
+            $this->query_parameters['page'] = $page;
         }
 
-        return $this->client;
-    }
-
-    public function setClient(EsiClient $client): void
-    {
-        $this->client = $client;
-    }
-
-    public function __construct()
-    {
-        $this->esi_client = app('esi-client');
     }
 
     /**
-     * @param EsiRequestContainer $request
+     * @param EsiRequestContainer $container
      * @return EsiResponse
      * @throws EsiScopeAccessDeniedException
      * @throws InvalidAuthenticationException
@@ -98,26 +74,51 @@ class RetrieveEsiData
      * @throws UriDataMissingException
      * @throws \Throwable
      */
-    public function execute(EsiRequestContainer $request): EsiResponse
+    public static function execute(
+        EsiRequestContainer $container,
+        ?EsiClient $client = null
+    ): EsiResponse
     {
-        $this->request = $request;
+        return (new self(
+            method: $container->method,
+            endpoint: $container->endpoint,
+            version: $container->version,
+            path_values: $container->path_values,
+            query_parameters: $container->query_parameters,
+            request_body: $container->request_body,
+            refresh_token: $container->refresh_token,
+            page: $container->page,
+            client: $client
+        ))->executeInstance();
+    }
 
-        $method = $this->request->method;
-        $endpoint = $this->request->endpoint;
-        $path_values = $this->request->path_values;
-        $version = $this->request->version;
-        $request_body = $this->request->request_body;
-        $query_parameters = $this->getQueryParameters($request);
+    /**
+     * @return EsiResponse
+     * @throws EsiScopeAccessDeniedException
+     * @throws InvalidAuthenticationException
+     * @throws RequestFailedException
+     * @throws UriDataMissingException
+     * @throws \Throwable
+     */
+    public function executeInstance(): EsiResponse
+    {
 
         try {
-            $result = $this->getClient()->invoke($method, $endpoint, $path_values, $version, $query_parameters, $request_body);
+            $result = $this->client->invoke(
+                method: $this->method,
+                uri_original: $this->endpoint,
+                uri_data: $this->path_values,
+                version: $this->version,
+                query_parameters: $this->query_parameters,
+                request_body: $this->request_body
+            );
         } catch (RequestFailedException $exception) {
             $this->handleException($exception);
             // Rethrow the exception
             throw $exception;
         } catch (EsiScopeAccessDeniedException | InvalidAuthenticationException | UriDataMissingException | \Throwable $exception) {
 
-            $logger = Configuration::getInstance()->getLogger();
+            $logger = EsiConfiguration::getInstance()->getLogger();
             $logger->error($exception->getMessage());
 
             throw $exception;
@@ -131,48 +132,27 @@ class RetrieveEsiData
 
         $this->logWarnings($result);
 
-        $this->updateRefreshToken();
+        // Update the refresh token if we have one
+        $this->refresh_token?->save();
 
         return $result;
     }
 
-    public function setRequest(EsiRequestContainer $request): void
-    {
-        $this->request = $request;
-    }
-
     private function logWarnings(EsiResponse $response): void
     {
-        $logger = Configuration::getInstance()->getLogger();
+        $logger = EsiConfiguration::getInstance()->getLogger();
 
-        if (! is_null($response->pages) && $this->request->page === null) {
+        if ($response->pages !== null && $this->page === null) {
             $logger->warning('Response contained pages but none was expected');
         }
 
-        if (! is_null($this->request->page) && $response->pages === null) {
+        if ($response->pages === null && $this->page !== null) {
             $logger->warning('Expected a paged response but had none');
         }
 
-        if (array_key_exists('Warning', $response->parsed_headers)) {
-            $warning = $response->parsed_headers['Warning'];
-
-            $logger->warning("Response contained a warning: {$warning}");
+        if (isset($response->parsed_headers['Warning'])) {
+            $logger->warning("Response contained a warning: {$response->parsed_headers['Warning']}");
         }
-    }
-
-    private function updateRefreshToken(): void
-    {
-        if ($this->request->isPublic()) {
-            return;
-        }
-
-        $auth = $this->getClient()->getAuthentication();
-
-        $refresh_token = $this->request->refresh_token;
-        $refresh_token->token = $auth->access_token ?? '-';
-        $refresh_token->expires_on = $auth->token_expires;
-
-        $refresh_token->save();
     }
 
     private function handleException(RequestFailedException $exception): void
@@ -183,16 +163,19 @@ class RetrieveEsiData
             Redis::incrby('esiratelimit', 80);
         }
 
+        // return if no refresh token is available
+        if(! $this->refresh_token) {
+            return;
+        }
+
         // Sometimes CCP does funny stuff, such as: issue tokens that are valid for to long.
         // invalidate the token
         if ($exception->getOriginalException()->getCode() === 403 && $exception->getErrorMessage() === 'token expiry is too far in the future') {
-            if (! is_null($this->request->refresh_token)) {
-                $this->request->refresh_token->expires_on = carbon()->subMinutes(10);
-                $this->request->refresh_token->save();
-            }
+            $this->refresh_token->expires_on = carbon()->subMinutes(10);
+            $this->refresh_token->save();
         }
 
-        // If the token can't login and we get an HTTP 400 together with
+        // If the token can't log in and we get an HTTP 400 together with
         // and error message stating that this is an invalid_token, remove
         // the token from SeAT plus.
         if ($exception->getOriginalException()->getCode() == 400 && in_array($exception->getErrorMessage(), [
@@ -202,43 +185,42 @@ class RetrieveEsiData
             'invalid_grant: Invalid refresh token. Unable to migrate grant.',
             'invalid_grant: Invalid refresh token. Token missing/expired.',
         ])) {
-            if (! is_null($this->request->refresh_token)) {
-                $refresh_token = $this->request->refresh_token->refresh();
+            $refresh_token = $this->refresh_token->refresh();
 
-                // Try compensating for race conditions, only delete invalid tokens that have not been updated recently
-                if (carbon($refresh_token->updated_at)->isBefore(carbon()->subMinutes())) {
-                    // Remove the invalid token
-                    $refresh_token->delete();
-                }
+            // Try compensating for race conditions, only delete invalid tokens that have not been updated recently
+            if (carbon($refresh_token->updated_at)->isBefore(carbon()->subMinutes())) {
+                // Remove the invalid token
+                $refresh_token->delete();
             }
         }
     }
 
-    private function getUpToDateRefreshToken(): RefreshToken
+    /**
+     * @throws RequestFailedException
+     */
+    private function buildClient(): EsiClient
     {
-        $character_id = $this->request->refresh_token->character_id;
+        $esi_client = new EsiClientSetup();
 
-        return Cache::lock("get up to date refresh_token of character_id: {$character_id}", 10)
-            ->get(function () {
-                $token = $this->request->refresh_token->refresh();
-
-                if (carbon($token->expires_on)->gt(now()->addMinute())) {
-                    return $token;
-                }
-
-                return UpdateRefreshTokenService::make()->update($token);
-            });
-    }
-
-    private function getQueryParameters(EsiRequestContainer $request): array
-    {
-        $query_parameters = $request->query_parameters;
-
-        // Configure the page to get
-        if ($request->page !== null) {
-            $query_parameters['page'] = $request->page;
+        if (is_null($this->refresh_token)) {
+            return $esi_client->get();
         }
 
-        return $query_parameters;
+        $this->getUpToDateRefreshTokenService = $this->getUpToDateRefreshTokenService ?? new GetUpToDateRefreshTokenService();
+
+        try {
+            $this->refresh_token = ($this->getUpToDateRefreshTokenService)($this->refresh_token);
+        } catch (RequestFailedException $e) {
+            $this->handleException($e);
+            throw $e;
+        }
+
+        $authentication = new EsiAuthentication(
+            access_token: $this->refresh_token->getRawOriginal('token'),
+            refresh_token: $this->refresh_token->refresh_token,
+            token_expires: $this->refresh_token->expires_on,
+        );
+
+        return $esi_client->get($authentication);
     }
 }

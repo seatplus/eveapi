@@ -1,5 +1,6 @@
 <?php
 
+use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\Eveapi\Services\Esi\GetUpToDateRefreshTokenService;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
@@ -54,7 +55,7 @@ it('throws request failed exception', function () {
 
         $mock->makePartial()
             ->shouldReceive('refresh')
-            ->andThrow(new RequestFailedException('failed'));
+            ->andThrow(new RequestFailedException(new Exception('failed'), new EsiResponse(json_encode([]), [], 'now', 200)));
     });
 
     $service = new GetUpToDateRefreshTokenService();

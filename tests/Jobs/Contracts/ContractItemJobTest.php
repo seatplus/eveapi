@@ -7,8 +7,6 @@ use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\Contracts\ContractItem;
 use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
-uses(MockRetrieveEsiDataAction::class);
-
 test('job is being dispatched', function () {
     Queue::fake();
 
@@ -17,7 +15,7 @@ test('job is being dispatched', function () {
 
     $mock_data = ContractItem::factory()->count(1)->make();
 
-    $this->assertRetrieveEsiDataIsNotCalled();
+    noRetrieveEsiDataAction();
 
     CharacterContractItemsJob::dispatch(testCharacter()->character_id, $mock_data->first()->contract_id);
 

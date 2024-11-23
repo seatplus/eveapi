@@ -108,9 +108,6 @@ class EveapiServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/eveapi.updateJobs.php', 'seatplus.updateJobs');
 
         $this->mergeConfigFrom(__DIR__.'/../config/eveapi.jobs.php', 'eveapi.jobs');
-
-        // Eseye Singleton
-        $this->app->singleton('esi-client', fn() => new EsiClientSetup);
     }
 
     /**
