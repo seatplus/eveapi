@@ -12,5 +12,6 @@ it('has causer morph relationshio', function () {
         'comment' => faker()->text,
     ]);
 
-    expect($log)->causer->toBeInstanceOf(CharacterInfo::class);
+    expect($log)->causer->toBeInstanceOf(CharacterInfo::class)
+        ->and($log->application)->toBeInstanceOf(\Seatplus\Eveapi\Models\Application::class);
 });
