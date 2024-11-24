@@ -41,3 +41,26 @@ it('has filter by system ids scope', function () {
     // Assert
     expect($locations->count())->toBeGreaterThan(0);
 });
+
+it('has assets relationship', function () {
+
+    // Arrange
+    $system = System::factory()->create();
+    $station = Station::factory()->create([
+        'system_id' => $system->system_id,
+    ]);
+    $location = Location::factory()->create([
+        'locatable_id' => $station->station_id,
+        'locatable_type' => Station::class,
+    ]);
+
+    \Seatplus\Eveapi\Models\Assets\Asset::factory()->create([
+        'location_id' => $location->location_id,
+    ]);
+
+    // Act
+    $assets = $location->assets;
+
+    // Assert
+    expect($assets->count())->toBeGreaterThan(0);
+});
