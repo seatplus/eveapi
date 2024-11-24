@@ -57,7 +57,7 @@ class Category extends Model
 
     public function groups(): HasMany
     {
-        return $this->hasMany(Group::class, 'group_id', 'group_id');
+        return $this->hasMany(Group::class, 'category_id', 'category_id');
     }
     #[\Override]
     protected function casts() : array
