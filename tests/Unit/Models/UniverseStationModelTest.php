@@ -8,3 +8,21 @@ test('character has corporation relation test', function () {
 
     expect($station->system)->toBeInstanceOf(System::class);
 });
+
+it('has location relation', function () {
+    // Arrange
+    $system = System::factory()->create();
+    $station = Station::factory()->create([
+        'system_id' => $system->system_id,
+    ]);
+    \Seatplus\Eveapi\Models\Universe\Location::factory()->create([
+        'locatable_id' => $station->station_id,
+        'locatable_type' => Station::class,
+    ]);
+
+    // Act
+    $location = $station->location;
+
+    // Assert
+    expect($location)->toBeInstanceOf(\Seatplus\Eveapi\Models\Universe\Location::class);
+});
