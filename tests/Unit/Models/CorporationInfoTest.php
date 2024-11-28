@@ -5,10 +5,12 @@ use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Application;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\Contacts\Label;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Models\SsoScopes;
 use Seatplus\Eveapi\Models\Wallet\Balance;
+use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 
 beforeEach(function () {
     Queue::fake();
@@ -105,4 +107,22 @@ it('has wallets relationship', function () {
     ]);
 
     expect($this->test_character->corporation->refresh()->wallets->first())->toBeInstanceOf(Balance::class);
+});
+
+it('has labels relationship', function () {
+    Label::factory()->create([
+        'labelable_id' => $this->test_character->corporation->corporation_id,
+        'labelable_type' => CorporationInfo::class,
+    ]);
+
+    expect($this->test_character->corporation->refresh()->labels->first())->toBeInstanceOf(Label::class);
+});
+
+it('has wallet transactions relationship', function () {
+    WalletTransaction::factory()->create([
+        'wallet_transactionable_id' => $this->test_character->corporation->corporation_id,
+        'wallet_transactionable_type' => CorporationInfo::class,
+    ]);
+
+    expect($this->test_character->corporation->refresh()->wallet_transactions->first())->toBeInstanceOf(WalletTransaction::class);
 });
