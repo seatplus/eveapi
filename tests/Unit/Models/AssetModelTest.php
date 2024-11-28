@@ -111,3 +111,24 @@ it('has in scope', function (string $scope) {
 
     expect($query->get())->toHaveCount(1);
 })->with(['ofTypes', 'ofGroups', 'ofCategories']);
+
+it('excludes assets in asset safety', function () {
+    $assetInSafety = Asset::factory()->create(['location_id' => Asset::ASSET_SAFETY]);
+    $assetNotInSafety = Asset::factory()->create(['location_id' => 12345]);
+
+    $result = Asset::withoutAssetSafety()->get();
+
+    expect($result)->toHaveCount(1)
+        ->and($result->first()->is($assetNotInSafety))->toBeTrue();
+});
+
+it('includes assets not in asset safety', function () {
+    $assetNotInSafety1 = Asset::factory()->create(['location_id' => 12345]);
+    $assetNotInSafety2 = Asset::factory()->create(['location_id' => 67890]);
+
+    $result = Asset::withoutAssetSafety()->get();
+
+    expect($result)->toHaveCount(2)
+        ->and($result->contains($assetNotInSafety1))->toBeTrue()
+        ->and($result->contains($assetNotInSafety2))->toBeTrue();
+});
