@@ -27,6 +27,7 @@
 namespace Seatplus\Eveapi\Models\Contracts;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -57,14 +58,20 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
      */
     public $incrementing = false;
 
-    public function getIssuerAttribute(): CharacterInfo|CorporationInfo
+    /**
+     * @return Attribute<CorporationInfo|CharacterInfo>
+     */
+    public function issuer(): Attribute
     {
-        return $this->for_corporation ? $this->issuer_corporation : $this->issuer_character;
+        return new Attribute(fn() => $this->for_corporation ? $this->issuer_corporation : $this->issuer_character);
     }
 
-    public function getAsigneeAttribute(): CharacterInfo|CorporationInfo
+    /**
+     * @return Attribute<CorporationInfo|CharacterInfo>
+     */
+    public function assignee(): Attribute
     {
-        return $this->assignee_character ?? $this->assignee_corporation;
+        return new Attribute(fn() => $this->assignee_character ?? $this->assignee_corporation);
     }
 
     public function items(): HasMany
