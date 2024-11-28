@@ -49,3 +49,12 @@ it('has isPending attribute and scope', function ($batch) {
     $query_result = BatchUpdate::query()->pending()->get();
     expect($query_result)->toHaveCount(0);
 })->with('batch_update');
+
+it('filters by character scope', function (BatchUpdate $batchUpdate) {
+
+    $result = BatchUpdate::character()->get();
+
+    expect($result)->toHaveCount(1)
+        ->and($result->first()->is($batchUpdate))->toBeTrue();
+})->with('batch_update');
+
