@@ -111,3 +111,21 @@ it('has has affiliation relationship', function (string $contact_type) {
 })->with([
     'character', 'corporation', 'alliance', 'faction',
 ]);
+
+it('has entity filter scope', function () {
+    Contact::factory()->create([
+        'contactable_id' => $this->test_character->character_id,
+        'contactable_type' => CharacterInfo::class,
+    ]);
+
+    Contact::factory()->create([
+        'contactable_id' => $this->test_character->corporation->corporation_id,
+        'contactable_type' => CorporationInfo::class,
+    ]);
+
+    $contacts = Contact::query()
+        ->entityFilter([$this->test_character->corporation->corporation_id])
+        ->get();
+
+    expect($contacts)->toHaveCount(1);
+});
