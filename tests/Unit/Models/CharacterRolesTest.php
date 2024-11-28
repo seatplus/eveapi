@@ -29,16 +29,11 @@ test('has director role test', function () {
     expect($character_role->hasRole('roles', 'Hangar_Query_3'))->toBeTrue();
 });
 
-test('has no made up role', function () {
+test('has no role in scope', function () {
     $character_role = CharacterRole::factory()->make([
         'roles' => ['Contract_Manager', 'Director'],
+        'roles_at_hq' => ['Hangar_Query_3'],
     ]);
 
-    expect($character_role->hasRole('roles', 'Something_Made_up'))->toBeFalse();
-});
-
-it('returns false for invalid role', function () {
-    $characterRole = CharacterRole::factory()->create(['roles' => ['Accountant']]);
-
-    expect($characterRole->hasRole('roles', 'Invalid_Role'))->toBeFalse();
+    expect($character_role->hasRole('roles_at_hq', 'Contract_Manager'))->toBeFalse();
 });
