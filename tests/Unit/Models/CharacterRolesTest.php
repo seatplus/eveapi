@@ -36,3 +36,9 @@ test('has no made up role', function () {
 
     expect($character_role->hasRole('roles', 'Something_Made_up'))->toBeFalse();
 });
+
+it('returns false for invalid role', function () {
+    $characterRole = CharacterRole::factory()->create(['roles' => ['Accountant']]);
+
+    expect($characterRole->hasRole('roles', 'Invalid_Role'))->toBeFalse();
+});
