@@ -111,3 +111,14 @@ it('has ofCategories scope', function () {
         ->and(Contract::filterByCategoryIds($item->type->group->category->category_id + 1)->get())->toHaveCount(0);
 
 });
+
+it('has assignee', function (int $assignee_id) {
+    $contract = Contract::factory()->create([
+        'assignee_id' => $assignee_id,
+    ]);
+
+    expect($contract->assignee)->not()->toBeNull();
+})->with([
+    fn() => testCharacter()->character_id,
+    fn() => testCharacter()->corporation_id,
+]);
