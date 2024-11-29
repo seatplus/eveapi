@@ -2,6 +2,7 @@
 
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\Contacts\Label;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\SsoScopes;
 
@@ -26,11 +27,10 @@ it('has character affiliation', function () {
 
     $alliance = $affiliation->alliance;
 
-    expect($alliance)->toBeInstanceOf(AllianceInfo::class);
+    expect($alliance)->toBeInstanceOf(AllianceInfo::class)
+        ->and($alliance->characters->first())->toBeInstanceOf(CharacterInfo::class)
+        ->and($alliance->characters->first()->character_id)->toEqual($this->test_character->character_id);
 
-    expect($alliance->characters->first())->toBeInstanceOf(CharacterInfo::class);
-
-    expect($alliance->characters->first()->character_id)->toEqual($this->test_character->character_id);
 });
 
 it('has corporations relation', function () {
@@ -43,4 +43,15 @@ it('has corporations relation', function () {
     $corporation->save();
 
     expect($this->test_character->alliance->corporations->first())->toBeInstanceOf(CorporationInfo::class);
+});
+
+it('has many labels', function () {
+    $alliance = AllianceInfo::factory()->create();
+    $label = Label::factory()->create([
+        'labelable_id' => $alliance->alliance_id,
+        'labelable_type' => AllianceInfo::class
+    ]);
+
+    expect($alliance->labels)->toHaveCount(1)
+        ->and($alliance->labels->first()->is($label))->toBeTrue();
 });
