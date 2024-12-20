@@ -28,6 +28,7 @@ namespace Seatplus\Eveapi\Esi;
 
 use Exception;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ServerException;
 use Illuminate\Queue\InteractsWithQueue;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
@@ -99,17 +100,15 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
 
         $original_exception = $exception->getOriginalException();
 
-        // if original exception is ClientException check if it is forbidden
+        // if original exception is ClientException, we can safely assume that the request was invalid
         if ($original_exception instanceof ClientException) {
+            $this->fail($exception);
+        }
 
-            if ($original_exception->getResponse()->getReasonPhrase() === 'Forbidden') {
-                match ($this->esi_request_container->endpoint) {
-                    // if attempt was made for structure endpoint
-                    '/universe/structures/{structure_id}/' => $this->delete(),
-                    // by default fail a forbidden request
-                    default => $this->fail($exception)
-                };
-            }
+        // if original exception is ServerException, we can safely assume that the request was valid
+        // but the server failed so we can release the job back into the queue
+        if($original_exception instanceof ServerException) {
+            $this->release(60);
         }
     }
 }
