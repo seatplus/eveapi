@@ -27,3 +27,14 @@ it('runs ResolveLocationService', function () {
     expect(\Seatplus\Eveapi\Models\Universe\Location::all())
         ->toHaveCount(0);
 });
+
+it('returns correct tags array without refresh token', function () {
+    $job = new ResolveLocationJob(12345);
+
+    $tags = $job->tags();
+
+    expect($tags)->toBe([
+        'location_resolve',
+        'location_id:12345',
+    ]);
+});
