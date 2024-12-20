@@ -90,13 +90,8 @@ class ResolveUniverseStructureByIdJob extends EsiBase implements HasPathValuesIn
     #[\Override]
     public function executeJob(): void
     {
-        try {
-            $result = $this->retrieve();
-        } catch (RequestFailedException) {
-            $this->delete();
 
-            return;
-        }
+        $result = $this->retrieve();
 
         if ($result->isCachedLoad()) {
             return;
