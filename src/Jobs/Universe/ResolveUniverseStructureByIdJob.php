@@ -119,32 +119,4 @@ class ResolveUniverseStructureByIdJob extends EsiBase implements HasPathValuesIn
         ]);
     }
 
-    #[\Override]
-    public function failed(Throwable $exception): void
-    {
-        if ($exception instanceof MaxAttemptsExceededException) {
-            $this->delete();
-            logger()->info('deleted job because MaxAttemptsException');
-
-            return;
-        }
-
-        if ($exception instanceof RequestFailedException) {
-
-            $guzzle_exception = $exception->getOriginalException();
-
-            if ($guzzle_exception instanceof ClientException) {
-                $response = $guzzle_exception->getResponse();
-
-                if ($response->getReasonPhrase() === 'Forbidden') {
-                    logger()->info('Received Forbidden, going to delete the job');
-                    $this->job->delete();
-
-                    return;
-                }
-            }
-        }
-
-        $this->delete();
-    }
 }
