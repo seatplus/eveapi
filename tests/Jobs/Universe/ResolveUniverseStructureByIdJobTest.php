@@ -1,13 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Event;
+use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\Eveapi\Events\RefreshTokenCreated;
 use Seatplus\Eveapi\Events\UniverseStructureCreated;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseStructureByIdJob;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Structure;
-use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 beforeEach(function () {
     Event::fake([
@@ -18,9 +18,6 @@ beforeEach(function () {
     $this->refresh_token = RefreshToken::factory()->scopes(['esi-universe.read_structures.v1'])->create();
 });
 
-/**
- * @runTestsInSeparateProcesses
- */
 it('creates structure', function () {
     $mock_data = buildStructureMockEsiData();
 
@@ -37,9 +34,6 @@ it('creates structure', function () {
     ]);
 });
 
-/**
- * @runTestsInSeparateProcesses
- */
 it('creates location', function () {
     $mock_data = buildStructureMockEsiData();
 
@@ -56,9 +50,6 @@ it('creates location', function () {
     ]);
 });
 
-/**
- * @runTestsInSeparateProcesses
- */
 it('creates polymorphic relationship', function () {
     $mock_data = buildStructureMockEsiData();
 
@@ -67,6 +58,33 @@ it('creates polymorphic relationship', function () {
     $location = Location::find($mock_data->structure_id);
 
     expect($location->locatable)->toBeInstanceOf(Structure::class);
+});
+
+it('returns correct tags array for universe structure job', function () {
+    $job = new ResolveUniverseStructureByIdJob(12345, 67890);
+
+    $tags = $job->tags();
+
+    expect($tags)->toBe([
+        'resolve',
+        'universe',
+        'structure',
+        'location_id:67890',
+    ]);
+});
+
+it('does not upsert structure and location when response is cached', function () {
+    $response = mock(EsiResponse::class, function ($mock) {
+        $mock->shouldReceive('isCachedLoad')->andReturn(true);
+    });
+
+    $job = mock(ResolveUniverseStructureByIdJob::class)->makePartial();
+    $job->shouldReceive('retrieve')->andReturn($response);
+
+    $job->executeJob();
+
+    expect(Structure::count())->toBe(0)
+        ->and(Location::count())->toBe(0);
 });
 
 // Helpers
