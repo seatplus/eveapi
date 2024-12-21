@@ -51,10 +51,11 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
 
     public function __construct(
         public int $character_id,
-        public $queue = 'default' // @pest-ignore-type
+        public $queue = 'default', // @pest-ignore-type
+        array $batch_jobs = []
     ) {
         $this->refresh_token = RefreshToken::find($this->character_id);
-        $this->createBatchJobs();
+        $this->batch_jobs =  $batch_jobs ?: $this->createBatchJobs();
     }
 
     public function middleware(): array
@@ -94,8 +95,8 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
 
         return Bus::batch($this->getBatchJobs())
             ->finally(function (Batch $batch) {
-                BatchUpdate::where('batch_id', $batch->id)->update(['finished_at' => now()]);
-                BatchStatistic::where('batch_id', $batch->id)->update(['finished_at' => now()]);
+                BatchUpdate::where('batch_id', $batch->id)->update(['finished_at' => now()]); //@pest-ignore-line
+                BatchStatistic::where('batch_id', $batch->id)->update(['finished_at' => now()]); //@pest-ignore-line
             })
             ->name($batch_name)
             ->onQueue($this->queue)
@@ -103,9 +104,9 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
             ->dispatch();
     }
 
-    private function createBatchJobs(): void
+    private function createBatchJobs(): array
     {
-        $this->batch_jobs = [
+        return [
             // Add Private Endpoints
             [
                 // Chain character info and affiliation
@@ -187,11 +188,6 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
 
         // Get corporation_id from character
         $corporation_id = $this->refresh_token->character->corporation_id;
-
-        // Return empty array if character has no corporation, this should never happen but just in case
-        if (! $corporation_id) {
-            return [];
-        }
 
         return [
             [
