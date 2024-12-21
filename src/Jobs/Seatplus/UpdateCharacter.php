@@ -100,9 +100,7 @@ class UpdateCharacter implements ShouldQueue
         if (! isset($this->interval_in_minutes)) {
             $expression = Schedules::firstWhere('job', UpdateCharacter::class)?->expression;
 
-            $this->interval_in_minutes = $expression
-                ? $this->calculateInterval($expression)
-                : 60;
+            $this->interval_in_minutes = $expression ? $this->calculateInterval($expression) : 60;
         }
 
         return $this->interval_in_minutes;
