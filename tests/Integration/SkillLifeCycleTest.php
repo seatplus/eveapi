@@ -50,6 +50,18 @@ it('Dispatch Type job if skill is missing', function () {
     Queue::assertPushed(ResolveUniverseTypeByIdJob::class);
 });
 
+it('does not update skills and character info if response is cached', function () {
+    $response = \Mockery::mock(\Seatplus\EsiClient\DataTransferObjects\EsiResponse::class);
+    $response->shouldReceive('isCachedLoad')->andReturn(true);
+
+    $job = \Mockery::mock(\Seatplus\Eveapi\Jobs\Skills\SkillsJob::class)->makePartial();
+    $job->shouldReceive('retrieve')->andReturn($response);
+
+    $job->executeJob();
+
+    expect(Skill::all())->toHaveCount(0);
+});
+
 // Helpers
 function buildSkillMockEsiData()
 {
