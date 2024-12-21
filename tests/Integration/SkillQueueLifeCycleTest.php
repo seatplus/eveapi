@@ -61,6 +61,18 @@ it('deletes old queue items', function () {
     $this->assertNotCount(6, SkillQueue::all());
 });
 
+it('does not update skill queue if response is cached', function () {
+    $response = mock(\Seatplus\EsiClient\DataTransferObjects\EsiResponse::class);
+    $response->shouldReceive('isCachedLoad')->andReturn(true);
+
+    $job = mock(\Seatplus\Eveapi\Jobs\Skills\SkillQueueJob::class)->makePartial();
+    $job->shouldReceive('retrieve')->andReturn($response);
+
+    $job->executeJob();
+
+    expect(SkillQueue::all())->toHaveCount(0);
+});
+
 // Helpers
 function buildSkillQueueMockEsiData()
 {
