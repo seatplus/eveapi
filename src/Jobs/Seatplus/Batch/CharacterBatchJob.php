@@ -95,8 +95,10 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
 
         return Bus::batch($this->getBatchJobs())
             ->finally(function (Batch $batch) {
-                BatchUpdate::where('batch_id', $batch->id)->update(['finished_at' => now()]); //@pest-ignore-line
-                BatchStatistic::where('batch_id', $batch->id)->update(['finished_at' => now()]); //@pest-ignore-line
+                // @codeCoverageIgnoreStart
+                BatchUpdate::where('batch_id', $batch->id)->update(['finished_at' => now()]);
+                BatchStatistic::where('batch_id', $batch->id)->update(['finished_at' => now()]);
+                // @codeCoverageIgnoreEnd
             })
             ->name($batch_name)
             ->onQueue($this->queue)
