@@ -65,7 +65,7 @@ class MailHeaderJob extends EsiBase implements HasPathValuesInterface, HasRequir
         return [
             'mail',
             'header',
-            sprintf('character_id:%s', $this->character_id),
+            "character_id:{$this->character_id}",
         ];
     }
 
@@ -94,43 +94,22 @@ class MailHeaderJob extends EsiBase implements HasPathValuesInterface, HasRequir
                 'from' => data_get($mail, 'from'),
                 'timestamp' => carbon(data_get($mail, 'timestamp')),
                 'is_read' => data_get($mail, 'is_read', false),
+                'recipients' => data_get($mail, 'recipients'),
             ])
-            ->chunk(1000)
-            ->each(fn (Collection $chunk) => Mail::upsert($chunk->toArray(), 'id'));
+            // create the mail header
+            ->tap(function (Collection $mails) {
 
-        collect($response)
-            ->each(function (object $mail) {
-                // create recipients
-                $recipients = collect(data_get($mail, 'recipients'))
-                    ->map(fn (object $recipient) => [
-                        'mail_id' => data_get($mail, 'mail_id'),
-                        'receivable_id' => data_get($recipient, 'recipient_id'),
-                        'receivable_type' => $this->getReceivableType(data_get($recipient, 'recipient_type')),
-                    ])
-                    ->push([
-                        'mail_id' => data_get($mail, 'mail_id'),
-                        'receivable_id' => data_get($this->getPathValues(), 'character_id'),
-                        'receivable_type' => CharacterInfo::class,
-                    ])
-                    ->unique()
-                    ->toArray();
-
-                MailRecipients::upsert($recipients, ['mail_id', 'receivable_id']);
-
-                // Get mail
-                $mail_body = Mail::query()->firstWhere('id', data_get($mail, 'mail_id'))?->body;
-
-                // if mail body is not null
-                if (! is_null($mail_body)) {
-                    // don't dispatch a get mail body job - as it is already present
-                    return;
-                }
-
-                // Get Mail Body
-                $this->batching()
-                    ? $this->batch()->add([new MailBodyJob($this->character_id, data_get($mail, 'mail_id'))])
-                    : MailBodyJob::dispatch($this->character_id, data_get($mail, 'mail_id'))->onQueue($this->queue);
-            });
+                $mails->map(function (array $mail) {
+                    unset($mail['recipients']); // remove recipients from mail header
+                    return $mail; // return mail header
+                })
+                    ->chunk(1000)
+                    ->each(fn (Collection $chunk) => Mail::upsert($chunk->toArray(), 'id'));
+            })
+            // handle recipients
+            ->tap(fn(Collection $mails) => $this->handleRecipients($mails))
+            // handle mail body
+            ->tap(fn(Collection $mails) => $this->handleMailBody($mails));
 
         // see https://divinglaravel.com/avoiding-memory-leaks-when-running-laravel-queue-workers
         // This job is very memory consuming hence avoiding memory leaks, the worker should restart
@@ -146,5 +125,61 @@ class MailHeaderJob extends EsiBase implements HasPathValuesInterface, HasRequir
             'mailing_list' => 'mailing_list',
             default => throw new \Exception("Unknown recipient type {$recipient_type}"),
         };
+    }
+
+    /**
+     * @param Collection $mail
+     * @return void
+     */
+    function handleRecipients(Collection $mails): void
+    {
+
+        $existing_recipients = MailRecipients::query()
+            ->whereIn('mail_id', $mails->pluck('id'))
+            ->get()
+            ->pluck('mail_id')
+            ->toArray();
+
+        $recipients = $mails
+            // filter out mails that already have recipients recorded
+            ->filter(fn($mail) => ! in_array(data_get($mail, 'id'), $existing_recipients))
+            ->map(function (array $mail) {
+                // create recipients array for mail
+                return collect(data_get($mail, 'recipients'))
+                    ->map(fn(object $recipient) => [
+                        'mail_id' => data_get($mail, 'id'),
+                        'receivable_id' => data_get($recipient, 'recipient_id'),
+                        'receivable_type' => $this->getReceivableType(data_get($recipient, 'recipient_type')),
+                    ])
+                    ->push([
+                        'mail_id' => data_get($mail, 'id'),
+                        'receivable_id' => data_get($this->getPathValues(), 'character_id'),
+                        'receivable_type' => CharacterInfo::class,
+                    ])
+                    ->unique()
+                    ->toArray();
+            })
+            // flatten the collection to a single array
+            ->flatten(1)
+            ->toArray();
+
+        MailRecipients::upsert($recipients, ['mail_id', 'receivable_id']);
+    }
+
+    /**
+     * @param Collection<object> $mails
+     * @return void
+     */
+    function handleMailBody(Collection $mails): void
+    {
+        Mail::query()
+            ->whereIn('id', $mails->pluck('id'))
+            ->whereNull('body')
+            ->select('id')
+            ->get()
+            ->each(fn(Mail $mail) => $this->batching()
+                ? $this->batch()->add([new MailBodyJob($this->character_id, $mail->id)])
+                : MailBodyJob::dispatch($this->character_id, $mail->id)->onQueue($this->queue)
+            );
     }
 }
