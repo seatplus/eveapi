@@ -28,6 +28,7 @@ namespace Seatplus\Eveapi\Jobs\Killmails;
 
 use Exception;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseSystemBySystemIdJob;
@@ -43,8 +44,8 @@ class KillmailJob extends EsiBase implements HasPathValuesInterface
     use HasPathValues;
 
     public function __construct(
-        private int $killmail_id,
-        private string $killmail_hash
+        public int $killmail_id,
+        public string $killmail_hash
     ) {
         parent::__construct(
             method: 'get',
@@ -78,13 +79,14 @@ class KillmailJob extends EsiBase implements HasPathValuesInterface
     #[\Override]
     public function executeJob(): void
     {
-        $response = $this->retrieve();
+        DB::transaction(function () {
 
-        if ($response->isCachedLoad()) {
-            return;
-        }
+            $response = $this->retrieve();
 
-        try {
+            if ($response->isCachedLoad()) {
+                return;
+            }
+
             $killmail = Killmail::firstOrCreate([
                 'killmail_id' => $this->killmail_id,
             ], [
@@ -96,17 +98,17 @@ class KillmailJob extends EsiBase implements HasPathValuesInterface
                 'ship_type_id' => data_get($response, 'victim.ship_type_id'),
                 'victim_faction_id' => data_get($response, 'victim.faction_id'),
                 'damage_taken' => data_get($response, 'victim.damage_taken'),
+                'complete' => true,
             ]);
 
-            if ($killmail->complete) {
+            // if killmail was not recently created, we can assume that the killmail is already in the database
+            if (!$killmail->wasRecentlyCreated) {
                 return;
             }
 
-            $this->cleanUp($killmail);
-
-            $this->batching()
-                ? $this->batch()->add([new ResolveUniverseSystemBySystemIdJob(data_get($response, 'solar_system_id'))])
-                : ResolveUniverseSystemBySystemIdJob::dispatch(data_get($response, 'solar_system_id'))->onQueue($this->queue);
+            if(is_null($killmail->system)) {
+                $this->getMissingSystem($response);
+            }
 
             if (is_null($killmail->ship)) {
                 $this->getMissingTypeIds(collect(data_get($response, 'victim.ship_type_id')));
@@ -115,12 +117,8 @@ class KillmailJob extends EsiBase implements HasPathValuesInterface
             $this->createKillmailItems(data_get($response, 'victim.items'));
 
             $this->createKillmailAttackers(data_get($response, 'attackers'));
+        });
 
-            $killmail->complete = true;
-            $killmail->save();
-        } catch (Exception $e) {
-            $this->fail($e);
-        }
     }
 
     private function createKillmailItems(array $items, ?int $location_id = null): void
@@ -145,6 +143,10 @@ class KillmailJob extends EsiBase implements HasPathValuesInterface
 
         $unknown_type_ids = KillmailItem::doesntHave('type')->pluck('type_id')->unique();
 
+        if ($unknown_type_ids->isEmpty()) {
+            return;
+        }
+
         $this->getMissingTypeIds($unknown_type_ids);
     }
 
@@ -167,19 +169,29 @@ class KillmailJob extends EsiBase implements HasPathValuesInterface
             ->filter()
             ->unique();
 
+        if ($unknown_type_ids->isEmpty()) {
+            return;
+        }
+
         $this->getMissingTypeIds($unknown_type_ids);
     }
 
     private function getMissingTypeIds(Collection $type_ids): void
     {
+        dump($type_ids);
         $this->batching()
             ? $this->batch()->add($type_ids->map(fn (int $type_id) => new ResolveUniverseTypeByIdJob($type_id))->toArray())
             : $type_ids->each(fn (int $type_id) => ResolveUniverseTypeByIdJob::dispatch($type_id)->onQueue($this->queue));
     }
 
-    private function cleanUp(Killmail $killmail): void
+    /**
+     * @param \Seatplus\EsiClient\DataTransferObjects\EsiResponse $response
+     * @return void
+     */
+    private function getMissingSystem(\Seatplus\EsiClient\DataTransferObjects\EsiResponse $response): void
     {
-        $killmail->attackers()->delete();
-        $killmail->items()->delete();
+        $this->batching()
+            ? $this->batch()->add([new ResolveUniverseSystemBySystemIdJob(data_get($response, 'solar_system_id'))])
+            : ResolveUniverseSystemBySystemIdJob::dispatch(data_get($response, 'solar_system_id'))->onQueue($this->queue);
     }
 }
