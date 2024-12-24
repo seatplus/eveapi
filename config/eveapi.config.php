@@ -45,5 +45,8 @@ return [
         'eve_client_id' => env('EVE_CLIENT_ID'),
         'eve_client_secret' => env('EVE_CLIENT_SECRET'),
     ],
-
+    'queue' => [
+        'balancing_mode' => env('QUEUE_BALANCING_MODE', false),
+        'workers' => (int) env('QUEUE_WORKERS', 4),
+    ],
 ];

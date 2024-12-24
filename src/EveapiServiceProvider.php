@@ -59,15 +59,6 @@ use Seatplus\Eveapi\Services\Esi\EsiClientSetup;
 
 class EveapiServiceProvider extends ServiceProvider
 {
-    /**
-     * The environment variable name used to setup the queue daemon balancing mode.
-     */
-    const QUEUE_BALANCING_MODE = 'QUEUE_BALANCING_MODE';
-
-    /**
-     * The environment variable name used to setup the queue workers amount.
-     */
-    const QUEUE_BALANCING_WORKERS = 'QUEUE_WORKERS';
 
     public function boot(): void
     {
@@ -128,11 +119,11 @@ class EveapiServiceProvider extends ServiceProvider
         });
 
         // attempt to parse the QUEUE_BALANCING variable into a boolean
-        $balancing_mode = filter_var(env(self::QUEUE_BALANCING_MODE, false), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+        $balancing_mode = filter_var(config('eveapi.config.queue.balancing_mode'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
 
         // in case the variable cannot be parsed into a boolean, assign the environment value itself
         if (is_null($balancing_mode)) {
-            $balancing_mode = env(self::QUEUE_BALANCING_MODE, false);
+            $balancing_mode = config('eveapi.config.queue.balancing_mode');
         }
 
         // Configure the workers for SeAT plus.
@@ -142,7 +133,7 @@ class EveapiServiceProvider extends ServiceProvider
                     'connection' => 'redis',
                     'queue' => ['high', 'medium', 'low', 'default'],
                     'balance' => $balancing_mode,
-                    'processes' => (int) env(self::QUEUE_BALANCING_WORKERS, 4),
+                    'processes' => config('eveapi.config.queue.workers'),
                     'block_for' => 5,
                     'timeout' => 120, // 2 minutes
                     'nice' => 10, //Allowed values are between 0 and 19
@@ -156,7 +147,7 @@ class EveapiServiceProvider extends ServiceProvider
                     'queue' => ['high', 'medium', 'low', 'default'],
                     'balance' => 'auto',
                     'minProcesses' => 1,
-                    'maxProcesses' => (int) env(self::QUEUE_BALANCING_WORKERS, 4),
+                    'maxProcesses' => config('eveapi.config.queue.workers'),
                     'tries' => 1,
                     'nice' => 10, //Allowed values are between 0 and 19
                     'timeout' => 900, // 15 minutes
