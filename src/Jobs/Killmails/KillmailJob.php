@@ -178,7 +178,6 @@ class KillmailJob extends EsiBase implements HasPathValuesInterface
 
     private function getMissingTypeIds(Collection $type_ids): void
     {
-        dump($type_ids);
         $this->batching()
             ? $this->batch()->add($type_ids->map(fn (int $type_id) => new ResolveUniverseTypeByIdJob($type_id))->toArray())
             : $type_ids->each(fn (int $type_id) => ResolveUniverseTypeByIdJob::dispatch($type_id)->onQueue($this->queue));
