@@ -27,10 +27,25 @@ test('retrieve test', function () {
     ]);
 });
 
+test('returns early if cached', function () {
+
+    $response = mock(\Seatplus\EsiClient\DataTransferObjects\EsiResponse::class);
+    $response->shouldReceive('isCachedLoad')->once()->andReturn(true);
+
+    $job = mock(CorporationInfoJob::class)->makePartial();
+    $job->shouldReceive('retrieve')->once()->andReturn($response);
+
+    $job->executeJob();
+
+    expect(true)->toBeTrue();
+});
+
 // Helpers
 function buildCorporationInfoMockEsiData()
 {
-    $mock_data = CorporationInfo::factory()->make();
+    $mock_data = CorporationInfo::factory()->make([
+        'date_founded' => now()->toDateString(),
+    ]);
 
     mockRetrieveEsiDataAction($mock_data->toArray());
 
