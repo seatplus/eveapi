@@ -36,6 +36,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\MaxAttemptsExceededException;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 use Seatplus\Eveapi\Esi\RetrieveFromEsiBase;
 use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 use Throwable;
@@ -94,7 +95,7 @@ abstract class EsiBase extends RetrieveFromEsiBase implements BaseJobInterface, 
     final public function handle(): void
     {
         try {
-            $this->executeJob();
+            DB::transaction(fn() => $this->executeJob());
         } catch (Exception $exception) {
             report($exception);
 
