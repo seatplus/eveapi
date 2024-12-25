@@ -122,21 +122,4 @@ abstract class EsiBase extends RetrieveFromEsiBase implements BaseJobInterface, 
     {
         return $this->endpoint;
     }
-
-    /**
-     * Handle a job failure.
-     */
-    public function failed(Throwable $exception): void
-    {
-        if ($exception instanceof MaxAttemptsExceededException) {
-            return;
-        }
-
-        // if exception has getOriginalException Method
-        if (method_exists($exception, 'getOriginalException')) {
-            if ($exception->getOriginalException()?->getResponse()?->getReasonPhrase() === 'Forbidden') {
-                $this->fail($exception);
-            }
-        }
-    }
 }
