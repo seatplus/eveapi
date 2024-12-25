@@ -27,6 +27,7 @@
 namespace Seatplus\Eveapi\Jobs\Contracts;
 
 use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Support\Facades\DB;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -73,30 +74,36 @@ abstract class ContractItemsJob extends EsiBase implements HasPathValuesInterfac
 
         $response = $this->retrieve();
 
-        if ($response->isCachedLoad() && ContractItem::where('contract_id', $this->contract_id)->count() > 0) {
+        if ($response->isCachedLoad()) {
             return;
         }
 
-        $contract_items = collect($response)->map(fn (object $item) => [
-            // primary
-            'record_id' => $item->record_id,
-            //others
-            'contract_id' => $this->contract_id,
-            'is_included' => $item->is_included,
-            'is_singleton' => $item->is_singleton,
-            'quantity' => $item->quantity,
-            'type_id' => $item->type_id,
+        DB::transaction(function () use ($response) {
 
-            // optionals
-            'raw_quantity' => optional($item)->raw_quantity,
-        ]);
 
-        ContractItem::upsert(
-            $contract_items->toArray(),
-            ['record_id'],
-        );
+            $contract_items = collect($response)->map(fn (object $item) => [
+                // primary
+                'record_id' => $item->record_id,
+                //others
+                'contract_id' => $this->contract_id,
+                'is_included' => $item->is_included,
+                'is_singleton' => $item->is_singleton,
+                'quantity' => $item->quantity,
+                'type_id' => $item->type_id,
+
+                // optionals
+                'raw_quantity' => optional($item)->raw_quantity,
+            ]);
+
+            ContractItem::upsert(
+                $contract_items->toArray(),
+                ['record_id'],
+            );
+        });
 
         $this->dispatchFollowUpJobs();
+
+
     }
 
     private function dispatchFollowUpJobs(): void
