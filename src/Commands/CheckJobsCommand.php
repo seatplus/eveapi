@@ -37,6 +37,12 @@ use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
+use Seatplus\Eveapi\Jobs\Contacts\AllianceContactJob;
+use Seatplus\Eveapi\Jobs\Contacts\AllianceContactLabelJob;
+use Seatplus\Eveapi\Jobs\Contacts\CharacterContactJob;
+use Seatplus\Eveapi\Jobs\Contacts\CharacterContactLabelJob;
+use Seatplus\Eveapi\Jobs\Contacts\CorporationContactJob;
+use Seatplus\Eveapi\Jobs\Contacts\CorporationContactLabelJob;
 use Seatplus\Eveapi\Jobs\Contracts\ContractItemsJob;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
@@ -342,6 +348,26 @@ class CheckJobsCommand extends Command
             if (is_subclass_of($job_class, $base_job)) {
                 $job_filename = $reflection_class->getFileName();
             }
+        }
+
+        // for Contact and ContactLabel jobs, we need to check if the response is cached
+        $contact_jobs = [
+            CharacterContactJob::class,
+            CharacterContactLabelJob::class,
+            CorporationContactJob::class,
+            CorporationContactLabelJob::class,
+            AllianceContactJob::class,
+            AllianceContactLabelJob::class,
+        ];
+
+        if(in_array($job_class, $contact_jobs)) {
+
+            // get parent class of job
+            $reflection_class = new ReflectionClass($job_class);
+            // get filename of parent class
+            $parent_class = $reflection_class->getParentClass()->getFileName();
+            // overwrite job_filename with parent class filename
+            $job_filename = $parent_class;
         }
 
         // check if job isCachedLoad() is called somewhere in the job
