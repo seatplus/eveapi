@@ -36,6 +36,7 @@ use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Traits\HasPages;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
@@ -43,10 +44,9 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
 {
     use HasPathValues;
     use HasRequiredScopes;
+    use HasPages;
 
     private Collection $assets;
-
-    private int $page = 1;
 
     public function __construct(
         public int $character_id
@@ -95,7 +95,7 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
     public function executeJob(): void
     {
         while (true) {
-            $response = $this->retrieve($this->page);
+            $response = $this->retrieve($this->getPage());
 
             if ($response->isCachedLoad()) {
                 return;
@@ -119,11 +119,11 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
                 );
 
             // Lastly if more pages are present load next page
-            if ($this->page >= $response->pages) {
+            if ($this->getPage() >= $response->pages) {
                 break;
             }
 
-            $this->page++;
+            $this->incrementPage();
         }
 
         $this->persist();
