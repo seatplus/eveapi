@@ -87,25 +87,6 @@ class AllianceContactJob extends ContactBaseJob
     {
         $processor = new ProcessContactResponse($this->alliance_id, AllianceInfo::class);
 
-        while (true) {
-            $response = $this->retrieve($this->getPage());
-
-            if ($response->isCachedLoad()) {
-                return;
-            }
-
-            $processed_ids = $processor->execute($response);
-
-            $this->known_ids->push($processed_ids);
-
-            // Lastly if more pages are present load next page
-            if ($this->getPage() >= $response->pages) {
-                break;
-            }
-
-            $this->incrementPage();
-        }
-
-        $processor->remove_old_entries($this->known_ids->flatten()->unique()->toArray());
+        $this->handleProcessor($processor);
     }
 }
