@@ -66,7 +66,7 @@ class ProcessContactResponse
         })->pluck('contact_id');
     }
 
-    public function remove_old_contacts(array $known_ids): void
+    public function remove_old_entries(array $known_ids): void
     {
         // Cleanup
         Contact::where('contactable_id', $this->contactable_id)

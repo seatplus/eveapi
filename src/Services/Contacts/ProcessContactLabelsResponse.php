@@ -48,10 +48,11 @@ class ProcessContactLabelsResponse
         ]))->pluck('label_id');
     }
 
-    public function remove_old_contacts(array $known_ids): void
+    public function remove_old_entries(array $known_ids): void
     {
         // Cleanup
-        Label::where('labelable_id', $this->labelable_id)
+        Label::query()
+            ->where('labelable_id', $this->labelable_id)
             ->where('labelable_type', $this->labelable_type)
             ->whereNotIn('label_id', $known_ids)
             ->delete();

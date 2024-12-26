@@ -33,7 +33,6 @@ use Seatplus\Eveapi\Services\Contacts\ProcessContactResponse;
 
 class AllianceContactJob extends ContactBaseJob
 {
-    private int $page = 1;
 
     private readonly Collection $known_ids;
 
@@ -89,7 +88,7 @@ class AllianceContactJob extends ContactBaseJob
         $processor = new ProcessContactResponse($this->alliance_id, AllianceInfo::class);
 
         while (true) {
-            $response = $this->retrieve($this->page);
+            $response = $this->retrieve($this->getPage());
 
             if ($response->isCachedLoad()) {
                 return;
@@ -100,13 +99,13 @@ class AllianceContactJob extends ContactBaseJob
             $this->known_ids->push($processed_ids);
 
             // Lastly if more pages are present load next page
-            if ($this->page >= $response->pages) {
+            if ($this->getPage() >= $response->pages) {
                 break;
             }
 
-            $this->page++;
+            $this->incrementPage();
         }
 
-        $processor->remove_old_contacts($this->known_ids->flatten()->unique()->toArray());
+        $processor->remove_old_entries($this->known_ids->flatten()->unique()->toArray());
     }
 }

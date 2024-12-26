@@ -8,11 +8,15 @@ use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Services\Contacts\ProcessContactLabelsResponse;
+use Seatplus\Eveapi\Services\Contacts\ProcessContactResponse;
+use Seatplus\Eveapi\Traits\HasPages;
 use Seatplus\Eveapi\Traits\HasPathValues;
 
 abstract class ContactBaseJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
     use HasPathValues;
+    use HasPages;
 
     protected string $required_scope;
 
@@ -48,5 +52,32 @@ abstract class ContactBaseJob extends EsiBase implements HasPathValuesInterface,
         throw_unless($refresh_token->hasScope($this->getRequiredScope()), new Exception('refresh token does not have required scope'));
 
         return $refresh_token;
+    }
+
+    protected function handleProcessor(ProcessContactLabelsResponse|ProcessContactResponse $processor): void
+    {
+
+        $known_ids = collect();
+
+        while (true) {
+            $response = $this->retrieve($this->getPage());
+
+            if ($response->isCachedLoad()) {
+                return;
+            }
+
+            $processed_ids = $processor->execute($response);
+
+            $known_ids->push($processed_ids);
+
+            // Lastly if more pages are present load next page
+            if ($this->page >= $response->pages) {
+                break;
+            }
+
+            $this->incrementPage();
+        }
+
+        $processor->remove_old_entries($known_ids->flatten()->unique()->toArray());
     }
 }
