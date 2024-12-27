@@ -54,6 +54,7 @@ it('contains public jobs in batch', function ($public_job) {
 ]);
 
 it('contains jobs if refresh_token has scope', function (string $scope, array $classes) {
+    \Illuminate\Support\Facades\Queue::fake();
     updateRefreshTokenScopes($this->test_character->refresh_token, [$scope])->save();
 
     Bus::fake();
