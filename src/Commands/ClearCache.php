@@ -55,7 +55,9 @@ class ClearCache extends Command
         $this->line('');
 
         if (! $this->option('force')) {
-            if (! $this->confirm('Are you sure you want to clear ALL caches (file/redis)?', true)) {
+            $choice = $this->choice('Are you sure you want to clear ALL caches (file/redis)?', ['yes', 'no'],'yes');
+
+            if($choice === 'no') {
                 $this->warn('Exiting without clearing cache');
 
                 return;
