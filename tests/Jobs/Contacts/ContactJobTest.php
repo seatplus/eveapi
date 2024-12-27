@@ -81,6 +81,8 @@ test('character contact label job', function () {
 });
 
 test('ContactJob using ContactBaseJob and finds refresh_token', function (string $flavour) {
+    Queue::fake();
+
     $required_scopes = [
         'esi-characters.read_contacts.v1',
         'esi-corporations.read_contacts.v1',
