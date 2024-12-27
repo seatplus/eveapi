@@ -503,6 +503,7 @@ it('dispatches resolve universe type by id job for missing types of skillqueue',
 });
 
 it('dispatches mail body job for missing mail bodies', function () {
+    \Illuminate\Support\Facades\Queue::fake();
     $refresh_token = updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-mail.read_mail.v1']);
     $refresh_token->save();
 
