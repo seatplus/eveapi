@@ -10,7 +10,7 @@ it('creates category', function () {
 
     expect(Category::first())->toBeNull();
 
-    Event::fakeFor(fn () => ResolveUniverseCategoryByIdJob::dispatchSync($mock_data->category_id));
+    Event::fakeFor(fn () => (new ResolveUniverseCategoryByIdJob($mock_data->category_id))->handle());
 
     expect(Category::first())
         ->first()->category_id->toBe($mock_data->category_id);
