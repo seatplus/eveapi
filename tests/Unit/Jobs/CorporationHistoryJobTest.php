@@ -17,3 +17,14 @@ it('checks if the response is cached', function () {
 
     expect(CorporationHistory::count())->toBe(0);
 });
+
+it('has tags', function () {
+    $job = new CorporationHistoryJob($character_id = 1);
+
+    expect($job->tags())->toBe([
+        'character',
+        'info',
+        'character_id:'.$character_id,
+        'corporationhistory',
+    ]);
+});
