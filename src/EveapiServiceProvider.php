@@ -118,21 +118,13 @@ class EveapiServiceProvider extends ServiceProvider
             return $request->user()->can('queue_manager');
         });
 
-        // attempt to parse the QUEUE_BALANCING variable into a boolean
-        $balancing_mode = filter_var(config('eveapi.config.queue.balancing_mode'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-
-        // in case the variable cannot be parsed into a boolean, assign the environment value itself
-        if (is_null($balancing_mode)) {
-            $balancing_mode = config('eveapi.config.queue.balancing_mode');
-        }
-
         // Configure the workers for SeAT plus.
         $horizon_environments = [
             'local' => [
                 'seatplus-workers' => [
                     'connection' => 'redis',
                     'queue' => ['high', 'medium', 'low', 'default'],
-                    'balance' => $balancing_mode,
+                    'balance' => false,
                     'processes' => config('eveapi.config.queue.workers'),
                     'block_for' => 5,
                     'timeout' => 120, // 2 minutes
@@ -250,16 +242,14 @@ class EveapiServiceProvider extends ServiceProvider
 
         RateLimiter::for(
             'character_batch',
-            function ($job) { // @pest-ignore-type
-                $character_id = $job?->refresh_token?->character_id;
-                $queue_name = $job?->queue;
+            function (object $job) { // @pest-ignore-type
+                $character_id = $job->refresh_token?->character_id;
+                $queue_name = $job->queue;
 
                 // if queue is high then we need no rate limiting
-                if ($queue_name === 'high') {
-                    return Limit::none();
-                }
-
-                return Limit::perHour(1)->by("character_batch_{$character_id}_{$queue_name}");
+                return $queue_name === 'high'
+                    ? Limit::none()
+                    : Limit::perHour(1)->by("character_batch_{$character_id}_{$queue_name}");
             }
         );
     }
