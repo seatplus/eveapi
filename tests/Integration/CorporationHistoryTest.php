@@ -14,7 +14,7 @@ test('job creates db entry', function () {
 
     expect(CorporationHistory::all())->toHaveCount(0);
 
-    CorporationHistoryJob::dispatchSync(testCharacter()->character_id);
+    (new CorporationHistoryJob(testCharacter()->character_id))->handle();
 
     expect(CorporationHistory::all())->toHaveCount(3)
         ->and($this->test_character->corporation_history)->toHaveCount(3);
