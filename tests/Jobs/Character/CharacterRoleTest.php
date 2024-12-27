@@ -27,10 +27,9 @@ test('if job is queued', function () {
     Queue::assertPushedOn('default', CharacterRoleJob::class);
 });
 
-/**
- * @runTestsInSeparateProcesses
- */
 test('retrieve test', function () {
+
+    Queue::fake();
     $mock_data = buildCharacterRoleMockEsiData();
 
     (new CharacterRoleJob($this->test_character->character_id))->handle();
