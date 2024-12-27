@@ -15,7 +15,7 @@ it('has has batchable morph to relationship', function ($batch) {
 })->with('batch_update');
 
 test('character has batch_update relationship ', function ($batch) {
-    expect($this->test_character)->batch_update->toBeInstanceOf(BatchUpdate::class);
+    expect(CharacterInfo::first())->batch_update->toBeInstanceOf(BatchUpdate::class);
 })->with('batch_update');
 
 it('has isPending attribute and scope', function ($batch) {

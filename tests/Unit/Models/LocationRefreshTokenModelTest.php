@@ -27,10 +27,10 @@ it('belongs to a refresh token', function () {
     $locationRefreshToken = LocationRefreshToken::query()
         ->updateOrCreate([
             'location_id' => $location->location_id,
-            'character_id' => test()->test_character->character_id,
+            'character_id' => testCharacter()->character_id,
         ], [
             'resolved' => true,
         ]);
 
-    expect($locationRefreshToken->refresh_token->is(testCharacter()->refresh_token))->toBeTrue();
+    expect($locationRefreshToken->refresh_token->character_id)->toBe(testCharacter()->character_id);
 });

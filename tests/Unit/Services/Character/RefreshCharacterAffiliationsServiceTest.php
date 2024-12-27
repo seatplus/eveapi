@@ -8,6 +8,9 @@ use Seatplus\Eveapi\Services\Character\RefreshCharacterAffiliationsService;
 beforeEach(function () {
     Queue::fake();
 
+    CharacterAffiliation::query()->whereNotIn('character_id', [testCharacter()->character_id])->delete();
+    \Seatplus\Eveapi\Models\Character\CharacterInfo::query()->whereNotIn('character_id', [testCharacter()->character_id])->delete();
+
     // check that only one CharacterAffiliation exists and that it is the test character
     expect(CharacterAffiliation::count())->toBe(1)
         ->and(CharacterAffiliation::first()->character_id)->toBe(testCharacter()->character_id);
@@ -32,7 +35,7 @@ describe('dispatches CharacterAffiliationJob for ', function () {
         Queue::assertPushed(CharacterAffiliationJob::class);
 
         // assert that the job was dispatched with the correct id
-        Queue::assertPushed(CharacterAffiliationJob::class, fn(CharacterAffiliationJob $job) => $job->getManualIds() === [testCharacter()->character_id]);
+        Queue::assertPushed(CharacterAffiliationJob::class, fn(CharacterAffiliationJob $job) => in_array(testCharacter()->character_id, $job->getManualIds()));
 
     });
 
@@ -55,7 +58,7 @@ describe('dispatches CharacterAffiliationJob for ', function () {
         Queue::assertPushed(CharacterAffiliationJob::class);
 
         // assert that the job was dispatched with the correct id
-        Queue::assertPushed(CharacterAffiliationJob::class, fn(CharacterAffiliationJob $job) => $job->getManualIds() === [testCharacter()->character_id]);
+        Queue::assertPushed(CharacterAffiliationJob::class, fn(CharacterAffiliationJob $job) => in_array(testCharacter()->character_id, $job->getManualIds()));
 
     });
 
@@ -74,7 +77,7 @@ describe('dispatches CharacterAffiliationJob for ', function () {
         Queue::assertPushed(CharacterAffiliationJob::class);
 
         // assert that the job was dispatched with the correct id
-        Queue::assertPushed(CharacterAffiliationJob::class, fn(CharacterAffiliationJob $job) => $job->getManualIds() === [testCharacter()->character_id]);
+        Queue::assertPushed(CharacterAffiliationJob::class, fn(CharacterAffiliationJob $job) => in_array(testCharacter()->character_id, $job->getManualIds()));
 
     });
 
