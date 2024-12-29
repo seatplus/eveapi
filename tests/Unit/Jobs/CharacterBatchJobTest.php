@@ -87,3 +87,9 @@ it('does not add AllianceContactsJob if no alliance_id is present', function () 
         expect($batch_job)->not->toBeInstanceOf(\Seatplus\Eveapi\Jobs\Contacts\AllianceContactJob::class);
     }
 });
+
+it('has middleware', function () {
+    $job = new CharacterBatchJob(testCharacter()->character_id);
+
+    expect($job->middleware())->toBeArray();
+});
