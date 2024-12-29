@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseCategoryByIdJob;
 use Seatplus\Eveapi\Models\Universe\Category;
-use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 it('creates category', function () {
     $mock_data = buildCategoryMockData();

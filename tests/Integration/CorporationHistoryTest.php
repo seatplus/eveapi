@@ -2,7 +2,6 @@
 
 use Seatplus\Eveapi\Jobs\Character\CorporationHistoryJob;
 use Seatplus\Eveapi\Models\Character\CorporationHistory;
-use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 test('job creates db entry', function () {
     $corporation_history = CorporationHistory::factory()->count(3)->make([

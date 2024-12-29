@@ -3,7 +3,8 @@
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
 beforeEach(function () {
-    $this->trait = new class {
+    $this->trait = new class
+    {
         use HasRequiredScopes;
     };
 });
@@ -25,7 +26,6 @@ it('returns refresh token for alliance_id', function () {
     expect($refreshToken)->toBeInstanceOf(\Seatplus\Eveapi\Models\RefreshToken::class);
 
     \Illuminate\Support\Facades\Event::fakeFor(fn () => updateRefreshTokenScopes($refreshToken, ['scope'])->save());
-
 
     $this->trait->alliance_id = $alliance_id;
     $this->trait->setRequiredScope('scope');

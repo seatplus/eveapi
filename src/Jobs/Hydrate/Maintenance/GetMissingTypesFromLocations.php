@@ -49,7 +49,7 @@ class GetMissingTypesFromLocations extends HydrateMaintenanceBase
             function (Builder $query) {
                 $query->whereDoesntHave('type')->addSelect('type_id');
             }
-        )->with('locatable')->get()->map(fn(Location $location) => $location->locatable->type_id)->unique()->values();
+        )->with('locatable')->get()->map(fn (Location $location) => $location->locatable->type_id)->unique()->values();
 
         $jobs = $type_ids->map(fn (int $id) => new ResolveUniverseTypeByIdJob($id));
 

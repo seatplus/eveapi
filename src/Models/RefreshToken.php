@@ -116,8 +116,9 @@ class RefreshToken extends Model
 
         return in_array($scope, $scopes);
     }
+
     #[\Override]
-    protected function casts() : array
+    protected function casts(): array
     {
         return [
             'expires_on' => 'datetime',

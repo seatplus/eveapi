@@ -26,7 +26,6 @@
 
 namespace Seatplus\Eveapi\Jobs\Killmails;
 
-use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
@@ -102,11 +101,11 @@ class KillmailJob extends EsiBase implements HasPathValuesInterface
             ]);
 
             // if killmail was not recently created, we can assume that the killmail is already in the database
-            if (!$killmail->wasRecentlyCreated) {
+            if (! $killmail->wasRecentlyCreated) {
                 return;
             }
 
-            if(is_null($killmail->system)) {
+            if (is_null($killmail->system)) {
                 $this->getMissingSystem($response);
             }
 
@@ -183,10 +182,6 @@ class KillmailJob extends EsiBase implements HasPathValuesInterface
             : $type_ids->each(fn (int $type_id) => ResolveUniverseTypeByIdJob::dispatch($type_id)->onQueue($this->queue));
     }
 
-    /**
-     * @param \Seatplus\EsiClient\DataTransferObjects\EsiResponse $response
-     * @return void
-     */
     private function getMissingSystem(\Seatplus\EsiClient\DataTransferObjects\EsiResponse $response): void
     {
         $this->batching()

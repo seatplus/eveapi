@@ -50,7 +50,6 @@ describe('executes request successfully', function () {
         expect($response)->toBeInstanceOf(EsiResponse::class);
     });
 
-
 });
 
 describe('throws request failed exception', function () {
@@ -114,7 +113,7 @@ it('throws InvalidAuthenticationException', function () {
     $service->executeInstance();
 })->throws(\Seatplus\EsiClient\Exceptions\InvalidAuthenticationException::class);
 
-it('builds client with authentication',function () {
+it('builds client with authentication', function () {
 
     $refresh_token = RefreshToken::factory()->create();
 

@@ -83,8 +83,9 @@ class Station extends Model implements LocatableInterface
     {
         return $this->belongsTo(System::class, 'system_id', 'system_id');
     }
+
     #[\Override]
-    protected function casts() : array
+    protected function casts(): array
     {
         return [
             'station_id' => 'integer',

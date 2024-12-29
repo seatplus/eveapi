@@ -16,6 +16,5 @@ it('reports exception', function () {
     // act
     $job->handle();
 
-
 })
     ->throws(\Exception::class, 'test');

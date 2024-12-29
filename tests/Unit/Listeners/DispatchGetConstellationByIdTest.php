@@ -13,14 +13,14 @@ it('dispatches job when constellation is null', function () {
 
     $system = System::factory()->noConstellation()->make();
 
-    $event = mock(UniverseSystemCreated::class, fn($mock) => $mock->system = $system);
+    $event = mock(UniverseSystemCreated::class, fn ($mock) => $mock->system = $system);
 
-    $listener = new DispatchGetConstellationById();
+    $listener = new DispatchGetConstellationById;
     $listener->handle($event);
 
     Queue::assertPushedOn('default',
         ResolveUniverseConstellationByConstellationIdJob::class,
-        fn($job) => $job->constellation_id === $system->constellation_id
+        fn ($job) => $job->constellation_id === $system->constellation_id
     );
 });
 
@@ -30,7 +30,7 @@ it('does not dispatch job when constellation is not null', function () {
         $mock->system = System::factory()->make();
     })->makePartial();
 
-    $listener = new DispatchGetConstellationById();
+    $listener = new DispatchGetConstellationById;
     $listener->handle($event);
 
     Queue::assertNotPushed(ResolveUniverseConstellationByConstellationIdJob::class);

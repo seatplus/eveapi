@@ -14,7 +14,6 @@ use Seatplus\Eveapi\Models\Universe\Region;
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\Structure;
 use Seatplus\Eveapi\Models\Universe\System;
-use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 test('universe station creation creates event', function () {
     Event::fake();

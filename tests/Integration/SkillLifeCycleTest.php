@@ -6,7 +6,6 @@ use Seatplus\Eveapi\Jobs\Skills\SkillsJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Skills\Skill;
 use Seatplus\Eveapi\Models\Universe\Type;
-use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 uses(\Illuminate\Foundation\Testing\LazilyRefreshDatabase::class);
 

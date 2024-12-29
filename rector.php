@@ -13,13 +13,13 @@ return RectorConfig::configure()
         //SetList::CODE_QUALITY,
         //SetList::CODING_STYLE,
         \RectorLaravel\Set\LaravelLevelSetList::UP_TO_LARAVEL_110,
-        \Rector\Set\ValueObject\LevelSetList::UP_TO_PHP_83
+        \Rector\Set\ValueObject\LevelSetList::UP_TO_PHP_83,
     ])
     ->withPaths([
-        __DIR__ . '/config',
-        __DIR__ . '/src',
-        __DIR__ . '/tests',
-        __DIR__ . '/database'
+        __DIR__.'/config',
+        __DIR__.'/src',
+        __DIR__.'/tests',
+        __DIR__.'/database',
     ]);
-    // uncomment to reach your current PHP version
-    // ->withPhpSets()
+// uncomment to reach your current PHP version
+// ->withPhpSets()

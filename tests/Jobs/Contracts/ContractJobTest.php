@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Contracts\CharacterContractsJob;
 use Seatplus\Eveapi\Models\Contracts\Contract;
-use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 beforeEach(function () {
     Queue::fake();

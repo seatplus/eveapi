@@ -67,8 +67,9 @@ class CharacterAffiliation extends Model
     {
         return $this->hasOne(CharacterInfo::class, 'character_id', 'character_id');
     }
+
     #[\Override]
-    protected function casts() : array
+    protected function casts(): array
     {
         return [
             'character_id' => 'integer',

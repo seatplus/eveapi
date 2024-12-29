@@ -5,7 +5,6 @@ use Seatplus\Eveapi\Jobs\Mail\MailBodyJob;
 
 it('returns early if cache is hit', function () {
 
-
     $response = mock(EsiResponse::class, function ($mock) {
         $mock->shouldReceive('isCachedLoad')->andReturn(true);
     });

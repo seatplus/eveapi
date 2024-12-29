@@ -28,28 +28,12 @@ namespace Seatplus\Eveapi\Commands;
 
 use Exception;
 use Illuminate\Console\Command;
-use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use ReflectionClass;
-use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
-use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
-use Seatplus\Eveapi\Jobs\Contacts\AllianceContactJob;
-use Seatplus\Eveapi\Jobs\Contacts\AllianceContactLabelJob;
-use Seatplus\Eveapi\Jobs\Contacts\CharacterContactJob;
-use Seatplus\Eveapi\Jobs\Contacts\CharacterContactLabelJob;
-use Seatplus\Eveapi\Jobs\Contacts\CorporationContactJob;
-use Seatplus\Eveapi\Jobs\Contacts\CorporationContactLabelJob;
-use Seatplus\Eveapi\Jobs\Contracts\ContractItemsJob;
 use Seatplus\Eveapi\Jobs\EsiBase;
-use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Jobs\Wallet\WalletJournalBase;
-use Seatplus\Eveapi\Jobs\Wallet\WalletTransactionBase;
-
 use Seatplus\Eveapi\Services\JobChecker;
+
 use function Termwind\render;
 
 class CheckJobsCommand extends Command
@@ -76,8 +60,7 @@ class CheckJobsCommand extends Command
 
     public function __construct(
         private JobChecker $jobChecker
-    )
-    {
+    ) {
         parent::__construct();
     }
 
@@ -170,8 +153,6 @@ class CheckJobsCommand extends Command
                 return new $job(...$constructor_parameters->toArray());
             });
     }
-
-
 
     private function writeSuccess(string $message): void
     {

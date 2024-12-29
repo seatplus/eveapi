@@ -1,10 +1,9 @@
 <?php
 
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
-use Seatplus\Eveapi\Services\Esi\GetUpToDateRefreshTokenService;
-use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
-use Illuminate\Support\Facades\Cache;
+use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Services\Esi\GetUpToDateRefreshTokenService;
 use Seatplus\Eveapi\Services\Esi\UpdateRefreshTokenService;
 
 beforeEach(function () {
@@ -18,7 +17,7 @@ it('retrieves up to date refresh token successfully', function () {
         'expires_on' => now()->addMinutes(5),
     ]);
 
-    $result = (new GetUpToDateRefreshTokenService())($refreshToken);
+    $result = (new GetUpToDateRefreshTokenService)($refreshToken);
 
     expect($result)->toBe($refreshToken);
 });
@@ -58,7 +57,7 @@ it('throws request failed exception', function () {
             ->andThrow(new RequestFailedException(new Exception('failed'), new EsiResponse(json_encode([]), [], 'now', 200)));
     });
 
-    $service = new GetUpToDateRefreshTokenService();
+    $service = new GetUpToDateRefreshTokenService;
 
-    expect(fn() => ($service)($refreshToken))->toThrow(RequestFailedException::class);
+    expect(fn () => ($service)($refreshToken))->toThrow(RequestFailedException::class);
 });

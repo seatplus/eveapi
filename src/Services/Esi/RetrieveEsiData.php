@@ -45,29 +45,26 @@ class RetrieveEsiData
      * @throws RequestFailedException
      */
     public function __construct(
-        private readonly string                 $method = '',
-        private readonly string                 $endpoint = '',
-        private readonly string                 $version = '',
-        private readonly array                  $path_values = [],
-        private array                           $query_parameters = [],
-        private readonly ?array                 $request_body = [],
-        private ?RefreshToken                   $refresh_token = null,
-        private readonly ?int                   $page = null,
-        private ?EsiClient                      $client = null,
+        private readonly string $method = '',
+        private readonly string $endpoint = '',
+        private readonly string $version = '',
+        private readonly array $path_values = [],
+        private array $query_parameters = [],
+        private readonly ?array $request_body = [],
+        private ?RefreshToken $refresh_token = null,
+        private readonly ?int $page = null,
+        private ?EsiClient $client = null,
         private ?GetUpToDateRefreshTokenService $getUpToDateRefreshTokenService = null
-    )
-    {
+    ) {
         $this->client = $client ?? $this->buildClient();
 
-        if($page) {
+        if ($page) {
             $this->query_parameters['page'] = $page;
         }
 
     }
 
     /**
-     * @param EsiRequestContainer $container
-     * @return EsiResponse
      * @throws EsiScopeAccessDeniedException
      * @throws InvalidAuthenticationException
      * @throws RequestFailedException
@@ -77,8 +74,7 @@ class RetrieveEsiData
     public static function execute(
         EsiRequestContainer $container,
         ?EsiClient $client = null
-    ): EsiResponse
-    {
+    ): EsiResponse {
         return (new self(
             method: $container->method,
             endpoint: $container->endpoint,
@@ -93,7 +89,6 @@ class RetrieveEsiData
     }
 
     /**
-     * @return EsiResponse
      * @throws EsiScopeAccessDeniedException
      * @throws InvalidAuthenticationException
      * @throws RequestFailedException
@@ -116,7 +111,7 @@ class RetrieveEsiData
             $this->handleException($exception);
             // Rethrow the exception
             throw $exception;
-        } catch (EsiScopeAccessDeniedException | InvalidAuthenticationException | UriDataMissingException | \Throwable $exception) {
+        } catch (EsiScopeAccessDeniedException|InvalidAuthenticationException|UriDataMissingException|\Throwable $exception) {
 
             $logger = EsiConfiguration::getInstance()->getLogger();
             $logger->error($exception->getMessage());
@@ -164,7 +159,7 @@ class RetrieveEsiData
         }
 
         // return if no refresh token is available
-        if(! $this->refresh_token) {
+        if (! $this->refresh_token) {
             return;
         }
 
@@ -200,13 +195,13 @@ class RetrieveEsiData
      */
     private function buildClient(): EsiClient
     {
-        $esi_client = new EsiClientSetup();
+        $esi_client = new EsiClientSetup;
 
         if (is_null($this->refresh_token)) {
             return $esi_client->get();
         }
 
-        $this->getUpToDateRefreshTokenService = $this->getUpToDateRefreshTokenService ?? new GetUpToDateRefreshTokenService();
+        $this->getUpToDateRefreshTokenService = $this->getUpToDateRefreshTokenService ?? new GetUpToDateRefreshTokenService;
 
         try {
             $this->refresh_token = ($this->getUpToDateRefreshTokenService)($this->refresh_token);

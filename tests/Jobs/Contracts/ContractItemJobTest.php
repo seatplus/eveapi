@@ -5,7 +5,6 @@ use Seatplus\Eveapi\Jobs\Contracts\CharacterContractItemsJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\Contracts\ContractItem;
-use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 test('job is being dispatched', function () {
     Queue::fake();

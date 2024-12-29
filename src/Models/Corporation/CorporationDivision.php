@@ -40,8 +40,9 @@ class CorporationDivision extends Model
     {
         return $this->belongsTo(CorporationInfo::class, 'corporation_id', 'corporation_id');
     }
+
     #[\Override]
-    protected function casts() : array
+    protected function casts(): array
     {
         return [
             'corporation_id' => 'integer',

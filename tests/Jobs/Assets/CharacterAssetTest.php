@@ -5,7 +5,6 @@ use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
-use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 beforeEach(function () {
     Queue::fake();

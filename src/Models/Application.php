@@ -94,8 +94,9 @@ class Application extends Model
                 ]),
             ]);
     }
+
     #[\Override]
-    protected function casts() : array
+    protected function casts(): array
     {
         return [
             'corporation_id' => 'integer',

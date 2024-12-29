@@ -191,8 +191,9 @@ class CharacterInfo extends Model
     {
         return $this->morphOne(BatchUpdate::class, 'batchable');
     }
+
     #[\Override]
-    protected function casts() : array
+    protected function casts(): array
     {
         return [
             'character_id' => 'integer',

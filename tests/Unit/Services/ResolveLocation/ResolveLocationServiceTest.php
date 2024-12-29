@@ -1,8 +1,7 @@
 <?php
 
-use Seatplus\Eveapi\Services\ResolveLocation\ResolveLocationService;
-use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Location;
+use Seatplus\Eveapi\Services\ResolveLocation\ResolveLocationService;
 use Seatplus\Eveapi\Services\ResolveLocation\Resolver\ResolverInterface;
 
 it('runs through resolvers', function () {

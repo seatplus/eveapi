@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletJournalJob;
 use Seatplus\Eveapi\Models\Wallet\WalletJournal;
-use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 beforeEach(function () {
     // Prevent any auto dispatching of jobs

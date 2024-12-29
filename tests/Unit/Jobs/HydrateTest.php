@@ -61,9 +61,7 @@ it('returns null if no refresh token is found', function () {
     $job->shouldReceive('batch->cancelled')->andReturn(false);
     $job->shouldReceive('batch->add')->with([]);
 
-
     $job->handle();
-
 
     expect(true)->toBeTrue();
 });

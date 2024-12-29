@@ -55,11 +55,9 @@ use Seatplus\Eveapi\Observers\CharacterInfoObserver;
 use Seatplus\Eveapi\Observers\GroupObserver;
 use Seatplus\Eveapi\Observers\TypeObserver;
 use Seatplus\Eveapi\Services\Character\RefreshCharacterAffiliationsService;
-use Seatplus\Eveapi\Services\Esi\EsiClientSetup;
 
 class EveapiServiceProvider extends ServiceProvider
 {
-
     public function boot(): void
     {
         //Add Migrations

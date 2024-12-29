@@ -95,8 +95,9 @@ class System extends Model
     {
         return $this->hasMany(Structure::class, 'solar_system_id', 'system_id');
     }
+
     #[\Override]
-    protected function casts() : array
+    protected function casts(): array
     {
         return [
             'system_id' => 'integer',

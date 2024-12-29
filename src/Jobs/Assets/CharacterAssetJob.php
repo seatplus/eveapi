@@ -42,9 +42,9 @@ use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
 class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
+    use HasPages;
     use HasPathValues;
     use HasRequiredScopes;
-    use HasPages;
 
     private Collection $assets;
 

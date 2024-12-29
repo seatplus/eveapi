@@ -15,7 +15,6 @@ it('has one system', function () {
 it('deletes related attackers and items', function () {
     $killmail = Killmail::factory()->create();
 
-
     KillmailAttacker::query()->create([
         'killmail_id' => $killmail->killmail_id,
         'damage_done' => 123,

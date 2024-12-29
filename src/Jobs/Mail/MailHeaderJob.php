@@ -101,15 +101,16 @@ class MailHeaderJob extends EsiBase implements HasPathValuesInterface, HasRequir
 
                 $mails->map(function (array $mail) {
                     unset($mail['recipients']); // remove recipients from mail header
+
                     return $mail; // return mail header
                 })
                     ->chunk(1000)
                     ->each(fn (Collection $chunk) => Mail::upsert($chunk->toArray(), 'id'));
             })
             // handle recipients
-            ->tap(fn(Collection $mails) => $this->handleRecipients($mails))
+            ->tap(fn (Collection $mails) => $this->handleRecipients($mails))
             // handle mail body
-            ->tap(fn(Collection $mails) => $this->handleMailBody($mails));
+            ->tap(fn (Collection $mails) => $this->handleMailBody($mails));
 
         // see https://divinglaravel.com/avoiding-memory-leaks-when-running-laravel-queue-workers
         // This job is very memory consuming hence avoiding memory leaks, the worker should restart
@@ -128,10 +129,9 @@ class MailHeaderJob extends EsiBase implements HasPathValuesInterface, HasRequir
     }
 
     /**
-     * @param Collection $mail
-     * @return void
+     * @param  Collection  $mail
      */
-    function handleRecipients(Collection $mails): void
+    public function handleRecipients(Collection $mails): void
     {
 
         $existing_recipients = MailRecipients::query()
@@ -142,11 +142,11 @@ class MailHeaderJob extends EsiBase implements HasPathValuesInterface, HasRequir
 
         $recipients = $mails
             // filter out mails that already have recipients recorded
-            ->filter(fn($mail) => ! in_array(data_get($mail, 'id'), $existing_recipients))
+            ->filter(fn ($mail) => ! in_array(data_get($mail, 'id'), $existing_recipients))
             ->map(function (array $mail) {
                 // create recipients array for mail
                 return collect(data_get($mail, 'recipients'))
-                    ->map(fn(object $recipient) => [
+                    ->map(fn (object $recipient) => [
                         'mail_id' => data_get($mail, 'id'),
                         'receivable_id' => data_get($recipient, 'recipient_id'),
                         'receivable_type' => $this->getReceivableType(data_get($recipient, 'recipient_type')),
@@ -167,17 +167,16 @@ class MailHeaderJob extends EsiBase implements HasPathValuesInterface, HasRequir
     }
 
     /**
-     * @param Collection<object> $mails
-     * @return void
+     * @param  Collection<object>  $mails
      */
-    function handleMailBody(Collection $mails): void
+    public function handleMailBody(Collection $mails): void
     {
         Mail::query()
             ->whereIn('id', $mails->pluck('id'))
             ->whereNull('body')
             ->select('id')
             ->get()
-            ->each(fn(Mail $mail) => $this->batching()
+            ->each(fn (Mail $mail) => $this->batching()
                 ? $this->batch()->add([new MailBodyJob($this->character_id, $mail->id)])
                 : MailBodyJob::dispatch($this->character_id, $mail->id)->onQueue($this->queue)
             );

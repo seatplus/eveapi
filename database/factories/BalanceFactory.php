@@ -50,7 +50,7 @@ class BalanceFactory extends Factory
 
     public function withDivision()
     {
-        return $this->state(fn() => [
+        return $this->state(fn () => [
             'division' => fake()->unique()->numberBetween(1, 7),
         ]);
     }

@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
-use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 beforeEach(function () {
     Event::fakeFor(function () {

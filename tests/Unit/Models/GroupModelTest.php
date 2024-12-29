@@ -1,8 +1,8 @@
 <?php
 
+use Seatplus\Eveapi\Models\Universe\Category;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Type;
-use Seatplus\Eveapi\Models\Universe\Category;
 
 it('has many types', function () {
     $group = Group::factory()->create();

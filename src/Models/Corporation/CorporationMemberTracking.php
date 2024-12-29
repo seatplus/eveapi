@@ -59,8 +59,9 @@ class CorporationMemberTracking extends Model
     {
         return $this->hasOne(Type::class, 'type_id', 'ship_type_id');
     }
+
     #[\Override]
-    protected function casts() : array
+    protected function casts(): array
     {
         return [
             'corporation_id' => 'integer',

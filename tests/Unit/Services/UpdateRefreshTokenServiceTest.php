@@ -1,8 +1,8 @@
 <?php
 
+use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
 use Seatplus\EsiClient\Services\UpdateRefreshTokenService as EsiClientUpdateToken;
 use Seatplus\Eveapi\Models\RefreshToken;
-use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
 use Seatplus\Eveapi\Services\Esi\UpdateRefreshTokenService;
 
 beforeEach(function () {

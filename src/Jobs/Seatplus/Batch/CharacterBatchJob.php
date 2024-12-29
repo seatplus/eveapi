@@ -55,7 +55,7 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
         array $batch_jobs = []
     ) {
         $this->refresh_token = RefreshToken::find($this->character_id);
-        $this->batch_jobs =  $batch_jobs ?: $this->createBatchJobs();
+        $this->batch_jobs = $batch_jobs ?: $this->createBatchJobs();
     }
 
     public function middleware(): array

@@ -59,8 +59,9 @@ class Category extends Model
     {
         return $this->hasMany(Group::class, 'category_id', 'category_id');
     }
+
     #[\Override]
-    protected function casts() : array
+    protected function casts(): array
     {
         return [
             'category_id' => 'integer',

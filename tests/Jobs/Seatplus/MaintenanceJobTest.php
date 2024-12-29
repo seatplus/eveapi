@@ -56,7 +56,7 @@ it('MaintenanceJob dispatches job: ', function ($hydrate_job) {
 
     (new MaintenanceJob)->handle();
 
-    Bus::assertBatched(fn($batch) => $batch->jobs->first(fn ($job) => $job instanceof $hydrate_job));
+    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof $hydrate_job));
 
 })->with([
     GetMissingGroups::class,

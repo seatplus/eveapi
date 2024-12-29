@@ -49,7 +49,7 @@ it('has many labels', function () {
     $alliance = AllianceInfo::factory()->create();
     $label = Label::factory()->create([
         'labelable_id' => $alliance->alliance_id,
-        'labelable_type' => AllianceInfo::class
+        'labelable_type' => AllianceInfo::class,
     ]);
 
     expect($alliance->labels)->toHaveCount(1)

@@ -1,14 +1,13 @@
 <?php
 
 use Illuminate\Console\Scheduling\Schedule;
-use Seatplus\Eveapi\Jobs\Seatplus\Batch\CharacterBatchJob;
 
 it('tests horizon auth with user', function () {
 
     $serviceProvider = new \Seatplus\Eveapi\EveapiServiceProvider(app());
     $serviceProvider->configureHorizon();
 
-    $requestWithUser = new \Illuminate\Http\Request();
+    $requestWithUser = new \Illuminate\Http\Request;
     $requestWithUser->setUserResolver(function () {
         $user = mock(\Seatplus\Auth\Models\User::class, function ($mock) {
             $mock->shouldReceive('can')->with('queue_manager')->andReturn(true);
@@ -25,7 +24,7 @@ it('tests horizon auth without user', function () {
     $serviceProvider = new \Seatplus\Eveapi\EveapiServiceProvider(app());
     $serviceProvider->configureHorizon();
 
-    $requestWithoutUser = new \Illuminate\Http\Request();
+    $requestWithoutUser = new \Illuminate\Http\Request;
 
     expect(\Laravel\Horizon\Horizon::check($requestWithoutUser))->toBeFalse();
 });
@@ -107,17 +106,17 @@ function assertJobWasReleased($testJob)
 
 class RateLimitedTestJob
 {
-    use \Illuminate\Queue\InteractsWithQueue, \Illuminate\Foundation\Queue\Queueable;
+    use \Illuminate\Foundation\Queue\Queueable, \Illuminate\Queue\InteractsWithQueue;
 
     public static $handled = false;
 
-    public function __construct(public $refresh_token)
-    {
-    }
+    public function __construct(public $refresh_token) {}
+
     public function handle()
     {
         static::$handled = true;
     }
+
     public function middleware()
     {
         return [new \Illuminate\Queue\Middleware\RateLimitedWithRedis('character_batch')];

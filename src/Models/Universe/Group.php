@@ -65,8 +65,9 @@ class Group extends Model
     {
         return $this->hasOne(Category::class, 'category_id', 'category_id');
     }
+
     #[\Override]
-    protected function casts() : array
+    protected function casts(): array
     {
         return [
             'group_id' => 'integer',

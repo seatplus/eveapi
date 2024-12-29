@@ -5,7 +5,6 @@ use Seatplus\Eveapi\Jobs\Contacts\AllianceContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\CharacterContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\CorporationContactJob;
 use Seatplus\Eveapi\Models\Contacts\Contact;
-use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 beforeEach(function () {
     // Prevent any auto dispatching of jobs

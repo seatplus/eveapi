@@ -46,8 +46,9 @@ class BatchStatistic extends Model
 
         return self::create($attributes);
     }
+
     #[\Override]
-    protected function casts() : array
+    protected function casts(): array
     {
         return [
             'started_at' => 'datetime',

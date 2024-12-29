@@ -52,6 +52,7 @@ class FindCorporationRefreshToken
                 return true;
             }
         }
+
         return false;
     }
 
@@ -66,6 +67,7 @@ class FindCorporationRefreshToken
                 return true;
             }
         }
+
         return false;
     }
 }

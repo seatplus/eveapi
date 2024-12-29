@@ -16,17 +16,17 @@ it('writes error, warning and success header', function (array $job_checker_resu
     expect(true)->toBeTrue();
 
 })->with([
-    'error' => fn() => [
+    'error' => fn () => [
         'status' => 'error',
-        'message' => 'test error message'
+        'message' => 'test error message',
     ],
-    'warning' => fn() => [
+    'warning' => fn () => [
         'status' => 'warning',
-        'message' => 'test warning message'
+        'message' => 'test warning message',
     ],
-    'success' => fn() => [
+    'success' => fn () => [
         'status' => 'success',
-        'message' => 'test success message'
+        'message' => 'test success message',
     ],
 ]);
 
@@ -37,7 +37,7 @@ it('throws exception if status is unknown', function () {
             ->andReturn(collect([
                 [
                     'status' => 'unknown',
-                    'message' => 'test unknown message'
+                    'message' => 'test unknown message',
                 ],
             ]));
     });
@@ -48,4 +48,3 @@ it('throws exception if status is unknown', function () {
 
 })
     ->throws(\Exception::class, 'Unknown status');
-

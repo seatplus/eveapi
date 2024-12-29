@@ -53,8 +53,9 @@ class WalletTransaction extends Model
     {
         return $this->hasOne(Location::class, 'location_id', 'location_id');
     }
+
     #[\Override]
-    protected function casts() : array
+    protected function casts(): array
     {
         return [
             'date' => 'datetime',

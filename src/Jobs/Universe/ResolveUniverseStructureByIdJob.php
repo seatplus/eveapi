@@ -26,10 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Universe;
 
-use GuzzleHttp\Exception\ClientException;
-use Illuminate\Queue\MaxAttemptsExceededException;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -38,7 +35,6 @@ use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Structure;
 use Seatplus\Eveapi\Traits\HasPathValues;
 use Seatplus\Eveapi\Traits\HasRequiredScopes;
-use Throwable;
 
 class ResolveUniverseStructureByIdJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
@@ -113,5 +109,4 @@ class ResolveUniverseStructureByIdJob extends EsiBase implements HasPathValuesIn
             'locatable_type' => Structure::class,
         ]);
     }
-
 }

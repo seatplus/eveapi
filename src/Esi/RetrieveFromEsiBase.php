@@ -34,7 +34,6 @@ use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
 use Seatplus\Eveapi\Services\Facade\RetrieveEsiData;
-use Seatplus\Eveapi\Traits\RateLimitsEsiCalls;
 
 abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
 {
@@ -107,7 +106,7 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
 
         // if original exception is ServerException, we can safely assume that the request was valid
         // but the server failed so we can release the job back into the queue
-        if($original_exception instanceof ServerException) {
+        if ($original_exception instanceof ServerException) {
             $this->release(60);
         }
     }

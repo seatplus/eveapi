@@ -57,7 +57,7 @@ class WalletJournalFactory extends Factory
 
     public function withLabels()
     {
-        return $this->state(fn() => [
+        return $this->state(fn () => [
             'label_ids' => [1, 2, 3],
         ]);
     }

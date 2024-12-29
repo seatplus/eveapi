@@ -30,5 +30,4 @@ it('increments page', function () {
 
     expect($job->getPage())->toEqual(2);
 
-
 });

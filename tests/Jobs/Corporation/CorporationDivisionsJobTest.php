@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationDivisionsJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationDivision;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
-use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 beforeEach(function () {
     Event::fakeFor(function () {

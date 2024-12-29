@@ -1,7 +1,6 @@
 <?php
 
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
-use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 use Seatplus\Eveapi\Services\ResolveLocation\Finders\ThroughCorporationMemberTrackingFinder;
 
 it('finds Director Token', function () {

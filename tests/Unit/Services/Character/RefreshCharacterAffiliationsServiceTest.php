@@ -28,14 +28,14 @@ describe('dispatches CharacterAffiliationJob for ', function () {
         ]);
 
         // act
-        $service = new RefreshCharacterAffiliationsService();
+        $service = new RefreshCharacterAffiliationsService;
         $service();
 
         // assert
         Queue::assertPushed(CharacterAffiliationJob::class);
 
         // assert that the job was dispatched with the correct id
-        Queue::assertPushed(CharacterAffiliationJob::class, fn(CharacterAffiliationJob $job) => in_array(testCharacter()->character_id, $job->getManualIds()));
+        Queue::assertPushed(CharacterAffiliationJob::class, fn (CharacterAffiliationJob $job) => in_array(testCharacter()->character_id, $job->getManualIds()));
 
     });
 
@@ -51,14 +51,14 @@ describe('dispatches CharacterAffiliationJob for ', function () {
             ->queue(testCharacter()->character_id);
 
         // act
-        $service = new RefreshCharacterAffiliationsService();
+        $service = new RefreshCharacterAffiliationsService;
         $service();
 
         // assert
         Queue::assertPushed(CharacterAffiliationJob::class);
 
         // assert that the job was dispatched with the correct id
-        Queue::assertPushed(CharacterAffiliationJob::class, fn(CharacterAffiliationJob $job) => in_array(testCharacter()->character_id, $job->getManualIds()));
+        Queue::assertPushed(CharacterAffiliationJob::class, fn (CharacterAffiliationJob $job) => in_array(testCharacter()->character_id, $job->getManualIds()));
 
     });
 
@@ -70,14 +70,14 @@ describe('dispatches CharacterAffiliationJob for ', function () {
         CharacterAffiliation::query()->delete();
 
         // act
-        $service = new RefreshCharacterAffiliationsService();
+        $service = new RefreshCharacterAffiliationsService;
         $service();
 
         // assert
         Queue::assertPushed(CharacterAffiliationJob::class);
 
         // assert that the job was dispatched with the correct id
-        Queue::assertPushed(CharacterAffiliationJob::class, fn(CharacterAffiliationJob $job) => in_array(testCharacter()->character_id, $job->getManualIds()));
+        Queue::assertPushed(CharacterAffiliationJob::class, fn (CharacterAffiliationJob $job) => in_array(testCharacter()->character_id, $job->getManualIds()));
 
     });
 
@@ -95,7 +95,7 @@ describe('does not dispatches CharacterAffiliationJob ', function () {
         ]);
 
         // act
-        $service = new RefreshCharacterAffiliationsService();
+        $service = new RefreshCharacterAffiliationsService;
         $service();
 
         // assert

@@ -30,8 +30,9 @@ class BatchUpdate extends Model
     {
         $query->whereMorphedTo('batchable', CharacterInfo::class);
     }
+
     #[\Override]
-    protected function casts() : array
+    protected function casts(): array
     {
         return [
             'started_at' => 'datetime',

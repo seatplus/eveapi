@@ -9,7 +9,6 @@ use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletTransactionByDivisionJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Wallet\Balance;
 use Seatplus\Eveapi\Models\Wallet\WalletJournal;
-use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 beforeEach(function () {
     Event::fakeFor(fn () => updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-wallet.read_corporation_wallets.v1'])->save());

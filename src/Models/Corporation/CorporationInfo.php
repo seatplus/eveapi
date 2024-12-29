@@ -111,8 +111,9 @@ class CorporationInfo extends Model
     {
         return $this->morphMany(WalletTransaction::class, 'wallet_transactionable');
     }
+
     #[\Override]
-    protected function casts() : array
+    protected function casts(): array
     {
         return [
             'corporation_id' => 'integer',

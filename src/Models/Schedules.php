@@ -33,7 +33,7 @@ class Schedules extends Model
     protected $guarded = [];
 
     #[\Override]
-    protected function casts() : array
+    protected function casts(): array
     {
         return [
             'expression' => 'string',

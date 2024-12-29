@@ -69,8 +69,9 @@ class CharacterRole extends Model
 
         return false;
     }
+
     #[\Override]
-    protected function casts() : array
+    protected function casts(): array
     {
         return [
             'character_id' => 'integer',

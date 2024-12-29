@@ -46,8 +46,9 @@ class SsoScopes extends Model
     {
         return $query->where('type', 'global');
     }
+
     #[\Override]
-    protected function casts() : array
+    protected function casts(): array
     {
         return [
             'selected_scopes' => 'array',

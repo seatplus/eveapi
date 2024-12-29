@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationInfoJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
-use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 beforeEach(function () {
     $this->corporation_id = testCharacter()->corporation->corporation_id;

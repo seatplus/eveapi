@@ -7,7 +7,6 @@ use Seatplus\Eveapi\Jobs\Mail\MailBodyJob;
 use Seatplus\Eveapi\Jobs\Mail\MailHeaderJob;
 use Seatplus\Eveapi\Models\Mail\Mail;
 use Seatplus\Eveapi\Models\Mail\MailRecipients;
-use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 beforeEach(function () {
     // Prevent any auto dispatching of jobs
@@ -71,7 +70,6 @@ it('adds MailBodyJob to batch if batched', function () {
         // make it batching
         $mock->shouldReceive('batching')->andReturnTrue();
         $mock->shouldReceive('batch->add')->times(5);
-
 
     })->makePartial();
 

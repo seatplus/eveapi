@@ -74,8 +74,9 @@ class Type extends Model
             'category_id'
         );
     }
+
     #[\Override]
-    protected function casts() : array
+    protected function casts(): array
     {
         return [
             'type_id' => 'integer',

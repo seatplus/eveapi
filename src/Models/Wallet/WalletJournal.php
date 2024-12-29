@@ -40,11 +40,12 @@ class WalletJournal extends Model
     {
         return $this->morphTo();
     }
+
     /**
      * @return array<string, string>
      */
     #[\Override]
-    protected function casts() : array
+    protected function casts(): array
     {
         return [
             'date' => 'datetime',

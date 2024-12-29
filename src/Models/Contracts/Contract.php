@@ -63,7 +63,7 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
      */
     public function issuer(): Attribute
     {
-        return new Attribute(fn() => $this->for_corporation ? $this->issuer_corporation : $this->issuer_character);
+        return new Attribute(fn () => $this->for_corporation ? $this->issuer_corporation : $this->issuer_character);
     }
 
     /**
@@ -71,7 +71,7 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
      */
     public function assignee(): Attribute
     {
-        return new Attribute(fn() => $this->assignee_character ?? $this->assignee_corporation);
+        return new Attribute(fn () => $this->assignee_character ?? $this->assignee_corporation);
     }
 
     public function items(): HasMany

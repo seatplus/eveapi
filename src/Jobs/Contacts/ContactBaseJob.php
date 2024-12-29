@@ -15,8 +15,8 @@ use Seatplus\Eveapi\Traits\HasPathValues;
 
 abstract class ContactBaseJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
 {
-    use HasPathValues;
     use HasPages;
+    use HasPathValues;
 
     protected string $required_scope;
 

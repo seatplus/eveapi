@@ -12,8 +12,8 @@ it('fails when server exception is handled', function () {
 
     \Seatplus\Eveapi\Services\Facade\RetrieveEsiData::shouldReceive('execute')->andThrow($exception);
 
-   $job = new \Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob(123);
-   $job->executeJob();
+    $job = new \Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob(123);
+    $job->executeJob();
 
     expect(true)->toBeTrue();
 })->throws(RequestFailedException::class);

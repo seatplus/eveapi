@@ -25,7 +25,7 @@ it('does not further execute if killmail is complete', function () {
 
     \Illuminate\Support\Facades\Queue::fake();
 
-    $killmail = \Illuminate\Support\Facades\Event::fakeFor(fn() => Killmail::factory()->create([
+    $killmail = \Illuminate\Support\Facades\Event::fakeFor(fn () => Killmail::factory()->create([
         'complete' => true,
         'solar_system_id' => 12345,
     ]));
@@ -59,7 +59,7 @@ it('does not further execute if killmail is complete', function () {
 it('adds to batch', function () {
     Queue::fake();
 
-    $killmail = \Illuminate\Support\Facades\Event::fakeFor(fn() => Killmail::factory()->make([
+    $killmail = \Illuminate\Support\Facades\Event::fakeFor(fn () => Killmail::factory()->make([
         'complete' => false,
         'ship_type_id' => 12345,
         'solar_system_id' => 12345,

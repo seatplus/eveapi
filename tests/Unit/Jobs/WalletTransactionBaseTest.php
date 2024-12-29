@@ -5,13 +5,13 @@ use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\Eveapi\Jobs\Wallet\WalletTransactionBase;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 
-beforeEach(fn() => \Illuminate\Support\Facades\Queue::fake());
+beforeEach(fn () => \Illuminate\Support\Facades\Queue::fake());
 
 it('sets from_id to latest transaction id minus one when latest transaction exists', function () {
 
     WalletTransaction::factory()->create([
         'wallet_transactionable_id' => 12345,
-        'transaction_id' => 100
+        'transaction_id' => 100,
     ]);
 
     $job = mock(WalletTransactionBase::class, function (MockInterface $mock) {
@@ -52,7 +52,7 @@ it('keeps from_id as PHP_INT_MAX when no latest transaction exists', function ()
 it('breaks when transaction_id is equal to the from_id', function () {
     WalletTransaction::factory()->create([
         'wallet_transactionable_id' => 12345,
-        'transaction_id' => 100
+        'transaction_id' => 100,
     ]);
 
     $job = mock(WalletTransactionBase::class, function (MockInterface $mock) {
@@ -69,8 +69,8 @@ it('breaks when transaction_id is equal to the from_id', function () {
                 'location_id' => 12345,
                 'quantity' => 1,
                 'type_id' => 12345,
-                'unit_price' => 12345
-            ]
+                'unit_price' => 12345,
+            ],
         ]), [], 'now', 200);
         $mock->shouldReceive('retrieve')->andReturn($response);
         $mock->shouldReceive('getRefreshToken')->andReturn(testCharacter()->refresh_token);

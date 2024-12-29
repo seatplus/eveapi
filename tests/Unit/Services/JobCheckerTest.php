@@ -12,9 +12,9 @@ describe('Version checker', function () {
         $esiPathService->shouldReceive('getEsiPaths')->andReturn([
             '/endpoint' => [
                 'get' => [
-                    'x-alternate-versions' => ['v1', 'v2']
-                ]
-            ]
+                    'x-alternate-versions' => ['v1', 'v2'],
+                ],
+            ],
         ]);
 
         $job = mock(EsiBase::class, function (MockInterface $mock) {
@@ -39,9 +39,9 @@ describe('Version checker', function () {
         $esiPathService->shouldReceive('getEsiPaths')->andReturn([
             '/endpoint' => [
                 'get' => [
-                    'x-alternate-versions' => ['v1', 'v2']
-                ]
-            ]
+                    'x-alternate-versions' => ['v1', 'v2'],
+                ],
+            ],
         ]);
 
         $job = mock(EsiBase::class, function (MockInterface $mock) {
@@ -66,9 +66,9 @@ describe('Version checker', function () {
         $esiPathService->shouldReceive('getEsiPaths')->andReturn([
             '/endpoint' => [
                 'get' => [
-                    'x-alternate-versions' => ['v2', 'v3']
-                ]
-            ]
+                    'x-alternate-versions' => ['v2', 'v3'],
+                ],
+            ],
         ]);
 
         $job = mock(EsiBase::class, function (MockInterface $mock) {
@@ -96,8 +96,8 @@ describe('required scope checker', function () {
             '/endpoint' => [
                 'get' => [
                     'x-alternate-versions' => ['v1', 'v2'],
-                ]
-            ]
+                ],
+            ],
         ]);
 
         $job = mock(EsiBase::class, function (MockInterface $mock) {
@@ -124,8 +124,8 @@ describe('required scope checker', function () {
             '/endpoint' => [
                 'get' => [
                     'x-alternate-versions' => ['v1', 'v2'],
-                ]
-            ]
+                ],
+            ],
         ]);
 
         $job = mock(EsiBase::class, \Seatplus\Eveapi\Esi\HasRequiredScopeInterface::class, function (MockInterface $mock) {
@@ -154,11 +154,11 @@ describe('required scope checker', function () {
                     'x-alternate-versions' => ['v1', 'v2'],
                     'security' => [
                         [
-                            'evesso' => ['esi-assets.read_assets.v1']
-                        ]
-                    ]
-                ]
-            ]
+                            'evesso' => ['esi-assets.read_assets.v1'],
+                        ],
+                    ],
+                ],
+            ],
         ]);
 
         $job = mock(EsiBase::class, function (MockInterface $mock) {
@@ -179,7 +179,7 @@ describe('required scope checker', function () {
         expect($result[1]['message'])->toEqual('job requires authentication but does not implement HasRequiredScopeInterface');
     });
 
-    it('returns error if job does not implement the required scopes for the endpoint', function (){
+    it('returns error if job does not implement the required scopes for the endpoint', function () {
         $esiPathService = mock(EsiPathService::class)->makePartial();
         $esiPathService->shouldReceive('getEsiPaths')->andReturn([
             '/endpoint' => [
@@ -187,11 +187,11 @@ describe('required scope checker', function () {
                     'x-alternate-versions' => ['v1', 'v2'],
                     'security' => [
                         [
-                            'evesso' => ['esi-assets.read_assets.v1']
-                        ]
-                    ]
-                ]
-            ]
+                            'evesso' => ['esi-assets.read_assets.v1'],
+                        ],
+                    ],
+                ],
+            ],
         ]);
 
         $job = mock(EsiBase::class, \Seatplus\Eveapi\Esi\HasRequiredScopeInterface::class, function (MockInterface $mock) {
@@ -213,7 +213,7 @@ describe('required scope checker', function () {
         expect($result[1]['message'])->toEqual('job requires scope esi-assets.read_assets.v2 but endpoint requires esi-assets.read_assets.v1');
     });
 
-    it('returns success if job implements the required scopes for the endpoint', function (){
+    it('returns success if job implements the required scopes for the endpoint', function () {
         $esiPathService = mock(EsiPathService::class)->makePartial();
         $esiPathService->shouldReceive('getEsiPaths')->andReturn([
             '/endpoint' => [
@@ -221,11 +221,11 @@ describe('required scope checker', function () {
                     'x-alternate-versions' => ['v1', 'v2'],
                     'security' => [
                         [
-                            'evesso' => ['esi-assets.read_assets.v1']
-                        ]
-                    ]
-                ]
-            ]
+                            'evesso' => ['esi-assets.read_assets.v1'],
+                        ],
+                    ],
+                ],
+            ],
         ]);
 
         $job = mock(EsiBase::class, \Seatplus\Eveapi\Esi\HasRequiredScopeInterface::class, function (MockInterface $mock) {
@@ -248,24 +248,23 @@ describe('required scope checker', function () {
             ->and($result[1]['status'])->toEqual('success');
     });
 
-
 });
 
-describe('Path Check', function (){
+describe('Path Check', function () {
 
-    beforeEach(function (){
+    beforeEach(function () {
         $this->esiPathService = mock(EsiPathService::class, function (MockInterface $mock) {
             $mock->shouldReceive('getEsiPaths')->andReturn([
                 '/endpoint/{id}' => [
                     'get' => [
                         'x-alternate-versions' => ['v1', 'v2'],
-                    ]
+                    ],
                 ],
                 '/endpoint/' => [
                     'get' => [
                         'x-alternate-versions' => ['v1', 'v2'],
-                    ]
-                ]
+                    ],
+                ],
             ]);
         })->makePartial();
         $this->fileGetContentsAction = mock(FileGetContentsAction::class, function (MockInterface $mock) {
@@ -273,24 +272,24 @@ describe('Path Check', function (){
         })->makePartial();
     });
 
-    it('returns error if job endpoint has moustache but no HasPathValuesInterface implemented', function (){
+    it('returns error if job endpoint has moustache but no HasPathValuesInterface implemented', function () {
 
-       $job = mock(EsiBase::class, function (MockInterface $mock) {
-           $mock->shouldReceive('getVersion')->andReturn('v2');
-           $mock->shouldReceive('getEndpoint')->andReturn('/endpoint/{id}');
-           $mock->shouldReceive('getMethod')->andReturn('get');
-       })->makePartial();
+        $job = mock(EsiBase::class, function (MockInterface $mock) {
+            $mock->shouldReceive('getVersion')->andReturn('v2');
+            $mock->shouldReceive('getEndpoint')->andReturn('/endpoint/{id}');
+            $mock->shouldReceive('getMethod')->andReturn('get');
+        })->makePartial();
 
-       $jobChecker = mock(JobChecker::class, [$this->esiPathService, $this->fileGetContentsAction])->makePartial();
+        $jobChecker = mock(JobChecker::class, [$this->esiPathService, $this->fileGetContentsAction])->makePartial();
 
-       $result = $jobChecker->checkJob($job);
+        $result = $jobChecker->checkJob($job);
 
-       expect($result[2]['message'])->toEqual('path values are required but job does not implement HasPathValuesInterface')
-           ->and($result[2]['status'])->toEqual('error');
+        expect($result[2]['message'])->toEqual('path values are required but job does not implement HasPathValuesInterface')
+            ->and($result[2]['status'])->toEqual('error');
 
     });
 
-    it('returns success if job endpoint has no moustache and no HasPathValuesInterface implemented', function (){
+    it('returns success if job endpoint has no moustache and no HasPathValuesInterface implemented', function () {
 
         $job = mock(EsiBase::class, function (MockInterface $mock) {
             $mock->shouldReceive('getVersion')->andReturn('v2');
@@ -307,7 +306,7 @@ describe('Path Check', function (){
 
     });
 
-    it('returns error if no path values are set but have HasPathValuesInterface implemented', function (){
+    it('returns error if no path values are set but have HasPathValuesInterface implemented', function () {
 
         $job = mock(EsiBase::class, \Seatplus\Eveapi\Esi\HasPathValuesInterface::class, function (MockInterface $mock) {
             $mock->shouldReceive('getVersion')->andReturn('v2');
@@ -360,18 +359,18 @@ describe('Path Check', function (){
 describe('Middleware check', function () {
 
     beforeEach(function () {
-       $this->esiPathService = mock(EsiPathService::class, function (MockInterface $mock) {
-           $mock->shouldReceive('getEsiPaths')->andReturn([
-               '/endpoint' => [
-                   'get' => [
-                       'x-alternate-versions' => ['v1', 'v2'],
-                   ]
-               ]
-           ]);
-       })->makePartial();
-       $this->fileGetContentsAction = mock(FileGetContentsAction::class, function (MockInterface $mock) {
-           $mock->shouldReceive('__invoke')->andReturn('{"v1": "2021-01-01", "v2": "2021-01-01"}');
-       })->makePartial();
+        $this->esiPathService = mock(EsiPathService::class, function (MockInterface $mock) {
+            $mock->shouldReceive('getEsiPaths')->andReturn([
+                '/endpoint' => [
+                    'get' => [
+                        'x-alternate-versions' => ['v1', 'v2'],
+                    ],
+                ],
+            ]);
+        })->makePartial();
+        $this->fileGetContentsAction = mock(FileGetContentsAction::class, function (MockInterface $mock) {
+            $mock->shouldReceive('__invoke')->andReturn('{"v1": "2021-01-01", "v2": "2021-01-01"}');
+        })->makePartial();
     });
 
     it('returns error if ThrottlesExceptionsWithRedis middleware is not set', function () {
@@ -434,14 +433,14 @@ describe('Corporation Role Check', function () {
                 '/endpoint/safe' => [
                     'get' => [
                         'x-alternate-versions' => ['v1', 'v2'],
-                        'x-required-roles' => ['Director']
-                    ]
+                        'x-required-roles' => ['Director'],
+                    ],
                 ],
                 '/endpoint/unsafe' => [
                     'get' => [
                         'x-alternate-versions' => ['v1', 'v2'],
-                    ]
-                ]
+                    ],
+                ],
             ]);
         })->makePartial();
         $this->fileGetContentsAction = mock(FileGetContentsAction::class, function (MockInterface $mock) {
@@ -535,18 +534,18 @@ describe('is checking cache check', function () {
                 '/endpoint/cached' => [
                     'get' => [
                         'x-alternate-versions' => ['v1', 'v2'],
-                        'x-cached-seconds' => 3600
+                        'x-cached-seconds' => 3600,
                     ],
                     'post' => [
                         'x-alternate-versions' => ['v1', 'v2'],
-                        'x-cached-seconds' => 3600
-                    ]
+                        'x-cached-seconds' => 3600,
+                    ],
                 ],
                 '/endpoint/not-cached' => [
                     'get' => [
                         'x-alternate-versions' => ['v1', 'v2'],
-                    ]
-                ]
+                    ],
+                ],
             ]);
         })->makePartial();
         $this->fileGetContentsAction = mock(FileGetContentsAction::class, function (MockInterface $mock) {

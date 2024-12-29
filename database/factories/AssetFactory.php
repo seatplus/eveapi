@@ -57,14 +57,14 @@ class AssetFactory extends Factory
 
     public function withName()
     {
-        return $this->state(fn() => [
+        return $this->state(fn () => [
             'name' => implode(' ', fake()->unique()->words(2)),
         ]);
     }
 
     public function withType()
     {
-        return $this->state(fn() => [
+        return $this->state(fn () => [
             'type_id' => Type::factory(),
         ]);
     }

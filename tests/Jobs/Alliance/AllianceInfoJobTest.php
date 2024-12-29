@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfoJob;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
-use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 test('if job is queued', function () {
     Queue::fake();

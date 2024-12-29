@@ -53,6 +53,4 @@ describe('handle batching', function () {
         $job->handle();
     });
 
-
 });
-

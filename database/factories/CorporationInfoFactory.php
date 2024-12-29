@@ -54,7 +54,7 @@ class CorporationInfoFactory extends Factory
 
     public function withAlliance()
     {
-        return $this->state(fn() => [
+        return $this->state(fn () => [
             'alliance_id' => AllianceInfo::factory(),
         ]);
     }

@@ -12,7 +12,7 @@ it('generates an event', function () {
 
     $refresh_token = RefreshToken::factory()->create();
 
-    Event::assertDispatched(RefreshTokenCreated::class, fn($e) => $e->refresh_token === $refresh_token);
+    Event::assertDispatched(RefreshTokenCreated::class, fn ($e) => $e->refresh_token === $refresh_token);
 });
 
 it('queues update character job', function () {
@@ -24,7 +24,7 @@ it('queues update character job', function () {
 });
 
 it('queues update character job after scope change', function () {
-    $refresh_token = Event::fakeFor(fn() => RefreshToken::factory()->scopes(['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1'])->create());
+    $refresh_token = Event::fakeFor(fn () => RefreshToken::factory()->scopes(['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1'])->create());
 
     Queue::fake();
 
@@ -37,7 +37,7 @@ it('queues update character job after scope change', function () {
 });
 
 it('does not queues update character job after no scope change', function () {
-    $refresh_token = Event::fakeFor(fn() => RefreshToken::factory()->scopes(['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1'])->create());
+    $refresh_token = Event::fakeFor(fn () => RefreshToken::factory()->scopes(['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1'])->create());
 
     Queue::fake();
 

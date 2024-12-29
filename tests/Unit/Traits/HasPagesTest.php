@@ -3,7 +3,8 @@
 use Seatplus\Eveapi\Traits\HasPages;
 
 beforeEach(function () {
-    $this->trait = new class {
+    $this->trait = new class
+    {
         use HasPages;
     };
 });

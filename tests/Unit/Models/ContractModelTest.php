@@ -119,6 +119,6 @@ it('has assignee', function (int $assignee_id) {
 
     expect($contract->assignee)->not()->toBeNull();
 })->with([
-    fn() => testCharacter()->character_id,
-    fn() => testCharacter()->corporation_id,
+    fn () => testCharacter()->character_id,
+    fn () => testCharacter()->corporation_id,
 ]);

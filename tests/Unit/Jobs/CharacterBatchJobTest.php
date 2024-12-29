@@ -6,11 +6,10 @@ use Seatplus\Eveapi\Models\BatchStatistic;
 use Seatplus\Eveapi\Models\BatchUpdate;
 
 it('discards update if still pending', function () {
-    $batch_update = new BatchUpdate();
+    $batch_update = new BatchUpdate;
 
     $batch_update->is_pending = true;
     $batch_update->started_at = now();
-
 
     $job = mock(CharacterBatchJob::class)->makePartial();
     $job->shouldReceive('getBatchUpdate')->andReturn($batch_update);
@@ -31,7 +30,7 @@ it('finally creates BatchStatistices', function () {
         'finished_at' => now()->subDays(1),
     ]);
 
-    $job = new CharacterBatchJob(testCharacter()->character_id, batch_jobs: [fn() => 'test']);
+    $job = new CharacterBatchJob(testCharacter()->character_id, batch_jobs: [fn () => 'test']);
 
     \Illuminate\Support\Facades\Bus::fake();
 
@@ -58,13 +57,13 @@ it('does not add AllianceContactsJob if no alliance_id is present', function () 
 
     // make sure refresh token has esi-alliances.read_contacts.v1 scope
     $refresh_token = updateRefreshTokenScopes(testCharacter()->refresh_token, ['esi-alliances.read_contacts.v1']);
-    \Illuminate\Support\Facades\Event::fakeFor(fn() => $refresh_token->save());
+    \Illuminate\Support\Facades\Event::fakeFor(fn () => $refresh_token->save());
 
     // delete alliance_id from character info
     $character_affiliation = testCharacter()->character_affiliation;
     $character_affiliation->alliance_id = null;
 
-    \Illuminate\Support\Facades\Event::fakeFor(fn() => $character_affiliation->save());
+    \Illuminate\Support\Facades\Event::fakeFor(fn () => $character_affiliation->save());
 
     // Act
     $job = new CharacterBatchJob($character_affiliation->character_id);

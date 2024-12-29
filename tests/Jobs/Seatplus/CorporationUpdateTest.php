@@ -54,7 +54,7 @@ test('it dispatches jobs if token with role, scope and permission is present', f
     ['Accountant', 'esi-wallet.read_corporation_wallets.v1', [[CorporationBalanceJob::class, CorporationWalletJournalJob::class]]],
     ['Junior_Accountant', 'esi-wallet.read_corporation_wallets.v1', [[CorporationBalanceJob::class, CorporationWalletJournalJob::class]]],
 ])->with([
-    null, fn() => testCharacter()->corporation_id
+    null, fn () => testCharacter()->corporation_id,
 ]);
 
 it('Batch Statistics entry has been made', function () {
@@ -69,5 +69,5 @@ it('Batch Statistics entry has been made', function () {
 });
 
 it('has middleware', function () {
-    expect((new UpdateCorporation())->middleware())->toBeArray();
+    expect((new UpdateCorporation)->middleware())->toBeArray();
 });

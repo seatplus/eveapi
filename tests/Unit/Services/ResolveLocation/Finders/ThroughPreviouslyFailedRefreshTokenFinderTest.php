@@ -1,11 +1,11 @@
 <?php
 
 use Illuminate\Database\Eloquent\Collection;
-use Seatplus\Eveapi\Services\ResolveLocation\Finders\ThroughPreviouslyFailedRefreshTokenFinder;
 use Seatplus\Eveapi\Models\LocationRefreshToken;
+use Seatplus\Eveapi\Services\ResolveLocation\Finders\ThroughPreviouslyFailedRefreshTokenFinder;
 
 it('returns null when no valid record is found', function () {
-    $finder = new ThroughPreviouslyFailedRefreshTokenFinder();
+    $finder = new ThroughPreviouslyFailedRefreshTokenFinder;
     $location_id = 1;
     $tracings = new Collection([
         createLocationRefreshToken(6),

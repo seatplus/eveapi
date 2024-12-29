@@ -119,8 +119,9 @@ class Asset extends Model implements TypeWatchListInterface
 
         return $query->whereIn('category_id', $category_ids);
     }
+
     #[\Override]
-    protected function casts() : array
+    protected function casts(): array
     {
         return [
             'assetable_id' => 'integer',

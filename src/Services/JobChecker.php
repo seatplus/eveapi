@@ -2,7 +2,6 @@
 
 namespace Seatplus\Eveapi\Services;
 
-use Exception;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Support\Collection;
@@ -18,24 +17,19 @@ use Seatplus\Eveapi\Jobs\Contacts\CharacterContactLabelJob;
 use Seatplus\Eveapi\Jobs\Contacts\CorporationContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\CorporationContactLabelJob;
 use Seatplus\Eveapi\Jobs\Contracts\CharacterContractItemsJob;
-use Seatplus\Eveapi\Jobs\Contracts\ContractItemsJob;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletJournalJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
 use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletJournalByDivisionJob;
 use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletTransactionByDivisionJob;
-use Seatplus\Eveapi\Jobs\Wallet\WalletJournalBase;
-use Seatplus\Eveapi\Jobs\Wallet\WalletTransactionBase;
 
 class JobChecker
 {
     public function __construct(
         private EsiPathService $esiPathService,
         private FileGetContentsAction $fileGetContentsAction
-    )
-    {
-    }
+    ) {}
 
     /**
      * @throws \ReflectionException
@@ -229,8 +223,8 @@ class JobChecker
         $reflection_class = new ReflectionClass($job_class);
         $job_filename = $reflection_class->getFileName();
 
-        if($this->isParentClassImplementingIsCachedLoad($job_class)) {
-           $job_filename = $this->getParentFileName($job_class);
+        if ($this->isParentClassImplementingIsCachedLoad($job_class)) {
+            $job_filename = $this->getParentFileName($job_class);
         }
 
         // check if job isCachedLoad() is called somewhere in the job
@@ -263,6 +257,7 @@ class JobChecker
     {
         // get parent class of job
         $reflection_class = new ReflectionClass($job_class);
+
         // get filename of parent class
         // return job_filename with parent class filename
         return $reflection_class->getParentClass()->getFileName();
@@ -272,12 +267,12 @@ class JobChecker
     {
         $wallet_jobs = [
             CharacterWalletJournalJob::class,
-            CorporationWalletJournalByDivisionJob::class
+            CorporationWalletJournalByDivisionJob::class,
         ];
 
         $wallet_transaction_jobs = [
             CharacterWalletTransactionJob::class,
-            CorporationWalletTransactionByDivisionJob::class
+            CorporationWalletTransactionByDivisionJob::class,
         ];
 
         // for contract jobs, we need to check if the parent class is caching the response
@@ -297,8 +292,7 @@ class JobChecker
             ...$wallet_jobs,
             ...$wallet_transaction_jobs,
             ...$contract_jobs,
-            ...$contact_jobs
+            ...$contact_jobs,
         ]);
     }
-
 }

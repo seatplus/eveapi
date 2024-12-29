@@ -19,7 +19,6 @@ it('returns correct tags array', function () {
 
 it('does not upsert balances when response is cached', function () {
 
-
     $job = mock(CorporationBalanceJob::class, function (MockInterface $mock) {
 
         $response = mock(EsiResponse::class, function (MockInterface $mock) {

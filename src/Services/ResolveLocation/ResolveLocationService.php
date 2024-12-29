@@ -14,8 +14,7 @@ class ResolveLocationService
     public function __construct(
         private readonly ?RefreshToken $refresh_token = null,
         private array $resolvers = []
-    )
-    {
+    ) {
         $this->resolvers ??= [
             new StationResolver,
             new StructureResolver($this->refresh_token),

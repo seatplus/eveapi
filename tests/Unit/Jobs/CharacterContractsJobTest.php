@@ -36,20 +36,20 @@ it('increments page', function () {
 
 it('adds follow up jobs to batch if batching', function () {
 
-        Queue::fake();
+    Queue::fake();
 
-        $contract = \Seatplus\Eveapi\Models\Contracts\Contract::factory()->count(2)->make();
+    $contract = \Seatplus\Eveapi\Models\Contracts\Contract::factory()->count(2)->make();
 
-        $response = new EsiResponse(json_encode($contract->toArray()), [], 'now', 200);
+    $response = new EsiResponse(json_encode($contract->toArray()), [], 'now', 200);
 
-        $job = mock(CharacterContractsJob::class)->makePartial();
-        $job->character_id = 1;
-        $job->shouldReceive('retrieve')->andReturn($response);
+    $job = mock(CharacterContractsJob::class)->makePartial();
+    $job->character_id = 1;
+    $job->shouldReceive('retrieve')->andReturn($response);
 
-        $job->shouldReceive('batching')->once()->andReturnTrue();
-        $job->shouldReceive('batch->add')->once();
+    $job->shouldReceive('batching')->once()->andReturnTrue();
+    $job->shouldReceive('batch->add')->once();
 
-        $job->executeJob();
+    $job->executeJob();
 
-        Queue::assertNothingPushed();
+    Queue::assertNothingPushed();
 });

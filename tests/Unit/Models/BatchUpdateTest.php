@@ -57,4 +57,3 @@ it('filters by character scope', function (BatchUpdate $batchUpdate) {
     expect($result)->toHaveCount(1)
         ->and($result->first()->is($batchUpdate))->toBeTrue();
 })->with('batch_update');
-

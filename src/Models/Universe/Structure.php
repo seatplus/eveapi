@@ -76,8 +76,9 @@ class Structure extends Model implements LocatableInterface
     {
         return $this->belongsTo(System::class, 'solar_system_id', 'system_id');
     }
+
     #[\Override]
-    protected function casts() : array
+    protected function casts(): array
     {
         return [
             'structure_id' => 'integer',

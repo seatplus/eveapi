@@ -8,18 +8,13 @@ use Seatplus\Eveapi\Models\RefreshToken;
 
 class GetUpToDateRefreshTokenService
 {
-
     public function __construct(
         private ?UpdateRefreshTokenService $updateRefreshTokenService = null
-    )
-    {
-        $this->updateRefreshTokenService ??= new UpdateRefreshTokenService();
+    ) {
+        $this->updateRefreshTokenService ??= new UpdateRefreshTokenService;
     }
 
-
     /**
-     * @param RefreshToken $refresh_token
-     * @return RefreshToken
      * @throws RequestFailedException
      */
     public function __invoke(RefreshToken $refresh_token): RefreshToken
@@ -37,6 +32,4 @@ class GetUpToDateRefreshTokenService
                 return $this->updateRefreshTokenService->update($token);
             });
     }
-
-
 }

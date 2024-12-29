@@ -83,8 +83,9 @@ class AllianceInfo extends Model
     {
         return $this->morphMany(Label::class, 'labelable');
     }
+
     #[\Override]
-    protected function casts() : array
+    protected function casts(): array
     {
         return [
             'alliance_id' => 'integer',

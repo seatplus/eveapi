@@ -52,7 +52,7 @@ class CharacterAffiliationFactory extends Factory
 
     public function withAlliance(): CharacterAffiliationFactory
     {
-        return $this->state(fn() => [
+        return $this->state(fn () => [
             'alliance_id' => AllianceInfo::factory(),
         ]);
     }

@@ -21,8 +21,9 @@ class LocationRefreshToken extends Model
     {
         return $this->belongsTo(RefreshToken::class, 'character_id', 'character_id');
     }
+
     #[\Override]
-    protected function casts() : array
+    protected function casts(): array
     {
         return [
             'location_id' => 'integer',

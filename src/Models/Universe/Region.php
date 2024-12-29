@@ -55,7 +55,7 @@ class Region extends Model
     protected $table = 'universe_regions';
 
     #[\Override]
-    protected function casts() : array
+    protected function casts(): array
     {
         return [
             'region_id' => 'integer',

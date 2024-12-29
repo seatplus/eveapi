@@ -69,8 +69,9 @@ class Constellation extends Model
     {
         return $this->hasOne(Region::class, 'region_id', 'region_id');
     }
+
     #[\Override]
-    protected function casts() : array
+    protected function casts(): array
     {
         return [
             'constellation_id' => 'integer',

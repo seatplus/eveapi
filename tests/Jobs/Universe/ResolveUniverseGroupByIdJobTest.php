@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Models\Universe\Group;
-use Seatplus\Eveapi\Tests\Traits\MockRetrieveEsiDataAction;
 
 it('creates group', function () {
     $mock_data = buildGroupMockData();

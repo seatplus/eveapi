@@ -5,15 +5,15 @@ namespace Seatplus\Eveapi\Services\Esi;
 use Composer\InstalledVersions;
 use Seatplus\EsiClient\CacheMiddleware\LaravelFileCacheMiddleware;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
-use Seatplus\EsiClient\EsiConfiguration;
 use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiClient\EsiConfiguration;
 
 class EsiClientSetup
 {
     public function __construct()
     {
         EsiConfiguration::getInstance(
-            http_user_agent: 'SeAT plus v' . InstalledVersions::getPrettyVersion('seatplus/eveapi'),
+            http_user_agent: 'SeAT plus v'.InstalledVersions::getPrettyVersion('seatplus/eveapi'),
             // ESI
             datasource: config('eveapi.config.esi-client.datasource'),
             esi_scheme: config('eveapi.config.esi-client.esi_scheme'),
