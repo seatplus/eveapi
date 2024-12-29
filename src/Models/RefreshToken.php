@@ -39,6 +39,9 @@ use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
+/**
+ * @property \Carbon\Carbon $expires_on
+ */
 class RefreshToken extends Model
 {
     use HasFactory;
