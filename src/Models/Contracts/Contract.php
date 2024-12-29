@@ -59,7 +59,7 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
     public $incrementing = false;
 
     /**
-     * @return Attribute<CorporationInfo|CharacterInfo>
+     * @return Attribute<CorporationInfo|CharacterInfo, never>
      */
     public function issuer(): Attribute
     {
@@ -67,11 +67,11 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
     }
 
     /**
-     * @return Attribute<CorporationInfo|CharacterInfo>
+     * @return Attribute<CorporationInfo|CharacterInfo, never>
      */
     public function assignee(): Attribute
     {
-        return new Attribute(fn () => $this->assignee_character ?? $this->assignee_corporation);
+        return new Attribute(get: fn () => $this->assignee_character ?? $this->assignee_corporation);
     }
 
     public function items(): HasMany
