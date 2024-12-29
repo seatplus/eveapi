@@ -8,13 +8,18 @@ use Seatplus\Eveapi\Jobs\Wallet\CorporationBalanceJob;
 use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletJournalJob;
 use Seatplus\Eveapi\Models\BatchStatistic;
 
-test('it dispatches jobs if token with role, scope and permission is present', function (string $role, string $scope, array $job_classes) {
+test('it dispatches jobs if token with role, scope and permission is present', function (
+    string $role,
+    string $scope,
+    array $job_classes,
+    ?int $corporation_id
+) {
     Bus::fake();
 
     updateRefreshTokenScopes($this->test_character->refresh_token, [$scope])->save();
     $this->test_character->roles()->updateOrCreate(['roles' => ['Director']]);
 
-    (new UpdateCorporation)->handle();
+    (new UpdateCorporation($corporation_id))->handle();
 
     // loop through classes and check if jobs that are instance of class are in batch
     foreach ($job_classes as $job_class) {
@@ -48,6 +53,8 @@ test('it dispatches jobs if token with role, scope and permission is present', f
     ['Director', 'esi-corporations.track_members.v1', [CorporationMemberTrackingJob::class]],
     ['Accountant', 'esi-wallet.read_corporation_wallets.v1', [[CorporationBalanceJob::class, CorporationWalletJournalJob::class]]],
     ['Junior_Accountant', 'esi-wallet.read_corporation_wallets.v1', [[CorporationBalanceJob::class, CorporationWalletJournalJob::class]]],
+])->with([
+    null, fn() => testCharacter()->corporation_id
 ]);
 
 it('Batch Statistics entry has been made', function () {
@@ -59,4 +66,8 @@ it('Batch Statistics entry has been made', function () {
 
     expect(BatchStatistic::count())->toBe(1)
         ->and(BatchStatistic::first())->finished_at->toBeNull();
+});
+
+it('has middleware', function () {
+    expect((new UpdateCorporation())->middleware())->toBeArray();
 });
