@@ -38,11 +38,6 @@ class KillmailItem extends Model
 
     protected $guarded = [];
 
-    /*public function getHasContentAttribute(): bool
-    {
-        return $this->content()->exists();
-    }*/
-
     public function hasContent(): Attribute
     {
         return new Attribute(get: function () {
