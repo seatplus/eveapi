@@ -128,9 +128,6 @@ class MailHeaderJob extends EsiBase implements HasPathValuesInterface, HasRequir
         };
     }
 
-    /**
-     * @param  Collection  $mails
-     */
     public function handleRecipients(Collection $mails): void
     {
 

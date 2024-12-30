@@ -48,7 +48,7 @@ class ContactLabel extends Model
 
     public function labelName(): Attribute
     {
-        return new Attribute(function() {
+        return new Attribute(function () {
 
             /** @var CharacterInfo|CorporationInfo|AllianceInfo $contactable */
             $contactable = $this->contact->contactable;

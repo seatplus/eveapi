@@ -26,14 +26,12 @@
 
 namespace Seatplus\Eveapi\Jobs\Contacts;
 
-use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Services\Contacts\ProcessContactLabelsResponse;
 
 class CorporationContactLabelJob extends ContactBaseJob
 {
-
     public function __construct(
         public int $corporation_id,
         public int $character_id

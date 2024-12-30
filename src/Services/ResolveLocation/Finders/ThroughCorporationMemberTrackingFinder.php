@@ -45,7 +45,7 @@ class ThroughCorporationMemberTrackingFinder implements FinderInterface
                 ->filter(fn (RefreshToken $refresh_token) => $refresh_token->hasScope('esi-universe.read_structures.v1'))
                 ->first();
 
-            if (!is_null($refresh_token)) {
+            if (! is_null($refresh_token)) {
                 return $refresh_token;
             }
 
