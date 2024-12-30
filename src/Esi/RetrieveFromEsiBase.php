@@ -49,7 +49,7 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
         $this->builldEsiRequestContainer($page);
 
         try {
-            return RetrieveEsiData::execute($this->esi_request_container); // @phpstan-ignore-line
+            return RetrieveEsiData::execute($this->esi_request_container);
         } catch (RequestFailedException $exception) {
             $this->handleException($exception);
 
