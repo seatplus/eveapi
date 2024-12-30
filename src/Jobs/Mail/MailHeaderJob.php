@@ -129,15 +129,14 @@ class MailHeaderJob extends EsiBase implements HasPathValuesInterface, HasRequir
     }
 
     /**
-     * @param  Collection  $mail
+     * @param  Collection  $mails
      */
     public function handleRecipients(Collection $mails): void
     {
 
         $existing_recipients = MailRecipients::query()
             ->whereIn('mail_id', $mails->pluck('id'))
-            ->get()
-            ->pluck('mail_id')
+            ->get('mail_id')
             ->toArray();
 
         $recipients = $mails
