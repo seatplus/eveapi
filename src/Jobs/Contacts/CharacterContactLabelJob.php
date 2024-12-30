@@ -33,7 +33,6 @@ use Seatplus\Eveapi\Services\Contacts\ProcessContactLabelsResponse;
 
 class CharacterContactLabelJob extends ContactBaseJob
 {
-    private readonly Collection $known_ids;
 
     public function __construct(
         public int $character_id,
@@ -49,8 +48,6 @@ class CharacterContactLabelJob extends ContactBaseJob
         $this->setPathValues([
             'character_id' => $this->character_id,
         ]);
-
-        $this->known_ids = collect();
     }
 
     /**

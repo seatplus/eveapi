@@ -33,7 +33,6 @@ use Seatplus\Eveapi\Services\Contacts\ProcessContactResponse;
 
 class CorporationContactJob extends ContactBaseJob
 {
-    private readonly Collection $known_ids;
 
     public function __construct(
         public int $corporation_id,
@@ -50,8 +49,6 @@ class CorporationContactJob extends ContactBaseJob
         $this->setPathValues([
             'corporation_id' => $this->corporation_id,
         ]);
-
-        $this->known_ids = collect();
     }
 
     /**

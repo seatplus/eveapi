@@ -33,7 +33,6 @@ use Seatplus\Eveapi\Services\Contacts\ProcessContactLabelsResponse;
 
 class AllianceContactLabelJob extends ContactBaseJob
 {
-    private readonly Collection $known_ids;
 
     public function __construct(
         public int $alliance_id,
@@ -50,8 +49,6 @@ class AllianceContactLabelJob extends ContactBaseJob
         $this->setPathValues([
             'alliance_id' => $this->alliance_id,
         ]);
-
-        $this->known_ids = collect();
     }
 
     /**

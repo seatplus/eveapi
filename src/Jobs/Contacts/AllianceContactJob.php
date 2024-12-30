@@ -33,7 +33,6 @@ use Seatplus\Eveapi\Services\Contacts\ProcessContactResponse;
 
 class AllianceContactJob extends ContactBaseJob
 {
-    private readonly Collection $known_ids;
 
     public function __construct(
         public int $alliance_id,
@@ -51,7 +50,6 @@ class AllianceContactJob extends ContactBaseJob
             'alliance_id' => $this->alliance_id,
         ]);
 
-        $this->known_ids = collect();
     }
 
     /**
