@@ -138,7 +138,7 @@ class MailHeaderJob extends EsiBase implements HasPathValuesInterface, HasRequir
 
         $recipients = $mails
             // filter out mails that already have recipients recorded
-            ->filter(fn ($mail) => ! in_array(data_get($mail, 'id'), $existing_recipients))
+            ->filter(fn (array $mail) => ! in_array(data_get($mail, 'id'), $existing_recipients))
             ->map(function (array $mail) {
                 // create recipients array for mail
                 return collect(data_get($mail, 'recipients'))
