@@ -39,6 +39,7 @@ if (! function_exists('setting')) {
                 throw new SettingException('Must provide a name and value when setting a setting.');
             }
 
+            /** @var object $setting */
             $setting = GlobalSettings::updateOrCreate(
                 ['name' => $name[0]],
                 ['value' => $name[1]]
