@@ -52,8 +52,6 @@ class CheckJobsCommand extends Command
      */
     protected $description = 'Check all used endpoints and whether the jobs are up to date or in need of an update';
 
-    private array $esi_paths = [];
-
     private bool $has_errors = false;
 
     const URL = 'https://esi.evetech.net/latest/swagger.json';
