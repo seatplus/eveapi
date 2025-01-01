@@ -38,7 +38,8 @@ return new class extends Migration
     public function up()
     {
         Schema::create('corporation_histories', function (Blueprint $table) {
-            $table->unsignedBigInteger('record_id');
+            $table->id();
+            $table->unsignedBigInteger('record_id')->primary();
             $table->foreignId('character_id');
             $table->foreignId('corporation_id');
             $table->boolean('is_deleted')->nullable();

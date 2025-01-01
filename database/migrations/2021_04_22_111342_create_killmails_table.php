@@ -70,7 +70,7 @@ return new class extends Migration
             $table->unsignedBigInteger('quantity');
             $table->foreignId('type_id');
             $table->double('price')->default(0.0);
-            $table->boolean('singleton')->default(false);
+            $table->integer('singleton')->default(0);
             $table->boolean('dropped')->default(false);
             $table->boolean('destroyed')->default(false);
             $table->timestamps();

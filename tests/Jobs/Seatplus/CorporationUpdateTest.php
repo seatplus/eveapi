@@ -17,7 +17,7 @@ test('it dispatches jobs if token with role, scope and permission is present', f
     Bus::fake();
 
     updateRefreshTokenScopes($this->test_character->refresh_token, [$scope])->save();
-    $this->test_character->roles()->updateOrCreate(['roles' => ['Director']]);
+    $this->test_character->roles()->update(['roles' => ['Director']]);
 
     (new UpdateCorporation($corporation_id))->handle();
 

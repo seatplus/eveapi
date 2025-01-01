@@ -28,10 +28,12 @@ beforeEach(function () {
     $refresh_token = updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-universe.read_structures.v1']);
     $refresh_token->save();
 
-    CharacterRole::factory()->create([
-        'character_id' => test()->test_character->character_id,
-        'roles' => ['Director'],
-    ]);
+    CharacterRole::query()
+        ->updateOrCreate([
+            'character_id' => test()->test_character->character_id,
+        ], [
+            'roles' => ['Director'],
+        ]);
 
     $this->character_id = test()->test_character->character_id;
     $this->corporation_id = $this->test_character->corporation->corporation_id;

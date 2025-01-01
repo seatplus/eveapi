@@ -17,6 +17,8 @@ return new class extends Migration
             $table->integer('division')->nullable();
 
             $table->timestamps();
+
+            $table->unique(['balanceable_id', 'balanceable_type', 'division']);
         });
 
         Schema::dropIfExists('corporation_wallets');

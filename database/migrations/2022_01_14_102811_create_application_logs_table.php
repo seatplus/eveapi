@@ -10,9 +10,11 @@ return new class extends Migration
 {
     public function up()
     {
+        dump(DB::select("SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'applications';"));
+
         Schema::create('application_logs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('application_id')->constrained('applications');
+            $table->foreignUuid('application_id')->constrained('applications');
             $table->morphs('causer');
             $table->enum('type', ['comment', 'decision'])->index();
             $table->longText('comment');

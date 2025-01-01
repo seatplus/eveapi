@@ -27,11 +27,12 @@ abstract class TestCase extends OrchestraTestCase
             fn (string $modelName) => 'Seatplus\\Eveapi\\Database\\Factories\\'.class_basename($modelName).'Factory'
         );
 
+        Queue::fake();
+
         Event::fakeFor(function () {
             $this->test_character = CharacterInfo::factory()->create();
         });
 
-        Queue::fake();
     }
 
     /**
@@ -47,22 +48,6 @@ abstract class TestCase extends OrchestraTestCase
             EveapiServiceProvider::class,
             HorizonServiceProvider::class,
         ];
-    }
-
-    /**
-     * Define environment setup.
-     *
-     * @param  \Illuminate\Foundation\Application  $app
-     * @return void
-     */
-    #[\Override]
-    protected function defineEnvironment($app)
-    {
-        // Setup default database to use sqlite :memory:
-        $app['config']->set('database.default', 'mysql');
-
-        // setup batching database
-        app('config')->set('queue.batching.database', 'mysql');
     }
 
     #[\Override]
