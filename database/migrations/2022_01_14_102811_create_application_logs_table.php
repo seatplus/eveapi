@@ -10,7 +10,6 @@ return new class extends Migration
 {
     public function up()
     {
-        dump(DB::select("SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'applications';"));
 
         Schema::create('application_logs', function (Blueprint $table) {
             $table->id();
