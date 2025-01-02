@@ -39,7 +39,7 @@ return new class extends Migration
     {
         Schema::create('corporation_histories', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('record_id')->primary();
+            $table->unsignedBigInteger('record_id');
             $table->foreignId('character_id');
             $table->foreignId('corporation_id');
             $table->boolean('is_deleted')->nullable();
