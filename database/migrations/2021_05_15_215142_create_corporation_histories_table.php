@@ -46,6 +46,8 @@ return new class extends Migration
             $table->dateTime('start_date');
 
             $table->timestamps();
+
+            $table->unique(['record_id', 'character_id', 'corporation_id'], 'unique_corporation_history');
         });
     }
 };
