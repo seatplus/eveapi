@@ -37,3 +37,12 @@ test('has no role in scope', function () {
 
     expect($character_role->hasRole('roles_at_hq', 'Contract_Manager'))->toBeFalse();
 });
+
+it('returns false if scope is null', function () {
+    $character_role = CharacterRole::factory()->make([
+        'roles' => ['Contract_Manager', 'Director'],
+        'roles_at_hq' => null,
+    ]);
+
+    expect($character_role->hasRole('roles_at_hq', 'Contract_Manager'))->toBeFalse();
+});
