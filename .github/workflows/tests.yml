@@ -29,9 +29,9 @@ jobs:
       mariadb:
         image: mariadb:10.7
         env:
-          MARIADB_RANDOM_ROOT_PASSWORD: root
-          MYSQL_DATABASE: laravel
-          MYSQL_USER: root
+          MARIADB_RANDOM_ROOT_PASSWORD: 'yes'
+          MARIADB_DATABASE: laravel
+          MARIADB_PASSWORD: root
           MYSQL_PASSWORD: secret
         ports:
           - 3306:3306
