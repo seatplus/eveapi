@@ -15,8 +15,8 @@ jobs:
       postgres:
         image: postgres:17
         env:
-          POSTGRES_USER: root
-          POSTGRES_PASSWORD: postgres # required for the default postgres image but not needed if connected from localhost
+          POSTGRES_USER: seatplus
+          POSTGRES_PASSWORD: secret # required for the default postgres image but not needed if connected from localhost
           POSTGRES_DB: laravel
         ports:
           - 5432:5432
@@ -30,9 +30,9 @@ jobs:
         image: mariadb:10.7
         env:
           MARIADB_DATABASE: laravel
-          MARIADB_USER: root
+          MARIADB_USER: seatplus
           MARIADB_PASSWORD: secret
-          MARIADB_ROOT_PASSWORD: secret
+          MARIADB_ROOT_PASSWORD: 1
         ports:
           - 3306:3306
         options: --health-cmd "mysqladmin ping" --health-interval 10s --health-timeout 5s --health-retries 5
