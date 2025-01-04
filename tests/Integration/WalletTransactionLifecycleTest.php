@@ -33,9 +33,9 @@ test('run wallet transaction action', function (bool $is_corporation = false) {
 
     runWalletTransactionJobWithMockData($mock_data->toArray());
 
-    //assertWalletTransaction($mock_data, $this->test_character->character_id);
+    // assertWalletTransaction($mock_data, $this->test_character->character_id);
     foreach ($mock_data as $data) {
-        //Assert that character asset created
+        // Assert that character asset created
         $this->assertDatabaseHas('wallet_transactions', [
             'wallet_transactionable_id' => $wallet_transactionable_id,
             'transaction_id' => $data->transaction_id,

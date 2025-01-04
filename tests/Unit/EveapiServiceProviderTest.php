@@ -40,7 +40,7 @@ it('returns null when exception is caught', function () {
 
     // assert
 
-    //expect no schedule to be added
+    // expect no schedule to be added
     expect(app(Schedule::class)->events())->toBeArray();
 });
 

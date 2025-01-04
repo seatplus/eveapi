@@ -31,7 +31,7 @@ it('dispatch type job if skill_id is not yet in the type table', function () {
 
     Queue::assertNothingPushed();
 
-    //SkillQueue::factory(['skill_id' => 123])->make();
+    // SkillQueue::factory(['skill_id' => 123])->make();
 
     $mock_data = buildSkillQueueMockEsiData();
 

@@ -68,7 +68,7 @@ trait HasRequiredScopes
 
         $refresh_token = $refresh_tokens->first();
 
-        //check if the refresh token has the required scope
+        // check if the refresh token has the required scope
         throw_unless($refresh_token->hasScope($this->getRequiredScope()), new Exception('refresh token does not have the required scope'));
 
         return $refresh_token;

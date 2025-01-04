@@ -49,21 +49,21 @@ it('resolves system', function () {
     $mock_data = System::factory()->make();
     mockRetrieveEsiDataAction($mock_data->toArray());
 
-    //$job = new ResolveUniverseSystemBySystemIdJob;
+    // $job = new ResolveUniverseSystemBySystemIdJob;
 
-    //Assert that no system is created
+    // Assert that no system is created
     $this->assertDatabaseMissing('universe_systems', [
         'system_id' => $mock_data->system_id,
     ]);
 
     Event::fake();
 
-    //$job->setSystemId($mock_data->system_id)->handle();
+    // $job->setSystemId($mock_data->system_id)->handle();
     (new ResolveUniverseSystemBySystemIdJob($mock_data->system_id))->handle();
 
     Event::assertDispatched(UniverseSystemCreated::class);
 
-    //Assert that system is created
+    // Assert that system is created
     $this->assertDatabaseHas('universe_systems', [
         'system_id' => $mock_data->system_id,
     ]);
@@ -102,14 +102,14 @@ it('resolves constellations', function () {
 
     mockRetrieveEsiDataAction($mock_data->toArray());
 
-    //Assert that no system is present
+    // Assert that no system is present
     $this->assertDatabaseMissing('universe_constellations', [
         'constellation_id' => $mock_data->constellation_id,
     ]);
 
     (new ResolveUniverseConstellationByConstellationIdJob($mock_data->constellation_id))->handle();
 
-    //Assert that system is created
+    // Assert that system is created
     $this->assertDatabaseHas('universe_constellations', [
         'constellation_id' => $mock_data->constellation_id,
     ]);
@@ -150,14 +150,14 @@ it('resolves regions', function () {
 
     mockRetrieveEsiDataAction($mock_data->toArray());
 
-    //Assert that no system is present
+    // Assert that no system is present
     $this->assertDatabaseMissing('universe_regions', [
         'region_id' => $mock_data->region_id,
     ]);
 
     (new ResolveUniverseRegionByRegionIdJob($mock_data->region_id))->handle();
 
-    //Assert that system is created
+    // Assert that system is created
     $this->assertDatabaseHas('universe_regions', [
         'region_id' => $mock_data->region_id,
     ]);

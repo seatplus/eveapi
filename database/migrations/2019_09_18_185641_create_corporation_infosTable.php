@@ -38,13 +38,13 @@ return new class extends Migration
     public function up()
     {
         Schema::create('corporation_infos', function (Blueprint $table) {
-            $table->bigIncrements('corporation_id'); //req
-            $table->string('ticker'); //req
-            $table->string('name'); //req
-            $table->bigInteger('member_count'); //req
-            $table->bigInteger('ceo_id'); //req
-            $table->bigInteger('creator_id'); //req
-            $table->float('tax_rate', 10); //req
+            $table->bigIncrements('corporation_id'); // req
+            $table->string('ticker'); // req
+            $table->string('name'); // req
+            $table->bigInteger('member_count'); // req
+            $table->bigInteger('ceo_id'); // req
+            $table->bigInteger('creator_id'); // req
+            $table->float('tax_rate', 10); // req
 
             $table->bigInteger('alliance_id')->nullable();
             $table->dateTime('date_founded')->nullable();

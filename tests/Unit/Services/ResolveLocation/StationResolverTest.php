@@ -180,7 +180,7 @@ it('returns false if location is not a potential station', function () {
             ->with('locatable')
             ->andReturnNull();
     });
-    //$location->location_id = 59_000_000;
+    // $location->location_id = 59_000_000;
 
     $resolver = new StationResolver;
 

@@ -7,11 +7,11 @@ use Rector\Set\ValueObject\SetList;
 
 return RectorConfig::configure()
     ->withSets([
-        //SetList::DEAD_CODE,
-        //SetList::EARLY_RETURN,
-        //SetList::TYPE_DECLARATION,
-        //SetList::CODE_QUALITY,
-        //SetList::CODING_STYLE,
+        // SetList::DEAD_CODE,
+        // SetList::EARLY_RETURN,
+        // SetList::TYPE_DECLARATION,
+        // SetList::CODE_QUALITY,
+        // SetList::CODING_STYLE,
         \RectorLaravel\Set\LaravelLevelSetList::UP_TO_LARAVEL_110,
         \Rector\Set\ValueObject\LevelSetList::UP_TO_PHP_83,
     ])

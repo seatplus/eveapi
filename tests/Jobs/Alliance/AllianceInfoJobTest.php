@@ -27,7 +27,7 @@ test('retrieve test', function () {
     // Run InfoAction
     $job->handle();
 
-    //Assert that alliance_info is created
+    // Assert that alliance_info is created
     $this->assertDatabaseHas('alliance_infos', [
         'name' => $mock_data->name,
     ]);

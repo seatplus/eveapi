@@ -42,7 +42,7 @@ class GetMissingTypesFromSkillQueue extends HydrateMaintenanceBase
 
         $type_ids = SkillQueue::doesntHave('type')->pluck('skill_id')->unique()->values();
 
-        //$type_ids->each(fn ($id) => ResolveUniverseTypeByIdJob::dispatch($id)->onQueue('low'));
+        // $type_ids->each(fn ($id) => ResolveUniverseTypeByIdJob::dispatch($id)->onQueue('low'));
         $jobs = $type_ids->map(fn (int $id) => new ResolveUniverseTypeByIdJob($id));
 
         $this->batch()->add(
