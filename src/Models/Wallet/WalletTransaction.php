@@ -38,6 +38,7 @@ class WalletTransaction extends Model
     use HasFactory;
 
     protected $primaryKey = 'transaction_id';
+
     protected $guarded = false;
 
     public function wallet_transactionable(): MorphTo

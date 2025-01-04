@@ -29,6 +29,7 @@ namespace Seatplus\Eveapi;
 use Exception;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
@@ -60,6 +61,9 @@ class EveapiServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
+
+        Model::preventLazyLoading(! app()->isProduction());
+
         //Add Migrations
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations/');
 

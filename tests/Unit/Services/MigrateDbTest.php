@@ -7,13 +7,12 @@ use Seatplus\Eveapi\Models\Assets\Asset;
 
 beforeEach(function () {
 
-
     \Illuminate\Support\Facades\Event::fake();
 });
 
 describe('with migration run', function () {
 
-    beforeEach(function (){
+    beforeEach(function () {
 
         // verify no tables exist
         $tables = Schema::connection('mysql')->getTableListing();
@@ -31,7 +30,7 @@ describe('with migration run', function () {
         // insert 2025_01_02_185356_fix_killmail_items_table into migration table
         DB::connection('mysql')->table('migrations')->insert([
             'migration' => '2025_01_02_185356_fix_killmail_items_table',
-            'batch' => 1
+            'batch' => 1,
         ]);
     });
 
@@ -84,7 +83,6 @@ describe('with migration run', function () {
             $table->timestamps();
         });
 
-
         Asset::factory()->connection('mysql')->withName()->count(10)->create();
 
         expect(Asset::on('mysql')->count())->toBe(10)
@@ -92,7 +90,7 @@ describe('with migration run', function () {
 
         // Act
 
-        new \Seatplus\Eveapi\Services\MigrateDb();
+        new \Seatplus\Eveapi\Services\MigrateDb;
 
         // Assert
 
@@ -135,4 +133,3 @@ it('returns false if db connection fails', function () {
     // Assert
     expect($result)->toBeFalse();
 });
-

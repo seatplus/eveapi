@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Schema;
 
 class MigrateDb
 {
-
     public function __construct()
     {
         $this->migrate();
@@ -22,7 +21,7 @@ class MigrateDb
 
         throw_unless($this->databaseExists('pgsql'), new \Exception('PostgreSql database does not exist'));
 
-        if(! $this->databaseExists('mysql')) {
+        if (! $this->databaseExists('mysql')) {
             return;
         }
 
@@ -36,6 +35,7 @@ class MigrateDb
     {
         try {
             DB::connection($connection)->getPdo();
+
             return true;
         } catch (\Exception $e) {
             return false;
@@ -53,14 +53,13 @@ class MigrateDb
         DB::transaction(function () use ($source_tables) {
             foreach ($source_tables as $table) {
 
-                if($table === 'migrations') {
+                if ($table === 'migrations') {
                     continue;
                 }
 
                 $this->replicateTable($table);
             }
         });
-
 
     }
 
@@ -71,7 +70,7 @@ class MigrateDb
         DB::connection('mysql')->table($table)->orderBy($first_column)->chunk(1000, function ($table_data) use ($table) {
             $table_data = $table_data
                 ->map(fn ($row) => (array) $row)
-                ->map(fn ($row) => array_filter($row, fn ($key) => !str_contains($key, 'name_normalized'), ARRAY_FILTER_USE_KEY));
+                ->map(fn ($row) => array_filter($row, fn ($key) => ! str_contains($key, 'name_normalized'), ARRAY_FILTER_USE_KEY));
 
             DB::connection('pgsql')->table($table)->insert($table_data->toArray());
         });

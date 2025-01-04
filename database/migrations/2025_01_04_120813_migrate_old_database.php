@@ -11,6 +11,6 @@ return new class extends Migration
             return;
         }
 
-        new \Seatplus\Eveapi\Services\MigrateDb();
+        new \Seatplus\Eveapi\Services\MigrateDb;
     }
 };
