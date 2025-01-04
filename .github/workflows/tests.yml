@@ -29,10 +29,10 @@ jobs:
       mariadb:
         image: mariadb:10.7
         env:
-          MARIADB_RANDOM_ROOT_PASSWORD: 'yes'
           MARIADB_DATABASE: laravel
           MARIADB_USER: root
           MARIADB_PASSWORD: secret
+          MARIADB_ROOT_PASSWORD: secret
         ports:
           - 3306:3306
         options: --health-cmd "mysqladmin ping" --health-interval 10s --health-timeout 5s --health-retries 5
