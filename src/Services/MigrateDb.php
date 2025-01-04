@@ -2,7 +2,6 @@
 
 namespace Seatplus\Eveapi\Services;
 
-use Doctrine\DBAL\Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -45,7 +44,7 @@ class MigrateDb
     }
 
     /**
-     * @throws Exception
+     * @throws \Throwable
      */
     private function replicateTables(): void
     {
