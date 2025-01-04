@@ -35,13 +35,6 @@ class CorporationHistory extends Model
 
     protected $guarded = [];
 
-    public $incrementing = false;
-
-    /**
-     * @var string
-     */
-    protected $primaryKey = 'record_id';
-
     #[\Override]
     protected function casts(): array
     {

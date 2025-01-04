@@ -33,7 +33,7 @@ return new class extends Migration
         });
 
         Schema::table('universe_categories', function (Blueprint $table) {
-            $table->string('name_normalized')->virtualAs("regexp_replace(name, '[^A-Za-z0-9]', '')")->index();
+            $table->string('name_normalized')->storedAs("regexp_replace(name, '[^A-Za-z0-9]', '', 'g')")->index();
         });
 
         EnrichAssetTypeGroupCategoryJob::dispatch()->onQueue('high');

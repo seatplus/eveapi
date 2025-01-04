@@ -54,7 +54,7 @@ class ContractFactory extends Factory
             'status' => fake()->randomElement(['outstanding', 'in_progress', 'finished_issuer', 'finished_contractor', 'finished', 'cancelled', 'rejected', 'failed', 'deleted', 'reversed']),
             'type' => fake()->randomElement(['unknown', 'item_exchange', 'auction', 'courier', 'loan']),
 
-            //optionals
+            // optionals
             'buyout' => fake()->randomFloat(),
             'collateral' => fake()->randomFloat(),
             'date_accepted' => carbon()->addHour(),

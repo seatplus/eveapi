@@ -48,7 +48,7 @@ test('retrieve test', function () {
     // Run Action
     (new CorporationMemberTrackingJob(testCharacter()->corporation->corporation_id))->handle();
 
-    //Assert that test character is now created
+    // Assert that test character is now created
     $this->assertDatabaseHas('corporation_member_trackings', [
         'corporation_id' => $this->test_character->corporation->corporation_id,
     ]);

@@ -45,6 +45,8 @@ return new class extends Migration
             $table->unsignedInteger('skillpoints_in_skill');
             $table->unsignedInteger('trained_skill_level');
             $table->timestamps();
+
+            $table->unique(['character_id', 'skill_id']);
         });
     }
 

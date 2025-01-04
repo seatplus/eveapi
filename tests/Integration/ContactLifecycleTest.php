@@ -23,7 +23,7 @@ test('run character contact', function () {
     $cached_ids = \Seatplus\Eveapi\Services\Jobs\CacheCharacterAffiliationIdsService::make()->retrieve();
 
     foreach ($mock_data as $data) {
-        //Assert that character asset created
+        // Assert that character asset created
         $this->assertDatabaseHas('contacts', [
             'contactable_id' => $this->test_character->character_id,
             'contact_id' => $data->contact_id,
@@ -47,7 +47,7 @@ test('run corporation contact', function () {
     $cached_ids = \Seatplus\Eveapi\Services\Jobs\CacheCharacterAffiliationIdsService::make()->retrieve();
 
     foreach ($mock_data as $data) {
-        //Assert that character asset created
+        // Assert that character asset created
         $this->assertDatabaseHas('contacts', [
             'contactable_id' => $this->test_character->corporation->corporation_id,
             'contact_id' => $data->contact_id,
@@ -68,9 +68,9 @@ test('run alliance contact', function () {
 
     $job->handle();
 
-    //assertContact($mock_data, $this->test_character->corporation->alliance_id);
+    // assertContact($mock_data, $this->test_character->corporation->alliance_id);
     foreach ($mock_data as $data) {
-        //Assert that character asset created
+        // Assert that character asset created
         $this->assertDatabaseHas('contacts', [
             'contactable_id' => $this->test_character->corporation->alliance_id,
             'contact_id' => $data->contact_id,

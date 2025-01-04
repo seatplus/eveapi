@@ -62,7 +62,7 @@ class CharacterInfoFactory extends Factory
         return [
             'character_id' => fake()->unique()->numberBetween(9000000, 98000000),
             'name' => fake()->name,
-            //'corporation_id'  => $this->faker->numberBetween(98000000, 99000000),
+            // 'corporation_id'  => $this->faker->numberBetween(98000000, 99000000),
             'birthday' => fake()->iso8601('now'),
             'gender' => fake()->randomElement(['male', 'female']),
             'race_id' => fake()->randomDigitNotNull,

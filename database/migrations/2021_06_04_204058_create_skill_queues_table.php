@@ -52,6 +52,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->unique(['character_id', 'skill_id', 'queue_position', 'finished_level'], 'unique_skill_queue');
+            $table->unique(['character_id', 'skill_id', 'queue_position'], 'unique_skill_queue_position');
         });
     }
 

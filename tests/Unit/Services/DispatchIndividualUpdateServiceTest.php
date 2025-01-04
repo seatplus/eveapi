@@ -5,7 +5,7 @@ use Seatplus\Eveapi\Services\DispatchIndividualUpdate;
 
 it('dispatches job', function (string $job) {
     $refresh_token = $this->test_character->refresh_token;
-    //$job = 'character.assets';
+    // $job = 'character.assets';
 
     Queue::fake();
 

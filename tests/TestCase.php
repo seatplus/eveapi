@@ -2,6 +2,7 @@
 
 namespace Seatplus\Eveapi\Tests;
 
+use Illuminate\Config\Repository;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Event;
@@ -27,11 +28,12 @@ abstract class TestCase extends OrchestraTestCase
             fn (string $modelName) => 'Seatplus\\Eveapi\\Database\\Factories\\'.class_basename($modelName).'Factory'
         );
 
+        Queue::fake();
+
         Event::fakeFor(function () {
             $this->test_character = CharacterInfo::factory()->create();
         });
 
-        Queue::fake();
     }
 
     /**
@@ -55,14 +57,14 @@ abstract class TestCase extends OrchestraTestCase
      * @param  \Illuminate\Foundation\Application  $app
      * @return void
      */
-    #[\Override]
     protected function defineEnvironment($app)
     {
-        // Setup default database to use sqlite :memory:
-        $app['config']->set('database.default', 'mysql');
 
-        // setup batching database
-        app('config')->set('queue.batching.database', 'mysql');
+        tap($app['config'], function (Repository $config) {
+            $config->set('database.connections.mysql.port', '3306');
+            $config->set('database.connections.mysql.password', 'secret');
+        });
+
     }
 
     #[\Override]

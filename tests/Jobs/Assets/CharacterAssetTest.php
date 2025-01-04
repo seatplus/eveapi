@@ -38,7 +38,7 @@ test('retrieve test', function () {
     (new CharacterAssetJob($this->test_character->character_id))->handle();
 
     foreach ($mock_data as $data) {
-        //Assert that character asset created
+        // Assert that character asset created
         $this->assertDatabaseHas('assets', [
             'assetable_id' => $this->test_character->character_id,
             'item_id' => $data->item_id,
@@ -56,7 +56,7 @@ it('cleans up assets', function () {
 
     // assert that old data is present before CharacterAssetsCleanUpAction
     foreach ($old_data as $data) {
-        //Assert that character asset created
+        // Assert that character asset created
         $this->assertDatabaseHas('assets', [
             'assetable_id' => $this->test_character->character_id,
             'item_id' => $data->item_id,
@@ -69,7 +69,7 @@ it('cleans up assets', function () {
     (new CharacterAssetJob($this->test_character->character_id))->handle();
 
     foreach ($mock_data as $data) {
-        //Assert that character asset created
+        // Assert that character asset created
         $this->assertDatabaseHas('assets', [
             'assetable_id' => $this->test_character->character_id,
             'item_id' => $data->item_id,
@@ -94,7 +94,7 @@ it('dispatches unknown location job', function () {
     (new CharacterAssetJob($this->test_character->character_id))->handle();
 
     foreach ($mock_data as $data) {
-        //Assert that character asset created
+        // Assert that character asset created
         $this->assertDatabaseHas('assets', [
             'assetable_id' => $this->test_character->character_id,
             'item_id' => $data->item_id,
@@ -112,7 +112,7 @@ it('dispatches unknown types job', function () {
     (new CharacterAssetJob($this->test_character->character_id))->handle();
 
     foreach ($mock_data as $data) {
-        //Assert that character asset created
+        // Assert that character asset created
         $this->assertDatabaseHas('assets', [
             'assetable_id' => $this->test_character->character_id,
             'item_id' => $data->item_id,

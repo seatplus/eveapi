@@ -10,9 +10,10 @@ return new class extends Migration
 {
     public function up()
     {
+
         Schema::create('application_logs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('application_id')->constrained('applications');
+            $table->foreignUuid('application_id')->constrained('applications');
             $table->morphs('causer');
             $table->enum('type', ['comment', 'decision'])->index();
             $table->longText('comment');

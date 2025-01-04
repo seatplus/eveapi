@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::table('assets', function (Blueprint $table) {
             $table->index('item_id');
-            $table->string('name_normalized')->virtualAs("regexp_replace(name, '[^A-Za-z0-9]', '')")->index();
+            $table->string('name_normalized')->storedAs("regexp_replace(COALESCE(name, ''), '[^A-Za-z0-9]', '', 'g')")->index();
         });
     }
 };

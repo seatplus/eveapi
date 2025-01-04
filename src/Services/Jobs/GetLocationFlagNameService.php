@@ -47,7 +47,7 @@ class GetLocationFlagNameService
             'ship_hangar' => range(90, 90),
             'fighter_tubes' => range(159, 163),
             'dronebay' => [
-                ...range(158, 158), //FighterBay
+                ...range(158, 158), // FighterBay
                 ...range(87, 87), // DroneBay
             ],
             'specialized' => [

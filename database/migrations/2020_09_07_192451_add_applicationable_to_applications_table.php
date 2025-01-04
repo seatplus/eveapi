@@ -39,8 +39,9 @@ return new class extends Migration
     {
         Schema::dropIfExists('applications');
 
+        DB::statement('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
         Schema::create('applications', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->uuid('id')->default(DB::raw('uuid_generate_v4()'))->primary();
             $table->bigInteger('corporation_id');
             $table->morphs('applicationable');
             $table->timestamps();

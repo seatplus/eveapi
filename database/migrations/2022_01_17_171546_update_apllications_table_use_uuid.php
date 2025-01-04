@@ -12,10 +12,6 @@ return new class extends Migration
             $table->dropForeign(['application_id']);
         });
 
-        Schema::table('applications', function (Blueprint $table) {
-            $table->uuid('id')->change();
-        });
-
         Schema::table('application_logs', function (Blueprint $table) {
             $table->foreignUuid('application_id')->change();
 

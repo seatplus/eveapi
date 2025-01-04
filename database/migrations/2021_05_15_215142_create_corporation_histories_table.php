@@ -38,6 +38,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('corporation_histories', function (Blueprint $table) {
+            $table->id();
             $table->unsignedBigInteger('record_id');
             $table->foreignId('character_id');
             $table->foreignId('corporation_id');
@@ -45,6 +46,8 @@ return new class extends Migration
             $table->dateTime('start_date');
 
             $table->timestamps();
+
+            $table->unique(['record_id', 'character_id', 'corporation_id'], 'unique_corporation_history');
         });
     }
 };

@@ -95,7 +95,7 @@ class CorporationHistoryJob extends EsiBase implements HasPathValuesInterface
 
         CorporationHistory::query()->upsert(
             $results->toArray(),
-            ['record_id'],
+            ['record_id', 'character_id', 'corporation_id'],
             // only the is_deleted column could be updated
             ['is_deleted']
         );

@@ -18,7 +18,7 @@ it('runs the job', function () {
 
     expect(CorporationDivision::all())->toHaveCount(0);
 
-    //dd($this->test_character->refresh_token->scopes, 'esi-corporations.read_divisions.v1', $this->test_character->roles);
+    // dd($this->test_character->refresh_token->scopes, 'esi-corporations.read_divisions.v1', $this->test_character->roles);
 
     (new CorporationDivisionsJob(testCharacter()->corporation->corporation_id))->handle();
 

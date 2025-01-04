@@ -29,6 +29,7 @@ namespace Seatplus\Eveapi;
 use Exception;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
@@ -60,7 +61,10 @@ class EveapiServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
-        //Add Migrations
+
+        Model::preventLazyLoading(! app()->isProduction());
+
+        // Add Migrations
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations/');
 
         // Configure the queue dashboard
@@ -126,7 +130,7 @@ class EveapiServiceProvider extends ServiceProvider
                     'processes' => config('eveapi.config.queue.workers'),
                     'block_for' => 5,
                     'timeout' => 120, // 2 minutes
-                    'nice' => 10, //Allowed values are between 0 and 19
+                    'nice' => 10, // Allowed values are between 0 and 19
                     'maxTime' => 3600,
                     'maxJobs' => 1000,
                 ],
@@ -139,7 +143,7 @@ class EveapiServiceProvider extends ServiceProvider
                     'minProcesses' => 1,
                     'maxProcesses' => config('eveapi.config.queue.workers'),
                     'tries' => 1,
-                    'nice' => 10, //Allowed values are between 0 and 19
+                    'nice' => 10, // Allowed values are between 0 and 19
                     'timeout' => 900, // 15 minutes
                     'maxTime' => 3600,
                     'maxJobs' => 1000,
@@ -181,7 +185,7 @@ class EveapiServiceProvider extends ServiceProvider
         Type::observe(TypeObserver::class);
         Group::observe(GroupObserver::class);
 
-        //Character Observers
+        // Character Observers
         CharacterInfo::observe(CharacterInfoObserver::class);
     }
 
@@ -214,7 +218,7 @@ class EveapiServiceProvider extends ServiceProvider
             });
 
             // Run Character Affiliation Job every five minutes to updated outdated affiliations.
-            //$schedule->job(new CharacterAffiliationJob)->everyFiveMinutes();
+            // $schedule->job(new CharacterAffiliationJob)->everyFiveMinutes();
             $schedule->call(new RefreshCharacterAffiliationsService)->everyFiveMinutes();
 
             // Cleanup Batches Table

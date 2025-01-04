@@ -16,9 +16,9 @@ test('run wallet journal job', function () {
 
     $job->handle();
 
-    //assertWalletJournal($mock_data, $this->test_character->character_id);
+    // assertWalletJournal($mock_data, $this->test_character->character_id);
     foreach ($mock_data as $data) {
-        //Assert that character asset created
+        // Assert that character asset created
         $this->assertDatabaseHas('wallet_journals', [
             'wallet_journable_id' => $this->test_character->character_id,
             'id' => $data->id,
