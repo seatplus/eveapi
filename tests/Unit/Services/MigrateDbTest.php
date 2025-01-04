@@ -15,9 +15,6 @@ describe('with migration run', function () {
 
     beforeEach(function (){
 
-        config()->set('database.connections.mysql.port', '3306');
-        config()->set('database.connections.mysql.password', 'secret');
-
         // verify no tables exist
         $tables = Schema::connection('mysql')->getTableListing();
 
