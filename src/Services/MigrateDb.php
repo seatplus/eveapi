@@ -72,7 +72,9 @@ class MigrateDb
                 ->map(fn (object $row) => (array) $row)
                 ->map(fn (array $row) => array_filter($row, fn (string $key) => ! str_contains($key, 'name_normalized'), ARRAY_FILTER_USE_KEY));
 
-            DB::connection('pgsql')->table($table)->insert($table_data->toArray());
+            if (Schema::connection('pgsql')->hasTable($table)) {
+                DB::connection('pgsql')->table($table)->insert($table_data->toArray());
+            }
         });
     }
 
