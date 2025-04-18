@@ -28,6 +28,9 @@ namespace Seatplus\Eveapi\Models\Contacts;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
 class ContactLabel extends Model
 {
@@ -44,9 +47,11 @@ class ContactLabel extends Model
 
     public function getLabelNameAttribute(): ?string
     {
-        return $this->contact
-            ->contactable
-            ->labels
+
+        /** @var CharacterInfo|CorporationInfo|AllianceInfo $contactable */
+        $contactable = $this->contact->contactable;
+
+        return $contactable->labels
             ->firstWhere('label_id', $this->label_id)
             ?->label_name;
     }

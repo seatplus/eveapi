@@ -27,7 +27,7 @@ class ThroughWalletTransactionsFinder implements FinderInterface
             ->where('wallet_transactionable_type', CharacterInfo::class)
             ->inRandomOrder()
             ->get()
-            ->map(fn (WalletTransaction $wallet_transaction) => $wallet_transaction->wallet_transactionable->refresh_token)
+            ->map(fn(WalletTransaction $wallet_transaction) => data_get($wallet_transaction, 'wallet_transactionable.refresh_token'))
             ->unique()
             // filter refresh token that has scope esi-universe.read_structures.v1
             ->filter(fn (RefreshToken $refresh_token) => $refresh_token->hasScope('esi-universe.read_structures.v1'))
