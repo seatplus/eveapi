@@ -86,7 +86,7 @@ class Asset extends Model implements TypeWatchListInterface
 
     public function location(): HasOne
     {
-        //Todo create morphTo relation
+        // Todo create morphTo relation
         return $this->hasOne(Location::class, 'location_id', 'location_id');
     }
 

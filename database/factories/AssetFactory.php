@@ -38,8 +38,8 @@ class AssetFactory extends Factory
     public function definition()
     {
         return [
-            'assetable_id' => $this->faker->numberBetween(), //factory(CharacterInfo::class),
-            'assetable_type' => CharacterInfo::class, //$this->faker->randomElement([CharacterInfo::class, CorporationInfo::class]),
+            'assetable_id' => $this->faker->numberBetween(), // factory(CharacterInfo::class),
+            'assetable_type' => CharacterInfo::class, // $this->faker->randomElement([CharacterInfo::class, CorporationInfo::class]),
             'item_id' => $this->faker->unique()->randomNumber(),
             'is_blueprint_copy' => false,
             'is_singleton' => $this->faker->boolean,

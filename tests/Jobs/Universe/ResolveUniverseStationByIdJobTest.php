@@ -27,7 +27,7 @@ it('creates station', function () {
 
     (new ResolveUniverseStationByIdJob($mock_data->station_id))->handle();
 
-    //Assert that structure is created
+    // Assert that structure is created
     $this->assertDatabaseHas('universe_stations', [
         'station_id' => $mock_data->station_id,
     ]);
@@ -39,14 +39,14 @@ it('creates station', function () {
 it('creates location', function () {
     $mock_data = buildStationMockEsiData();
 
-    //Assert that no structure is created
+    // Assert that no structure is created
     $this->assertDatabaseMissing('universe_locations', [
         'location_id' => $mock_data->station_id,
     ]);
 
     (new ResolveUniverseStationByIdJob($mock_data->station_id))->handle();
 
-    //Assert that structure is created
+    // Assert that structure is created
     $this->assertDatabaseHas('universe_locations', [
         'location_id' => $mock_data->station_id,
     ]);
@@ -75,7 +75,7 @@ it('does not create structure if location id is not in range', function () {
 
     (new ResolveUniverseStationByIdJob($mock_data->station_id))->handle();
 
-    //Assert that no structure is created
+    // Assert that no structure is created
     $this->assertDatabaseMissing('universe_stations', [
         'station_id' => $mock_data->station_id,
     ]);

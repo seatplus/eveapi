@@ -5,7 +5,7 @@ use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\Esi\RetrieveEsiData;
 
 test('it returns client for an unauthenticated request', function () {
-    $retrieve = new RetrieveEsiData();
+    $retrieve = new RetrieveEsiData;
 
     $request_container = new EsiRequestContainer(
         method: 'get',
@@ -28,7 +28,7 @@ test('it returns client for an authenticated request', function () {
         return RefreshToken::factory()->create();
     });
 
-    $retrieve = new RetrieveEsiData();
+    $retrieve = new RetrieveEsiData;
 
     $request_container = new EsiRequestContainer(
         method: 'get',
@@ -58,7 +58,7 @@ it('updates outdated refresh_tokens', function () {
         'expires_on' => now()->addSeconds(50),
     ]);
 
-    $retrieve = new RetrieveEsiData();
+    $retrieve = new RetrieveEsiData;
 
     $request_container = new EsiRequestContainer(
         method: 'get',

@@ -35,7 +35,7 @@ describe('isStation or recently updated structure', function () {
             'locatable_type' => Station::class,
         ]);
 
-        $resolveStructurePipe = new StructureResolver();
+        $resolveStructurePipe = new StructureResolver;
 
         Log::shouldReceive()
             ->never();
@@ -64,7 +64,7 @@ describe('isStation or recently updated structure', function () {
             'locatable_type' => Structure::class,
         ]);
 
-        $resolveStructurePipe = new StructureResolver();
+        $resolveStructurePipe = new StructureResolver;
 
         Log::shouldReceive()
             ->never();

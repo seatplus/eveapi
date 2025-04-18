@@ -55,7 +55,7 @@ class UpdateCorporation implements ShouldQueue
     public function __construct(
         public ?int $corporation_id = null,
     ) {
-        $this->findCorporationRefreshToken = new FindCorporationRefreshToken();
+        $this->findCorporationRefreshToken = new FindCorporationRefreshToken;
     }
 
     public function middleware(): array

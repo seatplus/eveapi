@@ -5,7 +5,7 @@ use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 it('passes the middleware if HasRequiredScopeInterface is not implemented', function () {
-    $middleware = new HasRequiredScopeMiddleware();
+    $middleware = new HasRequiredScopeMiddleware;
 
     $job = Mockery::mock(EsiBase::class);
 
@@ -45,7 +45,7 @@ it('passes the job if refresh_token for required scope is found', function () {
 
 function prepareJobMiddleware(bool $should_fail = true)
 {
-    $middleware = new HasRequiredScopeMiddleware();
+    $middleware = new HasRequiredScopeMiddleware;
 
     $job = Mockery::mock(EsiBase::class, \Seatplus\Eveapi\Esi\HasRequiredScopeInterface::class);
 

@@ -25,7 +25,7 @@ it('runs ResolveLocationService', function () {
     $job->handle();
 
     // Assert
-    //assert that mock was called
+    // assert that mock was called
     expect(\Seatplus\Eveapi\Models\Universe\Location::all())
         ->toHaveCount(0);
 });

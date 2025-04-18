@@ -77,7 +77,7 @@ abstract class ContractItemsJob extends EsiBase implements HasPathValuesInterfac
         $contract_items = collect($response)->map(fn (object $item) => [
             // primary
             'record_id' => $item->record_id,
-            //others
+            // others
             'contract_id' => $this->contract_id,
             'is_included' => $item->is_included,
             'is_singleton' => $item->is_singleton,

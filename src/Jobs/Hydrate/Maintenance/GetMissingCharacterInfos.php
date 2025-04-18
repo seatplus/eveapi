@@ -7,7 +7,6 @@ use Seatplus\Eveapi\Models\RefreshToken;
 
 class GetMissingCharacterInfos extends HydrateMaintenanceBase
 {
-
     public function handle(): void
     {
         if ($this->batch()->cancelled()) {

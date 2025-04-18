@@ -23,9 +23,9 @@ test('run character contact label', function () {
 
     dispatch_sync($job);
 
-    //assertContactLabel($mock_data, $this->test_character->character_id);
+    // assertContactLabel($mock_data, $this->test_character->character_id);
     foreach ($mock_data as $data) {
-        //Assert that character asset created
+        // Assert that character asset created
         $this->assertDatabaseHas('labels', [
             'labelable_id' => (string) $this->test_character->character_id,
             'label_id' => $data->label_id,
@@ -40,9 +40,9 @@ test('run corporation contact label', function () {
 
     (new CorporationContactLabelJob(testCharacter()->corporation->corporation_id, testCharacter()->character_id))->handle();
 
-    //assertContactLabel($mock_data, $this->test_character->corporation->corporation_id);
+    // assertContactLabel($mock_data, $this->test_character->corporation->corporation_id);
     foreach ($mock_data as $data) {
-        //Assert that character asset created
+        // Assert that character asset created
         $this->assertDatabaseHas('labels', [
             'labelable_id' => (string) $this->test_character->corporation->corporation_id,
             'label_id' => $data->label_id,
@@ -57,9 +57,9 @@ test('run alliance contact label', function () {
 
     (new AllianceContactLabelJob(testCharacter()->corporation->alliance_id, testCharacter()->character_id))->handle();
 
-    //assertContactLabel($mock_data, $this->test_character->corporation->alliance_id);
+    // assertContactLabel($mock_data, $this->test_character->corporation->alliance_id);
     foreach ($mock_data as $data) {
-        //Assert that character asset created
+        // Assert that character asset created
         $this->assertDatabaseHas('labels', [
             'labelable_id' => (string) $this->test_character->corporation->alliance_id,
             'label_id' => $data->label_id,

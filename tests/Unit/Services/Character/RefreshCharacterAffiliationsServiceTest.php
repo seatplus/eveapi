@@ -25,7 +25,7 @@ describe('dispatches CharacterAffiliationJob for ', function () {
         ]);
 
         // act
-        $service = new RefreshCharacterAffiliationsService();
+        $service = new RefreshCharacterAffiliationsService;
         $service();
 
         // assert
@@ -50,7 +50,7 @@ describe('dispatches CharacterAffiliationJob for ', function () {
             ->queue(testCharacter()->character_id);
 
         // act
-        $service = new RefreshCharacterAffiliationsService();
+        $service = new RefreshCharacterAffiliationsService;
         $service();
 
         // assert
@@ -71,7 +71,7 @@ describe('dispatches CharacterAffiliationJob for ', function () {
         CharacterAffiliation::query()->delete();
 
         // act
-        $service = new RefreshCharacterAffiliationsService();
+        $service = new RefreshCharacterAffiliationsService;
         $service();
 
         // assert
@@ -98,7 +98,7 @@ describe('does not dispatches CharacterAffiliationJob ', function () {
         ]);
 
         // act
-        $service = new RefreshCharacterAffiliationsService();
+        $service = new RefreshCharacterAffiliationsService;
         $service();
 
         // assert

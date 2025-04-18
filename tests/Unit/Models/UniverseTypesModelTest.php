@@ -11,7 +11,7 @@ beforeEach(function () {
 it('has group', function () {
     $group = Event::fakeFor(fn () => Group::factory()->create(['group_id' => $this->type->group_id]));
 
-    //$this->type->group()->save($group);
+    // $this->type->group()->save($group);
 
     $this->assertNotNull($this->type->group);
 });

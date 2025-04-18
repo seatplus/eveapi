@@ -9,7 +9,7 @@ class CacheCharacterAffiliationIdsService
 {
     public static function make(): self
     {
-        return new self();
+        return new self;
     }
 
     final public function queue(int|array $character_ids): void

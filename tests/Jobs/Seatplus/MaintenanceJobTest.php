@@ -49,7 +49,7 @@ use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 
 beforeEach(function () {
-    //$this->job = new MaintenanceJob;
+    // $this->job = new MaintenanceJob;
 });
 
 it('MaintenanceJob dispatches job: ', function ($hydrate_job) {
@@ -460,7 +460,7 @@ it('dispatch get missing constellations and get missing regions as chained job',
     Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => [
         new GetMissingConstellations,
         new GetMissingRegions,
-    ])); //$batch->jobs->first(fn($job) => $job instanceof GetMissingConstellations));
+    ])); // $batch->jobs->first(fn($job) => $job instanceof GetMissingConstellations));
 });
 
 it('dispatches resolve universe constellation by constellation id job for missing constellations', function () {

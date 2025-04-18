@@ -50,7 +50,7 @@ class ContractFactory extends Factory
             'status' => $this->faker->randomElement(['outstanding', 'in_progress', 'finished_issuer', 'finished_contractor', 'finished', 'cancelled', 'rejected', 'failed', 'deleted', 'reversed']),
             'type' => $this->faker->randomElement(['unknown', 'item_exchange', 'auction', 'courier', 'loan']),
 
-            //optionals
+            // optionals
             'buyout' => $this->faker->randomFloat(),
             'collateral' => $this->faker->randomFloat(),
             'date_accepted' => carbon()->addHour(),

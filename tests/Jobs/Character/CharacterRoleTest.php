@@ -37,7 +37,7 @@ test('retrieve test', function () {
 
     (new CharacterRoleJob($this->test_character->character_id))->handle();
 
-    //Assert that test character is now created
+    // Assert that test character is now created
     $this->assertDatabaseHas('character_roles', [
         'character_id' => $mock_data->character_id,
     ]);

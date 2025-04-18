@@ -87,7 +87,7 @@ class CheckJobsCommand extends Command
             ->each(function (array $job) {
                 // check if any assertion failed
                 if ($job['status'] === 'error') {
-                    //$this->writeAssertionOutput(get_class($job), 'px-2', '<span class="px-2 bg-red text-gray-400 uppercase">error</span>');
+                    // $this->writeAssertionOutput(get_class($job), 'px-2', '<span class="px-2 bg-red text-gray-400 uppercase">error</span>');
                     $this->writeAssertionHeader($job['class'], 'px-2 bg-red text-gray-400 uppercase', 'error');
                 } elseif ($job['status'] === 'warning') {
                     $this->writeAssertionHeader($job['class'], 'px-2 bg-yellow text-gray-400 uppercase', 'warning');
