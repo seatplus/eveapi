@@ -6,6 +6,7 @@ use Seatplus\Eveapi\Jobs\Assets\EnrichAssetTypeGroupCategoryJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingBodysFromMails;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCategorys;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCharacterInfos;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCharacterInfosFromCorporationMemberTracking;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingConstellations;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingGroups;
@@ -61,6 +62,7 @@ it('MaintenanceJob dispatches job: ', function ($hydrate_job) {
     });
 
 })->with([
+    GetMissingCharacterInfos::class,
     GetMissingGroups::class,
     GetMissingCategorys::class,
     EnrichAssetTypeGroupCategoryJob::class,
@@ -147,6 +149,23 @@ it('catches missing groups from type', function () {
         ->once()
         ->with([
             new ResolveUniverseGroupByIdJob($type->group_id),
+        ]);
+
+    $mock->handle();
+});
+
+it('catches missing character_infos from refresh_token', function () {
+    $refresh_token = Event::fakeFor(fn () => \Seatplus\Eveapi\Models\RefreshToken::factory()->create([
+        'character_id' => CharacterInfo::factory()->make(),
+    ]));
+
+    $mock = Mockery::mock(GetMissingCharacterInfos::class)->makePartial();
+
+    $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
+    $mock->shouldReceive('batch->add')
+        ->once()
+        ->with([
+            new CharacterInfoJob($refresh_token->character_id),
         ]);
 
     $mock->handle();
