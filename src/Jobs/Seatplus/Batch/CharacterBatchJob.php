@@ -186,7 +186,7 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
         }
 
         // Get corporation_id from character
-        $corporation_id = $this->refresh_token->character->corporation_id;
+        $corporation_id = $this->refresh_token->character?->corporation_id;
 
         // Return empty array if character has no corporation, this should never happen but just in case
         if (! $corporation_id) {
@@ -209,7 +209,7 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
         }
 
         // Get alliance_id from character
-        $alliance_id = $this->refresh_token->character->alliance_id;
+        $alliance_id = $this->refresh_token->character?->alliance_id;
 
         // Return empty array if character has no alliance
         if (! $alliance_id) {
