@@ -105,7 +105,7 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
                 'status' => $contract->status,
                 'type' => $contract->type,
 
-                //optionals
+                // optionals
                 'buyout' => optional($contract)->buyout,
                 'collateral' => optional($contract)->collateral,
                 'date_accepted' => optional($contract)->date_accepted ? carbon(optional($contract)->date_accepted) : null,

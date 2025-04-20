@@ -37,6 +37,7 @@ use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Jobs\Assets\EnrichAssetTypeGroupCategoryJob;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingBodysFromMails;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCategorys;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCharacterInfos;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCharacterInfosFromCorporationMemberTracking;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingConstellations;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingGroups;
@@ -84,6 +85,7 @@ class MaintenanceJob implements ShouldQueue
     {
         return Bus::batch([
 
+            new GetMissingCharacterInfos,
             new GetMissingGroups,
             new GetMissingCategorys,
             new EnrichAssetTypeGroupCategoryJob,

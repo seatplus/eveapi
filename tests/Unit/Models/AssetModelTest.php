@@ -52,7 +52,7 @@ it('has scope assets location ids', function () {
 
 it('has assetable relationship', function () {
     $test_asset = Asset::factory()->create([
-        'assetable_id' => $this->test_character->character_id, //CharacterInfo::factory(),
+        'assetable_id' => $this->test_character->character_id, // CharacterInfo::factory(),
         'assetable_type' => CharacterInfo::class,
     ]);
 
@@ -64,7 +64,7 @@ it('has content relationship', function () {
         'location_flag' => 'Hangar',
     ]);
 
-    //Create Content
+    // Create Content
     $test_asset->content()->save(Asset::factory()->create([
         'location_flag' => 'cargo',
     ]));
@@ -77,7 +77,7 @@ it('has container relationship', function () {
         'location_flag' => 'Hangar',
     ]);
 
-    //Create Content
+    // Create Content
     $test_asset->content()->save(Asset::factory()->create([
         'location_flag' => 'cargo',
     ]));

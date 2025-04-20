@@ -23,7 +23,7 @@ test('retrieve test', function () {
     // Run InfoAction
     (new CorporationInfoJob($this->corporation_id))->handle();
 
-    //Assert that test character is now created
+    // Assert that test character is now created
     $this->assertDatabaseHas('corporation_infos', [
         'name' => $mock_data->name,
     ]);

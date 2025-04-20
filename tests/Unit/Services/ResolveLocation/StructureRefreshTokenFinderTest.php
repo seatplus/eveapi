@@ -49,7 +49,7 @@ describe('filters through different finders', function () {
                 'resolved' => true,
             ]);
 
-        $instance = new ThroughSuccessfulRefreshTokenFinder();
+        $instance = new ThroughSuccessfulRefreshTokenFinder;
 
         executeFindStructureRefreshTokenTest($instance);
 
@@ -62,7 +62,7 @@ describe('filters through different finders', function () {
             'assetable_type' => CharacterInfo::class,
         ]);
 
-        $instance = new ThroughCharacterAssetsFinder();
+        $instance = new ThroughCharacterAssetsFinder;
 
         executeFindStructureRefreshTokenTest($instance);
     });
@@ -73,7 +73,7 @@ describe('filters through different finders', function () {
             'issuer_id' => test()->character_id,
         ]);
 
-        $instance = new ThroughContractsFinder();
+        $instance = new ThroughContractsFinder;
 
         executeFindStructureRefreshTokenTest($instance);
     });
@@ -84,7 +84,7 @@ describe('filters through different finders', function () {
             'character_id' => test()->character_id,
         ]);
 
-        $instance = new ThroughCorporationMemberTrackingFinder();
+        $instance = new ThroughCorporationMemberTrackingFinder;
 
         executeFindStructureRefreshTokenTest($instance);
     });
@@ -96,7 +96,7 @@ describe('filters through different finders', function () {
             'corporation_id' => test()->corporation_id,
         ]);
 
-        $instance = new ThroughCorporationMemberTrackingFinder();
+        $instance = new ThroughCorporationMemberTrackingFinder;
 
         executeFindStructureRefreshTokenTest($instance);
     });
@@ -110,13 +110,13 @@ describe('filters through different finders', function () {
                 'attempts' => 1,
             ]);
 
-        $instance = new ThroughPreviouslyFailedRefreshTokenFinder();
+        $instance = new ThroughPreviouslyFailedRefreshTokenFinder;
 
         executeFindStructureRefreshTokenTest($instance);
     });
 
     it('finds token ThroughRandomRefreshTokenFinder', function () {
-        $instance = new ThroughRandomRefreshTokenFinder();
+        $instance = new ThroughRandomRefreshTokenFinder;
 
         executeFindStructureRefreshTokenTest($instance);
     });
@@ -128,7 +128,7 @@ describe('filters through different finders', function () {
             'wallet_transactionable_type' => CharacterInfo::class,
         ]);
 
-        $instance = new ThroughWalletTransactionsFinder();
+        $instance = new ThroughWalletTransactionsFinder;
 
         executeFindStructureRefreshTokenTest($instance);
     });
@@ -140,7 +140,7 @@ describe('filters through different finders', function () {
             'wallet_transactionable_type' => CorporationInfo::class,
         ]);
 
-        $instance = new ThroughWalletTransactionsFinder();
+        $instance = new ThroughWalletTransactionsFinder;
 
         executeFindStructureRefreshTokenTest($instance);
     });
@@ -209,7 +209,7 @@ it('goes through all finder classes', function () {
             'attempts' => 1,
         ]);
 
-    $instance = new StructureRefreshTokenFinder();
+    $instance = new StructureRefreshTokenFinder;
 
     // make sure the ThrougRandomRefreshTokenFinder did not result positively
     $random_token = (new ThroughRandomRefreshTokenFinder)->handle(test()->location_id, LocationRefreshToken::all());

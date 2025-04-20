@@ -35,9 +35,9 @@ test('retrieve test', function () {
 
     $job->handle();
 
-    //(new CharacterInfoAction)->execute($mock_data['character_id']);
+    // (new CharacterInfoAction)->execute($mock_data['character_id']);
 
-    //Assert that test character is now created
+    // Assert that test character is now created
     $this->assertDatabaseHas('character_infos', [
         'name' => $mock_data['name'],
     ]);

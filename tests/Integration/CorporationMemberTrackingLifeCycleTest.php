@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Queue;
-use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob as CharacterInfoJob;
+use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;

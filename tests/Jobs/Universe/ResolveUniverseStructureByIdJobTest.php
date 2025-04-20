@@ -26,14 +26,14 @@ beforeEach(function () {
 it('creates structure', function () {
     $mock_data = buildStructureMockEsiData();
 
-    //Assert that no structure is created
+    // Assert that no structure is created
     $this->assertDatabaseMissing('universe_structures', [
         'structure_id' => $mock_data->structure_id,
     ]);
 
     (new ResolveUniverseStructureByIdJob($this->refresh_token->character_id, $mock_data->structure_id))->handle();
 
-    //Assert that structure is created
+    // Assert that structure is created
     $this->assertDatabaseHas('universe_structures', [
         'structure_id' => $mock_data->structure_id,
     ]);
@@ -45,14 +45,14 @@ it('creates structure', function () {
 it('creates location', function () {
     $mock_data = buildStructureMockEsiData();
 
-    //Assert that no structure is created
+    // Assert that no structure is created
     $this->assertDatabaseMissing('universe_locations', [
         'location_id' => $mock_data->structure_id,
     ]);
 
     (new ResolveUniverseStructureByIdJob($this->refresh_token->character_id, $mock_data->structure_id))->handle();
 
-    //Assert that structure is created
+    // Assert that structure is created
     $this->assertDatabaseHas('universe_locations', [
         'location_id' => $mock_data->structure_id,
     ]);

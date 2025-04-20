@@ -51,7 +51,7 @@ class StructureResolver implements ResolverInterface
 
         // if args is RefreshToken or null, set it as refreshToken
         if ($args instanceof RefreshToken) {
-            //set it as refreshToken
+            // set it as refreshToken
             $this->refreshToken = $args;
         }
 

@@ -62,7 +62,7 @@ it('has morphable sso scope', function () {
         ->hasSsoScopes()
         ->create();
 
-    //$corporation_info->ssoScopes()->save(SsoScopes::factory()->make());
+    // $corporation_info->ssoScopes()->save(SsoScopes::factory()->make());
 
     expect($corporation_info->refresh()->ssoScopes)->toBeInstanceOf(SsoScopes::class);
 });
