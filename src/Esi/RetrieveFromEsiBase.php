@@ -31,8 +31,12 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use Illuminate\Queue\InteractsWithQueue;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
+use Seatplus\EsiClient\Exceptions\EsiErrorLimitedException;
+use Seatplus\EsiClient\Exceptions\EsiRateLimitedException;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
+use Seatplus\Eveapi\Exceptions\EsiJobReleasedException;
+use Seatplus\Eveapi\Jobs\Middleware\EsiProactiveRateLimitMiddleware;
 use Seatplus\Eveapi\Services\Facade\RetrieveEsiData;
 
 abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
@@ -43,18 +47,38 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
 
     /**
      * @throws RequestFailedException
+     * @throws EsiJobReleasedException
      */
     public function retrieve(?int $page = null): EsiResponse
     {
         $this->builldEsiRequestContainer($page);
 
         try {
-            return RetrieveEsiData::execute($this->esi_request_container);
+            $response = RetrieveEsiData::execute($this->esi_request_container);
+        } catch (EsiRateLimitedException|EsiErrorLimitedException $exception) {
+            $this->release($exception->retryAfter);
+            throw new EsiJobReleasedException($exception->getMessage(), $exception->getCode(), $exception);
         } catch (RequestFailedException $exception) {
             $this->handleException($exception);
 
             throw $exception;
         }
+
+        // Record rate-limit state for the proactive middleware when headers are present.
+        if ($response->ratelimitGroup !== null
+            && $response->ratelimitRemaining !== null
+            && $response->ratelimitLimit !== null
+            && $response->ratelimitWindowSeconds !== null
+        ) {
+            EsiProactiveRateLimitMiddleware::recordResponse(
+                group: $response->ratelimitGroup,
+                remaining: $response->ratelimitRemaining,
+                limit: $response->ratelimitLimit,
+                windowSeconds: $response->ratelimitWindowSeconds,
+            );
+        }
+
+        return $response;
     }
 
     private function getBaseEsiReuestContainer(): EsiRequestContainer
@@ -96,18 +120,19 @@ abstract class RetrieveFromEsiBase implements RetrieveFromEsiInterface
 
     private function handleException(RequestFailedException $exception): void
     {
-
         $original_exception = $exception->getOriginalException();
 
-        // if original exception is ClientException, we can safely assume that the request was invalid
-        if ($original_exception instanceof ClientException) {
-            $this->fail($exception);
+        // ServerException (5xx) — release for retry, respect Retry-After if present
+        if ($original_exception instanceof ServerException) {
+            $retryAfter = (int) ($original_exception->getResponse()->getHeader('Retry-After')[0] ?? 60);
+            $this->release(max(60, $retryAfter));
+
+            return;
         }
 
-        // if original exception is ServerException, we can safely assume that the request was valid
-        // but the server failed so we can release the job back into the queue
-        if ($original_exception instanceof ServerException) {
-            $this->release(60);
+        // Any other ClientException (4xx except 429/420 which are caught upstream) — fail permanently
+        if ($original_exception instanceof ClientException) {
+            $this->fail($exception);
         }
     }
 }

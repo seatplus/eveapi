@@ -61,11 +61,11 @@ abstract class WalletTransactionBase extends EsiBase implements HasPathValuesInt
             }
 
             // If no more transactions are present, break the loop.
-            if (collect($response)->isEmpty()) {
+            if (collect($response->data)->isEmpty()) {
                 break;
             }
 
-            $transactions = collect($response)
+            $transactions = collect($response->data)
                 ->map(fn (object $entry) => [
                     'transaction_id' => $entry->transaction_id,
 

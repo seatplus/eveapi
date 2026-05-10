@@ -39,7 +39,7 @@ class ProcessContactLabelsResponse
 
     public function execute(EsiResponse $response): Collection
     {
-        return collect($response)->each(fn (object $contact_label) => Label::updateOrCreate([
+        return collect($response->data)->each(fn (object $contact_label) => Label::updateOrCreate([
             'label_id' => $contact_label->label_id,
             'labelable_id' => $this->labelable_id,
             'labelable_type' => $this->labelable_type,

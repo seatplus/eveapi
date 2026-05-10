@@ -100,7 +100,7 @@ class CorporationMemberTrackingJob extends EsiBase implements HasCorporationRole
             return;
         }
 
-        $members = collect($response)
+        $members = collect($response->data)
             ->map(fn (object $member) => [
                 'corporation_id' => $this->corporation_id,
                 'character_id' => $member->character_id,

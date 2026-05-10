@@ -87,7 +87,7 @@ class MailHeaderJob extends EsiBase implements HasPathValuesInterface, HasRequir
             return;
         }
 
-        collect($response)
+        collect($response->data)
             ->map(fn (object $mail) => [
                 'id' => data_get($mail, 'mail_id'),
                 'subject' => data_get($mail, 'subject'),

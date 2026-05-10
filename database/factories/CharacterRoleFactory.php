@@ -52,10 +52,20 @@ class CharacterRoleFactory extends Factory
     {
         return [
             'character_id' => fake()->numberBetween(99000000, 100000000),
+            'roles' => [],
+            'roles_at_base' => null,
+            'roles_at_hq' => null,
+            'roles_at_other' => null,
+        ];
+    }
+
+    public function withRandomRoles(): static
+    {
+        return $this->state(fn () => [
             'roles' => fake()->randomElements($this->roles_array, fake()->randomDigitNotNull, []),
             'roles_at_base' => fake()->optional()->randomElements($this->roles_array, fake()->randomDigitNotNull),
             'roles_at_hq' => fake()->optional()->randomElements($this->roles_array, fake()->randomDigitNotNull),
             'roles_at_other' => fake()->optional()->randomElements($this->roles_array, fake()->randomDigitNotNull),
-        ];
+        ]);
     }
 }

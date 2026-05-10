@@ -34,7 +34,7 @@ it('handles multiple pages correctly', function () {
         $response = mock(EsiResponse::class, function (\Mockery\MockInterface $mock) {
             $mock->shouldReceive('isCachedLoad')->andReturnFalse();
             $mock->pages = 2;
-            $mock->shouldReceive('getIterator')->andReturn(new ArrayIterator([]));
+            $mock->data = (object) [];
         });
 
         $mock->shouldReceive('retrieve')->twice()->andReturn($response);
@@ -56,7 +56,7 @@ it('handles contextable type', function ($context_id_type) {
         $response = mock(EsiResponse::class, function (\Mockery\MockInterface $mock) use ($context_id_type) {
             $mock->shouldReceive('isCachedLoad')->andReturnFalse();
             $mock->pages = 1;
-            $mock->shouldReceive('getIterator')->andReturn(new ArrayIterator([
+            $mock->data = (object) [
                 (object) [
                     'context_id_type' => $context_id_type,
                     'id' => 12345,
@@ -64,7 +64,7 @@ it('handles contextable type', function ($context_id_type) {
                     'description' => 'test',
                     'ref_type' => 'test',
                 ],
-            ]));
+            ];
         });
 
         $mock->shouldReceive('retrieve')->once()->andReturn($response);

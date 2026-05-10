@@ -85,7 +85,7 @@ class CorporationHistoryJob extends EsiBase implements HasPathValuesInterface
             return;
         }
 
-        $results = collect($response)->map(fn (object $record) => [
+        $results = collect($response->data)->map(fn (object $record) => [
             'record_id' => data_get($record, 'record_id'),
             'character_id' => $this->character_id,
             'corporation_id' => data_get($record, 'corporation_id'),

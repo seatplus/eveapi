@@ -54,8 +54,13 @@ class RetrieveEsiData
         private ?RefreshToken $refresh_token = null,
         private readonly ?int $page = null,
         private ?EsiClient $client = null,
-        private ?GetUpToDateRefreshTokenService $getUpToDateRefreshTokenService = null
+        private ?GetUpToDateRefreshTokenService $getUpToDateRefreshTokenService = null,
+        ?string $compatibility_date = null,
     ) {
+        if ($compatibility_date !== null) {
+            EsiConfiguration::getInstance()->compatibility_date = $compatibility_date;
+        }
+
         $this->client = $client ?? $this->buildClient();
 
         if ($page) {
@@ -84,7 +89,8 @@ class RetrieveEsiData
             request_body: $container->request_body,
             refresh_token: $container->refresh_token,
             page: $container->page,
-            client: $client
+            client: $client,
+            compatibility_date: $container->compatibility_date,
         ))->executeInstance();
     }
 

@@ -80,7 +80,7 @@ abstract class ContractItemsJob extends EsiBase implements HasPathValuesInterfac
 
         DB::transaction(function () use ($response) {
 
-            $contract_items = collect($response)->map(fn (object $item) => [
+            $contract_items = collect($response->data)->map(fn (object $item) => [
                 // primary
                 'record_id' => $item->record_id,
                 // others

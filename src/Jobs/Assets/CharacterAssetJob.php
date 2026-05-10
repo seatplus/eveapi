@@ -102,7 +102,7 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
             }
 
             // First update the
-            collect($response)
+            collect($response->data)
                 ->each(
                     fn (object $asset) => $this->assets->push([
                         'item_id' => $asset->item_id,

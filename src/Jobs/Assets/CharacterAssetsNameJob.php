@@ -132,7 +132,7 @@ class CharacterAssetsNameJob extends EsiBase implements HasPathValuesInterface, 
                 $response = $this->retrieve();
 
                 // merge response into asset_names collection
-                $this->asset_names = $this->asset_names->merge(collect($response));
+                $this->asset_names = $this->asset_names->merge(collect($response->data));
             });
 
         // Update all assets in one go

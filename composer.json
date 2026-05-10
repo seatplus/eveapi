@@ -71,5 +71,15 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true
         }
-    }
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../esi-client",
+            "options": {
+                "symlink": true,
+                "canonical": false
+            }
+        }
+    ]
 }

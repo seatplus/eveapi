@@ -93,7 +93,7 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
                 return;
             }
 
-            collect($response)->each(fn (object $contract) => $contracts->push([
+            collect($response->data)->each(fn (object $contract) => $contracts->push([
                 // primary
                 'contract_id' => $contract->contract_id,
                 // other columns

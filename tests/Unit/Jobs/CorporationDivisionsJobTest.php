@@ -16,8 +16,9 @@ it('has middleware', function () {
     $job = new \Seatplus\Eveapi\Jobs\Corporation\CorporationDivisionsJob(1);
 
     expect($job->middleware())->toBeArray()
-        ->and($job->middleware())->toHaveCount(2)
-        ->and($job->middleware()[0])->toBeInstanceOf(\Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware::class);
+        ->and($job->middleware())->toHaveCount(3)
+        ->and($job->middleware()[0])->toBeInstanceOf(\Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware::class)
+        ->and($job->middleware()[1])->toBeInstanceOf(\Seatplus\Eveapi\Jobs\Middleware\EsiProactiveRateLimitMiddleware::class);
 });
 
 it('returns early if response is cached', function () {

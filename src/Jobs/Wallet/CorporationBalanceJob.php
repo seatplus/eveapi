@@ -100,7 +100,7 @@ class CorporationBalanceJob extends EsiBase implements HasCorporationRoleInterfa
             return;
         }
 
-        $corporation_balances = collect($response)
+        $corporation_balances = collect($response->data)
             ->map(
                 fn (object $wallet) => [
                     'balanceable_id' => $this->corporation_id,

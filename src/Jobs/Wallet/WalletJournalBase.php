@@ -52,7 +52,7 @@ abstract class WalletJournalBase extends EsiBase implements HasPathValuesInterfa
                 return;
             }
 
-            $journal_entries = collect($response)
+            $journal_entries = collect($response->data)
                 ->map(fn (object $entry) => [
                     'id' => $entry->id,
 

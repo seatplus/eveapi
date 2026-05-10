@@ -96,7 +96,7 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
 
     public function processResponse(EsiResponse $response, Carbon $timestamp): void
     {
-        collect($response)
+        collect($response->data)
             ->each(fn (object $result) => $this->character_affiliations->push(
                 [
                     'character_id' => $result->character_id,

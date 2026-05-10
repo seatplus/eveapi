@@ -6,8 +6,8 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // skip migration if in testing environment
-        if (app()->environment('testing')) {
+        // skip migration if in testing or local environment
+        if (app()->environment('testing') || app()->environment('local')) {
             return;
         }
 

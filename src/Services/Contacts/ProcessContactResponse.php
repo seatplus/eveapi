@@ -37,7 +37,7 @@ class ProcessContactResponse
 
     public function execute(EsiResponse $response): Collection
     {
-        return collect($response)->each(function (object $contact) {
+        return collect($response->data)->each(function (object $contact) {
             $contact_model = Contact::updateOrCreate([
                 'contact_id' => $contact->contact_id,
                 'contactable_id' => $this->contactable_id,

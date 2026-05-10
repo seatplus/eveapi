@@ -7,4 +7,4 @@
 .php_cs.cache
 .phpunit.result.cache
 .php-cs-fixer.cache
-composer.lock
+composer.lock.phpunit.cache/

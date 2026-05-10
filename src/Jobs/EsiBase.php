@@ -37,6 +37,8 @@ use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Seatplus\Eveapi\Esi\RetrieveFromEsiBase;
+use Seatplus\Eveapi\Exceptions\EsiJobReleasedException;
+use Seatplus\Eveapi\Jobs\Middleware\EsiProactiveRateLimitMiddleware;
 
 abstract class EsiBase extends RetrieveFromEsiBase implements BaseJobInterface, ShouldBeUnique, ShouldQueue
 {
@@ -48,15 +50,16 @@ abstract class EsiBase extends RetrieveFromEsiBase implements BaseJobInterface, 
 
     /**
      * The number of times the job may be attempted.
+     * Higher than default (3) to allow for rate-limit releases.
      */
-    public int $tries = 3;
+    public int $tries = 10;
 
     /**
      * Calculate the number of seconds to wait before retrying the job.
      */
     public function backoff(): array
     {
-        return [1 * 60, 5 * 60, 10 * 60];
+        return [1 * 60, 5 * 60, 10 * 60, 15 * 60, 15 * 60, 15 * 60, 15 * 60, 15 * 60, 15 * 60];
     }
 
     /**
@@ -83,6 +86,7 @@ abstract class EsiBase extends RetrieveFromEsiBase implements BaseJobInterface, 
     public function middleware(): array
     {
         return [
+            new EsiProactiveRateLimitMiddleware,
             (new ThrottlesExceptionsWithRedis(80, 5 * 60))
                 ->by('esiratelimit')
                 ->backoff(5),
@@ -93,6 +97,8 @@ abstract class EsiBase extends RetrieveFromEsiBase implements BaseJobInterface, 
     {
         try {
             DB::transaction(fn () => $this->executeJob());
+        } catch (EsiJobReleasedException) {
+            // Job was released back to the queue due to ESI rate/error limiting — not an error.
         } catch (Exception $exception) {
             report($exception);
 
