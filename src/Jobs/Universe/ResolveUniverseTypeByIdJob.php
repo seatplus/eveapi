@@ -77,22 +77,22 @@ class ResolveUniverseTypeByIdJob extends EsiBase implements HasPathValuesInterfa
         $response = $this->retrieve();
 
         Type::firstOrCreate(
-            ['type_id' => $response->type_id],
+            ['type_id' => $response->data->type_id],
             [
-                'group_id' => $response->group_id,
-                'name' => $response->name,
-                'description' => $response->description,
-                'published' => $response->published,
+                'group_id' => $response->data->group_id,
+                'name' => $response->data->name,
+                'description' => $response->data->description,
+                'published' => $response->data->published,
 
-                'capacity' => data_get($response, 'capacity'),
-                'graphic_id' => data_get($response, 'graphic_id'),
-                'icon_id' => data_get($response, 'icon_id'),
-                'market_group_id' => data_get($response, 'market_group_id'),
-                'mass' => data_get($response, 'mass'),
-                'packaged_volume' => data_get($response, 'packaged_volume'),
-                'portion_size' => data_get($response, 'portion_size'),
-                'radius' => data_get($response, 'radius'),
-                'volume' => data_get($response, 'volume'),
+                'capacity' => data_get($response->data, 'capacity'),
+                'graphic_id' => data_get($response->data, 'graphic_id'),
+                'icon_id' => data_get($response->data, 'icon_id'),
+                'market_group_id' => data_get($response->data, 'market_group_id'),
+                'mass' => data_get($response->data, 'mass'),
+                'packaged_volume' => data_get($response->data, 'packaged_volume'),
+                'portion_size' => data_get($response->data, 'portion_size'),
+                'radius' => data_get($response->data, 'radius'),
+                'volume' => data_get($response->data, 'volume'),
             ]
         );
     }

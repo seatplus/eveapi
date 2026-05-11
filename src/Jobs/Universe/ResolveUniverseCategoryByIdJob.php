@@ -67,11 +67,11 @@ class ResolveUniverseCategoryByIdJob extends EsiBase implements HasPathValuesInt
 
         Category::firstOrCreate(
             [
-                'category_id' => $response->category_id,
+                'category_id' => $response->data->category_id,
             ],
             [
-                'name' => $response->name,
-                'published' => $response->published,
+                'name' => $response->data->name,
+                'published' => $response->data->published,
             ]
         );
     }

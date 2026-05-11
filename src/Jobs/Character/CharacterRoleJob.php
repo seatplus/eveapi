@@ -89,10 +89,10 @@ class CharacterRoleJob extends EsiBase implements HasPathValuesInterface, HasReq
         CharacterRole::updateOrCreate([
             'character_id' => $this->character_id,
         ], [
-            'roles' => $response->roles,
-            'roles_at_base' => $response->roles_at_base,
-            'roles_at_hq' => $response->roles_at_hq,
-            'roles_at_other' => $response->roles_at_other,
+            'roles' => $response->data->roles,
+            'roles_at_base' => $response->data->roles_at_base,
+            'roles_at_hq' => $response->data->roles_at_hq,
+            'roles_at_other' => $response->data->roles_at_other,
         ]);
     }
 }

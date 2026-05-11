@@ -98,10 +98,10 @@ class ResolveUniverseStructureByIdJob extends EsiBase implements HasPathValuesIn
         Structure::updateOrCreate([
             'structure_id' => $this->location_id,
         ], [
-            'name' => $result->name,
-            'owner_id' => $result->owner_id,
-            'solar_system_id' => $result->solar_system_id,
-            'type_id' => $result->type_id ?? null,
+            'name' => $result->data->name,
+            'owner_id' => $result->data->owner_id,
+            'solar_system_id' => $result->data->solar_system_id,
+            'type_id' => $result->data->type_id ?? null,
         ])->touch();
 
         Location::updateOrCreate([

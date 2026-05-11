@@ -91,13 +91,13 @@ class AllianceInfoJob extends EsiBase implements HasPathValuesInterface
         }
 
         AllianceInfo::firstOrNew(['alliance_id' => $this->alliance_id])->fill([
-            'creator_corporation_id' => $response->creator_corporation_id,
-            'creator_id' => $response->creator_id,
-            'date_founded' => carbon($response->date_founded),
-            'executor_corporation_id' => data_get($response, 'executor_corporation_id'),
-            'faction_id' => data_get($response, 'faction_id'),
-            'name' => $response->name,
-            'ticker' => $response->ticker,
+            'creator_corporation_id' => $response->data->creator_corporation_id,
+            'creator_id' => $response->data->creator_id,
+            'date_founded' => carbon($response->data->date_founded),
+            'executor_corporation_id' => data_get($response->data, 'executor_corporation_id'),
+            'faction_id' => data_get($response->data, 'faction_id'),
+            'name' => $response->data->name,
+            'ticker' => $response->data->ticker,
         ])->save();
     }
 }

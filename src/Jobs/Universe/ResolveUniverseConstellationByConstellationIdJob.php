@@ -67,10 +67,10 @@ class ResolveUniverseConstellationByConstellationIdJob extends EsiBase implement
         $response = $this->retrieve();
 
         Constellation::firstOrCreate(
-            ['constellation_id' => $response->constellation_id],
+            ['constellation_id' => $response->data->constellation_id],
             [
-                'region_id' => $response->region_id,
-                'name' => $response->name,
+                'region_id' => $response->data->region_id,
+                'name' => $response->data->name,
             ]
         );
     }

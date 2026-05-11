@@ -85,6 +85,6 @@ class MailBodyJob extends EsiBase implements HasPathValuesInterface, HasRequired
         }
 
         Mail::where('id', $this->mail_id)
-            ->update(['body' => data_get($response, 'body')]);
+            ->update(['body' => data_get($response->data, 'body')]);
     }
 }

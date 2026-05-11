@@ -78,13 +78,13 @@ class ResolveUniverseSystemBySystemIdJob extends EsiBase implements HasPathValue
         $response = $this->retrieve();
 
         System::firstOrCreate(
-            ['system_id' => $response->system_id],
+            ['system_id' => $response->data->system_id],
             [
-                'constellation_id' => $response->constellation_id,
-                'name' => $response->name,
-                'security_status' => $response->security_status,
+                'constellation_id' => $response->data->constellation_id,
+                'name' => $response->data->name,
+                'security_status' => $response->data->security_status,
 
-                'security_class' => data_get($response, 'security_class'),
+                'security_class' => data_get($response->data, 'security_class'),
             ]
         );
     }

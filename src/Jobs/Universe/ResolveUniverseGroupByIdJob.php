@@ -80,11 +80,11 @@ class ResolveUniverseGroupByIdJob extends EsiBase implements HasPathValuesInterf
         $response = $this->retrieve();
 
         Group::firstOrCreate(
-            ['group_id' => $response->group_id],
+            ['group_id' => $response->data->group_id],
             [
-                'category_id' => $response->category_id,
-                'name' => $response->name,
-                'published' => $response->published,
+                'category_id' => $response->data->category_id,
+                'name' => $response->data->name,
+                'published' => $response->data->published,
             ]
         );
     }

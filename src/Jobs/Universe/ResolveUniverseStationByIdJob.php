@@ -84,15 +84,15 @@ class ResolveUniverseStationByIdJob extends EsiBase implements HasPathValuesInte
         Station::updateOrCreate([
             'station_id' => $this->location_id,
         ], [
-            'type_id' => $result->type_id,
-            'name' => $result->name,
-            'owner_id' => $result->owner ?? null,
-            'race_id' => $result->race_id ?? null,
-            'system_id' => $result->system_id,
-            'reprocessing_efficiency' => $result->reprocessing_efficiency,
-            'reprocessing_stations_take' => $result->reprocessing_stations_take,
-            'max_dockable_ship_volume' => $result->max_dockable_ship_volume,
-            'office_rental_cost' => $result->office_rental_cost,
+            'type_id' => $result->data->type_id,
+            'name' => $result->data->name,
+            'owner_id' => $result->data->owner ?? null,
+            'race_id' => $result->data->race_id ?? null,
+            'system_id' => $result->data->system_id,
+            'reprocessing_efficiency' => $result->data->reprocessing_efficiency,
+            'reprocessing_stations_take' => $result->data->reprocessing_stations_take,
+            'max_dockable_ship_volume' => $result->data->max_dockable_ship_volume,
+            'office_rental_cost' => $result->data->office_rental_cost,
         ])->touch();
 
         Location::updateOrCreate([

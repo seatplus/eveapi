@@ -88,7 +88,7 @@ class SkillsJob extends EsiBase implements HasPathValuesInterface, HasRequiredSc
             return;
         }
 
-        $skills = collect(data_get($response, 'skills'))
+        $skills = collect(data_get($response->data, 'skills'))
             ->map(fn (object $skill) => [
                 'character_id' => $this->character_id,
                 'skill_id' => data_get($skill, 'skill_id'),
@@ -105,8 +105,8 @@ class SkillsJob extends EsiBase implements HasPathValuesInterface, HasRequiredSc
 
         CharacterInfo::where('character_id', $this->character_id)
             ->update([
-                'total_sp' => data_get($response, 'total_sp'),
-                'unallocated_sp' => data_get($response, 'unallocated_sp'),
+                'total_sp' => data_get($response->data, 'total_sp'),
+                'unallocated_sp' => data_get($response->data, 'unallocated_sp'),
             ]);
 
         $this->dispatchMissingSkillTypeJobs();

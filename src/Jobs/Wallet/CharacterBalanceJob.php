@@ -96,7 +96,7 @@ class CharacterBalanceJob extends EsiBase implements HasPathValuesInterface, Has
             'balanceable_id' => $this->character_id,
             'balanceable_type' => CharacterInfo::class,
         ], [
-            'balance' => $response->scalar,
+            'balance' => $response->data->scalar,
         ]);
     }
 }

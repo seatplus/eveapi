@@ -72,21 +72,21 @@ class CorporationInfoJob extends EsiBase implements HasPathValuesInterface
         }
 
         CorporationInfo::firstOrNew(['corporation_id' => $this->corporation_id])->fill([
-            'ticker' => $response->ticker,
-            'name' => $response->name,
-            'member_count' => $response->member_count,
-            'ceo_id' => $response->ceo_id,
-            'creator_id' => $response->creator_id,
-            'tax_rate' => $response->tax_rate,
-            'alliance_id' => data_get($response, 'alliance_id'),
-            'date_founded' => property_exists($response, 'date_founded') ?
-                carbon($response->date_founded) : null,
-            'description' => data_get($response, 'description'),
-            'faction_id' => data_get($response, 'faction_id'),
-            'home_station_id' => data_get($response, 'home_station_id'),
-            'shares' => data_get($response, 'shares'),
-            'url' => data_get($response, 'url'),
-            'war_eligible' => data_get($response, 'war_eligible'),
+            'ticker' => $response->data->ticker,
+            'name' => $response->data->name,
+            'member_count' => $response->data->member_count,
+            'ceo_id' => $response->data->ceo_id,
+            'creator_id' => $response->data->creator_id,
+            'tax_rate' => $response->data->tax_rate,
+            'alliance_id' => data_get($response->data, 'alliance_id'),
+            'date_founded' => property_exists($response->data, 'date_founded') ?
+                carbon($response->data->date_founded) : null,
+            'description' => data_get($response->data, 'description'),
+            'faction_id' => data_get($response->data, 'faction_id'),
+            'home_station_id' => data_get($response->data, 'home_station_id'),
+            'shares' => data_get($response->data, 'shares'),
+            'url' => data_get($response->data, 'url'),
+            'war_eligible' => data_get($response->data, 'war_eligible'),
         ])->save();
     }
 }
