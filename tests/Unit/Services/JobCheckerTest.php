@@ -396,6 +396,7 @@ describe('Middleware check', function () {
             $mock->shouldReceive('getMethod')->andReturn('get');
             $mock->shouldReceive('middleware')->andReturn([
                 new \Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis,
+                new \Seatplus\Eveapi\Jobs\Middleware\EsiProactiveRateLimitMiddleware,
             ]);
         })->makePartial();
 
@@ -407,6 +408,24 @@ describe('Middleware check', function () {
             ->and($result[3]['status'])->toEqual('error');
     });
 
+    it('returns error if EsiProactiveRateLimitMiddleware middleware is not set', function () {
+        $job = mock(EsiBase::class, function (MockInterface $mock) {
+            $mock->shouldReceive('getVersion')->andReturn('v2');
+            $mock->shouldReceive('getEndpoint')->andReturn('/endpoint');
+            $mock->shouldReceive('getMethod')->andReturn('get');
+            $mock->shouldReceive('middleware')->andReturn([
+                new \Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis,
+            ]);
+        })->makePartial();
+
+        $jobChecker = mock(JobChecker::class, [$this->esiPathService, $this->fileGetContentsAction])->makePartial();
+
+        $result = $jobChecker->checkJob($job);
+
+        expect($result[3]['message'])->toEqual('EsiProactiveRateLimitMiddleware is not used')
+            ->and($result[3]['status'])->toEqual('error');
+    });
+
     it('returns success if ThrottlesExceptionsWithRedis middleware is set', function () {
         $job = mock(EsiBase::class, function (MockInterface $mock) {
             $mock->shouldReceive('getVersion')->andReturn('v2');
@@ -414,6 +433,7 @@ describe('Middleware check', function () {
             $mock->shouldReceive('getMethod')->andReturn('get');
             $mock->shouldReceive('middleware')->andReturn([
                 new \Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis,
+                new \Seatplus\Eveapi\Jobs\Middleware\EsiProactiveRateLimitMiddleware,
             ]);
         })->makePartial();
 
@@ -645,5 +665,149 @@ describe('is checking cache check', function () {
 
         expect($result[5]['message'])->toEqual('job checks if response is cached and endpoint is cached')
             ->and($result[5]['status'])->toEqual('success');
+    });
+});
+
+describe('Version checker with compatibility-date', function () {
+    it('returns warning when endpoint uses x-compatibility-date instead of x-alternate-versions', function () {
+        $esiPathService = mock(EsiPathService::class)->makePartial();
+        $esiPathService->shouldReceive('getEsiPaths')->andReturn([
+            '/endpoint' => [
+                'get' => [
+                    'x-compatibility-date' => '2025-01-01',
+                ],
+            ],
+        ]);
+
+        $job = mock(EsiBase::class, function (MockInterface $mock) {
+            $mock->shouldReceive('getVersion')->andReturn('v5');
+            $mock->shouldReceive('getEndpoint')->andReturn('/endpoint');
+            $mock->shouldReceive('getMethod')->andReturn('get');
+        })->makePartial();
+
+        $fileGetContentsAction = mock(FileGetContentsAction::class, function (MockInterface $mock) {
+            $mock->shouldReceive('__invoke')->andReturn('');
+        })->makePartial();
+        $jobChecker = mock(JobChecker::class, [$esiPathService, $fileGetContentsAction])->makePartial();
+
+        $result = $jobChecker->checkJob($job);
+
+        expect($result[0]['status'])->toEqual('warning')
+            ->and($result[0]['message'])->toContain('compatibility-date')
+            ->and($result[0]['message'])->toContain('2025-01-01');
+    });
+
+    it('returns warning when endpoint has neither x-alternate-versions nor x-compatibility-date', function () {
+        $esiPathService = mock(EsiPathService::class)->makePartial();
+        $esiPathService->shouldReceive('getEsiPaths')->andReturn([
+            '/endpoint' => [
+                'get' => [],
+            ],
+        ]);
+
+        $job = mock(EsiBase::class, function (MockInterface $mock) {
+            $mock->shouldReceive('getVersion')->andReturn('v5');
+            $mock->shouldReceive('getEndpoint')->andReturn('/endpoint');
+            $mock->shouldReceive('getMethod')->andReturn('get');
+        })->makePartial();
+
+        $fileGetContentsAction = mock(FileGetContentsAction::class, function (MockInterface $mock) {
+            $mock->shouldReceive('__invoke')->andReturn('');
+        })->makePartial();
+        $jobChecker = mock(JobChecker::class, [$esiPathService, $fileGetContentsAction])->makePartial();
+
+        $result = $jobChecker->checkJob($job);
+
+        expect($result[0]['status'])->toEqual('warning')
+            ->and($result[0]['message'])->toContain('no version information');
+    });
+});
+
+describe('Rate limit checker', function () {
+    it('returns success when no x-rate-limit extension on endpoint', function () {
+        $esiPathService = mock(EsiPathService::class)->makePartial();
+        $esiPathService->shouldReceive('getEsiPaths')->andReturn([
+            '/endpoint' => [
+                'get' => [
+                    'x-alternate-versions' => ['v1', 'v2'],
+                ],
+            ],
+        ]);
+
+        $job = mock(EsiBase::class, function (MockInterface $mock) {
+            $mock->shouldReceive('getVersion')->andReturn('v2');
+            $mock->shouldReceive('getEndpoint')->andReturn('/endpoint');
+            $mock->shouldReceive('getMethod')->andReturn('get');
+        })->makePartial();
+
+        $fileGetContentsAction = mock(FileGetContentsAction::class, function (MockInterface $mock) {
+            $mock->shouldReceive('__invoke')->andReturn('');
+        })->makePartial();
+        $jobChecker = mock(JobChecker::class, [$esiPathService, $fileGetContentsAction])->makePartial();
+
+        $result = $jobChecker->checkJob($job);
+
+        expect($result[6]['status'])->toEqual('success')
+            ->and($result[6]['message'])->toEqual('no rate-limit extension on endpoint');
+    });
+
+    it('returns error when x-rate-limit present but EsiProactiveRateLimitMiddleware not used', function () {
+        $esiPathService = mock(EsiPathService::class)->makePartial();
+        $esiPathService->shouldReceive('getEsiPaths')->andReturn([
+            '/endpoint' => [
+                'get' => [
+                    'x-alternate-versions' => ['v1', 'v2'],
+                    'x-rate-limit' => 'public',
+                ],
+            ],
+        ]);
+
+        $job = mock(EsiBase::class, function (MockInterface $mock) {
+            $mock->shouldReceive('getVersion')->andReturn('v2');
+            $mock->shouldReceive('getEndpoint')->andReturn('/endpoint');
+            $mock->shouldReceive('getMethod')->andReturn('get');
+            $mock->shouldReceive('middleware')->andReturn([]);
+        })->makePartial();
+
+        $fileGetContentsAction = mock(FileGetContentsAction::class, function (MockInterface $mock) {
+            $mock->shouldReceive('__invoke')->andReturn('');
+        })->makePartial();
+        $jobChecker = mock(JobChecker::class, [$esiPathService, $fileGetContentsAction])->makePartial();
+
+        $result = $jobChecker->checkJob($job);
+
+        expect($result[6]['status'])->toEqual('error')
+            ->and($result[6]['message'])->toContain('EsiProactiveRateLimitMiddleware');
+    });
+
+    it('returns success when x-rate-limit present and EsiProactiveRateLimitMiddleware is used', function () {
+        $esiPathService = mock(EsiPathService::class)->makePartial();
+        $esiPathService->shouldReceive('getEsiPaths')->andReturn([
+            '/endpoint' => [
+                'get' => [
+                    'x-alternate-versions' => ['v1', 'v2'],
+                    'x-rate-limit' => 'public',
+                ],
+            ],
+        ]);
+
+        $job = mock(EsiBase::class, function (MockInterface $mock) {
+            $mock->shouldReceive('getVersion')->andReturn('v2');
+            $mock->shouldReceive('getEndpoint')->andReturn('/endpoint');
+            $mock->shouldReceive('getMethod')->andReturn('get');
+            $mock->shouldReceive('middleware')->andReturn([
+                new \Seatplus\Eveapi\Jobs\Middleware\EsiProactiveRateLimitMiddleware,
+            ]);
+        })->makePartial();
+
+        $fileGetContentsAction = mock(FileGetContentsAction::class, function (MockInterface $mock) {
+            $mock->shouldReceive('__invoke')->andReturn('');
+        })->makePartial();
+        $jobChecker = mock(JobChecker::class, [$esiPathService, $fileGetContentsAction])->makePartial();
+
+        $result = $jobChecker->checkJob($job);
+
+        expect($result[6]['status'])->toEqual('success')
+            ->and($result[6]['message'])->toContain('public');
     });
 });

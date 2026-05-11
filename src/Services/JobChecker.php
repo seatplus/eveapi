@@ -18,6 +18,7 @@ use Seatplus\Eveapi\Jobs\Contacts\CorporationContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\CorporationContactLabelJob;
 use Seatplus\Eveapi\Jobs\Contracts\CharacterContractItemsJob;
 use Seatplus\Eveapi\Jobs\EsiBase;
+use Seatplus\Eveapi\Jobs\Middleware\EsiProactiveRateLimitMiddleware;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletJournalJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
@@ -45,7 +46,8 @@ class JobChecker
             ->push($this->checkPathValues($job))
             ->push($this->checkMiddleware($job))
             ->push($this->checkCorporationRoles($job))
-            ->push($this->checkIsCheckingCache($job));
+            ->push($this->checkIsCheckingCache($job))
+            ->push($this->checkRateLimit($job));
     }
 
     /**
@@ -58,7 +60,25 @@ class JobChecker
         // remove the v from string
         $version = (int) str_replace('v', '', $version_string);
 
-        $alternative_versions = $this->esiPathService->getEsiPaths()[$job->getEndpoint()][$job->getMethod()]['x-alternate-versions'];
+        $endpoint_data = $this->esiPathService->getEsiPaths()[$job->getEndpoint()][$job->getMethod()];
+        $alternative_versions = $endpoint_data['x-alternate-versions'] ?? null;
+
+        // Future ESI versioning: endpoint uses x-compatibility-date instead of version numbers
+        if ($alternative_versions === null) {
+            $compatibility_date = $endpoint_data['x-compatibility-date'] ?? null;
+
+            if ($compatibility_date !== null) {
+                return [
+                    'status' => 'warning',
+                    'message' => "endpoint uses compatibility-date versioning ($compatibility_date). Consider using compatibility_date instead of version string.",
+                ];
+            }
+
+            return [
+                'status' => 'warning',
+                'message' => 'endpoint has no version information (missing x-alternate-versions and x-compatibility-date)',
+            ];
+        }
 
         if (! in_array($version_string, $alternative_versions)) {
             $available_versions = implode(', ', $alternative_versions);
@@ -154,6 +174,11 @@ class JobChecker
             return $this->assertionResult('error', 'ThrottlesExceptionsWithRedis Middleware is not used');
         }
 
+        // check that EsiProactiveRateLimitMiddleware is used
+        if (! $used_middlewares->first(fn (object $middleware) => $middleware::class === EsiProactiveRateLimitMiddleware::class)) {
+            return $this->assertionResult('error', 'EsiProactiveRateLimitMiddleware is not used');
+        }
+
         // now check all jobs that require authentication implementing HasRequiredScopeMiddleware
         if ($job instanceof HasRequiredScopeInterface) {
             // check if the required scope middleware is used
@@ -243,6 +268,27 @@ class JobChecker
         }
 
         return $this->assertionResult('success', 'job checks if response is cached and endpoint is cached');
+    }
+
+    /**
+     * @throws ConnectionException
+     */
+    private function checkRateLimit(EsiBase $job): array
+    {
+        $endpoint_data = $this->esiPathService->getEsiPaths()[$job->getEndpoint()][$job->getMethod()];
+        $rate_limit = $endpoint_data['x-rate-limit'] ?? null;
+
+        if ($rate_limit === null) {
+            return $this->assertionResult('success', 'no rate-limit extension on endpoint');
+        }
+
+        // Endpoint declares a rate-limit extension — verify job uses EsiProactiveRateLimitMiddleware
+        $used_middlewares = collect($job->middleware());
+        if (! $used_middlewares->first(fn (object $middleware) => $middleware::class === EsiProactiveRateLimitMiddleware::class)) {
+            return $this->assertionResult('error', "endpoint declares rate-limit ($rate_limit) but EsiProactiveRateLimitMiddleware is not used");
+        }
+
+        return $this->assertionResult('success', "rate-limit extension present ($rate_limit) and EsiProactiveRateLimitMiddleware is used");
     }
 
     private function assertionResult(string $status, string $message): array
