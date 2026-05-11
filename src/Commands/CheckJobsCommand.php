@@ -54,7 +54,7 @@ class CheckJobsCommand extends Command
 
     private bool $has_errors = false;
 
-    const URL = 'https://esi.evetech.net/latest/swagger.json';
+    const string URL = 'https://esi.evetech.net/latest/swagger.json';
 
     public function __construct(
         private JobChecker $jobChecker

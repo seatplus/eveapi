@@ -41,7 +41,7 @@ class Asset extends Model implements TypeWatchListInterface
 {
     use HasFactory;
 
-    const ASSET_SAFETY = 2004;
+    const int ASSET_SAFETY = 2004;
 
     protected array $affiliated_ids = [];
 

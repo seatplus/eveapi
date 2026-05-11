@@ -1,1 +1,193 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$group\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Jobs/Assets/EnrichAssetTypeGroupCategoryJob.php
 
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name_normalized\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Jobs/Assets/EnrichAssetTypeGroupCategoryJob.php
+
+		-
+			message: '#^Call to function method_exists\(\) with \$this\(Seatplus\\Eveapi\\Jobs\\Corporation\\CorporationDivisionsJob\) and ''getCorporationRoles'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Jobs/Corporation/CorporationDivisionsJob.php
+
+		-
+			message: '#^Call to function method_exists\(\) with \$this\(Seatplus\\Eveapi\\Jobs\\Corporation\\CorporationMemberTrackingJob\) and ''getCorporationRoles'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Jobs/Corporation/CorporationMemberTrackingJob.php
+
+		-
+			message: '#^Anonymous function should return Illuminate\\Support\\Collection\<int, int\<0, max\>\|null\> but returns Illuminate\\Support\\Collection\<int, int\<0, max\>\|null\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Jobs/Hydrate/Maintenance/GetMissingLocationFromContracts.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$alliance_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Jobs/Seatplus/Batch/CharacterBatchJob.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$corporation_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Jobs/Seatplus/Batch/CharacterBatchJob.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Jobs/Seatplus/Batch/CharacterBatchJob.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: src/Jobs/Seatplus/Batch/CharacterBatchJob.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$corporation_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Jobs/Seatplus/UpdateCorporation.php
+
+		-
+			message: '#^Call to function method_exists\(\) with \$this\(Seatplus\\Eveapi\\Jobs\\Wallet\\CorporationBalanceJob\) and ''getCorporationRoles'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Jobs/Wallet/CorporationBalanceJob.php
+
+		-
+			message: '#^Call to function method_exists\(\) with \$this\(Seatplus\\Eveapi\\Jobs\\Wallet\\CorporationWalletTransactionByDivisionJob\) and ''getCorporationRoles'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Jobs/Wallet/CorporationWalletTransactionByDivisionJob.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$alliance_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Models/Character/CharacterInfo.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$corporation_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Models/Character/CharacterInfo.php
+
+		-
+			message: '#^Method Seatplus\\Eveapi\\Models\\Contacts\\Contact\:\:getAffiliationAttribute\(\) should return Seatplus\\Eveapi\\Models\\Character\\CharacterAffiliation\|null but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Models/Contacts/Contact.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$contactable\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Models/Contacts/ContactLabel.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$label_name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Models/Contacts/ContactLabel.php
+
+		-
+			message: '#^Property ''label_name'' does not exist in model\.$#'
+			identifier: rules.modelAppends
+			count: 1
+			path: src/Models/Contacts/ContactLabel.php
+
+		-
+			message: '#^Property ''has_content'' does not exist in model\.$#'
+			identifier: rules.modelAppends
+			count: 1
+			path: src/Models/Killmails/KillmailItem.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$corporation_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Models/RefreshToken.php
+
+		-
+			message: '#^PHPDoc type array of property Seatplus\\Eveapi\\Models\\Universe\\Constellation\:\:\$dispatchesEvents is not covariant with PHPDoc type array\<string, class\-string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$dispatchesEvents\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: src/Models/Universe/Constellation.php
+
+		-
+			message: '#^PHPDoc type array of property Seatplus\\Eveapi\\Models\\Universe\\Station\:\:\$dispatchesEvents is not covariant with PHPDoc type array\<string, class\-string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$dispatchesEvents\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: src/Models/Universe/Station.php
+
+		-
+			message: '#^PHPDoc type array of property Seatplus\\Eveapi\\Models\\Universe\\Structure\:\:\$dispatchesEvents is not covariant with PHPDoc type array\<string, class\-string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$dispatchesEvents\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: src/Models/Universe/Structure.php
+
+		-
+			message: '#^PHPDoc type array of property Seatplus\\Eveapi\\Models\\Universe\\System\:\:\$dispatchesEvents is not covariant with PHPDoc type array\<string, class\-string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$dispatchesEvents\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: src/Models/Universe/System.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$corporation_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Services/DispatchIndividualUpdate.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$roles\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Services/FindCorporationRefreshToken.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$refresh_token\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Services/ResolveLocation/Finders/ThroughContractsFinder.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$refresh_token\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Services/ResolveLocation/Finders/ThroughCorporationMemberTrackingFinder.php
+
+		-
+			message: '#^Method Seatplus\\Eveapi\\Services\\ResolveLocation\\Finders\\ThroughPreviouslyFailedRefreshTokenFinder\:\:handle\(\) should return Seatplus\\Eveapi\\Models\\RefreshToken\|null but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Services/ResolveLocation/Finders/ThroughPreviouslyFailedRefreshTokenFinder.php
+
+		-
+			message: '#^Method Seatplus\\Eveapi\\Services\\ResolveLocation\\Finders\\ThroughSuccessfulRefreshTokenFinder\:\:handle\(\) should return Seatplus\\Eveapi\\Models\\RefreshToken\|null but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Services/ResolveLocation/Finders/ThroughSuccessfulRefreshTokenFinder.php
+
+		-
+			message: '#^Property Seatplus\\Eveapi\\Services\\ResolveLocation\\ResolveLocationService\:\:\$resolvers on left side of \?\?\= is not nullable nor uninitialized\.$#'
+			identifier: nullCoalesce.initializedProperty
+			count: 1
+			path: src/Services/ResolveLocation/ResolveLocationService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Services/ResolveLocation/Resolver/StructureResolver.php

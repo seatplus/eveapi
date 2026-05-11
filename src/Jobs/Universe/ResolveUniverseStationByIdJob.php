@@ -36,7 +36,7 @@ class ResolveUniverseStationByIdJob extends EsiBase implements HasPathValuesInte
 {
     use HasPathValues;
 
-    const STATION_IDS_RANGE = [60000000, 64000000];
+    const array STATION_IDS_RANGE = [60000000, 64000000];
 
     public function __construct(
         public int $location_id

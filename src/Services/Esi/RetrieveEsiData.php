@@ -32,10 +32,7 @@ use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiClient\EsiConfiguration;
-use Seatplus\EsiClient\Exceptions\EsiScopeAccessDeniedException;
-use Seatplus\EsiClient\Exceptions\InvalidAuthenticationException;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
-use Seatplus\EsiClient\Exceptions\UriDataMissingException;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
 use Seatplus\Eveapi\Models\RefreshToken;
 
@@ -70,10 +67,7 @@ class RetrieveEsiData
     }
 
     /**
-     * @throws EsiScopeAccessDeniedException
-     * @throws InvalidAuthenticationException
      * @throws RequestFailedException
-     * @throws UriDataMissingException
      * @throws \Throwable
      */
     public static function execute(
@@ -95,10 +89,7 @@ class RetrieveEsiData
     }
 
     /**
-     * @throws EsiScopeAccessDeniedException
-     * @throws InvalidAuthenticationException
      * @throws RequestFailedException
-     * @throws UriDataMissingException
      * @throws \Throwable
      */
     public function executeInstance(): EsiResponse
@@ -117,7 +108,7 @@ class RetrieveEsiData
             $this->handleException($exception);
             // Rethrow the exception
             throw $exception;
-        } catch (EsiScopeAccessDeniedException|InvalidAuthenticationException|UriDataMissingException|\Throwable $exception) {
+        } catch (\Throwable $exception) {
 
             $logger = EsiConfiguration::getInstance()->getLogger();
             $logger->error($exception->getMessage());

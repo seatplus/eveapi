@@ -21,13 +21,13 @@ use Illuminate\Support\Facades\Redis;
 class EsiProactiveRateLimitMiddleware
 {
     /** Fraction of capacity below which we throttle (10 %). */
-    private const LOW_THRESHOLD = 0.10;
+    private const float LOW_THRESHOLD = 0.10;
 
     /** Redis key prefix. */
-    private const KEY_PREFIX = 'esi_ratelimit:';
+    private const string KEY_PREFIX = 'esi_ratelimit:';
 
     /** How many seconds to keep the Redis key alive (one full window + buffer). */
-    private const TTL_SECONDS = 1800;
+    private const int TTL_SECONDS = 1800;
 
     public function handle(mixed $job, \Closure $next): void
     {

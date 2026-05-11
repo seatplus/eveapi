@@ -44,17 +44,17 @@ class CharacterAssetsNameJob extends EsiBase implements HasPathValuesInterface, 
     use HasRequestBody;
     use HasRequiredScopes;
 
-    const CELESTIAL_CATEGORY = 2;
+    const int CELESTIAL_CATEGORY = 2;
 
-    const SHIP_CATEGORY = 6;
+    const int SHIP_CATEGORY = 6;
 
-    const DEPLOYABLE_CATEGORY = 22;
+    const int DEPLOYABLE_CATEGORY = 22;
 
-    const STARBASE_CATEGORY = 23;
+    const int STARBASE_CATEGORY = 23;
 
-    const ORBITALS_CATEGORY = 46;
+    const int ORBITALS_CATEGORY = 46;
 
-    const STRUCTURE_CATEGORY = 65;
+    const int STRUCTURE_CATEGORY = 65;
 
     private Collection $asset_names;
 

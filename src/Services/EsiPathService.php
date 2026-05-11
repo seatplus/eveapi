@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Http;
 
 class EsiPathService
 {
-    const URL = 'https://esi.evetech.net/latest/swagger.json';
+    const string URL = 'https://esi.evetech.net/latest/swagger.json';
 
     private array $esi_paths = [];
 
