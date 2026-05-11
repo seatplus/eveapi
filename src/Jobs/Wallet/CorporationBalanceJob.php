@@ -34,6 +34,7 @@ use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Wallet\Balance;
+use Seatplus\Eveapi\DataTransferObjects\Responses\Corporation\CorporationWalletItemResponse;
 use Seatplus\Eveapi\Traits\HasCorporationRole;
 use Seatplus\Eveapi\Traits\HasPages;
 use Seatplus\Eveapi\Traits\HasPathValues;
@@ -101,12 +102,13 @@ class CorporationBalanceJob extends EsiBase implements HasCorporationRoleInterfa
         }
 
         $corporation_balances = collect($response->data)
+            ->map(fn (object $item) => CorporationWalletItemResponse::from($item))
             ->map(
-                fn (object $wallet) => [
+                fn (CorporationWalletItemResponse $wallet) => [
                     'balanceable_id' => $this->corporation_id,
                     'balanceable_type' => CorporationInfo::class,
-                    'division' => data_get($wallet, 'division'),
-                    'balance' => data_get($wallet, 'balance'),
+                    'division' => $wallet->division,
+                    'balance' => $wallet->balance,
                 ]
             );
 

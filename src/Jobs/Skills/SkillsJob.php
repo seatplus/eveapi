@@ -27,6 +27,8 @@
 namespace Seatplus\Eveapi\Jobs\Skills;
 
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
+use Seatplus\Eveapi\DataTransferObjects\Responses\Skills\SkillItemResponse;
+use Seatplus\Eveapi\DataTransferObjects\Responses\Skills\SkillsResponse;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -88,13 +90,15 @@ class SkillsJob extends EsiBase implements HasPathValuesInterface, HasRequiredSc
             return;
         }
 
-        $skills = collect(data_get($response->data, 'skills'))
-            ->map(fn (object $skill) => [
+        $data = SkillsResponse::from($response->data);
+
+        $skills = collect($data->skills)
+            ->map(fn (SkillItemResponse $skill) => [
                 'character_id' => $this->character_id,
-                'skill_id' => data_get($skill, 'skill_id'),
-                'active_skill_level' => data_get($skill, 'active_skill_level'),
-                'skillpoints_in_skill' => data_get($skill, 'skillpoints_in_skill'),
-                'trained_skill_level' => data_get($skill, 'trained_skill_level'),
+                'skill_id' => $skill->skill_id,
+                'active_skill_level' => $skill->active_skill_level,
+                'skillpoints_in_skill' => $skill->skillpoints_in_skill,
+                'trained_skill_level' => $skill->trained_skill_level,
             ]);
 
         Skill::upsert(
@@ -105,8 +109,8 @@ class SkillsJob extends EsiBase implements HasPathValuesInterface, HasRequiredSc
 
         CharacterInfo::where('character_id', $this->character_id)
             ->update([
-                'total_sp' => data_get($response->data, 'total_sp'),
-                'unallocated_sp' => data_get($response->data, 'unallocated_sp'),
+                'total_sp' => $data->total_sp,
+                'unallocated_sp' => $data->unallocated_sp,
             ]);
 
         $this->dispatchMissingSkillTypeJobs();

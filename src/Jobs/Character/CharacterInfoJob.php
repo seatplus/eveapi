@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Character;
 
+use Seatplus\Eveapi\DataTransferObjects\Responses\Character\CharacterInfoResponse;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
@@ -84,18 +85,20 @@ class CharacterInfoJob extends EsiBase implements HasPathValuesInterface
             return;
         }
 
+        $data = CharacterInfoResponse::from($response->data);
+
         CharacterInfo::updateOrCreate([
             'character_id' => $this->character_id,
         ], [
-            'name' => $response->data->name,
-            'description' => data_get($response->data, 'description'),
-            'birthday' => $response->data->birthday,
-            'gender' => $response->data->gender,
-            'race_id' => $response->data->race_id,
-            'bloodline_id' => $response->data->bloodline_id,
-            'security_status' => data_get($response->data, 'security_status'),
-            'faction_id' => data_get($response->data, 'faction_id'),
-            'title' => data_get($response->data, 'title'),
+            'name' => $data->name,
+            'description' => $data->description,
+            'birthday' => $data->birthday,
+            'gender' => $data->gender,
+            'race_id' => $data->race_id,
+            'bloodline_id' => $data->bloodline_id,
+            'security_status' => $data->security_status,
+            'faction_id' => $data->faction_id,
+            'title' => $data->title,
         ]);
     }
 }

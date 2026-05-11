@@ -28,6 +28,7 @@ namespace Seatplus\Eveapi\Jobs\Assets;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Seatplus\Eveapi\DataTransferObjects\Responses\Assets\AssetNameItemResponse;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequestBodyInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
@@ -132,16 +133,18 @@ class CharacterAssetsNameJob extends EsiBase implements HasPathValuesInterface, 
                 $response = $this->retrieve();
 
                 // merge response into asset_names collection
-                $this->asset_names = $this->asset_names->merge(collect($response->data));
+                $this->asset_names = $this->asset_names->merge(
+                    collect($response->data)->map(fn (object $item) => AssetNameItemResponse::from($item))
+                );
             });
 
         // Update all assets in one go
         $this->asset_names
             // filter out "None" names
-            ->filter(fn (object $asset_name) => $asset_name->name !== 'None')
+            ->filter(fn (AssetNameItemResponse $asset_name) => $asset_name->name !== 'None')
             // update asset names
             ->each(
-                fn (object $asset_name) => Asset::query()
+                fn (AssetNameItemResponse $asset_name) => Asset::query()
                     ->where('assetable_id', $this->character_id)
                     ->where('item_id', $asset_name->item_id)
                     ->update(['name' => $asset_name->name])

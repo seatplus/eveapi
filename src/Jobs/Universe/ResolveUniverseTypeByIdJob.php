@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Universe;
 
+use Seatplus\Eveapi\DataTransferObjects\Responses\Universe\TypeResponse;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Universe\Type;
@@ -76,23 +77,24 @@ class ResolveUniverseTypeByIdJob extends EsiBase implements HasPathValuesInterfa
     {
         $response = $this->retrieve();
 
-        Type::firstOrCreate(
-            ['type_id' => $response->data->type_id],
-            [
-                'group_id' => $response->data->group_id,
-                'name' => $response->data->name,
-                'description' => $response->data->description,
-                'published' => $response->data->published,
+        $data = TypeResponse::from($response->data);
 
-                'capacity' => data_get($response->data, 'capacity'),
-                'graphic_id' => data_get($response->data, 'graphic_id'),
-                'icon_id' => data_get($response->data, 'icon_id'),
-                'market_group_id' => data_get($response->data, 'market_group_id'),
-                'mass' => data_get($response->data, 'mass'),
-                'packaged_volume' => data_get($response->data, 'packaged_volume'),
-                'portion_size' => data_get($response->data, 'portion_size'),
-                'radius' => data_get($response->data, 'radius'),
-                'volume' => data_get($response->data, 'volume'),
+        Type::firstOrCreate(
+            ['type_id' => $data->type_id],
+            [
+                'group_id' => $data->group_id,
+                'name' => $data->name,
+                'description' => $data->description,
+                'published' => $data->published,
+                'capacity' => $data->capacity,
+                'graphic_id' => $data->graphic_id,
+                'icon_id' => $data->icon_id,
+                'market_group_id' => $data->market_group_id,
+                'mass' => $data->mass,
+                'packaged_volume' => $data->packaged_volume,
+                'portion_size' => $data->portion_size,
+                'radius' => $data->radius,
+                'volume' => $data->volume,
             ]
         );
     }

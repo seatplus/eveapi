@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Corporation;
 
+use Seatplus\Eveapi\DataTransferObjects\Responses\Corporation\CorporationMemberTrackingItemResponse;
 use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
@@ -101,15 +102,16 @@ class CorporationMemberTrackingJob extends EsiBase implements HasCorporationRole
         }
 
         $members = collect($response->data)
-            ->map(fn (object $member) => [
+            ->map(fn (object $item) => CorporationMemberTrackingItemResponse::from($item))
+            ->map(fn (CorporationMemberTrackingItemResponse $member) => [
                 'corporation_id' => $this->corporation_id,
                 'character_id' => $member->character_id,
-                'start_date' => property_exists($member, 'start_date') ? carbon($member->start_date) : null,
-                'base_id' => $member->base_id ?? null,
-                'logon_date' => property_exists($member, 'logon_date') ? carbon($member->logon_date) : null,
-                'logoff_date' => property_exists($member, 'logoff_date') ? carbon($member->logoff_date) : null,
-                'location_id' => $member->location_id ?? null,
-                'ship_type_id' => $member->ship_type_id ?? null,
+                'start_date' => $member->start_date !== null ? carbon($member->start_date) : null,
+                'base_id' => $member->base_id,
+                'logon_date' => $member->logon_date !== null ? carbon($member->logon_date) : null,
+                'logoff_date' => $member->logoff_date !== null ? carbon($member->logoff_date) : null,
+                'location_id' => $member->location_id,
+                'ship_type_id' => $member->ship_type_id,
 
             ]);
 

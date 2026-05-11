@@ -3,6 +3,7 @@
 namespace Seatplus\Eveapi\Jobs\Wallet;
 
 use Illuminate\Support\Arr;
+use Seatplus\Eveapi\DataTransferObjects\Responses\Wallet\WalletTransactionItemResponse;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasQueryParametersInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
@@ -66,7 +67,8 @@ abstract class WalletTransactionBase extends EsiBase implements HasPathValuesInt
             }
 
             $transactions = collect($response->data)
-                ->map(fn (object $entry) => [
+                ->map(fn (object $item) => WalletTransactionItemResponse::from($item))
+                ->map(fn (WalletTransactionItemResponse $entry) => [
                     'transaction_id' => $entry->transaction_id,
 
                     'wallet_transactionable_id' => $wallet_transactionable_id,

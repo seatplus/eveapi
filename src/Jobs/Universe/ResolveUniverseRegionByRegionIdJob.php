@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Universe;
 
+use Seatplus\Eveapi\DataTransferObjects\Responses\Universe\RegionResponse;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Universe\Region;
@@ -77,11 +78,13 @@ class ResolveUniverseRegionByRegionIdJob extends EsiBase implements HasPathValue
     {
         $response = $this->retrieve();
 
+        $data = RegionResponse::from($response->data);
+
         Region::firstOrCreate(
-            ['region_id' => $response->data->region_id],
+            ['region_id' => $data->region_id],
             [
-                'name' => $response->data->name,
-                'description' => data_get($response->data, 'description'),
+                'name' => $data->name,
+                'description' => $data->description,
             ]
         );
     }

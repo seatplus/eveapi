@@ -26,6 +26,8 @@
 
 namespace Seatplus\Eveapi\Jobs\Corporation;
 
+use Seatplus\Eveapi\DataTransferObjects\Responses\Corporation\CorporationDivisionsResponse;
+use Seatplus\Eveapi\DataTransferObjects\Responses\Corporation\DivisionEntryResponse;
 use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
@@ -96,17 +98,18 @@ class CorporationDivisionsJob extends EsiBase implements HasCorporationRoleInter
             return;
         }
 
+        $data = CorporationDivisionsResponse::from($response->data);
         $divisions = collect();
 
-        collect($response->data)->each(fn (array $entries, string $division_type) => collect($entries)
-            ->each(fn (object $entry) => $divisions->push(
-                [
+        foreach (['hangar' => $data->hangar, 'wallet' => $data->wallet] as $division_type => $entries) {
+            collect($entries)
+                ->each(fn (DivisionEntryResponse $entry) => $divisions->push([
                     'corporation_id' => $this->corporation_id,
                     'division_type' => $division_type,
                     'division_id' => $entry->division,
-                    'name' => data_get($entry, 'name', ''),
-                ]
-            )));
+                    'name' => $entry->name ?? '',
+                ]));
+        }
 
         CorporationDivision::upsert(
             $divisions->toArray(),

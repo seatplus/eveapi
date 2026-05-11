@@ -28,6 +28,7 @@ namespace Seatplus\Eveapi\Jobs\Contracts;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Seatplus\Eveapi\DataTransferObjects\Responses\Contracts\ContractItemResponse;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -93,34 +94,36 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
                 return;
             }
 
-            collect($response->data)->each(fn (object $contract) => $contracts->push([
-                // primary
-                'contract_id' => $contract->contract_id,
-                // other columns
-                'acceptor_id' => $contract->acceptor_id,
-                'assignee_id' => $contract->assignee_id,
-                'availability' => $contract->availability,
-                'date_expired' => carbon($contract->date_expired),
-                'date_issued' => carbon($contract->date_issued),
-                'for_corporation' => $contract->for_corporation,
-                'issuer_corporation_id' => $contract->issuer_corporation_id,
-                'issuer_id' => $contract->issuer_id,
-                'status' => $contract->status,
-                'type' => $contract->type,
+            collect($response->data)
+                ->map(fn (object $item) => ContractItemResponse::from($item))
+                ->each(fn (ContractItemResponse $contract) => $contracts->push([
+                    // primary
+                    'contract_id' => $contract->contract_id,
+                    // other columns
+                    'acceptor_id' => $contract->acceptor_id,
+                    'assignee_id' => $contract->assignee_id,
+                    'availability' => $contract->availability,
+                    'date_expired' => carbon($contract->date_expired),
+                    'date_issued' => carbon($contract->date_issued),
+                    'for_corporation' => $contract->for_corporation,
+                    'issuer_corporation_id' => $contract->issuer_corporation_id,
+                    'issuer_id' => $contract->issuer_id,
+                    'status' => $contract->status,
+                    'type' => $contract->type,
 
-                // optionals
-                'buyout' => optional($contract)->buyout,
-                'collateral' => optional($contract)->collateral,
-                'date_accepted' => optional($contract)->date_accepted ? carbon(optional($contract)->date_accepted) : null,
-                'date_completed' => optional($contract)->date_completed ? carbon(optional($contract)->date_completed) : null,
-                'days_to_complete' => optional($contract)->days_to_complete,
-                'price' => optional($contract)->price,
-                'reward' => optional($contract)->reward,
-                'end_location_id' => optional($contract)->end_location_id,
-                'start_location_id' => optional($contract)->start_location_id,
-                'title' => optional($contract)->title,
-                'volume' => optional($contract)->volume,
-            ]));
+                    // optionals
+                    'buyout' => $contract->buyout,
+                    'collateral' => $contract->collateral,
+                    'date_accepted' => $contract->date_accepted !== null ? carbon($contract->date_accepted) : null,
+                    'date_completed' => $contract->date_completed !== null ? carbon($contract->date_completed) : null,
+                    'days_to_complete' => $contract->days_to_complete,
+                    'price' => $contract->price,
+                    'reward' => $contract->reward,
+                    'end_location_id' => $contract->end_location_id,
+                    'start_location_id' => $contract->start_location_id,
+                    'title' => $contract->title,
+                    'volume' => $contract->volume,
+                ]));
 
             // Lastly if more pages are present load next page
             if ($this->getPage() >= $response->pages) {

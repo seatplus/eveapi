@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Mail;
 
+use Seatplus\Eveapi\DataTransferObjects\Responses\Mail\MailBodyResponse;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -84,7 +85,9 @@ class MailBodyJob extends EsiBase implements HasPathValuesInterface, HasRequired
             return;
         }
 
+        $data = MailBodyResponse::from($response->data);
+
         Mail::where('id', $this->mail_id)
-            ->update(['body' => data_get($response->data, 'body')]);
+            ->update(['body' => $data->body]);
     }
 }

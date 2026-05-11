@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Alliances;
 
+use Seatplus\Eveapi\DataTransferObjects\Responses\Alliances\AllianceInfoResponse;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
@@ -90,14 +91,16 @@ class AllianceInfoJob extends EsiBase implements HasPathValuesInterface
             return;
         }
 
+        $data = AllianceInfoResponse::from($response->data);
+
         AllianceInfo::firstOrNew(['alliance_id' => $this->alliance_id])->fill([
-            'creator_corporation_id' => $response->data->creator_corporation_id,
-            'creator_id' => $response->data->creator_id,
-            'date_founded' => carbon($response->data->date_founded),
-            'executor_corporation_id' => data_get($response->data, 'executor_corporation_id'),
-            'faction_id' => data_get($response->data, 'faction_id'),
-            'name' => $response->data->name,
-            'ticker' => $response->data->ticker,
+            'creator_corporation_id' => $data->creator_corporation_id,
+            'creator_id' => $data->creator_id,
+            'date_founded' => carbon($data->date_founded),
+            'executor_corporation_id' => $data->executor_corporation_id,
+            'faction_id' => $data->faction_id,
+            'name' => $data->name,
+            'ticker' => $data->ticker,
         ])->save();
     }
 }

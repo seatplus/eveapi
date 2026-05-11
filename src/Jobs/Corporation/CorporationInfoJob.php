@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Corporation;
 
+use Seatplus\Eveapi\DataTransferObjects\Responses\Corporation\CorporationInfoResponse;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
@@ -71,22 +72,23 @@ class CorporationInfoJob extends EsiBase implements HasPathValuesInterface
             return;
         }
 
+        $data = CorporationInfoResponse::from($response->data);
+
         CorporationInfo::firstOrNew(['corporation_id' => $this->corporation_id])->fill([
-            'ticker' => $response->data->ticker,
-            'name' => $response->data->name,
-            'member_count' => $response->data->member_count,
-            'ceo_id' => $response->data->ceo_id,
-            'creator_id' => $response->data->creator_id,
-            'tax_rate' => $response->data->tax_rate,
-            'alliance_id' => data_get($response->data, 'alliance_id'),
-            'date_founded' => property_exists($response->data, 'date_founded') ?
-                carbon($response->data->date_founded) : null,
-            'description' => data_get($response->data, 'description'),
-            'faction_id' => data_get($response->data, 'faction_id'),
-            'home_station_id' => data_get($response->data, 'home_station_id'),
-            'shares' => data_get($response->data, 'shares'),
-            'url' => data_get($response->data, 'url'),
-            'war_eligible' => data_get($response->data, 'war_eligible'),
+            'ticker' => $data->ticker,
+            'name' => $data->name,
+            'member_count' => $data->member_count,
+            'ceo_id' => $data->ceo_id,
+            'creator_id' => $data->creator_id,
+            'tax_rate' => $data->tax_rate,
+            'alliance_id' => $data->alliance_id,
+            'date_founded' => $data->date_founded !== null ? carbon($data->date_founded) : null,
+            'description' => $data->description,
+            'faction_id' => $data->faction_id,
+            'home_station_id' => $data->home_station_id,
+            'shares' => $data->shares,
+            'url' => $data->url,
+            'war_eligible' => $data->war_eligible,
         ])->save();
     }
 }

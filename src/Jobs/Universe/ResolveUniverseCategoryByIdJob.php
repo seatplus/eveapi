@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Universe;
 
+use Seatplus\Eveapi\DataTransferObjects\Responses\Universe\CategoryResponse;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Universe\Category;
@@ -65,13 +66,13 @@ class ResolveUniverseCategoryByIdJob extends EsiBase implements HasPathValuesInt
     {
         $response = $this->retrieve();
 
+        $data = CategoryResponse::from($response->data);
+
         Category::firstOrCreate(
+            ['category_id' => $data->category_id],
             [
-                'category_id' => $response->data->category_id,
-            ],
-            [
-                'name' => $response->data->name,
-                'published' => $response->data->published,
+                'name' => $data->name,
+                'published' => $data->published,
             ]
         );
     }

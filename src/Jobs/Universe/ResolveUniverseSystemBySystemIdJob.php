@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Universe;
 
+use Seatplus\Eveapi\DataTransferObjects\Responses\Universe\SystemResponse;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Universe\System;
@@ -77,14 +78,15 @@ class ResolveUniverseSystemBySystemIdJob extends EsiBase implements HasPathValue
     {
         $response = $this->retrieve();
 
-        System::firstOrCreate(
-            ['system_id' => $response->data->system_id],
-            [
-                'constellation_id' => $response->data->constellation_id,
-                'name' => $response->data->name,
-                'security_status' => $response->data->security_status,
+        $data = SystemResponse::from($response->data);
 
-                'security_class' => data_get($response->data, 'security_class'),
+        System::firstOrCreate(
+            ['system_id' => $data->system_id],
+            [
+                'constellation_id' => $data->constellation_id,
+                'name' => $data->name,
+                'security_status' => $data->security_status,
+                'security_class' => $data->security_class,
             ]
         );
     }

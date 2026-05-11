@@ -28,6 +28,8 @@ namespace Seatplus\Eveapi\Jobs\Killmails;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Seatplus\Eveapi\DataTransferObjects\Responses\Killmails\KillmailAttackerResponse;
+use Seatplus\Eveapi\DataTransferObjects\Responses\Killmails\KillmailResponse;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseSystemBySystemIdJob;
@@ -86,17 +88,19 @@ class KillmailJob extends EsiBase implements HasPathValuesInterface
                 return;
             }
 
+            $data = KillmailResponse::from($response->data);
+
             $killmail = Killmail::firstOrCreate([
                 'killmail_id' => $this->killmail_id,
             ], [
                 'killmail_hash' => $this->killmail_hash,
-                'solar_system_id' => data_get($response->data, 'solar_system_id'),
-                'victim_character_id' => data_get($response->data, 'victim.character_id'),
-                'victim_corporation_id' => data_get($response->data, 'victim.corporation_id'),
-                'victim_alliance_id' => data_get($response->data, 'victim.alliance_id'),
-                'ship_type_id' => data_get($response->data, 'victim.ship_type_id'),
-                'victim_faction_id' => data_get($response->data, 'victim.faction_id'),
-                'damage_taken' => data_get($response->data, 'victim.damage_taken'),
+                'solar_system_id' => $data->solar_system_id,
+                'victim_character_id' => $data->victim->character_id,
+                'victim_corporation_id' => $data->victim->corporation_id,
+                'victim_alliance_id' => $data->victim->alliance_id,
+                'ship_type_id' => $data->victim->ship_type_id,
+                'victim_faction_id' => $data->victim->faction_id,
+                'damage_taken' => $data->victim->damage_taken,
                 'complete' => true,
             ]);
 
@@ -106,16 +110,16 @@ class KillmailJob extends EsiBase implements HasPathValuesInterface
             }
 
             if (is_null($killmail->system)) {
-                $this->getMissingSystem($response);
+                $this->getMissingSystem($data->solar_system_id);
             }
 
             if (is_null($killmail->ship)) {
-                $this->getMissingTypeIds(collect(data_get($response->data, 'victim.ship_type_id')));
+                $this->getMissingTypeIds(collect($data->victim->ship_type_id));
             }
 
             $this->createKillmailItems(data_get($response->data, 'victim.items'));
 
-            $this->createKillmailAttackers(data_get($response->data, 'attackers'));
+            $this->createKillmailAttackers($data->attackers);
         });
 
     }
@@ -151,15 +155,15 @@ class KillmailJob extends EsiBase implements HasPathValuesInterface
 
     private function createKillmailAttackers(array $attackers): void
     {
-        collect($attackers)->each(fn (object $attacker) => KillmailAttacker::create([
+        collect($attackers)->each(fn (KillmailAttackerResponse $attacker) => KillmailAttacker::create([
             'killmail_id' => $this->killmail_id,
-            'character_id' => data_get($attacker, 'character_id'),
-            'corporation_id' => data_get($attacker, 'corporation_id'),
-            'alliance_id' => data_get($attacker, 'alliance_id'),
-            'ship_type_id' => data_get($attacker, 'ship_type_id'),
-            'weapon_type_id' => data_get($attacker, 'weapon_type_id'),
-            'damage_done' => data_get($attacker, 'damage_done'),
-            'final_blow' => data_get($attacker, 'final_blow'),
+            'character_id' => $attacker->character_id,
+            'corporation_id' => $attacker->corporation_id,
+            'alliance_id' => $attacker->alliance_id,
+            'ship_type_id' => $attacker->ship_type_id,
+            'weapon_type_id' => $attacker->weapon_type_id,
+            'damage_done' => $attacker->damage_done,
+            'final_blow' => $attacker->final_blow,
         ]));
 
         $unknown_type_ids = KillmailAttacker::doesntHave('ship')
@@ -182,10 +186,10 @@ class KillmailJob extends EsiBase implements HasPathValuesInterface
             : $type_ids->each(fn (int $type_id) => ResolveUniverseTypeByIdJob::dispatch($type_id)->onQueue($this->queue));
     }
 
-    private function getMissingSystem(\Seatplus\EsiClient\DataTransferObjects\EsiResponse $response): void
+    private function getMissingSystem(int $solar_system_id): void
     {
         $this->batching()
-            ? $this->batch()->add([new ResolveUniverseSystemBySystemIdJob(data_get($response->data, 'solar_system_id'))])
-            : ResolveUniverseSystemBySystemIdJob::dispatch(data_get($response->data, 'solar_system_id'))->onQueue($this->queue);
+            ? $this->batch()->add([new ResolveUniverseSystemBySystemIdJob($solar_system_id)])
+            : ResolveUniverseSystemBySystemIdJob::dispatch($solar_system_id)->onQueue($this->queue);
     }
 }

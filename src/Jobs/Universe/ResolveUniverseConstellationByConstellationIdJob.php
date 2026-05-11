@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Universe;
 
+use Seatplus\Eveapi\DataTransferObjects\Responses\Universe\ConstellationResponse;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Universe\Constellation;
@@ -66,11 +67,13 @@ class ResolveUniverseConstellationByConstellationIdJob extends EsiBase implement
     {
         $response = $this->retrieve();
 
+        $data = ConstellationResponse::from($response->data);
+
         Constellation::firstOrCreate(
-            ['constellation_id' => $response->data->constellation_id],
+            ['constellation_id' => $data->constellation_id],
             [
-                'region_id' => $response->data->region_id,
-                'name' => $response->data->name,
+                'region_id' => $data->region_id,
+                'name' => $data->name,
             ]
         );
     }

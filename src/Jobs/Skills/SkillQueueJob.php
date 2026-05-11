@@ -27,6 +27,7 @@
 namespace Seatplus\Eveapi\Jobs\Skills;
 
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
+use Seatplus\Eveapi\DataTransferObjects\Responses\Skills\SkillQueueItemResponse;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -88,17 +89,19 @@ class SkillQueueJob extends EsiBase implements HasPathValuesInterface, HasRequir
             return;
         }
 
-        $skill_queue = collect($response->data)->map(fn (object $queue_item) => [
-            'character_id' => $this->character_id,
-            'skill_id' => data_get($queue_item, 'skill_id'),
-            'queue_position' => data_get($queue_item, 'queue_position'),
-            'finished_level' => data_get($queue_item, 'finished_level'),
-            'start_date' => data_get($queue_item, 'start_date') ? carbon(data_get($queue_item, 'start_date')) : null,
-            'finish_date' => data_get($queue_item, 'finish_date') ? carbon(data_get($queue_item, 'finish_date')) : null,
-            'training_start_sp' => data_get($queue_item, 'training_start_sp'),
-            'level_start_sp' => data_get($queue_item, 'level_start_sp'),
-            'level_end_sp' => data_get($queue_item, 'level_end_sp'),
-        ]);
+        $skill_queue = collect($response->data)
+            ->map(fn (object $item) => SkillQueueItemResponse::from($item))
+            ->map(fn (SkillQueueItemResponse $queue_item) => [
+                'character_id' => $this->character_id,
+                'skill_id' => $queue_item->skill_id,
+                'queue_position' => $queue_item->queue_position,
+                'finished_level' => $queue_item->finished_level,
+                'start_date' => $queue_item->start_date !== null ? carbon($queue_item->start_date) : null,
+                'finish_date' => $queue_item->finish_date !== null ? carbon($queue_item->finish_date) : null,
+                'training_start_sp' => $queue_item->training_start_sp,
+                'level_start_sp' => $queue_item->level_start_sp,
+                'level_end_sp' => $queue_item->level_end_sp,
+            ]);
 
         // Clean current skill queue
         SkillQueue::query()

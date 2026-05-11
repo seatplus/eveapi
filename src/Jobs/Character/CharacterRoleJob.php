@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Character;
 
+use Seatplus\Eveapi\DataTransferObjects\Responses\Character\CharacterRoleResponse;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -86,13 +87,15 @@ class CharacterRoleJob extends EsiBase implements HasPathValuesInterface, HasReq
             return;
         }
 
+        $data = CharacterRoleResponse::from($response->data);
+
         CharacterRole::updateOrCreate([
             'character_id' => $this->character_id,
         ], [
-            'roles' => $response->data->roles,
-            'roles_at_base' => $response->data->roles_at_base,
-            'roles_at_hq' => $response->data->roles_at_hq,
-            'roles_at_other' => $response->data->roles_at_other,
+            'roles' => $data->roles,
+            'roles_at_base' => $data->roles_at_base,
+            'roles_at_hq' => $data->roles_at_hq,
+            'roles_at_other' => $data->roles_at_other,
         ]);
     }
 }

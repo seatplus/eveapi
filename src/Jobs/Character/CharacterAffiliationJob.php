@@ -31,6 +31,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
+use Seatplus\Eveapi\DataTransferObjects\Responses\Character\AffiliationItemResponse;
 use Seatplus\Eveapi\Esi\HasRequestBodyInterface;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfoJob;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationInfoJob;
@@ -97,12 +98,13 @@ class CharacterAffiliationJob extends EsiBase implements HasRequestBodyInterface
     public function processResponse(EsiResponse $response, Carbon $timestamp): void
     {
         collect($response->data)
-            ->each(fn (object $result) => $this->character_affiliations->push(
+            ->map(fn (object $item) => AffiliationItemResponse::from($item))
+            ->each(fn (AffiliationItemResponse $result) => $this->character_affiliations->push(
                 [
                     'character_id' => $result->character_id,
                     'corporation_id' => $result->corporation_id,
-                    'alliance_id' => data_get($result, 'alliance_id'),
-                    'faction_id' => data_get($result, 'faction_id'),
+                    'alliance_id' => $result->alliance_id,
+                    'faction_id' => $result->faction_id,
                     'last_pulled' => $timestamp,
                 ]
             ));

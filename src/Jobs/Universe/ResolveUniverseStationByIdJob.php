@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Universe;
 
+use Seatplus\Eveapi\DataTransferObjects\Responses\Universe\StationResponse;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Universe\Location;
@@ -81,18 +82,20 @@ class ResolveUniverseStationByIdJob extends EsiBase implements HasPathValuesInte
 
         $result = $this->retrieve();
 
+        $data = StationResponse::from($result->data);
+
         Station::updateOrCreate([
             'station_id' => $this->location_id,
         ], [
-            'type_id' => $result->data->type_id,
-            'name' => $result->data->name,
-            'owner_id' => $result->data->owner ?? null,
-            'race_id' => $result->data->race_id ?? null,
-            'system_id' => $result->data->system_id,
-            'reprocessing_efficiency' => $result->data->reprocessing_efficiency,
-            'reprocessing_stations_take' => $result->data->reprocessing_stations_take,
-            'max_dockable_ship_volume' => $result->data->max_dockable_ship_volume,
-            'office_rental_cost' => $result->data->office_rental_cost,
+            'type_id' => $data->type_id,
+            'name' => $data->name,
+            'owner_id' => $data->owner,
+            'race_id' => $data->race_id,
+            'system_id' => $data->system_id,
+            'reprocessing_efficiency' => $data->reprocessing_efficiency,
+            'reprocessing_stations_take' => $data->reprocessing_stations_take,
+            'max_dockable_ship_volume' => $data->max_dockable_ship_volume,
+            'office_rental_cost' => $data->office_rental_cost,
         ])->touch();
 
         Location::updateOrCreate([

@@ -27,6 +27,7 @@
 namespace Seatplus\Eveapi\Jobs\Assets;
 
 use Illuminate\Support\Collection;
+use Seatplus\Eveapi\DataTransferObjects\Responses\Assets\AssetItemResponse;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -103,12 +104,13 @@ class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRe
 
             // First update the
             collect($response->data)
+                ->map(fn (object $item) => AssetItemResponse::from($item))
                 ->each(
-                    fn (object $asset) => $this->assets->push([
+                    fn (AssetItemResponse $asset) => $this->assets->push([
                         'item_id' => $asset->item_id,
                         'assetable_id' => $this->character_id,
                         'assetable_type' => CharacterInfo::class,
-                        'is_blueprint_copy' => optional($asset)->is_blueprint_copy ?? false,
+                        'is_blueprint_copy' => $asset->is_blueprint_copy ?? false,
                         'is_singleton' => $asset->is_singleton,
                         'location_flag' => $asset->location_flag,
                         'location_id' => $asset->location_id,

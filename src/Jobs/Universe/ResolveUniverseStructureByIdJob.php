@@ -27,6 +27,7 @@
 namespace Seatplus\Eveapi\Jobs\Universe;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
+use Seatplus\Eveapi\DataTransferObjects\Responses\Universe\StructureResponse;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -95,13 +96,15 @@ class ResolveUniverseStructureByIdJob extends EsiBase implements HasPathValuesIn
             return;
         }
 
+        $data = StructureResponse::from($result->data);
+
         Structure::updateOrCreate([
             'structure_id' => $this->location_id,
         ], [
-            'name' => $result->data->name,
-            'owner_id' => $result->data->owner_id,
-            'solar_system_id' => $result->data->solar_system_id,
-            'type_id' => $result->data->type_id ?? null,
+            'name' => $data->name,
+            'owner_id' => $data->owner_id,
+            'solar_system_id' => $data->solar_system_id,
+            'type_id' => $data->type_id,
         ])->touch();
 
         Location::updateOrCreate([

@@ -28,6 +28,7 @@ namespace Seatplus\Eveapi\Services\Contacts;
 
 use Illuminate\Support\Collection;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
+use Seatplus\Eveapi\DataTransferObjects\Responses\Contacts\ContactItemResponse;
 use Seatplus\Eveapi\Models\Contacts\Contact;
 use Seatplus\Eveapi\Services\Jobs\CacheCharacterAffiliationIdsService;
 
@@ -37,33 +38,35 @@ class ProcessContactResponse
 
     public function execute(EsiResponse $response): Collection
     {
-        return collect($response->data)->each(function (object $contact) {
-            $contact_model = Contact::updateOrCreate([
-                'contact_id' => $contact->contact_id,
-                'contactable_id' => $this->contactable_id,
-                'contactable_type' => $this->contactable_type,
-            ], [
-                'contact_type' => $contact->contact_type,
-                'standing' => $contact->standing,
-                'is_blocked' => optional($contact)->is_blocked,
-                'is_watched' => optional($contact)->is_watched,
-            ]);
+        return collect($response->data)
+            ->map(fn (object $item) => ContactItemResponse::from($item))
+            ->each(function (ContactItemResponse $contact) {
+                $contact_model = Contact::updateOrCreate([
+                    'contact_id' => $contact->contact_id,
+                    'contactable_id' => $this->contactable_id,
+                    'contactable_type' => $this->contactable_type,
+                ], [
+                    'contact_type' => $contact->contact_type,
+                    'standing' => $contact->standing,
+                    'is_blocked' => $contact->is_blocked,
+                    'is_watched' => $contact->is_watched,
+                ]);
 
-            $contact_model->labels()->whereNotIn('label_id', $contact->label_ids ?? [])->delete();
+                $contact_model->labels()->whereNotIn('label_id', $contact->label_ids ?? [])->delete();
 
-            if (optional($contact)->label_ids) {
-                $already_existing_label_ids = $contact_model->labels()->pluck('label_id');
+                if ($contact->label_ids !== null) {
+                    $already_existing_label_ids = $contact_model->labels()->pluck('label_id');
 
-                $labels_to_save = collect($contact->label_ids)->diff($already_existing_label_ids);
+                    $labels_to_save = collect($contact->label_ids)->diff($already_existing_label_ids);
 
-                $contact_model->labels()->createMany($labels_to_save->map(fn (int $label_id) => ['label_id' => $label_id]));
-            }
-        })->pipe(function (Collection $response) {
-            CacheCharacterAffiliationIdsService::make()
-                ->queue($response->filter(fn (object $contact) => $contact->contact_type === 'character')->pluck('contact_id')->toArray());
+                    $contact_model->labels()->createMany($labels_to_save->map(fn (int $label_id) => ['label_id' => $label_id]));
+                }
+            })->pipe(function (Collection $response) {
+                CacheCharacterAffiliationIdsService::make()
+                    ->queue($response->filter(fn (ContactItemResponse $contact) => $contact->contact_type === 'character')->pluck('contact_id')->toArray());
 
-            return $response;
-        })->pluck('contact_id');
+                return $response;
+            })->pluck('contact_id');
     }
 
     public function remove_old_entries(array $known_ids): void

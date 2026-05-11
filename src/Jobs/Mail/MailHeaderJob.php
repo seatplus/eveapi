@@ -27,6 +27,7 @@
 namespace Seatplus\Eveapi\Jobs\Mail;
 
 use Illuminate\Support\Collection;
+use Seatplus\Eveapi\DataTransferObjects\Responses\Mail\MailHeaderItemResponse;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -88,13 +89,14 @@ class MailHeaderJob extends EsiBase implements HasPathValuesInterface, HasRequir
         }
 
         collect($response->data)
-            ->map(fn (object $mail) => [
-                'id' => data_get($mail, 'mail_id'),
-                'subject' => data_get($mail, 'subject'),
-                'from' => data_get($mail, 'from'),
-                'timestamp' => carbon(data_get($mail, 'timestamp')),
-                'is_read' => data_get($mail, 'is_read', false),
-                'recipients' => data_get($mail, 'recipients'),
+            ->map(fn (object $item) => MailHeaderItemResponse::from($item))
+            ->map(fn (MailHeaderItemResponse $mail) => [
+                'id' => $mail->mail_id,
+                'subject' => $mail->subject,
+                'from' => $mail->from,
+                'timestamp' => carbon($mail->timestamp),
+                'is_read' => $mail->is_read,
+                'recipients' => $mail->recipients,
             ])
             // create the mail header
             ->tap(function (Collection $mails) {

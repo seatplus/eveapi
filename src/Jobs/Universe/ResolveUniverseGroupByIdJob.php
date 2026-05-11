@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Universe;
 
+use Seatplus\Eveapi\DataTransferObjects\Responses\Universe\GroupResponse;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Models\Universe\Group;
@@ -79,12 +80,14 @@ class ResolveUniverseGroupByIdJob extends EsiBase implements HasPathValuesInterf
     {
         $response = $this->retrieve();
 
+        $data = GroupResponse::from($response->data);
+
         Group::firstOrCreate(
-            ['group_id' => $response->data->group_id],
+            ['group_id' => $data->group_id],
             [
-                'category_id' => $response->data->category_id,
-                'name' => $response->data->name,
-                'published' => $response->data->published,
+                'category_id' => $data->category_id,
+                'name' => $data->name,
+                'published' => $data->published,
             ]
         );
     }

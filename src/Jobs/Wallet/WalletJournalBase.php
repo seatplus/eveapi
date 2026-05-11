@@ -3,6 +3,7 @@
 namespace Seatplus\Eveapi\Jobs\Wallet;
 
 use Illuminate\Support\Arr;
+use Seatplus\Eveapi\DataTransferObjects\Responses\Wallet\WalletJournalItemResponse;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -53,7 +54,8 @@ abstract class WalletJournalBase extends EsiBase implements HasPathValuesInterfa
             }
 
             $journal_entries = collect($response->data)
-                ->map(fn (object $entry) => [
+                ->map(fn (object $item) => WalletJournalItemResponse::from($item))
+                ->map(fn (WalletJournalItemResponse $entry) => [
                     'id' => $entry->id,
 
                     'wallet_journable_id' => $wallet_journable_id,
@@ -65,15 +67,15 @@ abstract class WalletJournalBase extends EsiBase implements HasPathValuesInterfa
                     'description' => $entry->description,
                     'ref_type' => $entry->ref_type,
                     // nullable props
-                    'amount' => optional($entry)->amount,
-                    'balance' => optional($entry)->balance,
-                    'contextable_id' => optional($entry)->context_id,
-                    'contextable_type' => $this->getContextableType(optional($entry)->context_id_type),
-                    'first_party_id' => optional($entry)->first_party_id,
-                    'second_party_id' => optional($entry)->second_party_id,
-                    'reason' => optional($entry)->reason,
-                    'tax' => optional($entry)->tax,
-                    'tax_receiver_id' => optional($entry)->tax_receiver_id,
+                    'amount' => $entry->amount,
+                    'balance' => $entry->balance,
+                    'contextable_id' => $entry->context_id,
+                    'contextable_type' => $this->getContextableType($entry->context_id_type),
+                    'first_party_id' => $entry->first_party_id,
+                    'second_party_id' => $entry->second_party_id,
+                    'reason' => $entry->reason,
+                    'tax' => $entry->tax,
+                    'tax_receiver_id' => $entry->tax_receiver_id,
                 ])->toArray();
 
             $this->journal_entries = array_merge($this->journal_entries, $journal_entries);

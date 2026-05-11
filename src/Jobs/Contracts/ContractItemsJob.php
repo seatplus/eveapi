@@ -28,6 +28,7 @@ namespace Seatplus\Eveapi\Jobs\Contracts;
 
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Support\Facades\DB;
+use Seatplus\Eveapi\DataTransferObjects\Responses\Contracts\ContractLineItemResponse;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -80,19 +81,21 @@ abstract class ContractItemsJob extends EsiBase implements HasPathValuesInterfac
 
         DB::transaction(function () use ($response) {
 
-            $contract_items = collect($response->data)->map(fn (object $item) => [
-                // primary
-                'record_id' => $item->record_id,
-                // others
-                'contract_id' => $this->contract_id,
-                'is_included' => $item->is_included,
-                'is_singleton' => $item->is_singleton,
-                'quantity' => $item->quantity,
-                'type_id' => $item->type_id,
+            $contract_items = collect($response->data)
+                ->map(fn (object $item) => ContractLineItemResponse::from($item))
+                ->map(fn (ContractLineItemResponse $item) => [
+                    // primary
+                    'record_id' => $item->record_id,
+                    // others
+                    'contract_id' => $this->contract_id,
+                    'is_included' => $item->is_included,
+                    'is_singleton' => $item->is_singleton,
+                    'quantity' => $item->quantity,
+                    'type_id' => $item->type_id,
 
-                // optionals
-                'raw_quantity' => optional($item)->raw_quantity,
-            ]);
+                    // optionals
+                    'raw_quantity' => $item->raw_quantity,
+                ]);
 
             ContractItem::upsert(
                 $contract_items->toArray(),

@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Wallet;
 
+use Seatplus\Eveapi\DataTransferObjects\Responses\Wallet\CharacterBalanceResponse;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -92,11 +93,13 @@ class CharacterBalanceJob extends EsiBase implements HasPathValuesInterface, Has
             return;
         }
 
+        $data = CharacterBalanceResponse::from($response->data);
+
         Balance::updateOrCreate([
             'balanceable_id' => $this->character_id,
             'balanceable_type' => CharacterInfo::class,
         ], [
-            'balance' => $response->data->scalar,
+            'balance' => $data->balance,
         ]);
     }
 }
