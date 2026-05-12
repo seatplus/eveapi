@@ -16,9 +16,12 @@
 use Faker\Factory;
 use Firebase\JWT\JWT;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\Facade\RetrieveEsiData;
+use Seatplus\Eveapi\Tests\TestCase;
 
-uses(\Seatplus\Eveapi\Tests\TestCase::class)->in('Unit', 'Integration', 'Jobs');
+uses(TestCase::class)->in('Unit', 'Integration', 'Jobs');
 // uses(\Illuminate\Foundation\Testing\LazilyRefreshDatabase::class)->in('Unit', 'Integration', 'Jobs');
 
 /*
@@ -68,10 +71,10 @@ function noRetrieveEsiDataAction()
 
 function testCharacter()
 {
-    return \Seatplus\Eveapi\Models\Character\CharacterInfo::first();
+    return CharacterInfo::first();
 }
 
-function updateRefreshTokenScopes(Seatplus\Eveapi\Models\RefreshToken $refreshToken, array $scopes): Seatplus\Eveapi\Models\RefreshToken
+function updateRefreshTokenScopes(RefreshToken $refreshToken, array $scopes): RefreshToken
 {
     $jwt = $refreshToken->getRawOriginal('token');
     $jwt_payload_base64_encoded = explode('.', (string) $jwt)[1];

@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingBodysFromMails;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCategorys;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCharacterInfosFromCorporationMemberTracking;
@@ -18,6 +19,7 @@ use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromLocations;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromSkillQueue;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromSkills;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingTypesFromWalletTransaction;
+use Seatplus\Eveapi\Models\Mail\Mail;
 
 it('returns early if batch is cancelled', function (string $job) {
     $job = mock($job)->makePartial();
@@ -52,8 +54,8 @@ it('returns early if batch is cancelled', function (string $job) {
 
 it('returns null if no refresh token is found', function () {
 
-    \Illuminate\Support\Facades\Event::fakeFor(function () {
-        \Seatplus\Eveapi\Models\Mail\Mail::factory()->create();
+    Event::fakeFor(function () {
+        Mail::factory()->create();
     });
 
     $job = mock(GetMissingBodysFromMails::class)->makePartial();

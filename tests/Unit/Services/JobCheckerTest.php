@@ -1,7 +1,13 @@
 <?php
 
+use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Mockery\MockInterface;
+use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
+use Seatplus\Eveapi\Esi\HasPathValuesInterface;
+use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
+use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
 use Seatplus\Eveapi\Jobs\EsiBase;
+use Seatplus\Eveapi\Jobs\Middleware\EsiProactiveRateLimitMiddleware;
 use Seatplus\Eveapi\Services\EsiPathService;
 use Seatplus\Eveapi\Services\FileGetContentsAction;
 use Seatplus\Eveapi\Services\JobChecker;
@@ -128,7 +134,7 @@ describe('required scope checker', function () {
             ],
         ]);
 
-        $job = mock(EsiBase::class, \Seatplus\Eveapi\Esi\HasRequiredScopeInterface::class, function (MockInterface $mock) {
+        $job = mock(EsiBase::class, HasRequiredScopeInterface::class, function (MockInterface $mock) {
             $mock->shouldReceive('getVersion')->andReturn('v2');
             $mock->shouldReceive('getEndpoint')->andReturn('/endpoint');
             $mock->shouldReceive('getMethod')->andReturn('get');
@@ -194,7 +200,7 @@ describe('required scope checker', function () {
             ],
         ]);
 
-        $job = mock(EsiBase::class, \Seatplus\Eveapi\Esi\HasRequiredScopeInterface::class, function (MockInterface $mock) {
+        $job = mock(EsiBase::class, HasRequiredScopeInterface::class, function (MockInterface $mock) {
             $mock->shouldReceive('getVersion')->andReturn('v2');
             $mock->shouldReceive('getEndpoint')->andReturn('/endpoint');
             $mock->shouldReceive('getMethod')->andReturn('get');
@@ -228,7 +234,7 @@ describe('required scope checker', function () {
             ],
         ]);
 
-        $job = mock(EsiBase::class, \Seatplus\Eveapi\Esi\HasRequiredScopeInterface::class, function (MockInterface $mock) {
+        $job = mock(EsiBase::class, HasRequiredScopeInterface::class, function (MockInterface $mock) {
             $mock->shouldReceive('getVersion')->andReturn('v2');
             $mock->shouldReceive('getEndpoint')->andReturn('/endpoint');
             $mock->shouldReceive('getMethod')->andReturn('get');
@@ -308,7 +314,7 @@ describe('Path Check', function () {
 
     it('returns error if no path values are set but have HasPathValuesInterface implemented', function () {
 
-        $job = mock(EsiBase::class, \Seatplus\Eveapi\Esi\HasPathValuesInterface::class, function (MockInterface $mock) {
+        $job = mock(EsiBase::class, HasPathValuesInterface::class, function (MockInterface $mock) {
             $mock->shouldReceive('getVersion')->andReturn('v2');
             $mock->shouldReceive('getEndpoint')->andReturn('/endpoint/{id}');
             $mock->shouldReceive('getMethod')->andReturn('get');
@@ -324,7 +330,7 @@ describe('Path Check', function () {
     });
 
     it('returns error if path value is not used in path', function () {
-        $job = mock(EsiBase::class, \Seatplus\Eveapi\Esi\HasPathValuesInterface::class, function (MockInterface $mock) {
+        $job = mock(EsiBase::class, HasPathValuesInterface::class, function (MockInterface $mock) {
             $mock->shouldReceive('getVersion')->andReturn('v2');
             $mock->shouldReceive('getEndpoint')->andReturn('/endpoint/{id}');
             $mock->shouldReceive('getMethod')->andReturn('get');
@@ -340,7 +346,7 @@ describe('Path Check', function () {
     });
 
     it('returns success if path value is used in path', function () {
-        $job = mock(EsiBase::class, \Seatplus\Eveapi\Esi\HasPathValuesInterface::class, function (MockInterface $mock) {
+        $job = mock(EsiBase::class, HasPathValuesInterface::class, function (MockInterface $mock) {
             $mock->shouldReceive('getVersion')->andReturn('v2');
             $mock->shouldReceive('getEndpoint')->andReturn('/endpoint/{id}');
             $mock->shouldReceive('getMethod')->andReturn('get');
@@ -390,13 +396,13 @@ describe('Middleware check', function () {
     });
 
     it('returns error if job implements HasRequiredScopeInterface but middleware is not set', function () {
-        $job = mock(EsiBase::class, \Seatplus\Eveapi\Esi\HasRequiredScopeInterface::class, function (MockInterface $mock) {
+        $job = mock(EsiBase::class, HasRequiredScopeInterface::class, function (MockInterface $mock) {
             $mock->shouldReceive('getVersion')->andReturn('v2');
             $mock->shouldReceive('getEndpoint')->andReturn('/endpoint');
             $mock->shouldReceive('getMethod')->andReturn('get');
             $mock->shouldReceive('middleware')->andReturn([
-                new \Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis,
-                new \Seatplus\Eveapi\Jobs\Middleware\EsiProactiveRateLimitMiddleware,
+                new ThrottlesExceptionsWithRedis,
+                new EsiProactiveRateLimitMiddleware,
             ]);
         })->makePartial();
 
@@ -414,7 +420,7 @@ describe('Middleware check', function () {
             $mock->shouldReceive('getEndpoint')->andReturn('/endpoint');
             $mock->shouldReceive('getMethod')->andReturn('get');
             $mock->shouldReceive('middleware')->andReturn([
-                new \Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis,
+                new ThrottlesExceptionsWithRedis,
             ]);
         })->makePartial();
 
@@ -432,8 +438,8 @@ describe('Middleware check', function () {
             $mock->shouldReceive('getEndpoint')->andReturn('/endpoint');
             $mock->shouldReceive('getMethod')->andReturn('get');
             $mock->shouldReceive('middleware')->andReturn([
-                new \Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis,
-                new \Seatplus\Eveapi\Jobs\Middleware\EsiProactiveRateLimitMiddleware,
+                new ThrottlesExceptionsWithRedis,
+                new EsiProactiveRateLimitMiddleware,
             ]);
         })->makePartial();
 
@@ -499,7 +505,7 @@ describe('Corporation Role Check', function () {
     });
 
     it('returns error if corporation role is required but no corporation role is set', function () {
-        $job = mock(EsiBase::class, \Seatplus\Eveapi\Esi\HasCorporationRoleInterface::class, function (MockInterface $mock) {
+        $job = mock(EsiBase::class, HasCorporationRoleInterface::class, function (MockInterface $mock) {
             $mock->shouldReceive('getVersion')->andReturn('v2');
             $mock->shouldReceive('getEndpoint')->andReturn('/endpoint/safe');
             $mock->shouldReceive('getMethod')->andReturn('get');
@@ -515,7 +521,7 @@ describe('Corporation Role Check', function () {
     });
 
     it('returns error if corporation role is required but corporation role is not set', function () {
-        $job = mock(EsiBase::class, \Seatplus\Eveapi\Esi\HasCorporationRoleInterface::class, function (MockInterface $mock) {
+        $job = mock(EsiBase::class, HasCorporationRoleInterface::class, function (MockInterface $mock) {
             $mock->shouldReceive('getVersion')->andReturn('v2');
             $mock->shouldReceive('getEndpoint')->andReturn('/endpoint/safe');
             $mock->shouldReceive('getMethod')->andReturn('get');
@@ -531,7 +537,7 @@ describe('Corporation Role Check', function () {
     });
 
     it('returns success if corporation role is required and corporation role is set', function () {
-        $job = mock(EsiBase::class, \Seatplus\Eveapi\Esi\HasCorporationRoleInterface::class, function (MockInterface $mock) {
+        $job = mock(EsiBase::class, HasCorporationRoleInterface::class, function (MockInterface $mock) {
             $mock->shouldReceive('getVersion')->andReturn('v2');
             $mock->shouldReceive('getEndpoint')->andReturn('/endpoint/safe');
             $mock->shouldReceive('getMethod')->andReturn('get');
@@ -575,7 +581,7 @@ describe('is checking cache check', function () {
 
     it('returns success when CharacterAffiliationJob is a post request with cached seconds', function () {
 
-        $job = mock(\Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob::class, function (MockInterface $mock) {
+        $job = mock(CharacterAffiliationJob::class, function (MockInterface $mock) {
             $mock->shouldReceive('getVersion')->andReturn('v2');
             $mock->shouldReceive('getEndpoint')->andReturn('/endpoint/cached');
             $mock->shouldReceive('getMethod')->andReturn('post');
@@ -796,7 +802,7 @@ describe('Rate limit checker', function () {
             $mock->shouldReceive('getEndpoint')->andReturn('/endpoint');
             $mock->shouldReceive('getMethod')->andReturn('get');
             $mock->shouldReceive('middleware')->andReturn([
-                new \Seatplus\Eveapi\Jobs\Middleware\EsiProactiveRateLimitMiddleware,
+                new EsiProactiveRateLimitMiddleware,
             ]);
         })->makePartial();
 

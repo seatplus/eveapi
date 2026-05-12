@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
+use Mockery\MockInterface;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\Eveapi\Jobs\Mail\MailBodyJob;
 use Seatplus\Eveapi\Jobs\Mail\MailHeaderJob;
@@ -41,7 +42,7 @@ it('runs mail body job', function () {
 
 it('adds MailBodyJob to batch if batched', function () {
 
-    $job = mock(MailHeaderJob::class, function (\Mockery\MockInterface $mock) {
+    $job = mock(MailHeaderJob::class, function (MockInterface $mock) {
         $mock->method = 'get';
         $mock->endpoint = '/characters/{character_id}/mail/';
         $mock->version = 'v1';

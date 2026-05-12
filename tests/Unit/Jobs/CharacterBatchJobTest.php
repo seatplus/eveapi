@@ -1,9 +1,11 @@
 <?php
 
-use Illuminate\Bus\Batch;
+use Illuminate\Support\Facades\Event;
+use Seatplus\Eveapi\Jobs\Contacts\AllianceContactJob;
 use Seatplus\Eveapi\Jobs\Seatplus\Batch\CharacterBatchJob;
 use Seatplus\Eveapi\Models\BatchStatistic;
 use Seatplus\Eveapi\Models\BatchUpdate;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
 it('discards update if still pending', function () {
     $batch_update = new BatchUpdate;
@@ -25,14 +27,14 @@ it('finally creates BatchStatistices', function () {
     // create an very old BatchUpdate
     BatchUpdate::create([
         'batchable_id' => testCharacter()->character_id,
-        'batchable_type' => \Seatplus\Eveapi\Models\Character\CharacterInfo::class,
+        'batchable_type' => CharacterInfo::class,
         'started_at' => now()->subDays(2),
         'finished_at' => now()->subDays(1),
     ]);
 
     $job = new CharacterBatchJob(testCharacter()->character_id, batch_jobs: [fn () => 'test']);
 
-    \Illuminate\Support\Facades\Bus::fake();
+    Illuminate\Support\Facades\Bus::fake();
 
     // Act
     $job->handle();
@@ -57,13 +59,13 @@ it('does not add AllianceContactsJob if no alliance_id is present', function () 
 
     // make sure refresh token has esi-alliances.read_contacts.v1 scope
     $refresh_token = updateRefreshTokenScopes(testCharacter()->refresh_token, ['esi-alliances.read_contacts.v1']);
-    \Illuminate\Support\Facades\Event::fakeFor(fn () => $refresh_token->save());
+    Event::fakeFor(fn () => $refresh_token->save());
 
     // delete alliance_id from character info
     $character_affiliation = testCharacter()->character_affiliation;
     $character_affiliation->alliance_id = null;
 
-    \Illuminate\Support\Facades\Event::fakeFor(fn () => $character_affiliation->save());
+    Event::fakeFor(fn () => $character_affiliation->save());
 
     // Act
     $job = new CharacterBatchJob($character_affiliation->character_id);
@@ -83,7 +85,7 @@ it('does not add AllianceContactsJob if no alliance_id is present', function () 
     $batch_jobs = Arr::flatten($batch_jobs);
 
     foreach ($batch_jobs as $batch_job) {
-        expect($batch_job)->not->toBeInstanceOf(\Seatplus\Eveapi\Jobs\Contacts\AllianceContactJob::class);
+        expect($batch_job)->not->toBeInstanceOf(AllianceContactJob::class);
     }
 });
 

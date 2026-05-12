@@ -31,7 +31,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\RefreshToken>
+ * @extends Factory<RefreshToken>
  */
 class RefreshTokenFactory extends Factory
 {

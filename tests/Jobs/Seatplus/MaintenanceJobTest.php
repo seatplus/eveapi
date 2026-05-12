@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Assets\EnrichAssetTypeGroupCategoryJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingBodysFromMails;
@@ -503,7 +504,7 @@ it('dispatches resolve universe type by id job for missing types of skillqueue',
 });
 
 it('dispatches mail body job for missing mail bodies', function () {
-    \Illuminate\Support\Facades\Queue::fake();
+    Queue::fake();
     $refresh_token = updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-mail.read_mail.v1']);
     $refresh_token->save();
 

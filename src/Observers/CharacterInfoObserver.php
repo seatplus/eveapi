@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Observers;
 
+use Seatplus\Eveapi\Exceptions\InvalidContainerDataException;
 use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
@@ -36,7 +37,7 @@ class CharacterInfoObserver
      *
      *
      *
-     * @throws \Seatplus\Eveapi\Exceptions\InvalidContainerDataException
+     * @throws InvalidContainerDataException
      */
     public function created(CharacterInfo $character_info): void
     {
@@ -48,7 +49,7 @@ class CharacterInfoObserver
      *
      *
      *
-     * @throws \Seatplus\Eveapi\Exceptions\InvalidContainerDataException
+     * @throws InvalidContainerDataException
      */
     public function updating(CharacterInfo $character_info): void
     {

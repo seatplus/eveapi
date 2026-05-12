@@ -1,7 +1,9 @@
 <?php
 
+use Seatplus\Eveapi\Jobs\Skills\SkillsJob;
+
 it('has tags', function () {
-    $job = new \Seatplus\Eveapi\Jobs\Skills\SkillsJob(1);
+    $job = new SkillsJob(1);
 
     expect($job->tags())->toBe([
         'skills',

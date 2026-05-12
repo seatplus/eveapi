@@ -5,6 +5,7 @@ use Seatplus\Eveapi\Jobs\Contacts\AllianceContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\CharacterContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\CorporationContactJob;
 use Seatplus\Eveapi\Models\Contacts\Contact;
+use Seatplus\Eveapi\Services\Jobs\CacheCharacterAffiliationIdsService;
 
 beforeEach(function () {
     // Prevent any auto dispatching of jobs
@@ -20,7 +21,7 @@ test('run character contact', function () {
 
     $job->handle();
 
-    $cached_ids = \Seatplus\Eveapi\Services\Jobs\CacheCharacterAffiliationIdsService::make()->retrieve();
+    $cached_ids = CacheCharacterAffiliationIdsService::make()->retrieve();
 
     foreach ($mock_data as $data) {
         // Assert that character asset created
@@ -44,7 +45,7 @@ test('run corporation contact', function () {
 
     $job->handle();
 
-    $cached_ids = \Seatplus\Eveapi\Services\Jobs\CacheCharacterAffiliationIdsService::make()->retrieve();
+    $cached_ids = CacheCharacterAffiliationIdsService::make()->retrieve();
 
     foreach ($mock_data as $data) {
         // Assert that character asset created

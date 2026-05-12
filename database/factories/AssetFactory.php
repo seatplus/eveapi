@@ -32,7 +32,7 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Universe\Type;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Assets\Asset>
+ * @extends Factory<Asset>
  */
 class AssetFactory extends Factory
 {

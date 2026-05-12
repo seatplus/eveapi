@@ -58,7 +58,7 @@ trait HasRequiredScopes
                 'character_id' => RefreshToken::firstWhere('character_id', $value),
                 'corporation_id' => $this->getCorporateRefreshToken($value),
                 'alliance_id' => $this->getAllianceRefreshToken($value),
-                default => throw new \Exception("Unexpected key: {$key}")
+                default => throw new Exception("Unexpected key: {$key}")
             });
 
         // throw error if length of collection is not 1

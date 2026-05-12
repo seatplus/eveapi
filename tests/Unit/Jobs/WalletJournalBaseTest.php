@@ -1,15 +1,16 @@
 <?php
 
+use Mockery\MockInterface;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\Eveapi\Jobs\Wallet\WalletJournalBase;
 
 it('does not execute job if response is cached', function () {
-    $job = mock(WalletJournalBase::class, function (\Mockery\MockInterface $mock) {
+    $job = mock(WalletJournalBase::class, function (MockInterface $mock) {
         $mock->shouldReceive('getPathValues')->once()->andReturn([
             'character_id' => 12345,
         ]);
 
-        $response = mock(EsiResponse::class, function (\Mockery\MockInterface $mock) {
+        $response = mock(EsiResponse::class, function (MockInterface $mock) {
             $mock->shouldReceive('isCachedLoad')->once()->andReturnTrue();
         });
 
@@ -26,12 +27,12 @@ it('does not execute job if response is cached', function () {
 
 it('handles multiple pages correctly', function () {
 
-    $job = mock(WalletJournalBase::class, function (\Mockery\MockInterface $mock) {
+    $job = mock(WalletJournalBase::class, function (MockInterface $mock) {
         $mock->shouldReceive('getPathValues')->once()->andReturn([
             'character_id' => 12345,
         ]);
 
-        $response = mock(EsiResponse::class, function (\Mockery\MockInterface $mock) {
+        $response = mock(EsiResponse::class, function (MockInterface $mock) {
             $mock->shouldReceive('isCachedLoad')->andReturnFalse();
             $mock->pages = 2;
             $mock->data = (object) [];
@@ -48,12 +49,12 @@ it('handles multiple pages correctly', function () {
 });
 
 it('handles contextable type', function ($context_id_type) {
-    $job = mock(WalletJournalBase::class, function (\Mockery\MockInterface $mock) use ($context_id_type) {
+    $job = mock(WalletJournalBase::class, function (MockInterface $mock) use ($context_id_type) {
         $mock->shouldReceive('getPathValues')->once()->andReturn([
             'corporation_id' => 12345,
         ]);
 
-        $response = mock(EsiResponse::class, function (\Mockery\MockInterface $mock) use ($context_id_type) {
+        $response = mock(EsiResponse::class, function (MockInterface $mock) use ($context_id_type) {
             $mock->shouldReceive('isCachedLoad')->andReturnFalse();
             $mock->pages = 1;
             $mock->data = (object) [

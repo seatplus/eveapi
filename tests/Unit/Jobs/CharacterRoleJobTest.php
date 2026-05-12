@@ -1,8 +1,11 @@
 <?php
 
+use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
+use Seatplus\Eveapi\Jobs\Character\CharacterRoleJob;
+
 it('checks if the response is cached', function () {
-    $job = mock(\Seatplus\Eveapi\Jobs\Character\CharacterRoleJob::class, function ($mock) {
-        $response = mock(\Seatplus\EsiClient\DataTransferObjects\EsiResponse::class, function ($mock) {
+    $job = mock(CharacterRoleJob::class, function ($mock) {
+        $response = mock(EsiResponse::class, function ($mock) {
             $mock->shouldReceive('isCachedLoad')->andReturn(true);
         });
 

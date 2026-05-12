@@ -2,12 +2,15 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
+use Mockery\MockInterface;
 use Seatplus\Eveapi\Models\Assets\Asset;
+use Seatplus\Eveapi\Services\MigrateDb;
 
 beforeEach(function () {
 
-    \Illuminate\Support\Facades\Event::fake();
+    Event::fake();
 });
 
 describe('with migration run', function () {
@@ -90,7 +93,7 @@ describe('with migration run', function () {
 
         // Act
 
-        new \Seatplus\Eveapi\Services\MigrateDb;
+        new MigrateDb;
 
         // Assert
 
@@ -102,7 +105,7 @@ describe('with migration run', function () {
 it('has no existing mariadb database', function () {
     // Arrange
 
-    $mock = mock(\Seatplus\Eveapi\Services\MigrateDb::class, function (\Mockery\MockInterface $mock) {
+    $mock = mock(MigrateDb::class, function (MockInterface $mock) {
         $mock->shouldReceive('databaseExists')
             ->with('mysql')
             ->once()
@@ -120,9 +123,9 @@ it('returns false if db connection fails', function () {
     // Arrange
     DB::shouldReceive()
         ->connection('pgsql')
-        ->andThrow(new \Exception('PostgreSql database does not exist'));
+        ->andThrow(new Exception('PostgreSql database does not exist'));
 
-    $mock = mock(\Seatplus\Eveapi\Services\MigrateDb::class, function (\Mockery\MockInterface $mock) {
+    $mock = mock(MigrateDb::class, function (MockInterface $mock) {
         $mock->shouldReceive('migrate')
             ->andReturnNull();
     })->makePartial();

@@ -76,7 +76,7 @@ it('applies binary search and chaches it if one id is invalid', function () {
     $ids = [123456789, $mock_data->character_id];
 
     // Prepare the mock responses
-    $exception_mock = \Mockery::mock(\Exception::class);
+    $exception_mock = Mockery::mock(Exception::class);
     $exception_mock->shouldReceive('getResponse->getReasonPhrase')->andReturn('Invalid character ID');
     // first create the exception
     $exception = new RequestFailedException($exception_mock, new EsiResponse(json_encode([]), [], 'now', 200));

@@ -1,13 +1,15 @@
 <?php
 
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
+use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\Eveapi\Jobs\Skills\SkillsJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Skills\Skill;
 use Seatplus\Eveapi\Models\Universe\Type;
 
-uses(\Illuminate\Foundation\Testing\LazilyRefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 beforeEach(function () {
     // Prevent any auto dispatching of jobs
@@ -50,10 +52,10 @@ it('Dispatch Type job if skill is missing', function () {
 });
 
 it('does not update skills and character info if response is cached', function () {
-    $response = \Mockery::mock(\Seatplus\EsiClient\DataTransferObjects\EsiResponse::class);
+    $response = Mockery::mock(EsiResponse::class);
     $response->shouldReceive('isCachedLoad')->andReturn(true);
 
-    $job = \Mockery::mock(\Seatplus\Eveapi\Jobs\Skills\SkillsJob::class)->makePartial();
+    $job = Mockery::mock(SkillsJob::class)->makePartial();
     $job->shouldReceive('retrieve')->andReturn($response);
 
     $job->executeJob();

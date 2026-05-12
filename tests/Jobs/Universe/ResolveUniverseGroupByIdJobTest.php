@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Event;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseGroupByIdJob;
 use Seatplus\Eveapi\Models\Universe\Group;
 
 it('creates group', function () {
@@ -11,7 +12,7 @@ it('creates group', function () {
 
     expect(Group::first())->toBeNull();
 
-    Event::fakeFor(fn () => (new \Seatplus\Eveapi\Jobs\Universe\ResolveUniverseGroupByIdJob($mock_data->group_id))->handle());
+    Event::fakeFor(fn () => (new ResolveUniverseGroupByIdJob($mock_data->group_id))->handle());
 
     expect(Group::first())
         ->first()->category_id->toBe($mock_data->category_id);

@@ -1,5 +1,6 @@
 <?php
 
+use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\System;
@@ -54,7 +55,7 @@ it('has assets relationship', function () {
         'locatable_type' => Station::class,
     ]);
 
-    \Seatplus\Eveapi\Models\Assets\Asset::factory()->create([
+    Asset::factory()->create([
         'location_id' => $location->location_id,
     ]);
 

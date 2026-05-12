@@ -32,7 +32,7 @@ use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\SsoScopes;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\SsoScopes>
+ * @extends Factory<SsoScopes>
  */
 class SsoScopesFactory extends Factory
 {

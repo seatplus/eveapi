@@ -34,7 +34,7 @@ use Seatplus\Eveapi\Models\Universe\System;
 use Seatplus\Eveapi\Models\Universe\Type;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Killmails\Killmail>
+ * @extends Factory<Killmail>
  */
 class KillmailFactory extends Factory
 {

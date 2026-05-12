@@ -2,6 +2,7 @@
 
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\Eveapi\Jobs\Mail\MailBodyJob;
+use Seatplus\Eveapi\Models\Mail\Mail;
 
 it('returns early if cache is hit', function () {
 
@@ -14,5 +15,5 @@ it('returns early if cache is hit', function () {
 
     $job->executeJob();
 
-    expect(\Seatplus\Eveapi\Models\Mail\Mail::all())->toHaveCount(0);
+    expect(Mail::all())->toHaveCount(0);
 });

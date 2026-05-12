@@ -2,6 +2,7 @@
 
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\Eveapi\Jobs\Contracts\CharacterContractsJob;
+use Seatplus\Eveapi\Models\Contracts\Contract;
 
 test('returns early if cached', function () {
 
@@ -20,7 +21,7 @@ it('increments page', function () {
 
     Queue::fake();
 
-    $contract = \Seatplus\Eveapi\Models\Contracts\Contract::factory()->count(2)->make();
+    $contract = Contract::factory()->count(2)->make();
 
     $response1 = new EsiResponse(json_encode($contract->toArray()), ['X-Pages' => 2], 'now', 200);
     $response2 = new EsiResponse('{}', ['X-Pages' => 2], 'now', 200);
@@ -38,7 +39,7 @@ it('adds follow up jobs to batch if batching', function () {
 
     Queue::fake();
 
-    $contract = \Seatplus\Eveapi\Models\Contracts\Contract::factory()->count(2)->make();
+    $contract = Contract::factory()->count(2)->make();
 
     $response = new EsiResponse(json_encode($contract->toArray()), [], 'now', 200);
 

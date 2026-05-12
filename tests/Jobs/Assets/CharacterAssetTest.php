@@ -5,6 +5,8 @@ use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
+use Seatplus\Eveapi\Models\Universe\Location;
+use Seatplus\Eveapi\Models\Universe\Type;
 
 beforeEach(function () {
     Queue::fake();
@@ -124,7 +126,7 @@ it('dispatches unknown types job', function () {
 });
 
 it('does not dispatch ResolveUniverseTypeByIdJob if type is known', function () {
-    $type = \Seatplus\Eveapi\Models\Universe\Type::factory()->create();
+    $type = Type::factory()->create();
 
     $assets = Asset::factory()->count(5)->create([
         'assetable_id' => testCharacter()->character_id,
@@ -140,7 +142,7 @@ it('does not dispatch ResolveUniverseTypeByIdJob if type is known', function () 
 });
 
 it('does not dispatch ResolveLocationJob if location is known', function () {
-    $location = \Seatplus\Eveapi\Models\Universe\Location::factory()->create();
+    $location = Location::factory()->create();
 
     $assets = Asset::factory()->count(5)->create([
         'assetable_id' => testCharacter()->character_id,

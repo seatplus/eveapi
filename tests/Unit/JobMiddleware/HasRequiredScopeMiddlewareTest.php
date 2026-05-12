@@ -1,5 +1,6 @@
 <?php
 
+use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Models\RefreshToken;
@@ -47,7 +48,7 @@ function prepareJobMiddleware(bool $should_fail = true)
 {
     $middleware = new HasRequiredScopeMiddleware;
 
-    $job = Mockery::mock(EsiBase::class, \Seatplus\Eveapi\Esi\HasRequiredScopeInterface::class);
+    $job = Mockery::mock(EsiBase::class, HasRequiredScopeInterface::class);
 
     if ($should_fail) {
         $job->shouldReceive('fail')->times(1);

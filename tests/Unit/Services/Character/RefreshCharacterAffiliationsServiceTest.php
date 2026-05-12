@@ -1,15 +1,18 @@
 <?php
 
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Redis;
 use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Services\Character\RefreshCharacterAffiliationsService;
+use Seatplus\Eveapi\Services\Jobs\CacheCharacterAffiliationIdsService;
 
 beforeEach(function () {
     Queue::fake();
 
     CharacterAffiliation::query()->whereNotIn('character_id', [testCharacter()->character_id])->delete();
-    \Seatplus\Eveapi\Models\Character\CharacterInfo::query()->whereNotIn('character_id', [testCharacter()->character_id])->delete();
+    CharacterInfo::query()->whereNotIn('character_id', [testCharacter()->character_id])->delete();
 
     // check that only one CharacterAffiliation exists and that it is the test character
     expect(CharacterAffiliation::count())->toBe(1)
@@ -44,10 +47,10 @@ describe('dispatches CharacterAffiliationJob for ', function () {
         // arrange
 
         // clear the redis cache
-        \Illuminate\Support\Facades\Redis::flushall();
+        Redis::flushall();
 
         // cache the character id
-        \Seatplus\Eveapi\Services\Jobs\CacheCharacterAffiliationIdsService::make()
+        CacheCharacterAffiliationIdsService::make()
             ->queue(testCharacter()->character_id);
 
         // act

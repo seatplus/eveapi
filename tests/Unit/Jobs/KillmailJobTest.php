@@ -1,8 +1,10 @@
 <?php
 
+use Illuminate\Support\Facades\Event;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\Eveapi\Jobs\Killmails\KillmailJob;
 use Seatplus\Eveapi\Models\Killmails\Killmail;
+use Seatplus\Eveapi\Models\Universe\System;
 
 it('returns early if cache is hit', function () {
 
@@ -23,9 +25,9 @@ it('returns early if cache is hit', function () {
 
 it('does not further execute if killmail is complete', function () {
 
-    \Illuminate\Support\Facades\Queue::fake();
+    Illuminate\Support\Facades\Queue::fake();
 
-    $killmail = \Illuminate\Support\Facades\Event::fakeFor(fn () => Killmail::factory()->create([
+    $killmail = Event::fakeFor(fn () => Killmail::factory()->create([
         'complete' => true,
         'solar_system_id' => 12345,
     ]));
@@ -53,13 +55,13 @@ it('does not further execute if killmail is complete', function () {
     $job->executeJob();
 
     Queue::assertNothingPushed();
-    expect(\Seatplus\Eveapi\Models\Universe\System::count())->toEqual(0);
+    expect(System::count())->toEqual(0);
 });
 
 it('adds to batch', function () {
     Queue::fake();
 
-    $killmail = \Illuminate\Support\Facades\Event::fakeFor(fn () => Killmail::factory()->make([
+    $killmail = Event::fakeFor(fn () => Killmail::factory()->make([
         'complete' => false,
         'ship_type_id' => 12345,
         'solar_system_id' => 12345,

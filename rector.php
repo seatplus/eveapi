@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
+use Rector\Set\ValueObject\LevelSetList;
 use Rector\Set\ValueObject\SetList;
+use RectorLaravel\Set\LaravelLevelSetList;
 
 return RectorConfig::configure()
     ->withSets([
@@ -12,8 +14,8 @@ return RectorConfig::configure()
         // SetList::TYPE_DECLARATION,
         // SetList::CODE_QUALITY,
         // SetList::CODING_STYLE,
-        \RectorLaravel\Set\LaravelLevelSetList::UP_TO_LARAVEL_110,
-        \Rector\Set\ValueObject\LevelSetList::UP_TO_PHP_83,
+        LaravelLevelSetList::UP_TO_LARAVEL_110,
+        LevelSetList::UP_TO_PHP_83,
     ])
     ->withPaths([
         __DIR__.'/config',

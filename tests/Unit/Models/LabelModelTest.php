@@ -1,11 +1,15 @@
 <?php
 
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\Contacts\Label;
+
 it('has labelable relationship', function () {
-    $label = \Seatplus\Eveapi\Models\Contacts\Label::factory()->create([
+    $label = Label::factory()->create([
         'labelable_id' => testCharacter()->character_id,
-        'labelable_type' => \Seatplus\Eveapi\Models\Character\CharacterInfo::class,
+        'labelable_type' => CharacterInfo::class,
     ]);
 
-    expect($label->labelable())->toBeInstanceOf(\Illuminate\Database\Eloquent\Relations\MorphTo::class)
+    expect($label->labelable())->toBeInstanceOf(MorphTo::class)
         ->and($label->labelable->character_id)->toEqual(testCharacter()->character_id);
 });

@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Contracts\CharacterContractItemsJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
@@ -27,7 +28,7 @@ it('dispatches resolve universe type job if type is unknown', function () {
 
     $mock_data = ContractItem::factory()->withoutType()->count(5)->make();
 
-    $contract = \Illuminate\Support\Facades\Event::fakeFor(fn () => Contract::factory()->create([
+    $contract = Event::fakeFor(fn () => Contract::factory()->create([
         'contract_id' => $mock_data->first()->contract_id,
     ]));
 

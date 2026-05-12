@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
+use Seatplus\Eveapi\Services\MigrateDb;
 
 return new class extends Migration
 {
@@ -11,6 +12,6 @@ return new class extends Migration
             return;
         }
 
-        new \Seatplus\Eveapi\Services\MigrateDb;
+        new MigrateDb;
     }
 };

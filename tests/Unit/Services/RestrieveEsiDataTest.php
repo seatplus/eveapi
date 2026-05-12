@@ -1,6 +1,8 @@
 <?php
 
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
+use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiClient\Exceptions\InvalidAuthenticationException;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
 use Seatplus\Eveapi\Models\RefreshToken;
@@ -19,7 +21,7 @@ describe('executes request successfully', function () {
         // build response with raw header X-Kevinrob-Cache HIT
         $response = new EsiResponse(json_encode([]), ['X-Kevinrob-Cache' => 'HIT'], 'now', 200);
 
-        $this->client = mock(\Seatplus\EsiClient\EsiClient::class, function ($mock) use ($response) {
+        $this->client = mock(EsiClient::class, function ($mock) use ($response) {
             $mock->shouldReceive('invoke')
                 ->andReturn($response);
         });
@@ -76,11 +78,11 @@ describe('throws request failed exception', function () {
         );
 
         $service->executeInstance();
-    })->throws(\Seatplus\EsiClient\Exceptions\RequestFailedException::class);
+    })->throws(RequestFailedException::class);
 
     it('during execute', function () {
 
-        $client = mock(\Seatplus\EsiClient\EsiClient::class, function ($mock) {
+        $client = mock(EsiClient::class, function ($mock) {
             $mock->shouldReceive('invoke')
                 ->andThrow($this->requestFailedException);
         });
@@ -93,14 +95,14 @@ describe('throws request failed exception', function () {
         );
 
         $service->executeInstance();
-    })->throws(\Seatplus\EsiClient\Exceptions\RequestFailedException::class);
+    })->throws(RequestFailedException::class);
 
 });
 
 it('throws InvalidAuthenticationException', function () {
-    $client = mock(\Seatplus\EsiClient\EsiClient::class, function ($mock) {
+    $client = mock(EsiClient::class, function ($mock) {
         $mock->shouldReceive('invoke')
-            ->andThrow(new \Seatplus\EsiClient\Exceptions\InvalidAuthenticationException('failed'));
+            ->andThrow(new InvalidAuthenticationException('failed'));
     });
 
     $service = new RetrieveEsiData(
@@ -111,7 +113,7 @@ it('throws InvalidAuthenticationException', function () {
     );
 
     $service->executeInstance();
-})->throws(\Seatplus\EsiClient\Exceptions\InvalidAuthenticationException::class);
+})->throws(InvalidAuthenticationException::class);
 
 it('builds client with authentication', function () {
 
@@ -151,7 +153,7 @@ describe('it logs warnings', function () {
 
         $esiResponse = new EsiResponse(json_encode([]), ['X-Pages' => 1], 'now', 200);
 
-        $client = mock(\Seatplus\EsiClient\EsiClient::class, function ($mock) use ($esiResponse) {
+        $client = mock(EsiClient::class, function ($mock) use ($esiResponse) {
             $mock->shouldReceive('invoke')
                 ->andReturn($esiResponse);
         });
@@ -172,7 +174,7 @@ describe('it logs warnings', function () {
 
         $esiResponse = new EsiResponse(json_encode([]), [], 'now', 200);
 
-        $client = mock(\Seatplus\EsiClient\EsiClient::class, function ($mock) use ($esiResponse) {
+        $client = mock(EsiClient::class, function ($mock) use ($esiResponse) {
             $mock->shouldReceive('invoke')
                 ->andReturn($esiResponse);
         });
@@ -194,7 +196,7 @@ describe('it logs warnings', function () {
 
         $esiResponse = new EsiResponse(json_encode([]), ['Warning' => 'this is a warning'], 'now', 200);
 
-        $client = mock(\Seatplus\EsiClient\EsiClient::class, function ($mock) use ($esiResponse) {
+        $client = mock(EsiClient::class, function ($mock) use ($esiResponse) {
             $mock->shouldReceive('invoke')
                 ->andReturn($esiResponse);
         });
@@ -234,7 +236,7 @@ describe('it handles exceptions', function () {
             getUpToDateRefreshTokenService: $getUpToDateRefreshTokenService
         );
 
-    })->throws(\Seatplus\EsiClient\Exceptions\RequestFailedException::class);
+    })->throws(RequestFailedException::class);
 
     it('handles token expiry too far in future', function () {
 
@@ -325,5 +327,5 @@ it('builds client without refresh_token', function () {
 
     $client = $property->getValue($service);
 
-    expect($client)->toBeInstanceOf(\Seatplus\EsiClient\EsiClient::class);
+    expect($client)->toBeInstanceOf(EsiClient::class);
 });

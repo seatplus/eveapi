@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Bus;
+use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationInfoJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
@@ -28,7 +29,7 @@ test('retrieve test', function () {
 
 test('returns early if cached', function () {
 
-    $response = mock(\Seatplus\EsiClient\DataTransferObjects\EsiResponse::class);
+    $response = mock(EsiResponse::class);
     $response->shouldReceive('isCachedLoad')->once()->andReturn(true);
 
     $job = mock(CorporationInfoJob::class)->makePartial();

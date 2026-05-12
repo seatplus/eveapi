@@ -22,22 +22,22 @@
             "Seatplus\\Eveapi\\Tests\\": "tests/"
         }
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
         "php": "^8.5",
         "ext-json": "*",
         "ext-redis": "*",
-        "laravel/framework": "^11.0",
+        "laravel/framework": "^13.0",
         "laravel/horizon": "^5.0",
         "seatplus/esi-client": "^4.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^9.0",
+        "orchestra/testbench": "^11.0",
         "nunomaduro/collision": "^v8.1",
         "itsgoingd/clockwork": "^5.0",
         "pestphp/pest": "^4.0",
-        "pestphp/pest-plugin-laravel": "^4.0",
+        "pestphp/pest-plugin-laravel": "^4.1",
         "pestphp/pest-plugin-type-coverage": "^4.0",
         "phpstan/phpstan-deprecation-rules": "^2.0",
         "phpstan/phpstan-phpunit": "^2.0",
@@ -80,6 +80,10 @@
                 "symlink": true,
                 "canonical": false
             }
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/seatplus/esi-schema"
         }
     ]
 }

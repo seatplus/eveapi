@@ -30,7 +30,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\BatchStatistic;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\BatchStatistic>
+ * @extends Factory<BatchStatistic>
  */
 class BatchStatisticFactory extends Factory
 {

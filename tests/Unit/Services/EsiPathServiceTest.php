@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Http;
+use Seatplus\Eveapi\Services\EsiPathService;
 
 it('can get esi paths', function () {
 
@@ -18,7 +19,7 @@ it('can get esi paths', function () {
         ]),
     ]);
 
-    $esi_path_service = new \Seatplus\Eveapi\Services\EsiPathService;
+    $esi_path_service = new EsiPathService;
 
     expect($esi_path_service->getEsiPaths())->toBeArray();
 });

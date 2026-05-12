@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Corporation;
 
+use Illuminate\Support\Collection;
 use Seatplus\Eveapi\DataTransferObjects\Responses\Corporation\CorporationMemberTrackingItemResponse;
 use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
@@ -122,12 +123,12 @@ class CorporationMemberTrackingJob extends EsiBase implements HasCorporationRole
         $this->getShipTypes();
     }
 
-    private function upsertMembers(\Illuminate\Support\Collection $members): void
+    private function upsertMembers(Collection $members): void
     {
         CorporationMemberTracking::upsert($members->toArray(), ['corporation_id', 'character_id']);
     }
 
-    private function removeOldMembers(\Illuminate\Support\Collection $members): void
+    private function removeOldMembers(Collection $members): void
     {
         CorporationMemberTracking::where('corporation_id', $this->corporation_id)
             ->whereNotIn('character_id', $members->pluck('character_id')->all())

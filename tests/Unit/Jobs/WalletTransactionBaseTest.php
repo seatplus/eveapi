@@ -1,11 +1,12 @@
 <?php
 
+use Illuminate\Support\Facades\Queue;
 use Mockery\MockInterface;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\Eveapi\Jobs\Wallet\WalletTransactionBase;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 
-beforeEach(fn () => \Illuminate\Support\Facades\Queue::fake());
+beforeEach(fn () => Queue::fake());
 
 it('sets from_id to latest transaction id minus one when latest transaction exists', function () {
 

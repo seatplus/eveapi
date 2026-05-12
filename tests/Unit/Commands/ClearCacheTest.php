@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Redis;
+
 it('clears all caches when force option is provided', function () {
     $this->artisan('seatplus:cache:clear', ['--force' => true])
         ->expectsOutput('SeAT plus Cache Clearing Tool')
@@ -30,7 +32,7 @@ it('clears caches when confirmation is given', function () {
 });
 
 it('handles exception when Redis cache clearing fails', function () {
-    \Illuminate\Support\Facades\Redis::shouldReceive('flushall')->andThrow(new Exception('Redis error'));
+    Redis::shouldReceive('flushall')->andThrow(new Exception('Redis error'));
 
     $this->artisan('seatplus:cache:clear', ['--force' => true])
         ->expectsOutput('SeAT plus Cache Clearing Tool')

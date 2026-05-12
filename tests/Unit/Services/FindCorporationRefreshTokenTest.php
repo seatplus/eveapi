@@ -1,5 +1,7 @@
 <?php
 
+use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
+
 it('returns no RefreshToken if character has no role', function () {
 
     // Arrange
@@ -10,7 +12,7 @@ it('returns no RefreshToken if character has no role', function () {
     updateRefreshTokenScopes(testCharacter()->refresh_token, [$scope])->save();
 
     // Act
-    $find_corporation_refresh_token = new \Seatplus\Eveapi\Services\FindCorporationRefreshToken;
+    $find_corporation_refresh_token = new FindCorporationRefreshToken;
 
     $refresh_token = $find_corporation_refresh_token($corporation_id, $scope, $role);
 

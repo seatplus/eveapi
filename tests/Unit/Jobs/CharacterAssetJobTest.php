@@ -1,8 +1,12 @@
 <?php
 
+use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
+use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
+use Seatplus\Eveapi\Models\Assets\Asset;
+
 it('checks if the response is cached', function () {
-    $job = mock(\Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob::class, function ($mock) {
-        $response = mock(\Seatplus\EsiClient\DataTransferObjects\EsiResponse::class, function ($mock) {
+    $job = mock(CharacterAssetJob::class, function ($mock) {
+        $response = mock(EsiResponse::class, function ($mock) {
             $mock->shouldReceive('isCachedLoad')->andReturn(true);
         });
 
@@ -11,18 +15,18 @@ it('checks if the response is cached', function () {
 
     $job->executeJob();
 
-    expect(\Seatplus\Eveapi\Models\Assets\Asset::count())->toBe(0);
+    expect(Asset::count())->toBe(0);
 });
 
 it('increments page', function () {
     Queue::fake();
 
-    $asset = \Seatplus\Eveapi\Models\Assets\Asset::factory()->count(2)->make();
+    $asset = Asset::factory()->count(2)->make();
 
-    $response1 = new \Seatplus\EsiClient\DataTransferObjects\EsiResponse(json_encode($asset->toArray()), ['X-Pages' => 2], 'now', 200);
-    $response2 = new \Seatplus\EsiClient\DataTransferObjects\EsiResponse('{}', ['X-Pages' => 2], 'now', 200);
+    $response1 = new EsiResponse(json_encode($asset->toArray()), ['X-Pages' => 2], 'now', 200);
+    $response2 = new EsiResponse('{}', ['X-Pages' => 2], 'now', 200);
 
-    $job = mock(\Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob::class)->makePartial();
+    $job = mock(CharacterAssetJob::class)->makePartial();
     $job->__construct(123);
     $job->shouldReceive('retrieve')->twice()->andReturns($response1, $response2);
 

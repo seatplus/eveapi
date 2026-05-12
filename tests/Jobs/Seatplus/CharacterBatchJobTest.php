@@ -1,6 +1,8 @@
 <?php
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Assets\EnrichAssetTypeGroupCategoryJob;
@@ -23,6 +25,8 @@ use Seatplus\Eveapi\Jobs\Wallet\CharacterBalanceJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletJournalJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
 use Seatplus\Eveapi\Models\BatchStatistic;
+use Seatplus\Eveapi\Models\BatchUpdate;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 it('creates BatchUpdate entries', function () {
@@ -32,13 +36,13 @@ it('creates BatchUpdate entries', function () {
 
     (new CharacterBatchJob(testCharacter()->character_id))->handle();
 
-    expect(\Seatplus\Eveapi\Models\BatchUpdate::all())->toHaveCount(RefreshToken::count())
-        ->and(\Seatplus\Eveapi\Models\BatchUpdate::first())
+    expect(BatchUpdate::all())->toHaveCount(RefreshToken::count())
+        ->and(BatchUpdate::first())
         ->batchable_id->toBe(testCharacter()->character_id)
-        ->batchable_type->toBe(\Seatplus\Eveapi\Models\Character\CharacterInfo::class)
-        ->batchable->toBeInstanceOf(\Seatplus\Eveapi\Models\Character\CharacterInfo::class)
+        ->batchable_type->toBe(CharacterInfo::class)
+        ->batchable->toBeInstanceOf(CharacterInfo::class)
         ->finished_at->toBeNull()
-        ->started_at->toBeInstanceOf(\Carbon\Carbon::class);
+        ->started_at->toBeInstanceOf(Carbon::class);
 });
 
 it('contains public jobs in batch', function ($public_job) {
@@ -54,7 +58,7 @@ it('contains public jobs in batch', function ($public_job) {
 ]);
 
 it('contains jobs if refresh_token has scope', function (string $scope, array $classes) {
-    \Illuminate\Support\Facades\Queue::fake();
+    Queue::fake();
     updateRefreshTokenScopes($this->test_character->refresh_token, [$scope])->save();
 
     Bus::fake();

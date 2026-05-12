@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
+use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\Eveapi\Jobs\Skills\SkillQueueJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Skills\SkillQueue;
@@ -62,10 +63,10 @@ it('deletes old queue items', function () {
 });
 
 it('does not update skill queue if response is cached', function () {
-    $response = mock(\Seatplus\EsiClient\DataTransferObjects\EsiResponse::class);
+    $response = mock(EsiResponse::class);
     $response->shouldReceive('isCachedLoad')->andReturn(true);
 
-    $job = mock(\Seatplus\Eveapi\Jobs\Skills\SkillQueueJob::class)->makePartial();
+    $job = mock(SkillQueueJob::class)->makePartial();
     $job->shouldReceive('retrieve')->andReturn($response);
 
     $job->executeJob();

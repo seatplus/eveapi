@@ -1,11 +1,14 @@
 <?php
 
+use Seatplus\Eveapi\Jobs\Assets\EnrichAssetTypeGroupCategoryJob;
+use Seatplus\Eveapi\Models\Assets\Asset;
+
 it('returns early if batch is cancelled', function () {
-    $job = mock(\Seatplus\Eveapi\Jobs\Assets\EnrichAssetTypeGroupCategoryJob::class, function ($mock) {
+    $job = mock(EnrichAssetTypeGroupCategoryJob::class, function ($mock) {
         $mock->shouldReceive('batch->cancelled')->andReturn(true);
     })->makePartial();
 
     $job->handle();
 
-    expect(\Seatplus\Eveapi\Models\Assets\Asset::count())->toBe(0);
+    expect(Asset::count())->toBe(0);
 });

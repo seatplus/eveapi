@@ -1,14 +1,18 @@
 <?php
 
+use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
+use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
+use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
+
 it('returns early if resonse is cached', function () {
 
-    $response = \Mockery::mock(\Seatplus\EsiClient\DataTransferObjects\EsiResponse::class);
+    $response = Mockery::mock(EsiResponse::class);
     $response->shouldReceive('isCachedLoad')->andReturn(true);
 
-    $job = mock(\Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob::class)->makePartial();
+    $job = mock(CorporationMemberTrackingJob::class)->makePartial();
     $job->shouldReceive('retrieve')->andReturn($response);
 
     $job->executeJob();
 
-    expect(\Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking::query()->count())->toEqual(0);
+    expect(CorporationMemberTracking::query()->count())->toEqual(0);
 });

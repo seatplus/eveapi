@@ -192,7 +192,7 @@ describe('is potential structure', function () {
         $mocked_refresh_token_finder
             ->shouldReceive('markAsResolved')
             ->once()
-            ->andThrow(new \Exception('test'));
+            ->andThrow(new Exception('test'));
 
         $mocked_refresh_token_finder
             ->shouldReceive('markAsFailed')
@@ -208,6 +208,6 @@ describe('is potential structure', function () {
         // Assert
         expect($result)->toBeTrue()
             ->and(Location::count())->toBe(1);
-    })->throws(\Exception::class);
+    })->throws(Exception::class);
 
 });

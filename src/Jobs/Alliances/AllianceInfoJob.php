@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Alliances;
 
+use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\Eveapi\DataTransferObjects\Responses\Alliances\AllianceInfoResponse;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Jobs\EsiBase;
@@ -74,7 +75,7 @@ class AllianceInfoJob extends EsiBase implements HasPathValuesInterface
     /**
      * Execute the job.
      *
-     * @throws \Seatplus\EsiClient\Exceptions\RequestFailedException
+     * @throws RequestFailedException
      */
     #[\Override]
     public function executeJob(): void

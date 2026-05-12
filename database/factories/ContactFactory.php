@@ -33,7 +33,7 @@ use Seatplus\Eveapi\Models\Contacts\Contact;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Contacts\Contact>
+ * @extends Factory<Contact>
  */
 class ContactFactory extends Factory
 {

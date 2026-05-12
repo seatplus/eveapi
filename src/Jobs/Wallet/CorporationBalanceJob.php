@@ -27,6 +27,7 @@
 namespace Seatplus\Eveapi\Jobs\Wallet;
 
 use Illuminate\Support\Collection;
+use Seatplus\Eveapi\DataTransferObjects\Responses\Corporation\CorporationWalletItemResponse;
 use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
 use Seatplus\Eveapi\Esi\HasPathValuesInterface;
 use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
@@ -34,7 +35,6 @@ use Seatplus\Eveapi\Jobs\EsiBase;
 use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Wallet\Balance;
-use Seatplus\Eveapi\DataTransferObjects\Responses\Corporation\CorporationWalletItemResponse;
 use Seatplus\Eveapi\Traits\HasCorporationRole;
 use Seatplus\Eveapi\Traits\HasPages;
 use Seatplus\Eveapi\Traits\HasPathValues;
