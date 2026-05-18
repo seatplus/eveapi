@@ -42,6 +42,7 @@ use Seatplus\EsiClient\Exceptions\EsiRateLimitedException;
 use Seatplus\Eveapi\Jobs\Middleware\EsiProactiveRateLimitMiddleware;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\Esi\GetUpToDateRefreshTokenService;
+use Seatplus\Eveapi\Services\Esi\RecordingEsiClient;
 
 abstract class EsiJob implements ShouldBeUnique, ShouldQueue
 {
@@ -89,8 +90,14 @@ abstract class EsiJob implements ShouldBeUnique, ShouldQueue
     /**
      * Laravel injects EsiClient and the token-refresh service via the service container.
      *
+     * The container resolves EsiClient as RecordingEsiClient (bound in EveapiServiceProvider::register()),
+     * so every ESI call transparently records X-Ratelimit-Remaining into Redis.
+     *
      * Auth is applied automatically when getRefreshToken() returns a token.
      * Override getRefreshToken() in authenticated jobs — return null for public endpoints.
+     *
+     * @see RecordingEsiClient
+     * @see EveapiServiceProvider::register()
      */
     final public function handle(EsiClient $esi, GetUpToDateRefreshTokenService $tokenService): void
     {
@@ -123,6 +130,7 @@ abstract class EsiJob implements ShouldBeUnique, ShouldQueue
 
     /**
      * Execute the ESI job. The $esi client is already authenticated when getRefreshToken() returns a token.
+     * At runtime $esi is always a RecordingEsiClient — see EveapiServiceProvider::register().
      */
     abstract protected function executeJob(EsiClient $esi): void;
 

@@ -104,6 +104,10 @@ class EveapiServiceProvider extends ServiceProvider
 
         $this->mergeConfigFrom(__DIR__.'/../config/eveapi.jobs.php', 'eveapi.jobs');
 
+        // RecordingEsiClient extends EsiClient and overrides invoke() to record
+        // X-Ratelimit-Remaining after every ESI call, activating EsiProactiveRateLimitMiddleware.
+        // EsiJob::handle() is type-hinted as EsiClient; this binding transparently injects
+        // RecordingEsiClient without touching any of the leaf job implementations.
         $this->app->bind(EsiClient::class, RecordingEsiClient::class);
     }
 
