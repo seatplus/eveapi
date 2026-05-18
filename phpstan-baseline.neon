@@ -67,12 +67,6 @@ parameters:
 			path: src/Jobs/Seatplus/UpdateCorporation.php
 
 		-
-			message: '#^Method Seatplus\\Eveapi\\Models\\BatchStatistic\:\:getDurationAttribute\(\) should return int but returns float\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Models/BatchStatistic.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$alliance_id\.$#'
 			identifier: property.notFound
 			count: 1

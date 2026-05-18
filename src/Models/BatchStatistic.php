@@ -7,6 +7,10 @@ use Illuminate\Bus\Batch;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property Carbon $started_at
+ * @property Carbon $finished_at
+ */
 class BatchStatistic extends Model
 {
     use HasFactory;
@@ -24,7 +28,7 @@ class BatchStatistic extends Model
         /** @var Carbon $finished_at */
         $finished_at = $this->finished_at;
 
-        return $this->started_at->diffInSeconds($finished_at);
+        return (int) $this->started_at->diffInSeconds($finished_at);
     }
 
     public static function createEntry(Batch $batch): self
@@ -51,8 +55,11 @@ class BatchStatistic extends Model
         return self::create($attributes);
     }
 
-    protected $casts = [
-        'started_at' => 'datetime',
-        'finished_at' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'started_at' => 'datetime',
+            'finished_at' => 'datetime',
+        ];
+    }
 }
