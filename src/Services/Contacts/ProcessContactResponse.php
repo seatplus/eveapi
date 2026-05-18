@@ -28,7 +28,6 @@ namespace Seatplus\Eveapi\Services\Contacts;
 
 use Illuminate\Support\Collection;
 use Seatplus\EsiSchema\EsiResult;
-use Seatplus\Eveapi\DataTransferObjects\Responses\Contacts\ContactItemResponse;
 use Seatplus\Eveapi\Models\Contacts\Contact;
 use Seatplus\Eveapi\Services\Jobs\CacheCharacterAffiliationIdsService;
 
@@ -39,8 +38,7 @@ class ProcessContactResponse
     public function execute(EsiResult $response): Collection
     {
         return collect($response->data)
-            ->map(fn (object $item) => ContactItemResponse::from($item))
-            ->each(function (ContactItemResponse $contact) {
+            ->each(function (object $contact) {
                 $contact_model = Contact::updateOrCreate([
                     'contact_id' => $contact->contact_id,
                     'contactable_id' => $this->contactable_id,
@@ -48,13 +46,13 @@ class ProcessContactResponse
                 ], [
                     'contact_type' => $contact->contact_type,
                     'standing' => $contact->standing,
-                    'is_blocked' => $contact->is_blocked,
-                    'is_watched' => $contact->is_watched,
+                    'is_blocked' => $contact->is_blocked ?? null,
+                    'is_watched' => $contact->is_watched ?? null,
                 ]);
 
                 $contact_model->labels()->whereNotIn('label_id', $contact->label_ids ?? [])->delete();
 
-                if ($contact->label_ids !== null) {
+                if (isset($contact->label_ids)) {
                     $already_existing_label_ids = $contact_model->labels()->pluck('label_id');
 
                     $labels_to_save = collect($contact->label_ids)->diff($already_existing_label_ids);
@@ -63,7 +61,7 @@ class ProcessContactResponse
                 }
             })->pipe(function (Collection $response) {
                 CacheCharacterAffiliationIdsService::make()
-                    ->queue($response->filter(fn (ContactItemResponse $contact) => $contact->contact_type === 'character')->pluck('contact_id')->toArray());
+                    ->queue($response->filter(fn (object $contact) => $contact->contact_type === 'character')->pluck('contact_id')->toArray());
 
                 return $response;
             })->pluck('contact_id');

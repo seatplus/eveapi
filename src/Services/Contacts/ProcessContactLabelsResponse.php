@@ -28,7 +28,6 @@ namespace Seatplus\Eveapi\Services\Contacts;
 
 use Illuminate\Support\Collection;
 use Seatplus\EsiSchema\EsiResult;
-use Seatplus\Eveapi\DataTransferObjects\Responses\Contacts\ContactLabelItemResponse;
 use Seatplus\Eveapi\Models\Contacts\Label;
 
 class ProcessContactLabelsResponse
@@ -41,8 +40,7 @@ class ProcessContactLabelsResponse
     public function execute(EsiResult $response): Collection
     {
         return collect($response->data)
-            ->map(fn (object $item) => ContactLabelItemResponse::from($item))
-            ->each(fn (ContactLabelItemResponse $contact_label) => Label::updateOrCreate([
+            ->each(fn (object $contact_label) => Label::updateOrCreate([
                 'label_id' => $contact_label->label_id,
                 'labelable_id' => $this->labelable_id,
                 'labelable_type' => $this->labelable_type,

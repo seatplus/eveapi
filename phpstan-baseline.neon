@@ -13,30 +13,6 @@ parameters:
 			path: database/factories/CharacterInfoFactory.php
 
 		-
-			message: '#^Call to an undefined static method Seatplus\\Eveapi\\Services\\Facade\\RetrieveEsiData\:\:execute\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 1
-			path: src/Esi/RetrieveFromEsiBase.php
-
-		-
-			message: '#^Unknown parameter \$group in call to static method Seatplus\\Eveapi\\Jobs\\Middleware\\EsiProactiveRateLimitMiddleware\:\:recordResponse\(\)\.$#'
-			identifier: argument.unknown
-			count: 1
-			path: src/Esi/RetrieveFromEsiBase.php
-
-		-
-			message: '#^Unknown parameter \$limit in call to static method Seatplus\\Eveapi\\Jobs\\Middleware\\EsiProactiveRateLimitMiddleware\:\:recordResponse\(\)\.$#'
-			identifier: argument.unknown
-			count: 1
-			path: src/Esi/RetrieveFromEsiBase.php
-
-		-
-			message: '#^Unknown parameter \$windowSeconds in call to static method Seatplus\\Eveapi\\Jobs\\Middleware\\EsiProactiveRateLimitMiddleware\:\:recordResponse\(\)\.$#'
-			identifier: argument.unknown
-			count: 1
-			path: src/Esi/RetrieveFromEsiBase.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$group\.$#'
 			identifier: property.notFound
 			count: 4
@@ -229,12 +205,6 @@ parameters:
 			path: src/Services/FindCorporationRefreshToken.php
 
 		-
-			message: '#^Instanceof between Seatplus\\Eveapi\\Jobs\\EsiBase and Seatplus\\Eveapi\\Jobs\\Character\\CharacterAffiliationJob will always evaluate to false\.$#'
-			identifier: instanceof.alwaysFalse
-			count: 1
-			path: src/Services/JobChecker.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$refresh_token\.$#'
 			identifier: property.notFound
 			count: 2
@@ -269,39 +239,3 @@ parameters:
 			identifier: property.notFound
 			count: 2
 			path: src/Services/ResolveLocation/Resolver/StructureResolver.php
-
-		-
-			message: '#^Trait Seatplus\\Eveapi\\Traits\\HasCorporationRole is used zero times and is not analysed\.$#'
-			identifier: trait.unused
-			count: 1
-			path: src/Traits/HasCorporationRole.php
-
-		-
-			message: '#^Trait Seatplus\\Eveapi\\Traits\\HasPages is used zero times and is not analysed\.$#'
-			identifier: trait.unused
-			count: 1
-			path: src/Traits/HasPages.php
-
-		-
-			message: '#^Trait Seatplus\\Eveapi\\Traits\\HasPathValues is used zero times and is not analysed\.$#'
-			identifier: trait.unused
-			count: 1
-			path: src/Traits/HasPathValues.php
-
-		-
-			message: '#^Trait Seatplus\\Eveapi\\Traits\\HasQueryValues is used zero times and is not analysed\.$#'
-			identifier: trait.unused
-			count: 1
-			path: src/Traits/HasQueryValues.php
-
-		-
-			message: '#^Trait Seatplus\\Eveapi\\Traits\\HasRequestBody is used zero times and is not analysed\.$#'
-			identifier: trait.unused
-			count: 1
-			path: src/Traits/HasRequestBody.php
-
-		-
-			message: '#^Trait Seatplus\\Eveapi\\Traits\\HasRequiredScopes is used zero times and is not analysed\.$#'
-			identifier: trait.unused
-			count: 1
-			path: src/Traits/HasRequiredScopes.php

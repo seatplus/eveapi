@@ -2,376 +2,70 @@
 
 namespace Seatplus\Eveapi\Services;
 
-use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Support\Collection;
-use ReflectionClass;
-use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
-use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
-use Seatplus\Eveapi\Jobs\Contacts\AllianceContactJob;
-use Seatplus\Eveapi\Jobs\Contacts\AllianceContactLabelJob;
-use Seatplus\Eveapi\Jobs\Contacts\CharacterContactJob;
-use Seatplus\Eveapi\Jobs\Contacts\CharacterContactLabelJob;
-use Seatplus\Eveapi\Jobs\Contacts\CorporationContactJob;
-use Seatplus\Eveapi\Jobs\Contacts\CorporationContactLabelJob;
-use Seatplus\Eveapi\Jobs\Contracts\CharacterContractItemsJob;
-use Seatplus\Eveapi\Jobs\EsiBase;
+use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Jobs\Middleware\EsiProactiveRateLimitMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletJournalJob;
-use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
-use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletJournalByDivisionJob;
-use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletTransactionByDivisionJob;
 
 class JobChecker
 {
     public function __construct(
-        private EsiPathService $esiPathService,
         private FileGetContentsAction $fileGetContentsAction
     ) {}
 
-    /**
-     * @throws \ReflectionException
-     * @throws \Throwable
-     * @throws ConnectionException
-     */
     public function checkJob(object $job): Collection
     {
-        if (! $job instanceof EsiBase) {
-            return collect()
-                ->push($this->assertionResult('success', 'EsiJob (new architecture): version check not applicable'))
-                ->push($this->assertionResult('success', 'EsiJob (new architecture): scope check not applicable'))
-                ->push($this->assertionResult('success', 'EsiJob (new architecture): path values check not applicable'))
-                ->push($this->assertionResult('success', 'EsiJob (new architecture): middleware check not applicable'))
-                ->push($this->assertionResult('success', 'EsiJob (new architecture): corporation roles check not applicable'))
-                ->push($this->checkIsCheckingCacheForEsiJob($job))
-                ->push($this->assertionResult('success', 'EsiJob (new architecture): rate limit check not applicable'));
-        }
-
         return collect()
-            ->push($this->checkVersion($job))
-            ->push($this->checkRequiredScope($job))
-            ->push($this->checkPathValues($job))
             ->push($this->checkMiddleware($job))
-            ->push($this->checkCorporationRoles($job))
-            ->push($this->checkIsCheckingCache($job))
-            ->push($this->checkRateLimit($job));
+            ->push($this->checkIsCachedLoad($job));
     }
 
-    private function checkIsCheckingCacheForEsiJob(object $job): array
+    private function checkMiddleware(object $job): array
     {
-        if (! is_a($job, CharacterAffiliationJob::class)) {
-            return $this->assertionResult('success', 'EsiJob (new architecture): cache check not applicable');
+        if (! $job instanceof EsiJob) {
+            return $this->assertionResult('warning', 'job does not extend EsiJob');
         }
 
-        try {
-            // @phpstan-ignore method.notFound
-            $endpoint = $job->getEndpoint();
-            // @phpstan-ignore method.notFound
-            $method = $job->getMethod();
-            $cached_seconds = $this->esiPathService->getEsiPaths()[$endpoint][$method]['x-cached-seconds'] ?? null;
-
-            if ($method === 'post' && ! is_null($cached_seconds)) {
-                return $this->assertionResult('success', 'CharacterAffiliationJob is a post request but has cached seconds');
-            }
-        } catch (\Throwable) {
-            return $this->assertionResult('success', 'EsiJob (new architecture): cache check not applicable');
-        }
-
-        return $this->assertionResult('success', 'EsiJob (new architecture): cache check not applicable');
-    }
-
-    /**
-     * @throws ConnectionException
-     */
-    private function checkVersion(EsiBase $job): array
-    {
-        $version_string = $job->getVersion();
-
-        // remove the v from string
-        $version = (int) str_replace('v', '', $version_string);
-
-        $endpoint_data = $this->esiPathService->getEsiPaths()[$job->getEndpoint()][$job->getMethod()];
-        $alternative_versions = $endpoint_data['x-alternate-versions'] ?? null;
-
-        // Future ESI versioning: endpoint uses x-compatibility-date instead of version numbers
-        if ($alternative_versions === null) {
-            $compatibility_date = $endpoint_data['x-compatibility-date'] ?? null;
-
-            if ($compatibility_date !== null) {
-                return [
-                    'status' => 'warning',
-                    'message' => "endpoint uses compatibility-date versioning ($compatibility_date). Consider using compatibility_date instead of version string.",
-                ];
-            }
-
-            return [
-                'status' => 'warning',
-                'message' => 'endpoint has no version information (missing x-alternate-versions and x-compatibility-date)',
-            ];
-        }
-
-        if (! in_array($version_string, $alternative_versions)) {
-            $available_versions = implode(', ', $alternative_versions);
-
-            return [
-                'status' => 'error',
-                'message' => "version is outdated. Using $version_string but only $available_versions are available",
-            ];
-        }
-
-        // check if version+1 is available
-        $next_version = $version + 1;
-        if (in_array('v'.$next_version, $alternative_versions)) {
-            return [
-                'status' => 'warning',
-                'message' => "new version is available. Using $version_string but v$next_version is available",
-            ];
-        }
-
-        return [
-            'status' => 'success',
-            'message' => 'version is up to date',
-        ];
-    }
-
-    /**
-     * @throws ConnectionException
-     */
-    private function checkRequiredScope(EsiBase $job): array
-    {
-        // check if esi-path of job has security parameter
-        $security = $this->esiPathService->getEsiPaths()[$job->getEndpoint()][$job->getMethod()]['security'] ?? null;
-
-        if (is_null($security)) {
-            if ($job instanceof HasRequiredScopeInterface) {
-                return $this->assertionResult('error', 'endpoint does not require authentication but job does implement HasRequiredScopeInterface');
-            }
-
-            return $this->assertionResult('success', 'no security scope required');
-        }
-
-        // now we know the endpoint requires authentication we must check if the job sets the required scope correctly
-
-        // check if job implements HasRequiredScopeInterface
-        if (! $job instanceof HasRequiredScopeInterface) {
-            return $this->assertionResult('error', 'job requires authentication but does not implement HasRequiredScopeInterface');
-        }
-
-        $job_required_scope = $job->getRequiredScope();
-        $endpoint_required_scope = $security[0]['evesso'][0];
-
-        if ($job_required_scope !== $endpoint_required_scope) {
-            return $this->assertionResult('error', "job requires scope $job_required_scope but endpoint requires $endpoint_required_scope");
-        }
-
-        return $this->assertionResult('success', 'security scope required');
-    }
-
-    private function checkPathValues(EsiBase $job): array
-    {
-        if (! $job instanceof HasPathValuesInterface) {
-            // Check if any mustache syntax is used in path
-            if (str_contains($job->getEndpoint(), '{')) {
-                return $this->assertionResult('error', 'path values are required but job does not implement HasPathValuesInterface');
-            }
-
-            return $this->assertionResult('success', 'no path values required');
-        }
-
-        $path_values = $job->getPathValues();
-
-        if (empty($path_values)) {
-            return $this->assertionResult('error', 'no path values set even though job requires path values');
-        }
-
-        $path = $job->getEndpoint();
-
-        foreach ($path_values as $key => $value) {
-            if (! str_contains($path, $key)) {
-                return $this->assertionResult('error', "path value $key is not used in path");
-            }
-        }
-
-        return $this->assertionResult('success', 'path values all set');
-    }
-
-    private function checkMiddleware(EsiBase $job): array
-    {
         $used_middlewares = collect($job->middleware());
 
-        // first we check if ThrottlesExceptionsWithRedis Middleware is used
-        if (! $used_middlewares->first(fn (object $middleware) => $middleware::class === ThrottlesExceptionsWithRedis::class)) {
-            return $this->assertionResult('error', 'ThrottlesExceptionsWithRedis Middleware is not used');
+        if (! $used_middlewares->first(fn (object $m) => $m instanceof ThrottlesExceptionsWithRedis)) {
+            return $this->assertionResult('error', 'ThrottlesExceptionsWithRedis middleware is not used');
         }
 
-        // check that EsiProactiveRateLimitMiddleware is used
-        if (! $used_middlewares->first(fn (object $middleware) => $middleware::class === EsiProactiveRateLimitMiddleware::class)) {
+        if (! $used_middlewares->first(fn (object $m) => $m instanceof EsiProactiveRateLimitMiddleware)) {
             return $this->assertionResult('error', 'EsiProactiveRateLimitMiddleware is not used');
         }
 
-        // now check all jobs that require authentication implementing HasRequiredScopeMiddleware
-        if ($job instanceof HasRequiredScopeInterface) {
-            // check if the required scope middleware is used
-            if (! $used_middlewares->first(fn (object $middleware) => $middleware::class === HasRequiredScopeMiddleware::class)) {
-                return $this->assertionResult('error', 'HasRequiredScopeMiddleware is not used even though job requires authentication');
-            }
-        }
-
-        return $this->assertionResult('success', 'All required middlewares are used');
+        return $this->assertionResult('success', 'all required middlewares are present');
     }
 
-    private function checkCorporationRoles(EsiBase $job): array
+    private function checkIsCachedLoad(object $job): array
     {
-        $required_roles = $this->esiPathService->getEsiPaths()[$job->getEndpoint()][$job->getMethod()]['x-required-roles'] ?? [];
-
-        // if no roles are required, return success
-        if (empty($required_roles)) {
-            return $this->assertionResult('success', 'no corporate roles required');
+        if (! $job instanceof EsiJob) {
+            return $this->assertionResult('warning', 'cache check skipped: job does not extend EsiJob');
         }
 
-        // check if job implements HasCorporationRolesInterface
-        if (! $job instanceof HasCorporationRoleInterface) {
-            return $this->assertionResult('error', 'job requires corporation roles but does not implement HasCorporationRoleInterface');
-        }
-
-        $job_required_roles = $job->getCorporationRoles();
-
-        // check if job has required roles set
-        if (empty($job_required_roles)) {
-            return $this->assertionResult('error', 'job requires corporation roles but does not set them');
-        }
-
-        // check if job has all required roles set
-        foreach ($required_roles as $required_role) {
-            if (! in_array($required_role, $job_required_roles)) {
-                $required_roles_string = implode(', ', $required_roles);
-
-                return $this->assertionResult('error', "job requires corporate roles ($required_roles_string) but $required_role is not set");
-            }
-        }
-
-        return $this->assertionResult('success', 'all required corporate roles are set');
-    }
-
-    /**
-     * @throws \Throwable
-     * @throws ConnectionException
-     * @throws \ReflectionException
-     */
-    private function checkIsCheckingCache(EsiBase $job): array
-    {
-        $cached_seconds = $this->esiPathService->getEsiPaths()[$job->getEndpoint()][$job->getMethod()]['x-cached-seconds'] ?? null;
-        $has_cached_seconds = ! is_null($cached_seconds);
-
-        // if method is post and has cached seconds, return warning
-        if ($job->getMethod() === 'post' && $has_cached_seconds) {
-            // if job is CharacterAffiliationJob, return success
-            if ($job instanceof CharacterAffiliationJob) {
-                return $this->assertionResult('success', 'CharacterAffiliationJob is a post request but has cached seconds');
-            }
-
-            return $this->assertionResult('warning', 'job is a post request but has cached seconds');
-        }
-
-        // get filename of job class
-        $job_class = $job::class;
-        $reflection_class = new ReflectionClass($job_class);
-        $job_filename = $reflection_class->getFileName();
-
-        if ($this->isParentClassImplementingIsCachedLoad($job_class)) {
-            $job_filename = $this->getParentFileName($job_class);
-        }
-
-        // check if job isCachedLoad() is called somewhere in the job
+        $job_filename = (new \ReflectionClass($job))->getFileName();
         $job_source = $this->fileGetContentsAction->__invoke($job_filename);
 
-        $has_is_cached_load = str_contains($job_source, 'isCachedLoad()');
+        $checks_cache = str_contains($job_source, 'isCachedLoad');
 
-        // if the endpoint is not cached but the job checks if the response is cached, return error
-        if (! $has_cached_seconds && $has_is_cached_load) {
-            return $this->assertionResult('error', 'job checks if response is cached but endpoint is not cached');
+        if (! $checks_cache) {
+            // Check parent (abstract base classes implement isCachedLoad check)
+            $parent = (new \ReflectionClass($job))->getParentClass();
+            if ($parent && $parent->getFilename()) {
+                $parent_source = $this->fileGetContentsAction->__invoke($parent->getFilename());
+                $checks_cache = str_contains($parent_source, 'isCachedLoad');
+            }
         }
 
-        // if the endpoint is cached but the job does not check if the response is cached, return error
-        if ($has_cached_seconds && ! $has_is_cached_load) {
-            return $this->assertionResult('error', 'job does not check if response is cached but endpoint is cached');
-        }
-
-        return $this->assertionResult('success', 'job checks if response is cached and endpoint is cached');
-    }
-
-    /**
-     * @throws ConnectionException
-     */
-    private function checkRateLimit(EsiBase $job): array
-    {
-        $endpoint_data = $this->esiPathService->getEsiPaths()[$job->getEndpoint()][$job->getMethod()];
-        $rate_limit = $endpoint_data['x-rate-limit'] ?? null;
-
-        if ($rate_limit === null) {
-            return $this->assertionResult('success', 'no rate-limit extension on endpoint');
-        }
-
-        // Endpoint declares a rate-limit extension — verify job uses EsiProactiveRateLimitMiddleware
-        $used_middlewares = collect($job->middleware());
-        if (! $used_middlewares->first(fn (object $middleware) => $middleware::class === EsiProactiveRateLimitMiddleware::class)) {
-            return $this->assertionResult('error', "endpoint declares rate-limit ($rate_limit) but EsiProactiveRateLimitMiddleware is not used");
-        }
-
-        return $this->assertionResult('success', "rate-limit extension present ($rate_limit) and EsiProactiveRateLimitMiddleware is used");
+        return $checks_cache
+            ? $this->assertionResult('success', 'job checks isCachedLoad')
+            : $this->assertionResult('warning', 'job does not check isCachedLoad');
     }
 
     private function assertionResult(string $status, string $message): array
     {
-        return [
-            'status' => $status,
-            'message' => $message,
-        ];
-    }
-
-    private function getParentFileName(string $job_class): string
-    {
-        // get parent class of job
-        $reflection_class = new ReflectionClass($job_class);
-
-        // get filename of parent class
-        // return job_filename with parent class filename
-        return $reflection_class->getParentClass()->getFileName();
-    }
-
-    private function isParentClassImplementingIsCachedLoad(string $job_class): bool
-    {
-        $wallet_jobs = [
-            CharacterWalletJournalJob::class,
-            CorporationWalletJournalByDivisionJob::class,
-        ];
-
-        $wallet_transaction_jobs = [
-            CharacterWalletTransactionJob::class,
-            CorporationWalletTransactionByDivisionJob::class,
-        ];
-
-        // for contract jobs, we need to check if the parent class is caching the response
-        $contract_jobs = [CharacterContractItemsJob::class];
-
-        // for Contact and ContactLabel jobs, we need to check if the response is cached
-        $contact_jobs = [
-            CharacterContactJob::class,
-            CharacterContactLabelJob::class,
-            CorporationContactJob::class,
-            CorporationContactLabelJob::class,
-            AllianceContactJob::class,
-            AllianceContactLabelJob::class,
-        ];
-
-        return in_array($job_class, [
-            ...$wallet_jobs,
-            ...$wallet_transaction_jobs,
-            ...$contract_jobs,
-            ...$contact_jobs,
-        ]);
+        return ['status' => $status, 'message' => $message];
     }
 }
