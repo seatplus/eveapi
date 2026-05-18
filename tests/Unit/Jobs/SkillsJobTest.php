@@ -6,7 +6,8 @@ it('has tags', function () {
     $job = new SkillsJob(1);
 
     expect($job->tags())->toBe([
-        'skills',
+        'character',
         'character_id:1',
+        'skills',
     ]);
 });

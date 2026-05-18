@@ -4,6 +4,7 @@ use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiClient\Exceptions\InvalidAuthenticationException;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
+use Seatplus\EsiSchema\Contracts\EsiRawResponse;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\Esi\GetUpToDateRefreshTokenService;
@@ -18,8 +19,8 @@ describe('executes request successfully', function () {
 
     beforeEach(function () {
 
-        // build response with raw header X-Kevinrob-Cache HIT
-        $response = new EsiResponse(json_encode([]), ['X-Kevinrob-Cache' => 'HIT'], 'now', 200);
+        // build a cached response
+        $response = new EsiRawResponse(data: [], isCachedLoad: true);
 
         $this->client = mock(EsiClient::class, function ($mock) use ($response) {
             $mock->shouldReceive('invoke')
@@ -31,13 +32,12 @@ describe('executes request successfully', function () {
         $service = new RetrieveEsiData(
             method: 'get',
             endpoint: 'foo/bar',
-            version: 'v4',
             client: $this->client
         );
 
         $response = $service->executeInstance();
 
-        expect($response)->toBeInstanceOf(EsiResponse::class);
+        expect($response)->toBeInstanceOf(EsiRawResponse::class);
     });
 
     it('via execute', function () {
@@ -49,7 +49,7 @@ describe('executes request successfully', function () {
 
         $response = RetrieveEsiData::execute($container, $this->client);
 
-        expect($response)->toBeInstanceOf(EsiResponse::class);
+        expect($response)->toBeInstanceOf(EsiRawResponse::class);
     });
 
 });
@@ -72,7 +72,6 @@ describe('throws request failed exception', function () {
         $service = new RetrieveEsiData(
             method: 'get',
             endpoint: 'foo/bar',
-            version: 'v4',
             refresh_token: $this->refrehToken,
             getUpToDateRefreshTokenService: $getUpToDateRefreshTokenService
         );
@@ -90,7 +89,6 @@ describe('throws request failed exception', function () {
         $service = new RetrieveEsiData(
             method: 'get',
             endpoint: 'foo/bar',
-            version: 'v4',
             client: $client
         );
 
@@ -108,7 +106,6 @@ it('throws InvalidAuthenticationException', function () {
     $service = new RetrieveEsiData(
         method: 'get',
         endpoint: 'foo/bar',
-        version: 'v4',
         client: $client
     );
 
@@ -127,7 +124,6 @@ it('builds client with authentication', function () {
     $service = new RetrieveEsiData(
         method: 'get',
         endpoint: 'foo/bar',
-        version: 'v4',
         refresh_token: $refresh_token,
         getUpToDateRefreshTokenService: $getUpToDateRefreshTokenService
     );
@@ -151,7 +147,7 @@ it('builds client with authentication', function () {
 describe('it logs warnings', function () {
     it('when response contained pages but none was expected', function () {
 
-        $esiResponse = new EsiResponse(json_encode([]), ['X-Pages' => 1], 'now', 200);
+        $esiResponse = new EsiRawResponse(data: [], pages: 2);
 
         $client = mock(EsiClient::class, function ($mock) use ($esiResponse) {
             $mock->shouldReceive('invoke')
@@ -161,18 +157,17 @@ describe('it logs warnings', function () {
         $service = new RetrieveEsiData(
             method: 'get',
             endpoint: 'foo/bar',
-            version: 'v4',
             client: $client
         );
 
         $response = $service->executeInstance();
 
-        expect($response)->toBe($esiResponse);
+        expect($response)->toBeInstanceOf(EsiRawResponse::class);
     });
 
     it('when response did not contain pages but one was expected', function () {
 
-        $esiResponse = new EsiResponse(json_encode([]), [], 'now', 200);
+        $esiResponse = new EsiRawResponse(data: [], pages: 1);
 
         $client = mock(EsiClient::class, function ($mock) use ($esiResponse) {
             $mock->shouldReceive('invoke')
@@ -182,19 +177,18 @@ describe('it logs warnings', function () {
         $service = new RetrieveEsiData(
             method: 'get',
             endpoint: 'foo/bar',
-            version: 'v4',
             page: 1,
             client: $client,
         );
 
         $response = $service->executeInstance();
 
-        expect($response)->toBe($esiResponse);
+        expect($response)->toBeInstanceOf(EsiRawResponse::class);
     });
 
-    it('when response contained a warning', function () {
+    it('when response does not have extra pages', function () {
 
-        $esiResponse = new EsiResponse(json_encode([]), ['Warning' => 'this is a warning'], 'now', 200);
+        $esiResponse = new EsiRawResponse(data: [], pages: 1);
 
         $client = mock(EsiClient::class, function ($mock) use ($esiResponse) {
             $mock->shouldReceive('invoke')
@@ -204,13 +198,12 @@ describe('it logs warnings', function () {
         $service = new RetrieveEsiData(
             method: 'get',
             endpoint: 'foo/bar',
-            version: 'v4',
             client: $client
         );
 
         $response = $service->executeInstance();
 
-        expect($response)->toBe($esiResponse);
+        expect($response)->toBeInstanceOf(EsiRawResponse::class);
     });
 });
 
@@ -231,7 +224,6 @@ describe('it handles exceptions', function () {
         new RetrieveEsiData(
             method: 'get',
             endpoint: 'foo/bar',
-            version: 'v4',
             refresh_token: RefreshToken::factory()->make(),
             getUpToDateRefreshTokenService: $getUpToDateRefreshTokenService
         );
@@ -260,7 +252,6 @@ describe('it handles exceptions', function () {
             $service = new RetrieveEsiData(
                 method: 'get',
                 endpoint: 'foo/bar',
-                version: 'v4',
                 refresh_token: $refreshToken,
                 getUpToDateRefreshTokenService: $getUpToDateRefreshTokenService
             );
@@ -293,7 +284,6 @@ describe('it handles exceptions', function () {
             new RetrieveEsiData(
                 method: 'get',
                 endpoint: 'foo/bar',
-                version: 'v4',
                 refresh_token: $refreshToken,
                 getUpToDateRefreshTokenService: $getUpToDateRefreshTokenService
             );
@@ -318,7 +308,6 @@ it('builds client without refresh_token', function () {
     $service = new RetrieveEsiData(
         method: 'get',
         endpoint: 'foo/bar',
-        version: 'v4',
     );
 
     $reflection = new ReflectionClass($service);

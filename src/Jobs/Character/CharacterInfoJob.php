@@ -1,104 +1,39 @@
 <?php
 
-/*
- * MIT License
- *
- * Copyright (c) 2019, 2020, 2021 Felix Huber
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 namespace Seatplus\Eveapi\Jobs\Character;
 
-use Seatplus\Eveapi\DataTransferObjects\Responses\Character\CharacterInfoResponse;
-use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Jobs\EsiBase;
+use Seatplus\EsiClient\EsiClient;
+use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Seatplus\Eveapi\Traits\HasPathValues;
 
-class CharacterInfoJob extends EsiBase implements HasPathValuesInterface
+class CharacterInfoJob extends EsiJob
 {
-    use HasPathValues;
-
-    public function __construct(
-        public int $character_id
-    ) {
-        parent::__construct(
-            method: 'get',
-            endpoint: '/characters/{character_id}/',
-            version: 'v5',
-        );
-
-        $this->setPathValues([
-            'character_id' => $character_id,
-        ]);
-    }
+    public function __construct(public int $character_id) {}
 
     #[\Override]
     public function tags(): array
     {
-        return [
-            'character',
-            'info',
-            'character_id:'.$this->character_id,
-        ];
+        return ['character', 'info', "character_id:{$this->character_id}"];
     }
 
-    /**
-     * Get the middleware the job should pass through.
-     */
     #[\Override]
-    public function middleware(): array
+    protected function executeJob(EsiClient $esi): void
     {
-        return [
-            ...parent::middleware(),
-        ];
-    }
-
-    /**
-     * Execute the job.
-     *
-     * @throws \Exception
-     */
-    #[\Override]
-    public function executeJob(): void
-    {
-        $response = $this->retrieve();
-
-        if ($response->isCachedLoad()) {
+        $response = $esi->characters()->getCharactersCharacterId($this->character_id);
+        if ($response->isCachedLoad) {
             return;
         }
 
-        $data = CharacterInfoResponse::from($response->data);
-
-        CharacterInfo::updateOrCreate([
-            'character_id' => $this->character_id,
-        ], [
-            'name' => $data->name,
-            'description' => $data->description,
-            'birthday' => $data->birthday,
-            'gender' => $data->gender,
-            'race_id' => $data->race_id,
-            'bloodline_id' => $data->bloodline_id,
-            'security_status' => $data->security_status,
-            'faction_id' => $data->faction_id,
-            'title' => $data->title,
+        CharacterInfo::updateOrCreate(['character_id' => $this->character_id], [
+            'name' => $response->name,
+            'description' => $response->description,
+            'birthday' => $response->birthday,
+            'gender' => $response->gender,
+            'race_id' => $response->race_id,
+            'bloodline_id' => $response->bloodline_id,
+            'security_status' => $response->security_status,
+            'faction_id' => $response->faction_id,
+            'title' => $response->title,
         ]);
     }
 }

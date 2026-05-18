@@ -24,7 +24,7 @@ class BatchStatistic extends Model
         /** @var Carbon $finished_at */
         $finished_at = $this->finished_at;
 
-        return $finished_at->diffInSeconds($this->started_at);
+        return $this->started_at->diffInSeconds($finished_at);
     }
 
     public static function createEntry(Batch $batch): self
@@ -51,12 +51,8 @@ class BatchStatistic extends Model
         return self::create($attributes);
     }
 
-    #[\Override]
-    protected function casts(): array
-    {
-        return [
-            'started_at' => 'datetime',
-            'finished_at' => 'datetime',
-        ];
-    }
+    protected $casts = [
+        'started_at' => 'datetime',
+        'finished_at' => 'datetime',
+    ];
 }

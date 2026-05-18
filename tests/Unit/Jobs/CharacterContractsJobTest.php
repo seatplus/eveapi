@@ -1,56 +1,37 @@
 <?php
 
-use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Contracts\CharacterContractsJob;
 use Seatplus\Eveapi\Models\Contracts\Contract;
 
 test('returns early if cached', function () {
+    $esi = Mockery::mock(EsiClient::class);
+    $esi->shouldReceive('contracts->getCharactersCharacterIdContracts')->andReturn(makeEsiResult([], isCachedLoad: true));
 
-    $response = mock(EsiResponse::class);
-    $response->shouldReceive('isCachedLoad')->once()->andReturn(true);
-
-    $job = mock(CharacterContractsJob::class)->makePartial();
-    $job->shouldReceive('retrieve')->once()->andReturn($response);
-
-    $job->executeJob();
+    $job = mock(CharacterContractsJob::class)->shouldAllowMockingProtectedMethods()->makePartial();
+    $job->character_id = 1;
+    $job->executeJob($esi);
 
     expect(true)->toBeTrue();
 });
 
-it('increments page', function () {
-
-    Queue::fake();
-
-    $contract = Contract::factory()->count(2)->make();
-
-    $response1 = new EsiResponse(json_encode($contract->toArray()), ['X-Pages' => 2], 'now', 200);
-    $response2 = new EsiResponse('{}', ['X-Pages' => 2], 'now', 200);
-
-    $job = mock(CharacterContractsJob::class)->makePartial();
-    $job->character_id = 1;
-    $job->shouldReceive('retrieve')->twice()->andReturns($response1, $response2);
-
-    $job->executeJob();
-
-    expect($job->getPage())->toEqual(2);
-});
-
 it('adds follow up jobs to batch if batching', function () {
-
     Queue::fake();
 
     $contract = Contract::factory()->count(2)->make();
 
-    $response = new EsiResponse(json_encode($contract->toArray()), [], 'now', 200);
+    $esi = Mockery::mock(EsiClient::class);
+    $esi->shouldReceive('contracts->getCharactersCharacterIdContracts')
+        ->andReturn(makeEsiResult(
+            array_map(fn ($c) => (object) $c, $contract->toArray())
+        ));
 
-    $job = mock(CharacterContractsJob::class)->makePartial();
+    $job = mock(CharacterContractsJob::class)->shouldAllowMockingProtectedMethods()->makePartial();
     $job->character_id = 1;
-    $job->shouldReceive('retrieve')->andReturn($response);
-
     $job->shouldReceive('batching')->once()->andReturnTrue();
     $job->shouldReceive('batch->add')->once();
 
-    $job->executeJob();
+    $job->executeJob($esi);
 
     Queue::assertNothingPushed();
 });

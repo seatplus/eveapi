@@ -1,6 +1,6 @@
 <?php
 
-use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterBalanceJob;
 use Seatplus\Eveapi\Models\Wallet\Balance;
 
@@ -11,22 +11,18 @@ it('returns correct tags array for character balance job', function () {
 
     expect($tags)->toBe([
         'character',
-        'character_id: 12345',
+        'character_id:12345',
         'wallet',
         'balance',
     ]);
 });
 
 it('does not upsert balances when response is cached', function () {
-    $job = mock(CharacterBalanceJob::class, function ($mock) {
-        $response = mock(EsiResponse::class, function ($mock) {
-            $mock->shouldReceive('isCachedLoad')->andReturn(true);
-        });
+    $esi = Mockery::mock(EsiClient::class);
+    $esi->shouldReceive('wallet->getCharactersCharacterIdWallet')->andReturn(makeEsiResult(null, isCachedLoad: true));
 
-        $mock->shouldReceive('retrieve')->andReturn($response);
-    })->makePartial();
-
-    $job->executeJob();
+    $job = mock(CharacterBalanceJob::class)->makePartial();
+    $job->executeJob($esi);
 
     expect(Balance::count())->toBe(0);
 });

@@ -1,105 +1,40 @@
 <?php
 
-/*
- * MIT License
- *
- * Copyright (c) 2019, 2020, 2021 Felix Huber
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 namespace Seatplus\Eveapi\Jobs\Character;
 
-use Seatplus\Eveapi\DataTransferObjects\Responses\Character\CorporationHistoryItemResponse;
-use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Jobs\EsiBase;
+use Seatplus\EsiClient\EsiClient;
+use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Models\Character\CorporationHistory;
-use Seatplus\Eveapi\Traits\HasPathValues;
 
-class CorporationHistoryJob extends EsiBase implements HasPathValuesInterface
+class CorporationHistoryJob extends EsiJob
 {
-    use HasPathValues;
-
-    public function __construct(
-        public int $character_id
-    ) {
-        parent::__construct(
-            method: 'get',
-            endpoint: '/characters/{character_id}/corporationhistory/',
-            version: 'v2',
-        );
-
-        $this->setPathValues([
-            'character_id' => $character_id,
-        ]);
-    }
+    public function __construct(public int $character_id) {}
 
     #[\Override]
     public function tags(): array
     {
-        return [
-            'character',
-            'info',
-            'character_id:'.$this->character_id,
-            'corporationhistory',
-        ];
+        return ['character', 'info', "character_id:{$this->character_id}", 'corporationhistory'];
     }
 
-    /**
-     * Get the middleware the job should pass through.
-     */
     #[\Override]
-    public function middleware(): array
+    protected function executeJob(EsiClient $esi): void
     {
-        return [
-            ...parent::middleware(),
-        ];
-    }
-
-    /**
-     * Execute the job.
-     *
-     * @throws \Exception
-     */
-    #[\Override]
-    public function executeJob(): void
-    {
-        $response = $this->retrieve();
-
-        if ($response->isCachedLoad()) {
+        $response = $esi->characters()->getCharactersCharacterIdCorporationhistory($this->character_id);
+        if ($response->isCachedLoad) {
             return;
         }
 
-        $results = collect($response->data)
-            ->map(fn (object $item) => CorporationHistoryItemResponse::from($item))
-            ->map(fn (CorporationHistoryItemResponse $record) => [
-                'record_id' => $record->record_id,
-                'character_id' => $this->character_id,
-                'corporation_id' => $record->corporation_id,
-                'is_deleted' => $record->is_deleted,
-                'start_date' => carbon($record->start_date),
-            ]);
+        $results = collect($response->data)->map(fn (object $record) => [
+            'record_id' => $record->record_id,
+            'character_id' => $this->character_id,
+            'corporation_id' => $record->corporation_id,
+            'is_deleted' => $record->is_deleted ?? false,
+            'start_date' => carbon($record->start_date),
+        ]);
 
         CorporationHistory::query()->upsert(
             $results->toArray(),
             ['record_id', 'character_id', 'corporation_id'],
-            // only the is_deleted column could be updated
             ['is_deleted']
         );
     }

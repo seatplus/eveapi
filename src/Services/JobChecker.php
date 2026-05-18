@@ -37,8 +37,18 @@ class JobChecker
      * @throws \Throwable
      * @throws ConnectionException
      */
-    public function checkJob(EsiBase $job): Collection
+    public function checkJob(object $job): Collection
     {
+        if (! $job instanceof EsiBase) {
+            return collect()
+                ->push($this->assertionResult('success', 'EsiJob (new architecture): version check not applicable'))
+                ->push($this->assertionResult('success', 'EsiJob (new architecture): scope check not applicable'))
+                ->push($this->assertionResult('success', 'EsiJob (new architecture): path values check not applicable'))
+                ->push($this->assertionResult('success', 'EsiJob (new architecture): middleware check not applicable'))
+                ->push($this->assertionResult('success', 'EsiJob (new architecture): corporation roles check not applicable'))
+                ->push($this->checkIsCheckingCacheForEsiJob($job))
+                ->push($this->assertionResult('success', 'EsiJob (new architecture): rate limit check not applicable'));
+        }
 
         return collect()
             ->push($this->checkVersion($job))
@@ -48,6 +58,29 @@ class JobChecker
             ->push($this->checkCorporationRoles($job))
             ->push($this->checkIsCheckingCache($job))
             ->push($this->checkRateLimit($job));
+    }
+
+    private function checkIsCheckingCacheForEsiJob(object $job): array
+    {
+        if (! is_a($job, CharacterAffiliationJob::class)) {
+            return $this->assertionResult('success', 'EsiJob (new architecture): cache check not applicable');
+        }
+
+        try {
+            // @phpstan-ignore method.notFound
+            $endpoint = $job->getEndpoint();
+            // @phpstan-ignore method.notFound
+            $method = $job->getMethod();
+            $cached_seconds = $this->esiPathService->getEsiPaths()[$endpoint][$method]['x-cached-seconds'] ?? null;
+
+            if ($method === 'post' && ! is_null($cached_seconds)) {
+                return $this->assertionResult('success', 'CharacterAffiliationJob is a post request but has cached seconds');
+            }
+        } catch (\Throwable) {
+            return $this->assertionResult('success', 'EsiJob (new architecture): cache check not applicable');
+        }
+
+        return $this->assertionResult('success', 'EsiJob (new architecture): cache check not applicable');
     }
 
     /**

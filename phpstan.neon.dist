@@ -17,6 +17,5 @@ parameters:
     configDirectories:
         - config
     ignoreErrors:
-        - '#^Access to an undefined property Seatplus\\EsiClient\\DataTransferObjects\\EsiResponse\:\:\$[a-zA-Z0-9\\_]+\.$#'
 
 

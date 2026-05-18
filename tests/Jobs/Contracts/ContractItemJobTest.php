@@ -10,16 +10,12 @@ use Seatplus\Eveapi\Models\Contracts\ContractItem;
 test('job is being dispatched', function () {
     Queue::fake();
 
-    // Assert that no jobs were pushed...
     Queue::assertNothingPushed();
 
     $mock_data = ContractItem::factory()->count(1)->make();
 
-    noRetrieveEsiDataAction();
-
     CharacterContractItemsJob::dispatch(testCharacter()->character_id, $mock_data->first()->contract_id);
 
-    // Assert no
     Queue::assertNotPushed(ResolveUniverseTypeByIdJob::class);
 });
 
@@ -32,14 +28,17 @@ it('dispatches resolve universe type job if type is unknown', function () {
         'contract_id' => $mock_data->first()->contract_id,
     ]));
 
-    mockRetrieveEsiDataAction($mock_data->toArray());
+    mockEsiClient(
+        'contracts->getCharactersCharacterIdContractsContractIdItems',
+        makeEsiResult(array_map(fn ($i) => (object) $i, $mock_data->toArray()))
+    );
 
     $job = new CharacterContractItemsJob(testCharacter()->character_id, $contract->contract_id);
 
     $refresh_token = updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-contracts.read_character_contracts.v1']);
     $refresh_token->save();
 
-    $job->handle();
+    runJob($job);
 
     expect(ContractItem::all())->toHaveCount(5);
 

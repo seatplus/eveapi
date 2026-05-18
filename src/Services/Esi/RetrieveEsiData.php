@@ -29,10 +29,10 @@ namespace Seatplus\Eveapi\Services\Esi;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
-use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiClient\EsiConfiguration;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
+use Seatplus\EsiSchema\Contracts\EsiRawResponse;
 use Seatplus\Eveapi\Containers\EsiRequestContainer;
 use Seatplus\Eveapi\Models\RefreshToken;
 
@@ -44,7 +44,6 @@ class RetrieveEsiData
     public function __construct(
         private readonly string $method = '',
         private readonly string $endpoint = '',
-        private readonly string $version = '',
         private readonly array $path_values = [],
         private array $query_parameters = [],
         private readonly ?array $request_body = [],
@@ -73,11 +72,10 @@ class RetrieveEsiData
     public static function execute(
         EsiRequestContainer $container,
         ?EsiClient $client = null
-    ): EsiResponse {
+    ): EsiRawResponse {
         return (new self(
             method: $container->method,
             endpoint: $container->endpoint,
-            version: $container->version,
             path_values: $container->path_values,
             query_parameters: $container->query_parameters,
             request_body: $container->request_body,
@@ -92,17 +90,16 @@ class RetrieveEsiData
      * @throws RequestFailedException
      * @throws \Throwable
      */
-    public function executeInstance(): EsiResponse
+    public function executeInstance(): EsiRawResponse
     {
 
         try {
             $result = $this->client->invoke(
                 method: $this->method,
-                uri_original: $this->endpoint,
-                uri_data: $this->path_values,
-                version: $this->version,
-                query_parameters: $this->query_parameters,
-                request_body: $this->request_body
+                path: $this->endpoint,
+                pathValues: $this->path_values,
+                queryParams: $this->query_parameters,
+                requestBody: $this->request_body ?? []
             );
         } catch (RequestFailedException $exception) {
             $this->handleException($exception);
@@ -118,7 +115,7 @@ class RetrieveEsiData
 
         // If this is a cached load, don't bother with any further
         // processing.
-        if ($result->isCachedLoad()) {
+        if ($result->isCachedLoad) {
             return $result;
         }
 
@@ -130,20 +127,16 @@ class RetrieveEsiData
         return $result;
     }
 
-    private function logWarnings(EsiResponse $response): void
+    private function logWarnings(EsiRawResponse $response): void
     {
         $logger = EsiConfiguration::getInstance()->getLogger();
 
-        if ($response->pages !== null && $this->page === null) {
+        if ($response->pages > 1 && $this->page === null) {
             $logger->warning('Response contained pages but none was expected');
         }
 
-        if ($response->pages === null && $this->page !== null) {
+        if ($response->pages === 1 && $this->page !== null) {
             $logger->warning('Expected a paged response but had none');
-        }
-
-        if (isset($response->parsed_headers['Warning'])) {
-            $logger->warning("Response contained a warning: {$response->parsed_headers['Warning']}");
         }
     }
 

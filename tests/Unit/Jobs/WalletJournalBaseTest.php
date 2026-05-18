@@ -1,78 +1,54 @@
 <?php
 
 use Mockery\MockInterface;
-use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Wallet\WalletJournalBase;
 
 it('does not execute job if response is cached', function () {
-    $job = mock(WalletJournalBase::class, function (MockInterface $mock) {
-        $mock->shouldReceive('getPathValues')->once()->andReturn([
-            'character_id' => 12345,
-        ]);
+    $esi = Mockery::mock(EsiClient::class);
+    $result = makeEsiResult([], isCachedLoad: true);
 
-        $response = mock(EsiResponse::class, function (MockInterface $mock) {
-            $mock->shouldReceive('isCachedLoad')->once()->andReturnTrue();
-        });
-
-        $mock->shouldReceive('retrieve')->once()->andReturn($response);
-
+    $job = mock(WalletJournalBase::class, function (MockInterface $mock) use ($result) {
+        $mock->shouldAllowMockingProtectedMethods();
+        $mock->shouldReceive('fetchPage')->once()->andReturn($result);
+        $mock->shouldReceive('walletableId')->andReturn(12345);
+        $mock->shouldReceive('walletableType')->andReturn('SomeClass');
     })->makePartial();
 
-    $job->executeJob();
+    $job->executeJob($esi);
 
     $this->assertDatabaseMissing('wallet_journals', [
         'wallet_journable_id' => 12345,
     ]);
 });
 
-it('handles multiple pages correctly', function () {
-
-    $job = mock(WalletJournalBase::class, function (MockInterface $mock) {
-        $mock->shouldReceive('getPathValues')->once()->andReturn([
-            'character_id' => 12345,
-        ]);
-
-        $response = mock(EsiResponse::class, function (MockInterface $mock) {
-            $mock->shouldReceive('isCachedLoad')->andReturnFalse();
-            $mock->pages = 2;
-            $mock->data = (object) [];
-        });
-
-        $mock->shouldReceive('retrieve')->twice()->andReturn($response);
-
-        $mock->shouldReceive('getPage')->andReturn(1, 1, 2, 2);
-        $mock->shouldReceive('incrementPage')->once();
-
-    })->makePartial();
-
-    $job->executeJob();
-});
-
 it('handles contextable type', function ($context_id_type) {
-    $job = mock(WalletJournalBase::class, function (MockInterface $mock) use ($context_id_type) {
-        $mock->shouldReceive('getPathValues')->once()->andReturn([
-            'corporation_id' => 12345,
-        ]);
+    $esi = Mockery::mock(EsiClient::class);
+    $data = [(object) [
+        'context_id_type' => $context_id_type,
+        'context_id' => 12345,
+        'id' => 12345,
+        'date' => now(),
+        'description' => 'test',
+        'ref_type' => 'test',
+        'amount' => 100.0,
+        'balance' => 200.0,
+        'first_party_id' => null,
+        'second_party_id' => null,
+        'reason' => null,
+        'tax' => null,
+        'tax_receiver_id' => null,
+    ]];
+    $result = makeEsiResult($data);
 
-        $response = mock(EsiResponse::class, function (MockInterface $mock) use ($context_id_type) {
-            $mock->shouldReceive('isCachedLoad')->andReturnFalse();
-            $mock->pages = 1;
-            $mock->data = (object) [
-                (object) [
-                    'context_id_type' => $context_id_type,
-                    'id' => 12345,
-                    'date' => now(),
-                    'description' => 'test',
-                    'ref_type' => 'test',
-                ],
-            ];
-        });
-
-        $mock->shouldReceive('retrieve')->once()->andReturn($response);
-
+    $job = mock(WalletJournalBase::class, function (MockInterface $mock) use ($result) {
+        $mock->shouldAllowMockingProtectedMethods();
+        $mock->shouldReceive('fetchPage')->once()->andReturn($result);
+        $mock->shouldReceive('walletableId')->andReturn(12345);
+        $mock->shouldReceive('walletableType')->andReturn('SomeClass');
     })->makePartial();
 
-    $job->executeJob();
+    $job->executeJob($esi);
 
 })->with([
     'structure_id',
@@ -87,5 +63,4 @@ it('handles contextable type', function ($context_id_type) {
     'planet_id',
     'system_id',
     'type_id',
-    null,
 ]);

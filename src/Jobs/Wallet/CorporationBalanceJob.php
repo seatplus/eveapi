@@ -1,129 +1,61 @@
 <?php
 
-/*
- * MIT License
- *
- * Copyright (c) 2019, 2020, 2021 Felix Huber
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 namespace Seatplus\Eveapi\Jobs\Wallet;
 
 use Illuminate\Support\Collection;
-use Seatplus\Eveapi\DataTransferObjects\Responses\Corporation\CorporationWalletItemResponse;
-use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
-use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\EsiBase;
-use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
+use Seatplus\EsiClient\EsiClient;
+use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
+use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Wallet\Balance;
-use Seatplus\Eveapi\Traits\HasCorporationRole;
-use Seatplus\Eveapi\Traits\HasPages;
-use Seatplus\Eveapi\Traits\HasPathValues;
-use Seatplus\Eveapi\Traits\HasRequiredScopes;
+use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 
-class CorporationBalanceJob extends EsiBase implements HasCorporationRoleInterface, HasPathValuesInterface, HasRequiredScopeInterface
+class CorporationBalanceJob extends EsiJob
 {
-    use HasCorporationRole;
-    use HasPages;
-    use HasPathValues;
-    use HasRequiredScopes;
+    public function __construct(public int $corporation_id) {}
 
-    public function __construct(
-        public int $corporation_id,
-    ) {
-        parent::__construct(
-            method: 'get',
-            endpoint: '/corporations/{corporation_id}/wallets/',
-            version: 'v1',
-        );
-
-        $this->setRequiredScope(head(config('eveapi.scopes.corporation.wallet')));
-
-        $this->setPathValues([
-            'corporation_id' => $this->corporation_id,
-        ]);
-
-        $this->setCorporationRoles(['Accountant', 'Junior_Accountant']);
-    }
-
-    /**
-     * Get the middleware the job should pass through.
-     */
     #[\Override]
-    public function middleware(): array
+    public function getRefreshToken(): ?RefreshToken
     {
-        return [
-            new HasRequiredScopeMiddleware,
-            ...parent::middleware(),
-        ];
+        $token = (new FindCorporationRefreshToken)(
+            $this->corporation_id,
+            head(config('eveapi.scopes.corporation.wallet')),
+            ['Accountant', 'Junior_Accountant']
+        );
+        throw_unless($token, new \Exception("No eligible refresh token found for corporation {$this->corporation_id}"));
+
+        return $token;
     }
 
     #[\Override]
     public function tags(): array
     {
-        return [
-            'corporation',
-            'corporation_id: '.$this->corporation_id,
-            'balances',
-        ];
+        return ['corporation', "corporation_id:{$this->corporation_id}", 'balances'];
     }
 
-    /**
-     * Execute the job.
-     *
-     * @throws \Exception
-     */
     #[\Override]
-    public function executeJob(): void
+    protected function executeJob(EsiClient $esi): void
     {
-        $response = $this->retrieve();
-
-        if ($response->isCachedLoad()) {
+        $response = $esi->wallet()->getCorporationsCorporationIdWallets($this->corporation_id);
+        if ($response->isCachedLoad) {
             return;
         }
 
-        $corporation_balances = collect($response->data)
-            ->map(fn (object $item) => CorporationWalletItemResponse::from($item))
-            ->map(
-                fn (CorporationWalletItemResponse $wallet) => [
-                    'balanceable_id' => $this->corporation_id,
-                    'balanceable_type' => CorporationInfo::class,
-                    'division' => $wallet->division,
-                    'balance' => $wallet->balance,
-                ]
-            );
+        $balances = collect($response->data)->map(fn (object $wallet) => [
+            'balanceable_id' => $this->corporation_id,
+            'balanceable_type' => CorporationInfo::class,
+            'division' => $wallet->division,
+            'balance' => $wallet->balance,
+        ]);
 
-        Balance::upsert(
-            $corporation_balances->toArray(),
-            ['balanceable_id', 'balanceable_type', 'division'],
-            ['balance']
-        );
+        Balance::upsert($balances->toArray(), ['balanceable_id', 'balanceable_type', 'division'], ['balance']);
 
-        $this->dispatchDivisionJobs($corporation_balances);
+        $this->dispatchDivisionJobs($balances);
     }
 
-    private function dispatchDivisionJobs(Collection $corporation_balances): void
+    private function dispatchDivisionJobs(Collection $balances): void
     {
-        $corporation_balances->each(function (array $balance) {
+        $balances->each(function (array $balance) {
             CorporationWalletJournalByDivisionJob::dispatch($this->corporation_id, $balance['division'])->onQueue('high');
             CorporationWalletTransactionByDivisionJob::dispatch($this->corporation_id, $balance['division'])->onQueue('high');
         });

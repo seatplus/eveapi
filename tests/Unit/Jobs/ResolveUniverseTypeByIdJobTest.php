@@ -1,11 +1,10 @@
 <?php
 
-use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Universe\Type;
 
 it('executes job and upserts type', function () {
-    $data = [
+    $data = (object) [
         'type_id' => 12345,
         'group_id' => 1,
         'name' => 'Test Type',
@@ -22,12 +21,9 @@ it('executes job and upserts type', function () {
         'volume' => 900,
     ];
 
-    $response = new EsiResponse(json_encode($data), [], 'now', 200);
+    mockEsiClient('universe->getUniverseTypesTypeId', $data);
 
-    $job = mock(ResolveUniverseTypeByIdJob::class)->makePartial();
-    $job->shouldReceive('retrieve')->andReturn($response);
-
-    $job->executeJob();
+    runJob(new ResolveUniverseTypeByIdJob(12345));
 
     expect(Type::count())->toEqual(1)
         ->and(Type::first()->type_id)->toEqual(12345);

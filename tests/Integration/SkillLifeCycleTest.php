@@ -1,29 +1,39 @@
 <?php
 
-use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
-use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
+use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Responses\CharactersSkills;
 use Seatplus\Eveapi\Jobs\Skills\SkillsJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Skills\Skill;
 use Seatplus\Eveapi\Models\Universe\Type;
 
-uses(LazilyRefreshDatabase::class);
-
 beforeEach(function () {
-    // Prevent any auto dispatching of jobs
     Queue::fake();
 });
 
 it('runs skill job', function () {
     expect(Skill::all())->toHaveCount(0);
 
-    buildSkillMockEsiData();
+    $mocked_skills = Event::fakeFor(
+        fn () => Skill::factory(['character_id' => testCharacter()->character_id])
+            ->count(5)
+            ->make()
+    );
+
+    $skillsDto = CharactersSkills::from((object) [
+        'skills' => array_map(fn ($s) => (object) $s, $mocked_skills->toArray()),
+        'total_sp' => 1337,
+        'unallocated_sp' => 42,
+    ]);
+    $skillsDto->isCachedLoad = false;
+
+    mockEsiClient('skills->getCharactersCharacterIdSkills', $skillsDto);
 
     expect($this->test_character->total_sp)->toBeNull();
 
-    (new SkillsJob(testCharacter()->character_id))->handle();
+    runJob(new SkillsJob(testCharacter()->character_id));
 
     expect(Skill::all())->toHaveCount(5);
     expect(Skill::first()->type)->toBeInstanceOf(Type::class);
@@ -40,47 +50,27 @@ it('Dispatch Type job if skill is missing', function () {
 
     expect($skill->type)->toBeNull();
 
-    mockRetrieveEsiDataAction([
-        'skills' => [$skill->toArray()],
+    $skillsDto = CharactersSkills::from((object) [
+        'skills' => [(object) $skill->toArray()],
         'total_sp' => 1337,
         'unallocated_sp' => 42,
     ]);
+    $skillsDto->isCachedLoad = false;
 
-    (new SkillsJob(testCharacter()->character_id))->handle();
+    mockEsiClient('skills->getCharactersCharacterIdSkills', $skillsDto);
+
+    runJob(new SkillsJob(testCharacter()->character_id));
 
     Queue::assertPushed(ResolveUniverseTypeByIdJob::class);
 });
 
 it('does not update skills and character info if response is cached', function () {
-    $response = Mockery::mock(EsiResponse::class);
-    $response->shouldReceive('isCachedLoad')->andReturn(true);
+    $esi = Mockery::mock(EsiClient::class);
+    $esi->shouldReceive('skills->getCharactersCharacterIdSkills')
+        ->andReturn((object) ['isCachedLoad' => true]);
 
-    $job = Mockery::mock(SkillsJob::class)->makePartial();
-    $job->shouldReceive('retrieve')->andReturn($response);
-
-    $job->executeJob();
+    $job = mock(SkillsJob::class)->makePartial();
+    $job->executeJob($esi);
 
     expect(Skill::all())->toHaveCount(0);
 });
-
-// Helpers
-function buildSkillMockEsiData()
-{
-    Queue::assertNothingPushed();
-    $mocked_skills = Event::fakeFor(
-        fn () => Skill::factory(['character_id' => testCharacter()->character_id])
-            ->count(5)
-            ->make()
-    );
-    Queue::assertNothingPushed();
-
-    $mock_data = [
-        'skills' => $mocked_skills->toArray(),
-        'total_sp' => 1337,
-        'unallocated_sp' => 42,
-    ];
-
-    mockRetrieveEsiDataAction($mock_data);
-
-    return $mock_data;
-}

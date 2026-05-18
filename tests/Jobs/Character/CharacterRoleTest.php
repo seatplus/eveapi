@@ -11,43 +11,30 @@ beforeEach(function () {
     $refresh_token->save();
 });
 
-/**
- * @runTestsInSeparateProcesses
- */
 test('if job is queued', function () {
     Queue::fake();
 
-    // Assert that no jobs were pushed...
     Queue::assertNothingPushed();
 
     CharacterRoleJob::dispatch($this->test_character->character_id)->onQueue('default');
 
-    // Assert a job was pushed to a given queue...
     Queue::assertPushedOn('default', CharacterRoleJob::class);
 });
 
 test('retrieve test', function () {
-
     Queue::fake();
-    $mock_data = buildCharacterRoleMockEsiData();
 
-    (new CharacterRoleJob($this->test_character->character_id))->handle();
-
-    // Assert that test character is now created
-    $this->assertDatabaseHas('character_roles', [
-        'character_id' => $mock_data->character_id,
-    ]);
-});
-
-// Helpers
-function buildCharacterRoleMockEsiData()
-{
     $mock_data = CharacterRole::factory()->make([
         'roles' => ['Personnel_Manager'],
         'character_id' => testCharacter()->character_id,
     ]);
 
-    mockRetrieveEsiDataAction($mock_data->toArray());
+    $dto = (object) array_merge(['isCachedLoad' => false], $mock_data->toArray());
+    mockEsiClient('characters->getCharactersCharacterIdRoles', $dto);
 
-    return $mock_data;
-}
+    runJob(new CharacterRoleJob($this->test_character->character_id));
+
+    $this->assertDatabaseHas('character_roles', [
+        'character_id' => $mock_data->character_id,
+    ]);
+});

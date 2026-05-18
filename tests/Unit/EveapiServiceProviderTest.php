@@ -6,6 +6,7 @@ use Illuminate\Contracts\Queue\Job;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Http\Request;
 use Illuminate\Queue\CallQueuedHandler;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\RateLimitedWithRedis;
 use Illuminate\Support\Facades\DB;
 use Laravel\Horizon\Horizon;
@@ -116,7 +117,7 @@ function assertJobWasReleased($testJob)
 
 class RateLimitedTestJob
 {
-    use \Illuminate\Queue\InteractsWithQueue, Queueable;
+    use InteractsWithQueue, Queueable;
 
     public static $handled = false;
 

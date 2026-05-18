@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
-use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Category;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Type;
@@ -15,28 +14,19 @@ beforeEach(function () {
     $refresh_token = updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-assets.read_assets.v1']);
     $refresh_token->save();
 
-    // $this->job = new CharacterAssetsNameJob($job_container);
     $this->name_to_create = 'TestName';
 });
 
-/**
- * @runTestsInSeparateProcesses
- */
 test('if job is queued', function () {
     Queue::fake();
 
-    // Assert that no jobs were pushed...
     Queue::assertNothingPushed();
 
     CharacterAssetsNameJob::dispatch($this->test_character->character_id)->onQueue('default');
 
-    // Assert a job was pushed to a given queue...
     Queue::assertPushedOn('default', CharacterAssetsNameJob::class);
 });
 
-/**
- * @runTestsInSeparateProcesses
- */
 it('updates a name', function () {
     $type = Event::fakeFor(fn () => Type::factory()->create([
         'group_id' => Group::factory()->create([
@@ -52,23 +42,22 @@ it('updates a name', function () {
         'is_singleton' => true,
     ]);
 
-    // Assert that character asset created has no name
     $this->assertDatabaseHas('assets', [
         'assetable_id' => $asset->assetable_id,
         'item_id' => $asset->item_id,
         'name' => null,
     ]);
 
-    mockRetrieveEsiDataAction([
-        [
+    mockEsiClient(
+        'assets->postCharactersCharacterIdAssetsNames',
+        makeEsiResult([(object) [
             'item_id' => $asset->item_id,
             'name' => $this->name_to_create,
-        ],
-    ]);
+        ]])
+    );
 
-    (new CharacterAssetsNameJob($this->test_character->character_id))->handle();
+    runJob(new CharacterAssetsNameJob($this->test_character->character_id));
 
-    // Assert that character asset created has name
     $this->assertDatabaseHas('assets', [
         'assetable_id' => $asset->assetable_id,
         'item_id' => $asset->item_id,
@@ -76,9 +65,6 @@ it('updates a name', function () {
     ]);
 });
 
-/**
- * @runTestsInSeparateProcesses
- */
 it('does not update for wrong category', function () {
     $type = Event::fakeFor(fn () => Type::factory()->create([
         'group_id' => Group::factory()->create([
@@ -94,16 +80,14 @@ it('does not update for wrong category', function () {
         'is_singleton' => true,
     ]);
 
-    // Assert that character asset created has no name
     $this->assertDatabaseHas('assets', [
         'assetable_id' => $asset->assetable_id,
         'item_id' => $asset->item_id,
         'name' => null,
     ]);
 
-    noRetrieveEsiDataAction();
+    // No ESI call needed - query returns no assets in scope
 
-    // Assert that character asset created has no name
     $this->assertDatabaseMissing('assets', [
         'assetable_id' => $asset->assetable_id,
         'item_id' => $asset->item_id,
@@ -111,15 +95,12 @@ it('does not update for wrong category', function () {
     ]);
 });
 
-/**
- * @runTestsInSeparateProcesses
- */
 it('does not run if category id is out of scope', function () {
     $type = Type::factory()->create();
 
-    $group = Event::fakeFor(fn () => Group::factory()->create([
+    Event::fakeFor(fn () => Group::factory()->create([
         'group_id' => $type->group_id,
-        'category_id' => 5, // Only Celestials, Ships, Deployable, Starbases, Orbitals and Structures might be named
+        'category_id' => 5,
     ]));
 
     $asset = Asset::factory()->create([
@@ -128,16 +109,12 @@ it('does not run if category id is out of scope', function () {
         'is_singleton' => true,
     ]);
 
-    // Assert that character asset created has no name
     $this->assertDatabaseHas('assets', [
         'assetable_id' => $asset->assetable_id,
         'item_id' => $asset->item_id,
         'name' => null,
     ]);
 
-    noRetrieveEsiDataAction();
-
-    // Assert that character asset created has no name
     $this->assertDatabaseMissing('assets', [
         'assetable_id' => $asset->assetable_id,
         'item_id' => $asset->item_id,
@@ -145,9 +122,6 @@ it('does not run if category id is out of scope', function () {
     ]);
 });
 
-/**
- * @runTestsInSeparateProcesses
- */
 it('does not run if group is missing', function () {
     $type = Type::factory()->create();
 
@@ -157,18 +131,12 @@ it('does not run if group is missing', function () {
         'is_singleton' => true,
     ]);
 
-    // Assert that character asset created has no name
     $this->assertDatabaseHas('assets', [
         'assetable_id' => $asset->assetable_id,
         'item_id' => $asset->item_id,
         'name' => null,
     ]);
 
-    $refresh_token = RefreshToken::factory()->make(['character_id' => $asset->assetable_id]);
-
-    noRetrieveEsiDataAction();
-
-    // Assert that character asset created has no name
     $this->assertDatabaseMissing('assets', [
         'assetable_id' => $asset->assetable_id,
         'item_id' => $asset->item_id,
@@ -176,13 +144,10 @@ it('does not run if group is missing', function () {
     ]);
 });
 
-/**
- * @runTestsInSeparateProcesses
- */
 it('runs the job', function () {
     $type = Event::fakeFor(fn () => Type::factory()->create());
 
-    $group = Event::fakeFor(fn () => Group::factory()->create([
+    Event::fakeFor(fn () => Group::factory()->create([
         'group_id' => $type->group_id,
         'category_id' => 22,
     ]));
@@ -193,23 +158,22 @@ it('runs the job', function () {
         'is_singleton' => true,
     ]));
 
-    // Assert that character asset created has no name
     $this->assertDatabaseHas('assets', [
         'assetable_id' => $asset->assetable_id,
         'item_id' => $asset->item_id,
         'name' => null,
     ]);
 
-    mockRetrieveEsiDataAction([
-        [
+    mockEsiClient(
+        'assets->postCharactersCharacterIdAssetsNames',
+        makeEsiResult([(object) [
             'item_id' => $asset->item_id,
             'name' => $this->name_to_create,
-        ],
-    ]);
+        ]])
+    );
 
-    (new CharacterAssetsNameJob($asset->assetable_id))->handle();
+    runJob(new CharacterAssetsNameJob($asset->assetable_id));
 
-    // Assert that character asset created has name
     $this->assertCount(
         1,
         Asset::where('assetable_id', $asset->assetable_id)

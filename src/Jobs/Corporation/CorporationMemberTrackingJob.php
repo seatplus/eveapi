@@ -1,155 +1,75 @@
 <?php
 
-/*
- * MIT License
- *
- * Copyright (c) 2019, 2020, 2021 Felix Huber
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 namespace Seatplus\Eveapi\Jobs\Corporation;
 
-use Illuminate\Support\Collection;
-use Seatplus\Eveapi\DataTransferObjects\Responses\Corporation\CorporationMemberTrackingItemResponse;
-use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
-use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
-use Seatplus\Eveapi\Jobs\EsiBase;
-use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
+use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
-use Seatplus\Eveapi\Traits\HasCorporationRole;
-use Seatplus\Eveapi\Traits\HasPathValues;
-use Seatplus\Eveapi\Traits\HasRequiredScopes;
+use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 
-class CorporationMemberTrackingJob extends EsiBase implements HasCorporationRoleInterface, HasPathValuesInterface, HasRequiredScopeInterface
+class CorporationMemberTrackingJob extends EsiJob
 {
-    use HasCorporationRole;
-    use HasPathValues;
-    use HasRequiredScopes;
+    public function __construct(public int $corporation_id) {}
 
-    public function __construct(
-        public int $corporation_id
-    ) {
-        parent::__construct(
-            method: 'get',
-            endpoint: '/corporations/{corporation_id}/membertracking/',
-            version: 'v2',
-        );
-
-        $this->setRequiredScope('esi-corporations.track_members.v1');
-
-        $this->setCorporationRoles('Director');
-
-        $this->setPathValues([
-            'corporation_id' => $this->corporation_id,
-        ]);
-    }
-
-    /**
-     * Get the middleware the job should pass through.
-     */
     #[\Override]
-    public function middleware(): array
+    public function getRefreshToken(): ?RefreshToken
     {
-        return [
-            new HasRequiredScopeMiddleware,
-            ...parent::middleware(),
-        ];
+        $token = (new FindCorporationRefreshToken)($this->corporation_id, 'esi-corporations.track_members.v1', 'Director');
+        throw_unless($token, new \Exception("No eligible refresh token found for corporation {$this->corporation_id}"));
+
+        return $token;
     }
 
     #[\Override]
     public function tags(): array
     {
-        return [
-            'corporation',
-            'corporation_id: '.$this->corporation_id,
-            'member',
-            'tracking',
-        ];
+        return ['corporation', "corporation_id:{$this->corporation_id}", 'member', 'tracking'];
     }
 
-    /**
-     * Execute the job.
-     *
-     * @throws \Exception
-     */
     #[\Override]
-    public function executeJob(): void
+    protected function executeJob(EsiClient $esi): void
     {
-        $response = $this->retrieve();
-
-        if ($response->isCachedLoad()) {
+        $response = $esi->corporation()->getCorporationsCorporationIdMembertracking($this->corporation_id);
+        if ($response->isCachedLoad) {
             return;
         }
 
-        $members = collect($response->data)
-            ->map(fn (object $item) => CorporationMemberTrackingItemResponse::from($item))
-            ->map(fn (CorporationMemberTrackingItemResponse $member) => [
-                'corporation_id' => $this->corporation_id,
-                'character_id' => $member->character_id,
-                'start_date' => $member->start_date !== null ? carbon($member->start_date) : null,
-                'base_id' => $member->base_id,
-                'logon_date' => $member->logon_date !== null ? carbon($member->logon_date) : null,
-                'logoff_date' => $member->logoff_date !== null ? carbon($member->logoff_date) : null,
-                'location_id' => $member->location_id,
-                'ship_type_id' => $member->ship_type_id,
+        $members = collect($response->data)->map(fn (object $member) => [
+            'corporation_id' => $this->corporation_id,
+            'character_id' => $member->character_id,
+            'start_date' => isset($member->start_date) ? carbon($member->start_date) : null,
+            'base_id' => $member->base_id ?? null,
+            'logon_date' => isset($member->logon_date) ? carbon($member->logon_date) : null,
+            'logoff_date' => isset($member->logoff_date) ? carbon($member->logoff_date) : null,
+            'location_id' => $member->location_id ?? null,
+            'ship_type_id' => $member->ship_type_id ?? null,
+        ]);
 
-            ]);
+        CorporationMemberTracking::upsert($members->toArray(), ['corporation_id', 'character_id']);
 
-        $this->upsertMembers($members);
-        $this->removeOldMembers($members);
+        CorporationMemberTracking::where('corporation_id', $this->corporation_id)
+            ->whereNotIn('character_id', $members->pluck('character_id')->all())
+            ->get()
+            ->each(fn (CorporationMemberTracking $ex_member) => $ex_member->delete());
+
         $this->getMemberCharacterInfo();
         $this->getLocations();
         $this->getShipTypes();
     }
 
-    private function upsertMembers(Collection $members): void
-    {
-        CorporationMemberTracking::upsert($members->toArray(), ['corporation_id', 'character_id']);
-    }
-
-    private function removeOldMembers(Collection $members): void
-    {
-        CorporationMemberTracking::where('corporation_id', $this->corporation_id)
-            ->whereNotIn('character_id', $members->pluck('character_id')->all())
-            // in order to use model events we must actually receive the models and delete them individually
-            ->get()
-            ->each(fn (CorporationMemberTracking $ex_member) => $ex_member->delete());
-    }
-
-    /**
-     * @throws \Exception
-     */
     private function getLocations(): void
     {
-        $refresh_token = $this->getRefreshToken();
-
+        $refreshToken = $this->getRefreshToken();
         CorporationMemberTracking::query()
             ->where('corporation_id', $this->corporation_id)
             ->doesntHave('location')
             ->pluck('location_id')
             ->unique()
-            ->each(fn (int $location_id) => ResolveLocationJob::dispatch($location_id, $refresh_token)->onQueue('high'));
+            ->each(fn (int $locationId) => ResolveLocationJob::dispatch($locationId, $refreshToken)->onQueue('high'));
     }
 
     private function getMemberCharacterInfo(): void
@@ -159,7 +79,7 @@ class CorporationMemberTrackingJob extends EsiBase implements HasCorporationRole
             ->doesntHave('character')
             ->pluck('character_id')
             ->unique()
-            ->each(fn (int $character_id) => CharacterInfoJob::dispatch($character_id)->onQueue('high'));
+            ->each(fn (int $characterId) => CharacterInfoJob::dispatch($characterId)->onQueue('high'));
     }
 
     private function getShipTypes(): void
@@ -169,6 +89,6 @@ class CorporationMemberTrackingJob extends EsiBase implements HasCorporationRole
             ->doesntHave('ship')
             ->pluck('ship_type_id')
             ->unique()
-            ->each(fn (int $ship_type_id) => ResolveUniverseTypeByIdJob::dispatch($ship_type_id)->onQueue('high'));
+            ->each(fn (int $shipTypeId) => ResolveUniverseTypeByIdJob::dispatch($shipTypeId)->onQueue('high'));
     }
 }

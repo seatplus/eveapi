@@ -27,7 +27,7 @@
 namespace Seatplus\Eveapi\Services\Contacts;
 
 use Illuminate\Support\Collection;
-use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
+use Seatplus\EsiSchema\EsiResult;
 use Seatplus\Eveapi\DataTransferObjects\Responses\Contacts\ContactItemResponse;
 use Seatplus\Eveapi\Models\Contacts\Contact;
 use Seatplus\Eveapi\Services\Jobs\CacheCharacterAffiliationIdsService;
@@ -36,7 +36,7 @@ class ProcessContactResponse
 {
     public function __construct(private readonly int $contactable_id, private readonly string $contactable_type) {}
 
-    public function execute(EsiResponse $response): Collection
+    public function execute(EsiResult $response): Collection
     {
         return collect($response->data)
             ->map(fn (object $item) => ContactItemResponse::from($item))

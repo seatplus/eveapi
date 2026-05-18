@@ -18,9 +18,7 @@ it('runs the job', function () {
 
     expect(CorporationDivision::all())->toHaveCount(0);
 
-    // dd($this->test_character->refresh_token->scopes, 'esi-corporations.read_divisions.v1', $this->test_character->roles);
-
-    (new CorporationDivisionsJob(testCharacter()->corporation->corporation_id))->handle();
+    runJob(new CorporationDivisionsJob(testCharacter()->corporation->corporation_id));
 
     expect(CorporationDivision::all())->toHaveCount(14);
 
@@ -30,7 +28,8 @@ it('runs the job', function () {
 // Helpers
 function buildCorporationDivisionEsiResponseMockData(): void
 {
-    $mock_data = [
+    $mock_data = (object) [
+        'isCachedLoad' => false,
         'hangar' => [
             (object) ['division' => 1, 'name' => 'Loot and Salavage'],
             (object) ['division' => 2, 'name' => 'Directors'],
@@ -51,5 +50,5 @@ function buildCorporationDivisionEsiResponseMockData(): void
         ],
     ];
 
-    mockRetrieveEsiDataAction($mock_data);
+    mockEsiClient('corporation->getCorporationsCorporationIdDivisions', $mock_data);
 }

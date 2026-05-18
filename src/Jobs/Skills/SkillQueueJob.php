@@ -1,125 +1,56 @@
 <?php
 
-/*
- * MIT License
- *
- * Copyright (c) 2019, 2020, 2021 Felix Huber
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 namespace Seatplus\Eveapi\Jobs\Skills;
 
-use Seatplus\EsiClient\Exceptions\RequestFailedException;
-use Seatplus\Eveapi\DataTransferObjects\Responses\Skills\SkillQueueItemResponse;
-use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\EsiBase;
-use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
+use Seatplus\EsiClient\EsiClient;
+use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
-use Seatplus\Eveapi\Models\Skills\Skill;
+use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Skills\SkillQueue;
-use Seatplus\Eveapi\Traits\HasPathValues;
-use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class SkillQueueJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+class SkillQueueJob extends EsiJob
 {
-    use HasPathValues;
-    use HasRequiredScopes;
+    public function __construct(private int $character_id) {}
 
-    public function __construct(
-        public int $character_id
-    ) {
-        parent::__construct(
-            method: 'get',
-            endpoint: '/characters/{character_id}/skillqueue/',
-            version: 'v2',
-        );
-
-        $this->setPathValues([
-            'character_id' => $character_id,
-        ]);
-
-        $this->setRequiredScope('esi-skills.read_skillqueue.v1');
+    #[\Override]
+    public function getRefreshToken(): ?RefreshToken
+    {
+        return RefreshToken::findOrFail($this->character_id);
     }
 
     #[\Override]
     public function tags(): array
     {
-        return [
-            'skill queue',
-            sprintf('character_id:%s', $this->character_id),
-        ];
+        return ['character', "character_id:{$this->character_id}", 'skillqueue'];
     }
 
     #[\Override]
-    public function middleware(): array
+    protected function executeJob(EsiClient $esi): void
     {
-        return [
-            new HasRequiredScopeMiddleware,
-            ...parent::middleware(),
-        ];
-    }
-
-    /**
-     * @throws RequestFailedException
-     */
-    #[\Override]
-    public function executeJob(): void
-    {
-        $response = $this->retrieve();
-
-        if ($response->isCachedLoad()) {
+        $response = $esi->skills()->getCharactersCharacterIdSkillqueue($this->character_id);
+        if ($response->isCachedLoad) {
             return;
         }
 
-        $skill_queue = collect($response->data)
-            ->map(fn (object $item) => SkillQueueItemResponse::from($item))
-            ->map(fn (SkillQueueItemResponse $queue_item) => [
-                'character_id' => $this->character_id,
-                'skill_id' => $queue_item->skill_id,
-                'queue_position' => $queue_item->queue_position,
-                'finished_level' => $queue_item->finished_level,
-                'start_date' => $queue_item->start_date !== null ? carbon($queue_item->start_date) : null,
-                'finish_date' => $queue_item->finish_date !== null ? carbon($queue_item->finish_date) : null,
-                'training_start_sp' => $queue_item->training_start_sp,
-                'level_start_sp' => $queue_item->level_start_sp,
-                'level_end_sp' => $queue_item->level_end_sp,
-            ]);
+        $skillQueue = collect($response->data)->map(fn (object $item) => [
+            'character_id' => $this->character_id,
+            'skill_id' => $item->skill_id,
+            'queue_position' => $item->queue_position,
+            'finished_level' => $item->finished_level,
+            'start_date' => isset($item->start_date) ? carbon($item->start_date) : null,
+            'finish_date' => isset($item->finish_date) ? carbon($item->finish_date) : null,
+            'training_start_sp' => $item->training_start_sp ?? null,
+            'level_start_sp' => $item->level_start_sp ?? null,
+            'level_end_sp' => $item->level_end_sp ?? null,
+        ]);
 
-        // Clean current skill queue
-        SkillQueue::query()
-            ->where('character_id', $this->character_id)
-            ->delete();
+        SkillQueue::query()->where('character_id', $this->character_id)->delete();
+        SkillQueue::upsert($skillQueue->toArray(), ['character_id', 'skill_id', 'queue_position']);
 
-        // Upsert skill queue
-        SkillQueue::upsert($skill_queue->toArray(), ['character_id', 'skill_id', 'queue_position']);
-
-        $this->dispatchMissingSkillTypeJobs();
-    }
-
-    private function dispatchMissingSkillTypeJobs(): void
-    {
         SkillQueue::query()
             ->where('character_id', $this->character_id)
             ->doesntHave('type')
             ->pluck('skill_id')
-            ->each(fn (int $skill_id) => ResolveUniverseTypeByIdJob::dispatch($skill_id)->onQueue('high'));
+            ->each(fn (int $skillId) => ResolveUniverseTypeByIdJob::dispatch($skillId)->onQueue('high'));
     }
 }

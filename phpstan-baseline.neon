@@ -1,6 +1,42 @@
 parameters:
 	ignoreErrors:
 		-
+			message: '#^Method Seatplus\\Eveapi\\Database\\Factories\\CharacterAffiliationFactory\:\:configure\(\) should return \$this\(Seatplus\\Eveapi\\Database\\Factories\\CharacterAffiliationFactory\) but returns static\(Seatplus\\Eveapi\\Database\\Factories\\CharacterAffiliationFactory\)\.$#'
+			identifier: return.type
+			count: 1
+			path: database/factories/CharacterAffiliationFactory.php
+
+		-
+			message: '#^Method Seatplus\\Eveapi\\Database\\Factories\\CharacterInfoFactory\:\:configure\(\) should return \$this\(Seatplus\\Eveapi\\Database\\Factories\\CharacterInfoFactory\) but returns static\(Seatplus\\Eveapi\\Database\\Factories\\CharacterInfoFactory\)\.$#'
+			identifier: return.type
+			count: 1
+			path: database/factories/CharacterInfoFactory.php
+
+		-
+			message: '#^Call to an undefined static method Seatplus\\Eveapi\\Services\\Facade\\RetrieveEsiData\:\:execute\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: src/Esi/RetrieveFromEsiBase.php
+
+		-
+			message: '#^Unknown parameter \$group in call to static method Seatplus\\Eveapi\\Jobs\\Middleware\\EsiProactiveRateLimitMiddleware\:\:recordResponse\(\)\.$#'
+			identifier: argument.unknown
+			count: 1
+			path: src/Esi/RetrieveFromEsiBase.php
+
+		-
+			message: '#^Unknown parameter \$limit in call to static method Seatplus\\Eveapi\\Jobs\\Middleware\\EsiProactiveRateLimitMiddleware\:\:recordResponse\(\)\.$#'
+			identifier: argument.unknown
+			count: 1
+			path: src/Esi/RetrieveFromEsiBase.php
+
+		-
+			message: '#^Unknown parameter \$windowSeconds in call to static method Seatplus\\Eveapi\\Jobs\\Middleware\\EsiProactiveRateLimitMiddleware\:\:recordResponse\(\)\.$#'
+			identifier: argument.unknown
+			count: 1
+			path: src/Esi/RetrieveFromEsiBase.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$group\.$#'
 			identifier: property.notFound
 			count: 4
@@ -11,18 +47,6 @@ parameters:
 			identifier: property.notFound
 			count: 1
 			path: src/Jobs/Assets/EnrichAssetTypeGroupCategoryJob.php
-
-		-
-			message: '#^Call to function method_exists\(\) with \$this\(Seatplus\\Eveapi\\Jobs\\Corporation\\CorporationDivisionsJob\) and ''getCorporationRoles'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: src/Jobs/Corporation/CorporationDivisionsJob.php
-
-		-
-			message: '#^Call to function method_exists\(\) with \$this\(Seatplus\\Eveapi\\Jobs\\Corporation\\CorporationMemberTrackingJob\) and ''getCorporationRoles'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: src/Jobs/Corporation/CorporationMemberTrackingJob.php
 
 		-
 			message: '#^Anonymous function should return Illuminate\\Support\\Collection\<int, int\<0, max\>\|null\> but returns Illuminate\\Support\\Collection\<int, int\<0, max\>\|null\>\.$#'
@@ -55,22 +79,22 @@ parameters:
 			path: src/Jobs/Seatplus/Batch/CharacterBatchJob.php
 
 		-
+			message: '#^Method Seatplus\\Eveapi\\Jobs\\Seatplus\\UpdateCharacter\:\:calculateInterval\(\) should return int but returns float\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Jobs/Seatplus/UpdateCharacter.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$corporation_id\.$#'
 			identifier: property.notFound
 			count: 1
 			path: src/Jobs/Seatplus/UpdateCorporation.php
 
 		-
-			message: '#^Call to function method_exists\(\) with \$this\(Seatplus\\Eveapi\\Jobs\\Wallet\\CorporationBalanceJob\) and ''getCorporationRoles'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
+			message: '#^Method Seatplus\\Eveapi\\Models\\BatchStatistic\:\:getDurationAttribute\(\) should return int but returns float\.$#'
+			identifier: return.type
 			count: 1
-			path: src/Jobs/Wallet/CorporationBalanceJob.php
-
-		-
-			message: '#^Call to function method_exists\(\) with \$this\(Seatplus\\Eveapi\\Jobs\\Wallet\\CorporationWalletTransactionByDivisionJob\) and ''getCorporationRoles'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: src/Jobs/Wallet/CorporationWalletTransactionByDivisionJob.php
+			path: src/Models/BatchStatistic.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$alliance_id\.$#'
@@ -91,6 +115,12 @@ parameters:
 			path: src/Models/Contacts/Contact.php
 
 		-
+			message: '#^Property Seatplus\\Eveapi\\Models\\Contacts\\Contact\:\:\$guarded \(array\<string\>\) does not accept default value of type false\.$#'
+			identifier: property.defaultValue
+			count: 1
+			path: src/Models/Contacts/Contact.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$contactable\.$#'
 			identifier: property.notFound
 			count: 1
@@ -107,6 +137,18 @@ parameters:
 			identifier: rules.modelAppends
 			count: 1
 			path: src/Models/Contacts/ContactLabel.php
+
+		-
+			message: '#^Property Seatplus\\Eveapi\\Models\\Contacts\\ContactLabel\:\:\$guarded \(array\<string\>\) does not accept default value of type false\.$#'
+			identifier: property.defaultValue
+			count: 1
+			path: src/Models/Contacts/ContactLabel.php
+
+		-
+			message: '#^Property Seatplus\\Eveapi\\Models\\Contacts\\Label\:\:\$guarded \(array\<string\>\) does not accept default value of type false\.$#'
+			identifier: property.defaultValue
+			count: 1
+			path: src/Models/Contacts/Label.php
 
 		-
 			message: '#^Property ''has_content'' does not exist in model\.$#'
@@ -145,6 +187,36 @@ parameters:
 			path: src/Models/Universe/System.php
 
 		-
+			message: '#^PHPDoc type array\<string\>\|bool of property Seatplus\\Eveapi\\Models\\Universe\\System\:\:\$guarded is not covariant with PHPDoc type array\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$guarded\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: src/Models/Universe/System.php
+
+		-
+			message: '#^PHPDoc type array\<string\>\|bool of property Seatplus\\Eveapi\\Models\\Universe\\Type\:\:\$guarded is not covariant with PHPDoc type array\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$guarded\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: src/Models/Universe/Type.php
+
+		-
+			message: '#^Property Seatplus\\Eveapi\\Models\\Wallet\\Balance\:\:\$guarded \(array\<string\>\) does not accept default value of type false\.$#'
+			identifier: property.defaultValue
+			count: 1
+			path: src/Models/Wallet/Balance.php
+
+		-
+			message: '#^Property Seatplus\\Eveapi\\Models\\Wallet\\WalletJournal\:\:\$guarded \(array\<string\>\) does not accept default value of type false\.$#'
+			identifier: property.defaultValue
+			count: 1
+			path: src/Models/Wallet/WalletJournal.php
+
+		-
+			message: '#^Property Seatplus\\Eveapi\\Models\\Wallet\\WalletTransaction\:\:\$guarded \(array\<string\>\) does not accept default value of type false\.$#'
+			identifier: property.defaultValue
+			count: 1
+			path: src/Models/Wallet/WalletTransaction.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$corporation_id\.$#'
 			identifier: property.notFound
 			count: 1
@@ -155,6 +227,12 @@ parameters:
 			identifier: property.notFound
 			count: 1
 			path: src/Services/FindCorporationRefreshToken.php
+
+		-
+			message: '#^Instanceof between Seatplus\\Eveapi\\Jobs\\EsiBase and Seatplus\\Eveapi\\Jobs\\Character\\CharacterAffiliationJob will always evaluate to false\.$#'
+			identifier: instanceof.alwaysFalse
+			count: 1
+			path: src/Services/JobChecker.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$refresh_token\.$#'
@@ -191,3 +269,39 @@ parameters:
 			identifier: property.notFound
 			count: 2
 			path: src/Services/ResolveLocation/Resolver/StructureResolver.php
+
+		-
+			message: '#^Trait Seatplus\\Eveapi\\Traits\\HasCorporationRole is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: src/Traits/HasCorporationRole.php
+
+		-
+			message: '#^Trait Seatplus\\Eveapi\\Traits\\HasPages is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: src/Traits/HasPages.php
+
+		-
+			message: '#^Trait Seatplus\\Eveapi\\Traits\\HasPathValues is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: src/Traits/HasPathValues.php
+
+		-
+			message: '#^Trait Seatplus\\Eveapi\\Traits\\HasQueryValues is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: src/Traits/HasQueryValues.php
+
+		-
+			message: '#^Trait Seatplus\\Eveapi\\Traits\\HasRequestBody is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: src/Traits/HasRequestBody.php
+
+		-
+			message: '#^Trait Seatplus\\Eveapi\\Traits\\HasRequiredScopes is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: src/Traits/HasRequiredScopes.php

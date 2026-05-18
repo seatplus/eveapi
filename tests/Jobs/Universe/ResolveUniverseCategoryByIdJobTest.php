@@ -5,22 +5,13 @@ use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseCategoryByIdJob;
 use Seatplus\Eveapi\Models\Universe\Category;
 
 it('creates category', function () {
-    $mock_data = buildCategoryMockData();
-
-    expect(Category::first())->toBeNull();
-
-    Event::fakeFor(fn () => (new ResolveUniverseCategoryByIdJob($mock_data->category_id))->handle());
-
-    expect(Category::first())
-        ->first()->category_id->toBe($mock_data->category_id);
-});
-
-// Helpers
-function buildCategoryMockData()
-{
     $mock_data = Category::factory()->make();
 
-    mockRetrieveEsiDataAction($mock_data->toArray());
+    $dto = (object) array_merge(['isCachedLoad' => false], $mock_data->toArray());
+    mockEsiClient('universe->getUniverseCategoriesCategoryId', $dto);
 
-    return $mock_data;
-}
+    Event::fakeFor(fn () => runJob(new ResolveUniverseCategoryByIdJob($mock_data->category_id)));
+
+    expect(Category::first())
+        ->category_id->toBe($mock_data->category_id);
+});

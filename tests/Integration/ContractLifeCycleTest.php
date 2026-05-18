@@ -10,15 +10,19 @@ test('job dispatches nothing by default upon creation with factory', function ()
 
     $contract = Contract::factory()->make([
         'for_corporation' => true,
+        'issuer_id' => testCharacter()->character_id,
     ]);
 
     expect($contract->start_location)->not()->toBeNull()
         ->and($contract->end_location)->not()->toBeNull()
         ->and($contract->issuer)->not()->toBeNull();
 
-    mockRetrieveEsiDataAction([$contract->toArray()]);
+    mockEsiClient(
+        'contracts->getCharactersCharacterIdContracts',
+        makeEsiResult([(object) $contract->toArray()])
+    );
 
-    (new CharacterContractsJob($contract->issuer_id))->handle();
+    runJob(new CharacterContractsJob($contract->issuer_id));
 
     Queue::assertNotPushed(ResolveLocationJob::class);
 });
@@ -32,9 +36,12 @@ test('job dispatches location job with unknown location id', function () {
         'for_corporation' => true,
     ]);
 
-    mockRetrieveEsiDataAction([$contract->toArray()]);
+    mockEsiClient(
+        'contracts->getCharactersCharacterIdContracts',
+        makeEsiResult([(object) $contract->toArray()])
+    );
 
-    (new CharacterContractsJob(testCharacter()->character_id))->handle();
+    runJob(new CharacterContractsJob(testCharacter()->character_id));
 
     expect($contract->start_location)->toBeNull()
         ->and($contract->end_location)->not()->toBeNull()

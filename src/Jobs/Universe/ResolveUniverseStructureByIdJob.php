@@ -1,76 +1,28 @@
 <?php
 
-/*
- * MIT License
- *
- * Copyright (c) 2019, 2020, 2021 Felix Huber
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 namespace Seatplus\Eveapi\Jobs\Universe;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Seatplus\Eveapi\DataTransferObjects\Responses\Universe\StructureResponse;
-use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\EsiBase;
+use Seatplus\EsiClient\EsiClient;
+use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Jobs\Middleware\EsiProactiveRateLimitMiddleware;
-use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
+use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Structure;
-use Seatplus\Eveapi\Traits\HasPathValues;
-use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class ResolveUniverseStructureByIdJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+class ResolveUniverseStructureByIdJob extends EsiJob
 {
-    use HasPathValues;
-    use HasRequiredScopes;
-
     public int $maxExceptions = 1;
 
     public function __construct(
         public int $character_id,
         public int $location_id
-    ) {
-        parent::__construct(
-            method: 'get',
-            endpoint: '/universe/structures/{structure_id}/',
-            version: 'v2',
-        );
-
-        $this->setRequiredScope('esi-universe.read_structures.v1');
-
-        $this->setPathValues([
-            'structure_id' => $this->location_id,
-        ]);
-    }
+    ) {}
 
     #[\Override]
     public function tags(): array
     {
-        return [
-            'resolve',
-            'universe',
-            'structure',
-            'location_id:'.$this->location_id,
-        ];
+        return ['resolve', 'universe', 'structure', "location_id:{$this->location_id}"];
     }
 
     #[\Override]
@@ -78,8 +30,6 @@ class ResolveUniverseStructureByIdJob extends EsiBase implements HasPathValuesIn
     {
         return [
             new EsiProactiveRateLimitMiddleware,
-            new HasRequiredScopeMiddleware,
-            // This is very likely throwing errors if user is not on acl. In order to not getting blocked by esi rate limit only use half of allowed errors
             (new ThrottlesExceptionsWithRedis(40 / 2, 5 * 60))
                 ->by('esiratelimit')
                 ->backoff(5),
@@ -87,29 +37,27 @@ class ResolveUniverseStructureByIdJob extends EsiBase implements HasPathValuesIn
     }
 
     #[\Override]
-    public function executeJob(): void
+    public function getRefreshToken(): ?RefreshToken
     {
+        return RefreshToken::findOrFail($this->character_id);
+    }
 
-        $result = $this->retrieve();
-
-        if ($result->isCachedLoad()) {
+    #[\Override]
+    protected function executeJob(EsiClient $esi): void
+    {
+        $response = $esi->universe()->getUniverseStructuresStructureId($this->location_id);
+        if ($response->isCachedLoad) {
             return;
         }
 
-        $data = StructureResponse::from($result->data);
-
-        Structure::updateOrCreate([
-            'structure_id' => $this->location_id,
-        ], [
-            'name' => $data->name,
-            'owner_id' => $data->owner_id,
-            'solar_system_id' => $data->solar_system_id,
-            'type_id' => $data->type_id,
+        Structure::updateOrCreate(['structure_id' => $this->location_id], [
+            'name' => $response->name,
+            'owner_id' => $response->owner_id,
+            'solar_system_id' => $response->solar_system_id,
+            'type_id' => $response->type_id ?? null,
         ])->touch();
 
-        Location::updateOrCreate([
-            'location_id' => $this->location_id,
-        ], [
+        Location::updateOrCreate(['location_id' => $this->location_id], [
             'locatable_id' => $this->location_id,
             'locatable_type' => Structure::class,
         ]);

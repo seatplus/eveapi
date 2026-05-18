@@ -8,23 +8,24 @@ use Seatplus\Eveapi\Models\Contacts\Contact;
 use Seatplus\Eveapi\Services\Jobs\CacheCharacterAffiliationIdsService;
 
 beforeEach(function () {
-    // Prevent any auto dispatching of jobs
     Queue::fake();
 });
 
 test('run character contact', function () {
-    $mock_data = buildContactLifecycleMockEsiData();
+    $mock_data = Contact::factory()->count(5)->make();
 
-    $job = new CharacterContactJob(testCharacter()->character_id);
+    mockEsiClient(
+        'contacts->getCharactersCharacterIdContacts',
+        makeEsiResult(array_map(fn ($c) => (object) $c, $mock_data->toArray()))
+    );
 
     updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-characters.read_contacts.v1'])->save();
 
-    $job->handle();
+    runJob(new CharacterContactJob(testCharacter()->character_id));
 
     $cached_ids = CacheCharacterAffiliationIdsService::make()->retrieve();
 
     foreach ($mock_data as $data) {
-        // Assert that character asset created
         $this->assertDatabaseHas('contacts', [
             'contactable_id' => $this->test_character->character_id,
             'contact_id' => $data->contact_id,
@@ -37,18 +38,20 @@ test('run character contact', function () {
 });
 
 test('run corporation contact', function () {
-    $mock_data = buildContactLifecycleMockEsiData();
+    $mock_data = Contact::factory()->count(5)->make();
 
-    $job = new CorporationContactJob(testCharacter()->corporation->corporation_id, testCharacter()->character_id);
+    mockEsiClient(
+        'contacts->getCorporationsCorporationIdContacts',
+        makeEsiResult(array_map(fn ($c) => (object) $c, $mock_data->toArray()))
+    );
 
     updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-corporations.read_contacts.v1'])->save();
 
-    $job->handle();
+    runJob(new CorporationContactJob(testCharacter()->corporation->corporation_id, testCharacter()->character_id));
 
     $cached_ids = CacheCharacterAffiliationIdsService::make()->retrieve();
 
     foreach ($mock_data as $data) {
-        // Assert that character asset created
         $this->assertDatabaseHas('contacts', [
             'contactable_id' => $this->test_character->corporation->corporation_id,
             'contact_id' => $data->contact_id,
@@ -61,17 +64,18 @@ test('run corporation contact', function () {
 });
 
 test('run alliance contact', function () {
-    $mock_data = buildContactLifecycleMockEsiData();
+    $mock_data = Contact::factory()->count(5)->make();
 
-    $job = new AllianceContactJob(testCharacter()->corporation->alliance_id, testCharacter()->character_id);
+    mockEsiClient(
+        'contacts->getAlliancesAllianceIdContacts',
+        makeEsiResult(array_map(fn ($c) => (object) $c, $mock_data->toArray()))
+    );
 
     updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-alliances.read_contacts.v1'])->save();
 
-    $job->handle();
+    runJob(new AllianceContactJob(testCharacter()->corporation->alliance_id, testCharacter()->character_id));
 
-    // assertContact($mock_data, $this->test_character->corporation->alliance_id);
     foreach ($mock_data as $data) {
-        // Assert that character asset created
         $this->assertDatabaseHas('contacts', [
             'contactable_id' => $this->test_character->corporation->alliance_id,
             'contact_id' => $data->contact_id,
@@ -82,15 +86,16 @@ test('run alliance contact', function () {
 it('has labels', function () {
     $mock_data = Contact::factory()->withLabels()->make();
 
-    mockRetrieveEsiDataAction([$mock_data->toArray()]);
-
-    $job = new CharacterContactJob(testCharacter()->character_id);
+    mockEsiClient(
+        'contacts->getCharactersCharacterIdContacts',
+        makeEsiResult([(object) $mock_data->toArray()])
+    );
 
     updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-characters.read_contacts.v1'])->save();
 
     expect($this->test_character->contacts)->toHaveCount(0);
 
-    $job->handle();
+    runJob(new CharacterContactJob(testCharacter()->character_id));
 
     expect($this->test_character->refresh()->contacts)->toHaveCount(1);
 
@@ -98,13 +103,3 @@ it('has labels', function () {
 
     expect($contact->labels)->toHaveCount(3);
 });
-
-// Helpers
-function buildContactLifecycleMockEsiData()
-{
-    $mock_data = Contact::factory()->count(5)->make();
-
-    mockRetrieveEsiDataAction($mock_data->toArray());
-
-    return $mock_data;
-}

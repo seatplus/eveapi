@@ -1,38 +1,41 @@
 <?php
 
-use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
+use Mockery\MockInterface;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Contracts\ContractItemsJob;
 
 it('has tags', function () {
-
-    $job = mock(ContractItemsJob::class)->makePartial();
+    $job = mock(ContractItemsJob::class)->shouldAllowMockingProtectedMethods()->makePartial();
     $job->contract_id = 1;
 
     expect($job->tags())->toBeArray();
 });
 
 it('stops executing when batch is cancelled', function () {
+    $esi = Mockery::mock(EsiClient::class);
 
-    $job = mock(ContractItemsJob::class)->makePartial();
+    $job = mock(ContractItemsJob::class)->shouldAllowMockingProtectedMethods()->makePartial();
     $job->contract_id = 1;
 
     $job->shouldReceive('batching')->once()->andReturn(true);
     $job->shouldReceive('batch->cancelled')->once()->andReturn(true);
 
-    $job->executeJob();
+    $job->executeJob($esi);
 
     expect(true)->toBeTrue();
 });
 
 it('does stop executing if response is cached', function () {
+    $esi = Mockery::mock(EsiClient::class);
+    $result = makeEsiResult([], isCachedLoad: true);
 
-    $response = mock(EsiResponse::class);
-    $response->shouldReceive('isCachedLoad')->andReturn(true);
+    $job = mock(ContractItemsJob::class, function (MockInterface $mock) use ($result) {
+        $mock->shouldAllowMockingProtectedMethods();
+        $mock->shouldReceive('fetchItems')->once()->andReturn($result);
+    })->makePartial();
+    $job->contract_id = 1;
 
-    $job = mock(ContractItemsJob::class)->makePartial();
-    $job->shouldReceive('retrieve')->andReturn($response);
-
-    $job->executeJob();
+    $job->executeJob($esi);
 
     expect(true)->toBeTrue();
 });

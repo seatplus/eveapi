@@ -31,7 +31,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use ReflectionClass;
-use Seatplus\Eveapi\Jobs\EsiBase;
+use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Services\JobChecker;
 
 use function Termwind\render;
@@ -65,7 +65,7 @@ class CheckJobsCommand extends Command
     public function handle(): int
     {
         $this->getAllJobs()
-            ->map(function (EsiBase $job) {
+            ->map(function (EsiJob $job) {
                 $assertions = $this->jobChecker->checkJob($job);
 
                 $has_errors = $assertions->contains(fn (array $assertion) => $assertion['status'] === 'error');
@@ -121,7 +121,7 @@ class CheckJobsCommand extends Command
 
                 return 'Seatplus\\Eveapi\\Jobs\\'.$job_string;
             })
-            ->filter(fn (string $job) => is_subclass_of($job, EsiBase::class))
+            ->filter(fn (string $job) => is_subclass_of($job, EsiJob::class))
             // filter out abstract classes
             ->filter(fn (string $job) => ! (new ReflectionClass($job))->isAbstract())
             ->map(function (string $job) {

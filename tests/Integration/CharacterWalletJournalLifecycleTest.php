@@ -5,33 +5,39 @@ use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletJournalJob;
 use Seatplus\Eveapi\Models\Wallet\WalletJournal;
 
 beforeEach(function () {
-    // Prevent any auto dispatching of jobs
     Queue::fake();
 });
 
 test('run wallet journal job', function () {
-    $mock_data = buildWalletJournalMockEsiData();
+    $mock_data = WalletJournal::factory()->count(5)->make();
 
-    $job = new CharacterWalletJournalJob(testCharacter()->character_id);
+    $esi_data = $mock_data->map(fn ($j) => (object) [
+        'id' => $j->id,
+        'date' => $j->date,
+        'description' => $j->description,
+        'ref_type' => $j->ref_type,
+        'amount' => $j->amount,
+        'balance' => $j->balance,
+        'context_id' => null,
+        'context_id_type' => null,
+        'first_party_id' => $j->first_party_id,
+        'second_party_id' => $j->second_party_id,
+        'reason' => $j->reason,
+        'tax' => null,
+        'tax_receiver_id' => null,
+    ])->toArray();
 
-    $job->handle();
+    mockEsiClient(
+        'wallet->getCharactersCharacterIdWalletJournal',
+        makeEsiResult($esi_data)
+    );
 
-    // assertWalletJournal($mock_data, $this->test_character->character_id);
+    runJob(new CharacterWalletJournalJob(testCharacter()->character_id));
+
     foreach ($mock_data as $data) {
-        // Assert that character asset created
         $this->assertDatabaseHas('wallet_journals', [
             'wallet_journable_id' => $this->test_character->character_id,
             'id' => $data->id,
         ]);
     }
 });
-
-// Helpers
-function buildWalletJournalMockEsiData()
-{
-    $mock_data = WalletJournal::factory()->count(5)->make();
-
-    mockRetrieveEsiDataAction($mock_data->toArray());
-
-    return $mock_data;
-}

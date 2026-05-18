@@ -48,20 +48,14 @@ class EsiProactiveRateLimitMiddleware
 
     /**
      * Store rate-limit state from a completed ESI response.
-     * Called by EsiBase after a successful retrieve().
+     * Called by jobs after a successful ESI call to track remaining capacity.
      */
-    public static function recordResponse(
-        string $group,
-        int $remaining,
-        int $limit,
-        int $windowSeconds,
-    ): void {
-        $key = self::KEY_PREFIX.$group;
-
-        Redis::setex($key, self::TTL_SECONDS, json_encode([
+    public static function recordResponse(int $remaining): void
+    {
+        Redis::setex(self::KEY_PREFIX.'global', self::TTL_SECONDS, json_encode([
             'remaining' => $remaining,
-            'limit' => $limit,
-            'window_seconds' => $windowSeconds,
+            'limit' => 1800,
+            'window_seconds' => 900,
         ]));
     }
 
@@ -69,20 +63,10 @@ class EsiProactiveRateLimitMiddleware
 
     private function resolveGroup(mixed $job): ?string
     {
-        // Jobs expose their rate-limit group via tags(), e.g. ['char-asset', ...]
-        // We look for a tag that matches a known ESI rate-limit group pattern.
-        if (! method_exists($job, 'tags')) {
-            return null;
-        }
+        // Check if we have global rate-limit state recorded
+        $data = Redis::get(self::KEY_PREFIX.'global');
 
-        foreach ($job->tags() as $tag) {
-            $data = Redis::get(self::KEY_PREFIX.$tag);
-            if ($data !== null) {
-                return $tag;
-            }
-        }
-
-        return null;
+        return $data !== null ? 'global' : null;
     }
 
     private function computeReleaseDelay(string $group): int

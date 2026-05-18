@@ -9,11 +9,14 @@ test('job creates db entry', function () {
         'corporation_id' => $this->test_character->corporation->corporation_id,
     ]);
 
-    mockRetrieveEsiDataAction($corporation_history->toArray());
+    mockEsiClient(
+        'characters->getCharactersCharacterIdCorporationhistory',
+        makeEsiResult(array_map(fn ($h) => (object) $h, $corporation_history->toArray()))
+    );
 
     expect(CorporationHistory::all())->toHaveCount(0);
 
-    (new CorporationHistoryJob(testCharacter()->character_id))->handle();
+    runJob(new CorporationHistoryJob(testCharacter()->character_id));
 
     expect(CorporationHistory::all())->toHaveCount(3)
         ->and($this->test_character->corporation_history)->toHaveCount(3);

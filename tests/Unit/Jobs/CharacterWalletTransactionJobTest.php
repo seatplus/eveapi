@@ -9,7 +9,7 @@ it('returns correct tags array for character wallet transaction job', function (
 
     expect($tags)->toBe([
         'character',
-        'character_id: 12345',
+        'character_id:12345',
         'wallet',
         'transaction',
     ]);

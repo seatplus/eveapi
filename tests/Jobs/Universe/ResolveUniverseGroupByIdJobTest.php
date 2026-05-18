@@ -5,25 +5,13 @@ use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseGroupByIdJob;
 use Seatplus\Eveapi\Models\Universe\Group;
 
 it('creates group', function () {
-    $mock_data = buildGroupMockData();
-
-    expect($mock_data)
-        ->group_id->toBeInt();
-
-    expect(Group::first())->toBeNull();
-
-    Event::fakeFor(fn () => (new ResolveUniverseGroupByIdJob($mock_data->group_id))->handle());
-
-    expect(Group::first())
-        ->first()->category_id->toBe($mock_data->category_id);
-});
-
-// Helpers
-function buildGroupMockData()
-{
     $mock_data = Group::factory()->make();
 
-    mockRetrieveEsiDataAction($mock_data->toArray());
+    $dto = (object) array_merge(['isCachedLoad' => false], $mock_data->toArray());
+    mockEsiClient('universe->getUniverseGroupsGroupId', $dto);
 
-    return $mock_data;
-}
+    Event::fakeFor(fn () => runJob(new ResolveUniverseGroupByIdJob($mock_data->group_id)));
+
+    expect(Group::first())
+        ->group_id->toBe($mock_data->group_id);
+});

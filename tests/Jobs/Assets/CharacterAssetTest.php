@@ -15,32 +15,22 @@ beforeEach(function () {
     $refresh_token->save();
 });
 
-/**
- * @runTestsInSeparateProcesses
- */
 test('if job is queued', function () {
     Queue::fake();
 
-    // Assert that no jobs were pushed...
     Queue::assertNothingPushed();
 
     CharacterAssetJob::dispatch($this->test_character->character_id)->onQueue('default');
 
-    // Assert a job was pushed to a given queue...
     Queue::assertPushedOn('default', CharacterAssetJob::class);
 });
 
-/**
- * @runTestsInSeparateProcesses
- */
 test('retrieve test', function () {
     $mock_data = buildAssetMockEsiData();
 
-    // Run job
-    (new CharacterAssetJob($this->test_character->character_id))->handle();
+    runJob(new CharacterAssetJob($this->test_character->character_id));
 
     foreach ($mock_data as $data) {
-        // Assert that character asset created
         $this->assertDatabaseHas('assets', [
             'assetable_id' => $this->test_character->character_id,
             'item_id' => $data->item_id,
@@ -48,17 +38,12 @@ test('retrieve test', function () {
     }
 });
 
-/**
- * @runTestsInSeparateProcesses
- */
 it('cleans up assets', function () {
     $old_data = Asset::factory()->count(5)->create([
         'assetable_id' => $this->test_character->character_id,
     ]);
 
-    // assert that old data is present before CharacterAssetsCleanUpAction
     foreach ($old_data as $data) {
-        // Assert that character asset created
         $this->assertDatabaseHas('assets', [
             'assetable_id' => $this->test_character->character_id,
             'item_id' => $data->item_id,
@@ -67,18 +52,15 @@ it('cleans up assets', function () {
 
     $mock_data = buildAssetMockEsiData();
 
-    // Run CharacterAssetsAction
-    (new CharacterAssetJob($this->test_character->character_id))->handle();
+    runJob(new CharacterAssetJob($this->test_character->character_id));
 
     foreach ($mock_data as $data) {
-        // Assert that character asset created
         $this->assertDatabaseHas('assets', [
             'assetable_id' => $this->test_character->character_id,
             'item_id' => $data->item_id,
         ]);
     }
 
-    // assert if old data has been removed thanks to CharacterAssetsCleanupAction
     foreach ($old_data as $data) {
         $this->assertCount(
             0,
@@ -90,38 +72,18 @@ it('cleans up assets', function () {
 });
 
 it('dispatches unknown location job', function () {
-    $mock_data = buildAssetMockEsiData();
+    buildAssetMockEsiData();
 
-    // Run CharacterAssetsAction
-    (new CharacterAssetJob($this->test_character->character_id))->handle();
+    runJob(new CharacterAssetJob($this->test_character->character_id));
 
-    foreach ($mock_data as $data) {
-        // Assert that character asset created
-        $this->assertDatabaseHas('assets', [
-            'assetable_id' => $this->test_character->character_id,
-            'item_id' => $data->item_id,
-        ]);
-    }
-
-    // Assert a job was pushed to a given queue...
     Queue::assertPushedOn('high', ResolveLocationJob::class);
 });
 
 it('dispatches unknown types job', function () {
-    $mock_data = buildAssetMockEsiData();
+    buildAssetMockEsiData();
 
-    // Run CharacterAssetsAction
-    (new CharacterAssetJob($this->test_character->character_id))->handle();
+    runJob(new CharacterAssetJob($this->test_character->character_id));
 
-    foreach ($mock_data as $data) {
-        // Assert that character asset created
-        $this->assertDatabaseHas('assets', [
-            'assetable_id' => $this->test_character->character_id,
-            'item_id' => $data->item_id,
-        ]);
-    }
-
-    // Assert a job was pushed to a given queue...
     Queue::assertPushedOn('high', ResolveUniverseTypeByIdJob::class);
 });
 
@@ -133,10 +95,12 @@ it('does not dispatch ResolveUniverseTypeByIdJob if type is known', function () 
         'type_id' => $type->type_id,
     ]);
 
-    mockRetrieveEsiDataAction($assets->toArray());
+    mockEsiClient(
+        'assets->getCharactersCharacterIdAssets',
+        makeEsiResult(array_map(fn ($a) => (object) $a, $assets->toArray()))
+    );
 
-    // Run CharacterAssetsAction
-    (new CharacterAssetJob($this->test_character->character_id))->handle();
+    runJob(new CharacterAssetJob($this->test_character->character_id));
 
     Queue::assertNotPushed(ResolveUniverseTypeByIdJob::class);
 });
@@ -149,10 +113,12 @@ it('does not dispatch ResolveLocationJob if location is known', function () {
         'location_id' => $location->location_id,
     ]);
 
-    mockRetrieveEsiDataAction($assets->toArray());
+    mockEsiClient(
+        'assets->getCharactersCharacterIdAssets',
+        makeEsiResult(array_map(fn ($a) => (object) $a, $assets->toArray()))
+    );
 
-    // Run CharacterAssetsAction
-    (new CharacterAssetJob($this->test_character->character_id))->handle();
+    runJob(new CharacterAssetJob($this->test_character->character_id));
 
     Queue::assertNotPushed(ResolveLocationJob::class);
 });
@@ -164,7 +130,10 @@ function buildAssetMockEsiData()
         'assetable_id' => testCharacter()->character_id,
     ]);
 
-    mockRetrieveEsiDataAction($mock_data->toArray());
+    mockEsiClient(
+        'assets->getCharactersCharacterIdAssets',
+        makeEsiResult(array_map(fn ($a) => (object) $a, $mock_data->toArray()))
+    );
 
     return $mock_data;
 }

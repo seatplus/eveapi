@@ -1,6 +1,6 @@
 <?php
 
-use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Mail\MailHeaderJob;
 use Seatplus\Eveapi\Models\Mail\Mail;
 
@@ -14,13 +14,11 @@ it('has tags', function () {
 });
 
 it('returns early if response is cached', function () {
-    $response = mock(EsiResponse::class);
-    $response->shouldReceive('isCachedLoad')->andReturn(true);
+    $esi = Mockery::mock(EsiClient::class);
+    $esi->shouldReceive('mail->getCharactersCharacterIdMail')->andReturn(makeEsiResult([], isCachedLoad: true));
 
     $job = mock(MailHeaderJob::class)->makePartial();
-    $job->shouldReceive('retrieve')->andReturn($response);
-
-    $job->executeJob();
+    $job->executeJob($esi);
 
     expect(Mail::all())->toHaveCount(0);
 });
