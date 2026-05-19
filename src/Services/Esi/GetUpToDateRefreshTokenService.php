@@ -17,7 +17,7 @@ class GetUpToDateRefreshTokenService
     /**
      * @throws RequestFailedException
      */
-    public function __invoke(RefreshToken $refresh_token): RefreshToken
+    public function get(RefreshToken $refresh_token): RefreshToken
     {
         $character_id = $refresh_token->character_id;
 

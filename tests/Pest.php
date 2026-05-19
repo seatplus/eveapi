@@ -66,7 +66,7 @@ function makeEsiResult(mixed $data, bool $isCachedLoad = false, int $pages = 1):
 function mockTokenService(): void
 {
     $mock = Mockery::mock(GetUpToDateRefreshTokenService::class, function (MockInterface $mock) {
-        $mock->shouldReceive('__invoke')
+        $mock->shouldReceive('get')
             ->andReturnUsing(fn (RefreshToken $token) => $token);
     });
     app()->instance(GetUpToDateRefreshTokenService::class, $mock);

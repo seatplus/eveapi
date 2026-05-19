@@ -111,7 +111,7 @@ abstract class EsiJob implements ShouldBeUnique, ShouldQueue
         $token = $this->getRefreshToken();
 
         if ($token !== null) {
-            $upToDate = ($tokenService)($token);
+            $upToDate = $tokenService->get($token);
             $esi = $esi->withToken($upToDate->getRawOriginal('token'));
         }
 

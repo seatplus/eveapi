@@ -19,7 +19,7 @@ it('retrieves up to date refresh token successfully', function () {
         'expires_on' => now()->addMinutes(5),
     ]);
 
-    $result = (new GetUpToDateRefreshTokenService)($refreshToken);
+    $result = (new GetUpToDateRefreshTokenService)->get($refreshToken);
 
     expect($result)->toBe($refreshToken);
 });
@@ -45,7 +45,7 @@ it('updates refresh token if expiry is near', function () {
 
     $service = new GetUpToDateRefreshTokenService($updateRefreshTokenService);
 
-    $result = ($service)($refreshToken);
+    $result = $service->get($refreshToken);
 
     expect($result->expires_on)->toBeGreaterThan(now()->addSeconds(30));
 });
@@ -61,5 +61,5 @@ it('throws request failed exception', function () {
 
     $service = new GetUpToDateRefreshTokenService;
 
-    expect(fn () => ($service)($refreshToken))->toThrow(RequestFailedException::class);
+    expect(fn () => $service->get($refreshToken))->toThrow(RequestFailedException::class);
 });
