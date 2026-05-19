@@ -30,6 +30,16 @@ jobs:
         ports:
           - 6379:6379
         options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+      mariadb:
+        image: mariadb:11
+        env:
+          MARIADB_ROOT_PASSWORD: secret
+          MARIADB_DATABASE: laravel
+          MARIADB_USER: seatplus
+          MARIADB_PASSWORD: secret
+        ports:
+          - 3306:3306
+        options: --health-cmd "healthcheck.sh --connect --innodb_initialized" --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
       - name: Checkout code
