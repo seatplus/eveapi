@@ -37,10 +37,14 @@ class EsiProactiveRateLimitMiddleware
 
     public function handle(mixed $job, \Closure $next): void
     {
-        $group = $this->resolveGroup($job);
+        $group = method_exists($job, 'rateLimitGroup') ? $job->rateLimitGroup() : null;
 
         if ($group !== null) {
-            $delay = $this->computeReleaseDelay($group);
+            $charId = method_exists($job, 'rateLimitCharacterId')
+                ? (string) ($job->rateLimitCharacterId() ?? 'public')
+                : 'public';
+
+            $delay = $this->computeReleaseDelay("{$group}:{$charId}");
 
             if ($delay > 0) {
                 $job->release($delay);
@@ -61,11 +65,18 @@ class EsiProactiveRateLimitMiddleware
 
     /**
      * Store rate-limit state from a completed ESI response.
-     * Called by jobs after a successful ESI call to track remaining capacity.
+     *
+     * Keyed by (group, characterId) so that different ESI rate-limit buckets
+     * are tracked independently. EsiJob::handle() sets the context on
+     * RecordingEsiClient before calling executeJob(), so the correct
+     * (group, characterId) pair is always available here.
+     *
+     * @param string $group       ESI rate-limit group (e.g. 'characters', 'alliances').
+     * @param string $characterId Character ID string, or 'public' for unauthenticated endpoints.
      */
-    public static function recordResponse(int $remaining): void
+    public static function recordResponse(int $remaining, string $group = 'global', string $characterId = 'public'): void
     {
-        Redis::setex(self::KEY_PREFIX.'global', self::TTL_SECONDS, json_encode([
+        Redis::setex(self::KEY_PREFIX."{$group}:{$characterId}", self::TTL_SECONDS, json_encode([
             'remaining' => $remaining,
             'limit' => 1800,
             'window_seconds' => 900,
@@ -86,17 +97,9 @@ class EsiProactiveRateLimitMiddleware
 
     // -------------------------------------------------------------------------
 
-    private function resolveGroup(mixed $job): ?string
+    private function computeReleaseDelay(string $keySuffix): int
     {
-        // Check if we have global rate-limit state recorded
-        $data = Redis::get(self::KEY_PREFIX.'global');
-
-        return $data !== null ? 'global' : null;
-    }
-
-    private function computeReleaseDelay(string $group): int
-    {
-        $raw = Redis::get(self::KEY_PREFIX.$group);
+        $raw = Redis::get(self::KEY_PREFIX.$keySuffix);
         if ($raw === null) {
             return 0;
         }

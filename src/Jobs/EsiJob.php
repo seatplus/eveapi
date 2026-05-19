@@ -88,6 +88,13 @@ abstract class EsiJob implements ShouldBeUnique, ShouldQueue
     }
 
     /**
+     * Fully-qualified class name of the primary ESI operation this job calls.
+     * Used to derive the rate-limit group (RATE_LIMIT_GROUP constant on the operation class).
+     * Override in concrete jobs: protected const string OPERATION_CLASS = GetCharactersCharacterIdAssets::class;
+     */
+    protected const string OPERATION_CLASS = '';
+
+    /**
      * Laravel injects EsiClient and the token-refresh service via the service container.
      *
      * The container resolves EsiClient as RecordingEsiClient (bound in EveapiServiceProvider::register()),
@@ -108,6 +115,10 @@ abstract class EsiJob implements ShouldBeUnique, ShouldQueue
             $esi = $esi->withToken($upToDate->getRawOriginal('token'));
         }
 
+        if ($esi instanceof RecordingEsiClient) {
+            $esi->setContext($this->rateLimitGroup(), $this->rateLimitCharacterId());
+        }
+
         try {
             DB::transaction(fn () => $this->executeJob($esi));
         } catch (EsiRateLimitedException|EsiErrorLimitedException $e) {
@@ -126,6 +137,33 @@ abstract class EsiJob implements ShouldBeUnique, ShouldQueue
     public function getRefreshToken(): ?RefreshToken
     {
         return null;
+    }
+
+    /**
+     * Returns the ESI rate-limit group for this job.
+     * Derived automatically from OPERATION_CLASS::RATE_LIMIT_GROUP.
+     * Falls back to 'global' when OPERATION_CLASS is not declared.
+     */
+    public function rateLimitGroup(): string
+    {
+        $op = static::OPERATION_CLASS;
+
+        if ($op === '') {
+            return 'global';
+        }
+
+        $group = defined("{$op}::RATE_LIMIT_GROUP") ? constant("{$op}::RATE_LIMIT_GROUP") : null;
+
+        return is_string($group) && $group !== '' ? $group : 'global';
+    }
+
+    /**
+     * Returns the character ID used as the rate-limit bucket owner.
+     * Derived automatically from getRefreshToken(). Null for public endpoints.
+     */
+    public function rateLimitCharacterId(): ?int
+    {
+        return $this->getRefreshToken()?->character_id;
     }
 
     /**

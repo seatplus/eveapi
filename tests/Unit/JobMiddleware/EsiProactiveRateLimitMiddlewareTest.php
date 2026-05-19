@@ -30,21 +30,105 @@ it('RecordingEsiClient overrides invoke method', function (): void {
 // EsiProactiveRateLimitMiddleware — recordResponse + throttle logic
 // ---------------------------------------------------------------------------
 
-it('recordResponse writes rate-limit state to Redis', function (): void {
+it('recordResponse writes rate-limit state to Redis keyed by group:charId', function (): void {
     Redis::flushdb();
 
-    EsiProactiveRateLimitMiddleware::recordResponse(1200);
+    EsiProactiveRateLimitMiddleware::recordResponse(1200, 'characters', '12345678');
 
-    $stored = json_decode(Redis::get('esi_ratelimit:global'), true);
+    $stored = json_decode(Redis::get('esi_ratelimit:characters:12345678'), true);
 
     expect($stored)->toHaveKey('remaining')
         ->and($stored['remaining'])->toBe(1200)
         ->and($stored['limit'])->toBe(1800);
 });
 
+it('recordResponse defaults to global:public when no group/charId given', function (): void {
+    Redis::flushdb();
+
+    EsiProactiveRateLimitMiddleware::recordResponse(900);
+
+    $stored = json_decode(Redis::get('esi_ratelimit:global:public'), true);
+
+    expect($stored)->not->toBeNull()
+        ->and($stored['remaining'])->toBe(900);
+});
+
 it('middleware passes job through when rate-limit is healthy', function (): void {
     Redis::flushdb();
-    EsiProactiveRateLimitMiddleware::recordResponse(1800); // 100% — well above threshold
+    EsiProactiveRateLimitMiddleware::recordResponse(1800, 'characters', '12345678');
+
+    $middleware = new EsiProactiveRateLimitMiddleware;
+    $passed = false;
+
+    $job = new class
+    {
+        public function rateLimitGroup(): string { return 'characters'; }
+
+        public function rateLimitCharacterId(): ?int { return 12345678; }
+
+        public function release(int $delay): void {}
+    };
+
+    $middleware->handle($job, function () use (&$passed): void {
+        $passed = true;
+    });
+
+    expect($passed)->toBeTrue();
+});
+
+it('middleware releases job when rate-limit is critically low', function (): void {
+    Redis::flushdb();
+    EsiProactiveRateLimitMiddleware::recordResponse(1, 'characters', '12345678');
+
+    $middleware = new EsiProactiveRateLimitMiddleware;
+    $passed = false;
+
+    $job = new class
+    {
+        public bool $released = false;
+
+        public function rateLimitGroup(): string { return 'characters'; }
+
+        public function rateLimitCharacterId(): ?int { return 12345678; }
+
+        public function release(int $delay): void
+        {
+            $this->released = true;
+        }
+    };
+
+    $middleware->handle($job, function () use (&$passed): void {
+        $passed = true;
+    });
+
+    expect($job->released)->toBeTrue()
+        ->and($passed)->toBeFalse();
+});
+
+it('middleware passes job through when no rate-limit state exists for that bucket', function (): void {
+    Redis::flushdb();
+
+    $middleware = new EsiProactiveRateLimitMiddleware;
+    $passed = false;
+
+    $job = new class
+    {
+        public function rateLimitGroup(): string { return 'characters'; }
+
+        public function rateLimitCharacterId(): ?int { return 99999999; }
+
+        public function release(int $delay): void {}
+    };
+
+    $middleware->handle($job, function () use (&$passed): void {
+        $passed = true;
+    });
+
+    expect($passed)->toBeTrue();
+});
+
+it('middleware passes job without rateLimitGroup() through (legacy jobs)', function (): void {
+    Redis::flushdb();
 
     $middleware = new EsiProactiveRateLimitMiddleware;
     $passed = false;
@@ -61,16 +145,19 @@ it('middleware passes job through when rate-limit is healthy', function (): void
     expect($passed)->toBeTrue();
 });
 
-it('middleware releases job when rate-limit is critically low', function (): void {
+it('middleware uses public as charId when rateLimitCharacterId() returns null', function (): void {
     Redis::flushdb();
-    EsiProactiveRateLimitMiddleware::recordResponse(1); // effectively 0% — below 10% threshold
+    EsiProactiveRateLimitMiddleware::recordResponse(1, 'alliances', 'public');
 
     $middleware = new EsiProactiveRateLimitMiddleware;
-    $passed = false;
 
     $job = new class
     {
         public bool $released = false;
+
+        public function rateLimitGroup(): string { return 'alliances'; }
+
+        public function rateLimitCharacterId(): ?int { return null; }
 
         public function release(int $delay): void
         {
@@ -78,12 +165,9 @@ it('middleware releases job when rate-limit is critically low', function (): voi
         }
     };
 
-    $middleware->handle($job, function () use (&$passed): void {
-        $passed = true;
-    });
+    $middleware->handle($job, function (): void {});
 
-    expect($job->released)->toBeTrue()
-        ->and($passed)->toBeFalse();
+    expect($job->released)->toBeTrue();
 });
 
 // ---------------------------------------------------------------------------
