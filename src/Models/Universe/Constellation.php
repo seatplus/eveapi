@@ -59,7 +59,7 @@ class Constellation extends Model
     /**
      * The event map for the model.
      *
-     * @var array
+     * @var array<string, class-string>
      */
     protected $dispatchesEvents = [
         'created' => UniverseConstellationCreated::class,

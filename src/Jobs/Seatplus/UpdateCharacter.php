@@ -110,6 +110,6 @@ class UpdateCharacter implements ShouldQueue
     {
         $cron = new CronExpression($expression);
 
-        return carbon($cron->getPreviousRunDate())->diffInMinutes($cron->getNextRunDate(null));
+        return (int) carbon($cron->getPreviousRunDate())->diffInMinutes($cron->getNextRunDate(null));
     }
 }

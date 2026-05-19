@@ -62,9 +62,15 @@ it('middleware passes job through when rate-limit is healthy', function (): void
 
     $job = new class
     {
-        public function rateLimitGroup(): string { return 'characters'; }
+        public function rateLimitGroup(): string
+        {
+            return 'characters';
+        }
 
-        public function rateLimitCharacterId(): ?int { return 12345678; }
+        public function rateLimitCharacterId(): ?int
+        {
+            return 12345678;
+        }
 
         public function release(int $delay): void {}
     };
@@ -87,9 +93,15 @@ it('middleware releases job when rate-limit is critically low', function (): voi
     {
         public bool $released = false;
 
-        public function rateLimitGroup(): string { return 'characters'; }
+        public function rateLimitGroup(): string
+        {
+            return 'characters';
+        }
 
-        public function rateLimitCharacterId(): ?int { return 12345678; }
+        public function rateLimitCharacterId(): ?int
+        {
+            return 12345678;
+        }
 
         public function release(int $delay): void
         {
@@ -113,9 +125,15 @@ it('middleware passes job through when no rate-limit state exists for that bucke
 
     $job = new class
     {
-        public function rateLimitGroup(): string { return 'characters'; }
+        public function rateLimitGroup(): string
+        {
+            return 'characters';
+        }
 
-        public function rateLimitCharacterId(): ?int { return 99999999; }
+        public function rateLimitCharacterId(): ?int
+        {
+            return 99999999;
+        }
 
         public function release(int $delay): void {}
     };
@@ -155,9 +173,15 @@ it('middleware uses public as charId when rateLimitCharacterId() returns null', 
     {
         public bool $released = false;
 
-        public function rateLimitGroup(): string { return 'alliances'; }
+        public function rateLimitGroup(): string
+        {
+            return 'alliances';
+        }
 
-        public function rateLimitCharacterId(): ?int { return null; }
+        public function rateLimitCharacterId(): ?int
+        {
+            return null;
+        }
 
         public function release(int $delay): void
         {

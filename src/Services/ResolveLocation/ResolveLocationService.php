@@ -15,7 +15,7 @@ class ResolveLocationService
         private readonly ?RefreshToken $refresh_token = null,
         private array $resolvers = []
     ) {
-        $this->resolvers ??= [
+        $this->resolvers = $resolvers ?: [
             new StationResolver,
             new StructureResolver($this->refresh_token),
         ];

@@ -14,7 +14,7 @@ return RectorConfig::configure()
         // SetList::TYPE_DECLARATION,
         // SetList::CODE_QUALITY,
         // SetList::CODING_STYLE,
-        LaravelLevelSetList::UP_TO_LARAVEL_110,
+        LaravelLevelSetList::UP_TO_LARAVEL_130,
         LevelSetList::UP_TO_PHP_83,
     ])
     ->withPaths([

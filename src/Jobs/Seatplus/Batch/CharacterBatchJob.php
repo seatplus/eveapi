@@ -90,7 +90,7 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
 
     private function execute(): Batch
     {
-        $character = $this->refresh_token?->character?->name ?? $this->character_id;
+        $character = $this->refresh_token?->character->name ?? $this->character_id;
         $batch_name = sprintf('%s (character) update batch', $character);
 
         return Bus::batch($this->getBatchJobs())

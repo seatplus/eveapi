@@ -26,8 +26,8 @@ class RecordingEsiClient extends EsiClient
      * Set the rate-limit context for the upcoming job execution.
      * Called by EsiJob::handle() before executeJob() is invoked.
      *
-     * @param  string   $group       ESI rate-limit group (from OPERATION_CLASS::RATE_LIMIT_GROUP).
-     * @param  int|null $characterId JWT character ID, or null for public/unauthenticated endpoints.
+     * @param  string  $group  ESI rate-limit group (from OPERATION_CLASS::RATE_LIMIT_GROUP).
+     * @param  int|null  $characterId  JWT character ID, or null for public/unauthenticated endpoints.
      */
     public function setContext(string $group, ?int $characterId): void
     {

@@ -34,7 +34,7 @@ class WalletJournal extends Model
 {
     use HasFactory;
 
-    protected $guarded = false;
+    protected $guarded = [];
 
     public function wallet_journable(): MorphTo
     {

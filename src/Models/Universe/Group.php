@@ -61,6 +61,7 @@ class Group extends Model
         return $this->hasMany(Type::class, 'group_id', 'group_id');
     }
 
+    /** @return HasOne<Category, $this> */
     public function category(): HasOne
     {
         return $this->hasOne(Category::class, 'category_id', 'category_id');

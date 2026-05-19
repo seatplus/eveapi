@@ -34,7 +34,7 @@ class Label extends Model
 {
     use HasFactory;
 
-    protected $guarded = false;
+    protected $guarded = [];
 
     public function labelable(): MorphTo
     {

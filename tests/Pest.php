@@ -13,6 +13,7 @@
 
 /** @link https://pestphp.com/docs/underlying-test-case */
 
+use DG\BypassFinals;
 use Faker\Factory;
 use Firebase\JWT\JWT;
 use Mockery\MockInterface;
@@ -22,6 +23,8 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\Esi\GetUpToDateRefreshTokenService;
 use Seatplus\Eveapi\Tests\TestCase;
+
+BypassFinals::enable();
 
 uses(TestCase::class)->in('Unit', 'Integration', 'Jobs');
 // uses(\Illuminate\Foundation\Testing\LazilyRefreshDatabase::class)->in('Unit', 'Integration', 'Jobs');

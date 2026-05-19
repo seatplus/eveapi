@@ -17,6 +17,7 @@ class LocationRefreshToken extends Model
         return $this->belongsTo(Location::class, 'location_id', 'location_id');
     }
 
+    /** @return BelongsTo<RefreshToken, $this> */
     public function refresh_token(): BelongsTo
     {
         return $this->belongsTo(RefreshToken::class, 'character_id', 'character_id');

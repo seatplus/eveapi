@@ -38,7 +38,7 @@ class Type extends Model
     /**
      * The attributes that aren't mass assignable.
      *
-     * @var array<string>|bool
+     * @var array<string>
      */
     protected $guarded = [];
 
@@ -58,6 +58,7 @@ class Type extends Model
 
     protected $with = ['group', 'category'];
 
+    /** @return HasOne<Group, $this> */
     public function group(): HasOne
     {
         return $this->hasOne(Group::class, 'group_id', 'group_id');

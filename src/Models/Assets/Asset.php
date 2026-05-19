@@ -64,6 +64,7 @@ class Asset extends Model implements TypeWatchListInterface
         return $this->morphTo();
     }
 
+    /** @return HasOne<Type, $this> */
     public function type(): HasOne
     {
         return $this->hasOne(Type::class, 'type_id', 'type_id');

@@ -89,6 +89,7 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
         return $this->hasOne(Location::class, 'location_id', 'end_location_id');
     }
 
+    /** @return BelongsTo<CharacterInfo, $this> */
     public function assignee_character(): BelongsTo
     {
         return $this->belongsTo(CharacterInfo::class, 'assignee_id', 'character_id');
@@ -99,6 +100,7 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
         return $this->belongsTo(CorporationInfo::class, 'assignee_id', 'corporation_id');
     }
 
+    /** @return BelongsTo<CharacterInfo, $this> */
     public function issuer_character(): BelongsTo
     {
         return $this->belongsTo(CharacterInfo::class, 'issuer_id', 'character_id');

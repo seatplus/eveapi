@@ -32,13 +32,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Seatplus\Eveapi\Models\Universe\Type;
 
+/** @property bool $has_content */
 class KillmailItem extends Model
 {
     protected $appends = ['has_content'];
 
     protected $guarded = [];
 
-    public function hasContent(): Attribute
+    protected function hasContent(): Attribute
     {
         return new Attribute(get: function () {
             return $this->content()->exists();

@@ -34,7 +34,7 @@ class Balance extends Model
 {
     use HasFactory;
 
-    protected $guarded = false;
+    protected $guarded = [];
 
     public function balanceable(): MorphTo
     {

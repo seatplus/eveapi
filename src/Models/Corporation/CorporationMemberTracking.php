@@ -40,6 +40,7 @@ class CorporationMemberTracking extends Model
 
     protected $guarded = [];
 
+    /** @return BelongsTo<CharacterInfo, $this> */
     public function character(): BelongsTo
     {
         return $this->belongsTo(CharacterInfo::class, 'character_id', 'character_id');

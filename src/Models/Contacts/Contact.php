@@ -36,7 +36,7 @@ use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 
 class Contact extends Model
 {
-    protected $guarded = false;
+    protected $guarded = [];
 
     use HasFactory;
 
@@ -74,21 +74,25 @@ class Contact extends Model
             ->first();
     }
 
+    /** @return HasOne<CharacterAffiliation, $this> */
     public function character_affiliation(): HasOne
     {
         return $this->hasOne(CharacterAffiliation::class, 'character_id', 'contact_id');
     }
 
+    /** @return HasOne<CharacterAffiliation, $this> */
     public function corporation_affiliation(): HasOne
     {
         return $this->hasOne(CharacterAffiliation::class, 'corporation_id', 'contact_id');
     }
 
+    /** @return HasOne<CharacterAffiliation, $this> */
     public function alliance_affiliation(): HasOne
     {
         return $this->hasOne(CharacterAffiliation::class, 'alliance_id', 'contact_id');
     }
 
+    /** @return HasOne<CharacterAffiliation, $this> */
     public function faction_affiliation(): HasOne
     {
         return $this->hasOne(CharacterAffiliation::class, 'faction_id', 'contact_id');

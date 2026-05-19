@@ -54,7 +54,7 @@ class Structure extends Model implements LocatableInterface
     /**
      * The event map for the model.
      *
-     * @var array
+     * @var array<string, class-string>
      */
     protected $dispatchesEvents = [
         'created' => UniverseStructureCreated::class,

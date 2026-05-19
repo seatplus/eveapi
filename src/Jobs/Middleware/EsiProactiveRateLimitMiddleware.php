@@ -71,8 +71,8 @@ class EsiProactiveRateLimitMiddleware
      * RecordingEsiClient before calling executeJob(), so the correct
      * (group, characterId) pair is always available here.
      *
-     * @param string $group       ESI rate-limit group (e.g. 'characters', 'alliances').
-     * @param string $characterId Character ID string, or 'public' for unauthenticated endpoints.
+     * @param  string  $group  ESI rate-limit group (e.g. 'characters', 'alliances').
+     * @param  string  $characterId  Character ID string, or 'public' for unauthenticated endpoints.
      */
     public static function recordResponse(int $remaining, string $group = 'global', string $characterId = 'public'): void
     {

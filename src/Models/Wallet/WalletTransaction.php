@@ -39,7 +39,7 @@ class WalletTransaction extends Model
 
     protected $primaryKey = 'transaction_id';
 
-    protected $guarded = false;
+    protected $guarded = [];
 
     public function wallet_transactionable(): MorphTo
     {

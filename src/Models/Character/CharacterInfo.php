@@ -65,6 +65,7 @@ class CharacterInfo extends Model
      */
     protected $primaryKey = 'character_id';
 
+    /** @return HasOne<RefreshToken, $this> */
     public function refresh_token(): HasOne
     {
         return $this->hasOne(RefreshToken::class, 'character_id', 'character_id');
@@ -94,11 +95,13 @@ class CharacterInfo extends Model
         );
     }
 
+    /** @return HasOne<CharacterRole, $this> */
     public function roles(): HasOne
     {
         return $this->hasOne(CharacterRole::class, 'character_id', 'character_id')->withDefault();
     }
 
+    /** @return HasOne<CharacterAffiliation, $this> */
     public function character_affiliation(): HasOne
     {
         return $this->hasOne(CharacterAffiliation::class, 'character_id', 'character_id');

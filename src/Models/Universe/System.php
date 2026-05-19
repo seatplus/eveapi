@@ -40,7 +40,7 @@ class System extends Model
     /**
      * The attributes that aren't mass assignable.
      *
-     * @var array<string>|bool
+     * @var array<string>
      */
     protected $guarded = [];
 
@@ -63,7 +63,7 @@ class System extends Model
     /**
      * The event map for the model.
      *
-     * @var array
+     * @var array<string, class-string>
      */
     protected $dispatchesEvents = [
         'created' => UniverseSystemCreated::class,

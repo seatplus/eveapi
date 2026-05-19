@@ -79,11 +79,13 @@ class RefreshToken extends Model
         return null;
     }
 
+    /** @return BelongsTo<CharacterInfo, $this> */
     public function character(): BelongsTo
     {
         return $this->belongsTo(CharacterInfo::class, 'character_id', 'character_id');
     }
 
+    /** @return HasOneThrough<CorporationInfo, CharacterAffiliation, $this> */
     public function corporation(): HasOneThrough
     {
         return $this->hasOneThrough(
