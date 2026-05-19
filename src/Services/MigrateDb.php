@@ -48,7 +48,7 @@ class MigrateDb
      */
     private function replicateTables(): void
     {
-        $source_tables = Schema::connection('mysql')->getTableListing();
+        $source_tables = Schema::connection('mysql')->getTableListing(schemaQualified: false);
 
         DB::transaction(function () use ($source_tables) {
             foreach ($source_tables as $table) {
