@@ -23,8 +23,14 @@ class EsiProactiveRateLimitMiddleware
     /** Fraction of capacity below which we throttle (10 %). */
     private const float LOW_THRESHOLD = 0.10;
 
+    /** Minimum error budget remaining before we proactively hold back new jobs. */
+    private const int ERROR_LIMIT_THRESHOLD = 10;
+
     /** Redis key prefix. */
     private const string KEY_PREFIX = 'esi_ratelimit:';
+
+    /** Redis key for error limit state. */
+    private const string ERROR_LIMIT_KEY = 'esi_errorlimit:global';
 
     /** How many seconds to keep the Redis key alive (one full window + buffer). */
     private const int TTL_SECONDS = 1800;
@@ -43,6 +49,13 @@ class EsiProactiveRateLimitMiddleware
             }
         }
 
+        $errorDelay = $this->computeErrorLimitDelay();
+        if ($errorDelay > 0) {
+            $job->release($errorDelay);
+
+            return;
+        }
+
         $next($job);
     }
 
@@ -56,6 +69,18 @@ class EsiProactiveRateLimitMiddleware
             'remaining' => $remaining,
             'limit' => 1800,
             'window_seconds' => 900,
+        ]));
+    }
+
+    /**
+     * Store error-limit state from an ESI response.
+     * X-ESI-Error-Limit-Remain and X-ESI-Error-Limit-Reset are present on all responses.
+     */
+    public static function recordErrorLimitResponse(int $remaining, int $resetIn): void
+    {
+        Redis::setex(self::ERROR_LIMIT_KEY, $resetIn + 5, json_encode([
+            'remaining' => $remaining,
+            'reset_in' => $resetIn,
         ]));
     }
 
@@ -96,5 +121,23 @@ class EsiProactiveRateLimitMiddleware
         $tokensNeeded = 2; // cost of a 2xx response
 
         return (int) ceil($tokensNeeded / $refillRate);
+    }
+
+    private function computeErrorLimitDelay(): int
+    {
+        $raw = Redis::get(self::ERROR_LIMIT_KEY);
+        if ($raw === null) {
+            return 0;
+        }
+
+        $state = json_decode($raw, true);
+        $remaining = (int) ($state['remaining'] ?? PHP_INT_MAX);
+        $resetIn = (int) ($state['reset_in'] ?? 60);
+
+        if ($remaining >= self::ERROR_LIMIT_THRESHOLD) {
+            return 0;
+        }
+
+        return $resetIn;
     }
 }

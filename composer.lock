@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e16cdfd93044c376198c85dd77c5d694",
+    "content-hash": "5ffa7eed3e207a2c2376017e8924a1cd",
     "packages": [
         {
             "name": "brick/math",
@@ -3385,7 +3385,7 @@
             "dist": {
                 "type": "path",
                 "url": "../esi-client",
-                "reference": "f2e4159f6f0173eeea4cda4678236f77dc2a02ee"
+                "reference": "f75007d48c450ebd8a9de74dd680ba22093947ab"
             },
             "require": {
                 "ext-json": "*",
@@ -3394,7 +3394,7 @@
                 "monolog/monolog": "^3.7",
                 "nesbot/carbon": "^3.0",
                 "php": "^8.3",
-                "seatplus/esi-schema": "^1.1"
+                "seatplus/esi-schema": "^1.2 || dev-feat/error-limit-tracking"
             },
             "require-dev": {
                 "ext-openssl": "*",
@@ -3478,17 +3478,11 @@
         },
         {
             "name": "seatplus/esi-schema",
-            "version": "1.2.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/seatplus/esi-schema.git",
-                "reference": "d07f8c371054ba15b6c4d7e66a3f101525dd38a3"
-            },
+            "version": "1.x-dev",
             "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/seatplus/esi-schema/zipball/d07f8c371054ba15b6c4d7e66a3f101525dd38a3",
-                "reference": "d07f8c371054ba15b6c4d7e66a3f101525dd38a3",
-                "shasum": ""
+                "type": "path",
+                "url": "../esi-schema",
+                "reference": "91db75120482dc1d56624866229e8911f39ec7eb"
             },
             "require": {
                 "php": "^8.3"
@@ -3539,11 +3533,10 @@
                 "MIT"
             ],
             "description": "Generated ESI response DTOs, versioned independently by ESI compatibility date. Zero runtime dependencies.",
-            "support": {
-                "source": "https://github.com/seatplus/esi-schema/tree/1.2.0",
-                "issues": "https://github.com/seatplus/esi-schema/issues"
-            },
-            "time": "2026-05-18T14:04:11+00:00"
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
         },
         {
             "name": "symfony/clock",
@@ -11080,7 +11073,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {},
+    "stability-flags": {
+        "seatplus/esi-schema": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

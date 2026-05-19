@@ -31,7 +31,7 @@
         "laravel/framework": "^13.0",
         "laravel/horizon": "^5.0",
         "seatplus/esi-client": "^4.0",
-        "seatplus/esi-schema": "^1.2"
+        "seatplus/esi-schema": "^1.2 || dev-feat/error-limit-tracking"
     },
     "require-dev": {
         "orchestra/testbench": "^11.0",
@@ -74,6 +74,14 @@
         }
     },
     "repositories": [
+        {
+            "type": "path",
+            "url": "../esi-schema",
+            "options": {
+                "symlink": true,
+                "canonical": false
+            }
+        },
         {
             "type": "path",
             "url": "../esi-client",

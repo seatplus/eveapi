@@ -29,6 +29,13 @@ class RecordingEsiClient extends EsiClient
             EsiProactiveRateLimitMiddleware::recordResponse($response->rateLimitRemaining);
         }
 
+        if ($response->errorLimitRemaining !== null) {
+            EsiProactiveRateLimitMiddleware::recordErrorLimitResponse(
+                $response->errorLimitRemaining,
+                $response->errorLimitReset ?? 60,
+            );
+        }
+
         return $response;
     }
 }
