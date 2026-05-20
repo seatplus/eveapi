@@ -4,12 +4,15 @@ namespace Seatplus\Eveapi\Jobs\Wallet;
 
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiSchema\EsiResult;
+use Seatplus\EsiSchema\Resources\Wallet\GetCorporationsCorporationIdWalletsDivisionTransactions;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 
 class CorporationWalletTransactionByDivisionJob extends WalletTransactionBase
 {
+    protected const string OPERATION_CLASS = GetCorporationsCorporationIdWalletsDivisionTransactions::class;
+
     public function __construct(
         public int $corporation_id,
         private int $division
@@ -31,7 +34,7 @@ class CorporationWalletTransactionByDivisionJob extends WalletTransactionBase
     #[\Override]
     protected function fetchTransactions(EsiClient $esi, ?int $fromId): EsiResult
     {
-        return $esi->wallet()->getCorporationsCorporationIdWalletsDivisionTransactions($this->corporation_id, $this->division, $fromId);
+        return GetCorporationsCorporationIdWalletsDivisionTransactions::execute($esi, $this->corporation_id, $this->division, $fromId);
     }
 
     #[\Override]

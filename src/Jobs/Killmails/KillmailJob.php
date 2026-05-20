@@ -4,6 +4,7 @@ namespace Seatplus\Eveapi\Jobs\Killmails;
 
 use Illuminate\Support\Collection;
 use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Resources\Killmails\GetKillmailsKillmailIdKillmailHash;
 use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseSystemBySystemIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
@@ -14,6 +15,8 @@ use Seatplus\Eveapi\Services\Jobs\GetLocationFlagNameService;
 
 class KillmailJob extends EsiJob
 {
+    protected const string OPERATION_CLASS = GetKillmailsKillmailIdKillmailHash::class;
+
     public function __construct(
         public int $killmail_id,
         public string $killmail_hash
@@ -28,7 +31,7 @@ class KillmailJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = $esi->killmails()->getKillmailsKillmailIdKillmailHash($this->killmail_hash, $this->killmail_id);
+        $response = GetKillmailsKillmailIdKillmailHash::execute($esi, $this->killmail_hash, $this->killmail_id);
         if ($response->isCachedLoad) {
             return;
         }

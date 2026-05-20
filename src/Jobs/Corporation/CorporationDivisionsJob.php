@@ -3,6 +3,7 @@
 namespace Seatplus\Eveapi\Jobs\Corporation;
 
 use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Resources\Corporation\GetCorporationsCorporationIdDivisions;
 use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationDivision;
 use Seatplus\Eveapi\Models\RefreshToken;
@@ -10,6 +11,8 @@ use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 
 class CorporationDivisionsJob extends EsiJob
 {
+    protected const string OPERATION_CLASS = GetCorporationsCorporationIdDivisions::class;
+
     public function __construct(public int $corporation_id) {}
 
     #[\Override]
@@ -30,7 +33,7 @@ class CorporationDivisionsJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = $esi->corporation()->getCorporationsCorporationIdDivisions($this->corporation_id);
+        $response = GetCorporationsCorporationIdDivisions::execute($esi, $this->corporation_id);
         if ($response->isCachedLoad) {
             return;
         }

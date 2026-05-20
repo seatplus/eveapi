@@ -6,6 +6,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
+use Seatplus\EsiSchema\Resources\Character\PostCharactersAffiliation;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfoJob;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationInfoJob;
 use Seatplus\Eveapi\Jobs\EsiJob;
@@ -13,6 +14,8 @@ use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 
 class CharacterAffiliationJob extends EsiJob
 {
+    protected const string OPERATION_CLASS = PostCharactersAffiliation::class;
+
     private array $manual_ids = [];
 
     private Collection $character_affiliations;
@@ -58,7 +61,7 @@ class CharacterAffiliationJob extends EsiJob
     {
         $timestamp = now();
         try {
-            $response = $esi->characters()->postCharactersAffiliation($characterIds);
+            $response = PostCharactersAffiliation::execute($esi, $characterIds);
             foreach ($response->data as $result) {
                 $this->character_affiliations->push([
                     'character_id' => $result->character_id,

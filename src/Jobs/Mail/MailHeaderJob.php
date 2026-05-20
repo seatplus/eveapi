@@ -4,6 +4,7 @@ namespace Seatplus\Eveapi\Jobs\Mail;
 
 use Illuminate\Support\Collection;
 use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Resources\Mail\GetCharactersCharacterIdMail;
 use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
@@ -14,6 +15,8 @@ use Seatplus\Eveapi\Models\RefreshToken;
 
 class MailHeaderJob extends EsiJob
 {
+    protected const string OPERATION_CLASS = GetCharactersCharacterIdMail::class;
+
     public function __construct(public int $character_id) {}
 
     #[\Override]
@@ -35,7 +38,7 @@ class MailHeaderJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = $esi->mail()->getCharactersCharacterIdMail($this->character_id);
+        $response = GetCharactersCharacterIdMail::execute($esi, $this->character_id);
         if ($response->isCachedLoad) {
             return;
         }

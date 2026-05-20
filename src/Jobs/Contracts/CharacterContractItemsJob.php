@@ -4,10 +4,13 @@ namespace Seatplus\Eveapi\Jobs\Contracts;
 
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiSchema\EsiResult;
+use Seatplus\EsiSchema\Resources\Contracts\GetCharactersCharacterIdContractsContractIdItems;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 class CharacterContractItemsJob extends ContractItemsJob
 {
+    protected const string OPERATION_CLASS = GetCharactersCharacterIdContractsContractIdItems::class;
+
     public function __construct(
         public int $character_id,
         public int $contract_id,
@@ -22,10 +25,7 @@ class CharacterContractItemsJob extends ContractItemsJob
     #[\Override]
     protected function fetchItems(EsiClient $esi): EsiResult
     {
-        return $esi->contracts()->getCharactersCharacterIdContractsContractIdItems(
-            $this->character_id,
-            $this->contract_id
-        );
+        return GetCharactersCharacterIdContractsContractIdItems::execute($esi, $this->character_id, $this->contract_id);
     }
 
     #[\Override]

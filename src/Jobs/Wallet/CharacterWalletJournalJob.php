@@ -4,11 +4,14 @@ namespace Seatplus\Eveapi\Jobs\Wallet;
 
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiSchema\EsiResult;
+use Seatplus\EsiSchema\Resources\Wallet\GetCharactersCharacterIdWalletJournal;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 class CharacterWalletJournalJob extends WalletJournalBase
 {
+    protected const string OPERATION_CLASS = GetCharactersCharacterIdWalletJournal::class;
+
     public function __construct(public int $character_id) {}
 
     #[\Override]
@@ -20,7 +23,7 @@ class CharacterWalletJournalJob extends WalletJournalBase
     #[\Override]
     protected function fetchPage(EsiClient $esi, int $page): EsiResult
     {
-        return $esi->wallet()->getCharactersCharacterIdWalletJournal($this->character_id, $page);
+        return GetCharactersCharacterIdWalletJournal::execute($esi, $this->character_id, $page);
     }
 
     #[\Override]

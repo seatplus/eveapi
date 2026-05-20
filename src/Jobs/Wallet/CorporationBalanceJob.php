@@ -4,6 +4,7 @@ namespace Seatplus\Eveapi\Jobs\Wallet;
 
 use Illuminate\Support\Collection;
 use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Resources\Wallet\GetCorporationsCorporationIdWallets;
 use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
@@ -12,6 +13,8 @@ use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 
 class CorporationBalanceJob extends EsiJob
 {
+    protected const string OPERATION_CLASS = GetCorporationsCorporationIdWallets::class;
+
     public function __construct(public int $corporation_id) {}
 
     #[\Override]
@@ -36,7 +39,7 @@ class CorporationBalanceJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = $esi->wallet()->getCorporationsCorporationIdWallets($this->corporation_id);
+        $response = GetCorporationsCorporationIdWallets::execute($esi, $this->corporation_id);
         if ($response->isCachedLoad) {
             return;
         }

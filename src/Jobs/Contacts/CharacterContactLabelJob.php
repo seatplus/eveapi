@@ -4,12 +4,15 @@ namespace Seatplus\Eveapi\Jobs\Contacts;
 
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiSchema\EsiResult;
+use Seatplus\EsiSchema\Resources\Contacts\GetCharactersCharacterIdContactsLabels;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\Contacts\ProcessContactLabelsResponse;
 
 class CharacterContactLabelJob extends ContactBaseJob
 {
+    protected const string OPERATION_CLASS = GetCharactersCharacterIdContactsLabels::class;
+
     public function __construct(public int $character_id) {}
 
     #[\Override]
@@ -21,7 +24,7 @@ class CharacterContactLabelJob extends ContactBaseJob
     #[\Override]
     protected function fetchPage(EsiClient $esi, int $page): EsiResult
     {
-        return $esi->contacts()->getCharactersCharacterIdContactsLabels($this->character_id);
+        return GetCharactersCharacterIdContactsLabels::execute($esi, $this->character_id);
     }
 
     #[\Override]

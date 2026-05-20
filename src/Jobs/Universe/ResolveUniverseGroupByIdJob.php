@@ -3,11 +3,14 @@
 namespace Seatplus\Eveapi\Jobs\Universe;
 
 use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Resources\Universe\GetUniverseGroupsGroupId;
 use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Models\Universe\Group;
 
 class ResolveUniverseGroupByIdJob extends EsiJob
 {
+    protected const string OPERATION_CLASS = GetUniverseGroupsGroupId::class;
+
     public function __construct(private int $group_id) {}
 
     #[\Override]
@@ -19,7 +22,7 @@ class ResolveUniverseGroupByIdJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = $esi->universe()->getUniverseGroupsGroupId($this->group_id);
+        $response = GetUniverseGroupsGroupId::execute($esi, $this->group_id);
 
         Group::firstOrCreate(
             ['group_id' => $response->group_id],

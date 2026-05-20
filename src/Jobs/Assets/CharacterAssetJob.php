@@ -4,6 +4,7 @@ namespace Seatplus\Eveapi\Jobs\Assets;
 
 use Illuminate\Support\Collection;
 use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Resources\Assets\GetCharactersCharacterIdAssets;
 use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
@@ -13,6 +14,8 @@ use Seatplus\Eveapi\Models\RefreshToken;
 
 class CharacterAssetJob extends EsiJob
 {
+    protected const string OPERATION_CLASS = GetCharactersCharacterIdAssets::class;
+
     private Collection $assets;
 
     public function __construct(public int $character_id)
@@ -37,7 +40,7 @@ class CharacterAssetJob extends EsiJob
     {
         $page = 1;
         do {
-            $response = $esi->assets()->getCharactersCharacterIdAssets($this->character_id, page: $page);
+            $response = GetCharactersCharacterIdAssets::execute($esi, $this->character_id, $page);
             if ($response->isCachedLoad) {
                 return;
             }

@@ -5,12 +5,15 @@ namespace Seatplus\Eveapi\Jobs\Assets;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Resources\Assets\PostCharactersCharacterIdAssetsNames;
 use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 class CharacterAssetsNameJob extends EsiJob
 {
+    protected const string OPERATION_CLASS = PostCharactersCharacterIdAssetsNames::class;
+
     const int CELESTIAL_CATEGORY = 2;
 
     const int SHIP_CATEGORY = 6;
@@ -60,7 +63,8 @@ class CharacterAssetsNameJob extends EsiJob
             ->pluck('item_id')
             ->chunk(1000)
             ->each(function (Collection $itemIds) use ($esi) {
-                $response = $esi->assets()->postCharactersCharacterIdAssetsNames(
+                $response = PostCharactersCharacterIdAssetsNames::execute(
+                    $esi,
                     $itemIds->values()->toArray(),
                     $this->character_id
                 );

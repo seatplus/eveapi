@@ -4,6 +4,7 @@ namespace Seatplus\Eveapi\Jobs\Universe;
 
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Resources\Universe\GetUniverseStructuresStructureId;
 use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Jobs\Middleware\EsiProactiveRateLimitMiddleware;
 use Seatplus\Eveapi\Models\RefreshToken;
@@ -12,6 +13,8 @@ use Seatplus\Eveapi\Models\Universe\Structure;
 
 class ResolveUniverseStructureByIdJob extends EsiJob
 {
+    protected const string OPERATION_CLASS = GetUniverseStructuresStructureId::class;
+
     public int $maxExceptions = 1;
 
     public function __construct(
@@ -45,7 +48,7 @@ class ResolveUniverseStructureByIdJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = $esi->universe()->getUniverseStructuresStructureId($this->location_id);
+        $response = GetUniverseStructuresStructureId::execute($esi, $this->location_id);
         if ($response->isCachedLoad) {
             return;
         }

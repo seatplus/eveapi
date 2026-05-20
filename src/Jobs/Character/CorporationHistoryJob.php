@@ -3,11 +3,14 @@
 namespace Seatplus\Eveapi\Jobs\Character;
 
 use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Resources\Character\GetCharactersCharacterIdCorporationhistory;
 use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Models\Character\CorporationHistory;
 
 class CorporationHistoryJob extends EsiJob
 {
+    protected const string OPERATION_CLASS = GetCharactersCharacterIdCorporationhistory::class;
+
     public function __construct(public int $character_id) {}
 
     #[\Override]
@@ -19,7 +22,7 @@ class CorporationHistoryJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = $esi->characters()->getCharactersCharacterIdCorporationhistory($this->character_id);
+        $response = GetCharactersCharacterIdCorporationhistory::execute($esi, $this->character_id);
         if ($response->isCachedLoad) {
             return;
         }

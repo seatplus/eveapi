@@ -4,12 +4,15 @@ namespace Seatplus\Eveapi\Jobs\Contacts;
 
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiSchema\EsiResult;
+use Seatplus\EsiSchema\Resources\Contacts\GetCorporationsCorporationIdContacts;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\Contacts\ProcessContactResponse;
 
 class CorporationContactJob extends ContactBaseJob
 {
+    protected const string OPERATION_CLASS = GetCorporationsCorporationIdContacts::class;
+
     public function __construct(
         public int $corporation_id,
         public int $character_id
@@ -24,7 +27,7 @@ class CorporationContactJob extends ContactBaseJob
     #[\Override]
     protected function fetchPage(EsiClient $esi, int $page): EsiResult
     {
-        return $esi->contacts()->getCorporationsCorporationIdContacts($this->corporation_id, $page);
+        return GetCorporationsCorporationIdContacts::execute($esi, $this->corporation_id, $page);
     }
 
     #[\Override]

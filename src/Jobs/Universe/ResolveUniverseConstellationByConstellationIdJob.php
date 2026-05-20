@@ -3,11 +3,14 @@
 namespace Seatplus\Eveapi\Jobs\Universe;
 
 use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Resources\Universe\GetUniverseConstellationsConstellationId;
 use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Models\Universe\Constellation;
 
 class ResolveUniverseConstellationByConstellationIdJob extends EsiJob
 {
+    protected const string OPERATION_CLASS = GetUniverseConstellationsConstellationId::class;
+
     public function __construct(public int $constellation_id) {}
 
     #[\Override]
@@ -19,7 +22,7 @@ class ResolveUniverseConstellationByConstellationIdJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = $esi->universe()->getUniverseConstellationsConstellationId($this->constellation_id);
+        $response = GetUniverseConstellationsConstellationId::execute($esi, $this->constellation_id);
 
         Constellation::firstOrCreate(
             ['constellation_id' => $response->constellation_id],

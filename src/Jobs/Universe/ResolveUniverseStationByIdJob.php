@@ -3,12 +3,15 @@
 namespace Seatplus\Eveapi\Jobs\Universe;
 
 use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Resources\Universe\GetUniverseStationsStationId;
 use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
 
 class ResolveUniverseStationByIdJob extends EsiJob
 {
+    protected const string OPERATION_CLASS = GetUniverseStationsStationId::class;
+
     public const array STATION_IDS_RANGE = [60000000, 64000000];
 
     public function __construct(public int $location_id) {}
@@ -26,7 +29,7 @@ class ResolveUniverseStationByIdJob extends EsiJob
             return;
         }
 
-        $response = $esi->universe()->getUniverseStationsStationId($this->location_id);
+        $response = GetUniverseStationsStationId::execute($esi, $this->location_id);
 
         Station::updateOrCreate(['station_id' => $this->location_id], [
             'type_id' => $response->type_id,

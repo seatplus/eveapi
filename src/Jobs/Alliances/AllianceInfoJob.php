@@ -3,11 +3,14 @@
 namespace Seatplus\Eveapi\Jobs\Alliances;
 
 use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Resources\Alliance\GetAlliancesAllianceId;
 use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 
 class AllianceInfoJob extends EsiJob
 {
+    protected const string OPERATION_CLASS = GetAlliancesAllianceId::class;
+
     public function __construct(public int $alliance_id) {}
 
     #[\Override]
@@ -23,7 +26,7 @@ class AllianceInfoJob extends EsiJob
             return;
         }
 
-        $response = $esi->alliance()->getAlliancesAllianceId($this->alliance_id);
+        $response = GetAlliancesAllianceId::execute($esi, $this->alliance_id);
         if ($response->isCachedLoad) {
             return;
         }

@@ -4,11 +4,14 @@ namespace Seatplus\Eveapi\Jobs\Wallet;
 
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiSchema\EsiResult;
+use Seatplus\EsiSchema\Resources\Wallet\GetCharactersCharacterIdWalletTransactions;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 class CharacterWalletTransactionJob extends WalletTransactionBase
 {
+    protected const string OPERATION_CLASS = GetCharactersCharacterIdWalletTransactions::class;
+
     public function __construct(public int $character_id) {}
 
     #[\Override]
@@ -20,7 +23,7 @@ class CharacterWalletTransactionJob extends WalletTransactionBase
     #[\Override]
     protected function fetchTransactions(EsiClient $esi, ?int $fromId): EsiResult
     {
-        return $esi->wallet()->getCharactersCharacterIdWalletTransactions($this->character_id, $fromId);
+        return GetCharactersCharacterIdWalletTransactions::execute($esi, $this->character_id, $fromId);
     }
 
     #[\Override]

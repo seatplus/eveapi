@@ -3,11 +3,14 @@
 namespace Seatplus\Eveapi\Jobs\Universe;
 
 use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Resources\Universe\GetUniverseTypesTypeId;
 use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Models\Universe\Type;
 
 class ResolveUniverseTypeByIdJob extends EsiJob
 {
+    protected const string OPERATION_CLASS = GetUniverseTypesTypeId::class;
+
     public function __construct(private int $type_id) {}
 
     #[\Override]
@@ -19,7 +22,7 @@ class ResolveUniverseTypeByIdJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = $esi->universe()->getUniverseTypesTypeId($this->type_id);
+        $response = GetUniverseTypesTypeId::execute($esi, $this->type_id);
 
         Type::firstOrCreate(
             ['type_id' => $response->type_id],

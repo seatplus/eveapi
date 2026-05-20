@@ -4,12 +4,15 @@ namespace Seatplus\Eveapi\Jobs\Contacts;
 
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiSchema\EsiResult;
+use Seatplus\EsiSchema\Resources\Contacts\GetAlliancesAllianceIdContactsLabels;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\Contacts\ProcessContactLabelsResponse;
 
 class AllianceContactLabelJob extends ContactBaseJob
 {
+    protected const string OPERATION_CLASS = GetAlliancesAllianceIdContactsLabels::class;
+
     public function __construct(
         public int $alliance_id,
         public int $character_id,
@@ -24,7 +27,7 @@ class AllianceContactLabelJob extends ContactBaseJob
     #[\Override]
     protected function fetchPage(EsiClient $esi, int $page): EsiResult
     {
-        return $esi->contacts()->getAlliancesAllianceIdContactsLabels($this->alliance_id);
+        return GetAlliancesAllianceIdContactsLabels::execute($esi, $this->alliance_id);
     }
 
     #[\Override]

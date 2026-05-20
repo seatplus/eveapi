@@ -5,6 +5,7 @@ namespace Seatplus\Eveapi\Jobs\Contracts;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Resources\Contracts\GetCharactersCharacterIdContracts;
 use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
@@ -13,6 +14,8 @@ use Seatplus\Eveapi\Models\RefreshToken;
 
 class CharacterContractsJob extends EsiJob
 {
+    protected const string OPERATION_CLASS = GetCharactersCharacterIdContracts::class;
+
     public function __construct(public int $character_id) {}
 
     #[\Override]
@@ -33,7 +36,7 @@ class CharacterContractsJob extends EsiJob
         $contracts = collect();
         $page = 1;
         do {
-            $response = $esi->contracts()->getCharactersCharacterIdContracts($this->character_id, $page);
+            $response = GetCharactersCharacterIdContracts::execute($esi, $this->character_id, $page);
             if ($response->isCachedLoad) {
                 return;
             }

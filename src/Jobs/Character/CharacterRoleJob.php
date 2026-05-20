@@ -3,12 +3,15 @@
 namespace Seatplus\Eveapi\Jobs\Character;
 
 use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Resources\Character\GetCharactersCharacterIdRoles;
 use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Models\Character\CharacterRole;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 class CharacterRoleJob extends EsiJob
 {
+    protected const string OPERATION_CLASS = GetCharactersCharacterIdRoles::class;
+
     public function __construct(public int $character_id) {}
 
     #[\Override]
@@ -26,7 +29,7 @@ class CharacterRoleJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = $esi->characters()->getCharactersCharacterIdRoles($this->character_id);
+        $response = GetCharactersCharacterIdRoles::execute($esi, $this->character_id);
         if ($response->isCachedLoad) {
             return;
         }

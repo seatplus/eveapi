@@ -3,6 +3,7 @@
 namespace Seatplus\Eveapi\Jobs\Skills;
 
 use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Resources\Skills\GetCharactersCharacterIdSkills;
 use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
@@ -11,6 +12,8 @@ use Seatplus\Eveapi\Models\Skills\Skill;
 
 class SkillsJob extends EsiJob
 {
+    protected const string OPERATION_CLASS = GetCharactersCharacterIdSkills::class;
+
     public function __construct(private int $character_id) {}
 
     #[\Override]
@@ -28,7 +31,7 @@ class SkillsJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = $esi->skills()->getCharactersCharacterIdSkills($this->character_id);
+        $response = GetCharactersCharacterIdSkills::execute($esi, $this->character_id);
         if ($response->isCachedLoad) {
             return;
         }

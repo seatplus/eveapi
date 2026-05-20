@@ -3,6 +3,7 @@
 namespace Seatplus\Eveapi\Jobs\Corporation;
 
 use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Resources\Corporation\GetCorporationsCorporationIdMembertracking;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
@@ -13,6 +14,8 @@ use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 
 class CorporationMemberTrackingJob extends EsiJob
 {
+    protected const string OPERATION_CLASS = GetCorporationsCorporationIdMembertracking::class;
+
     public function __construct(public int $corporation_id) {}
 
     #[\Override]
@@ -33,7 +36,7 @@ class CorporationMemberTrackingJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = $esi->corporation()->getCorporationsCorporationIdMembertracking($this->corporation_id);
+        $response = GetCorporationsCorporationIdMembertracking::execute($esi, $this->corporation_id);
         if ($response->isCachedLoad) {
             return;
         }
