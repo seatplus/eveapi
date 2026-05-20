@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Event;
-use Seatplus\Eveapi\Jobs\Assets\EnrichAssetTypeGroupCategoryJob;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\EnrichAssetTypeGroupCategoryJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Universe\Category;
 use Seatplus\Eveapi\Models\Universe\Group;

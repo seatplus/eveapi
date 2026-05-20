@@ -1,9 +1,8 @@
 <?php
 
-namespace Seatplus\Eveapi\Jobs\Assets;
+namespace Seatplus\Eveapi\Jobs\Hydrate\Maintenance;
 
 use Illuminate\Database\Eloquent\Collection;
-use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\HydrateMaintenanceBase;
 use Seatplus\Eveapi\Models\Assets\Asset;
 
 class EnrichAssetTypeGroupCategoryJob extends HydrateMaintenanceBase

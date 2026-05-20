@@ -3,8 +3,8 @@
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
-use Seatplus\Eveapi\Jobs\Assets\EnrichAssetTypeGroupCategoryJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\EnrichAssetTypeGroupCategoryJob;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingBodysFromMails;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCategorys;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingCharacterInfosFromCorporationMemberTracking;

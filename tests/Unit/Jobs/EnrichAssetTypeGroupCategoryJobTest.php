@@ -1,6 +1,6 @@
 <?php
 
-use Seatplus\Eveapi\Jobs\Assets\EnrichAssetTypeGroupCategoryJob;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\EnrichAssetTypeGroupCategoryJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
 
 it('returns early if batch is cancelled', function () {
