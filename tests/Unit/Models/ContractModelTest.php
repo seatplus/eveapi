@@ -32,8 +32,8 @@ it('has inRegionScope', function (string $location_id) {
         'end_location_id' => $test_contract->end_location->locatable->system->region->region_id
     };
 
-    expect(Contract::filterByRegionIds($region_id)->get())->toHaveCount(1)
-        ->and(Contract::filterByRegionIds($region_id + 1)->get())->toHaveCount(0);
+    expect(Contract::query()->filterByRegionIds($region_id)->get())->toHaveCount(1)
+        ->and(Contract::query()->filterByRegionIds($region_id + 1)->get())->toHaveCount(0);
 })->with([
     'start_location_id',
     'end_location_id',
@@ -56,8 +56,8 @@ it('has inSystemScope', function (string $location_id) {
         'end_location_id' => $test_contract->end_location->locatable->system->system_id
     };
 
-    expect(Contract::filterBySystemIds($system_id)->get())->toHaveCount(1)
-        ->and(Contract::filterBySystemIds($system_id + 1)->get())->toHaveCount(0);
+    expect(Contract::query()->filterBySystemIds($system_id)->get())->toHaveCount(1)
+        ->and(Contract::query()->filterBySystemIds($system_id + 1)->get())->toHaveCount(0);
 })->with([
     'start_location_id',
     'end_location_id',
@@ -73,8 +73,8 @@ it('has ofTypes scope', function () {
     expect($item)
         ->type
         ->toBeInstanceOf(Type::class)
-        ->and(Contract::filterByTypeIds($item->type->type_id)->get())->toHaveCount(1)
-        ->and(Contract::filterByTypeIds($item->type->type_id + 1)->get())->toHaveCount(0);
+        ->and(Contract::query()->filterByTypeIds($item->type->type_id)->get())->toHaveCount(1)
+        ->and(Contract::query()->filterByTypeIds($item->type->type_id + 1)->get())->toHaveCount(0);
 
 });
 
@@ -88,8 +88,8 @@ it('has ofGroups scope', function () {
     expect($item)
         ->type->toBeInstanceOf(Type::class)
         ->type->group_id->toBeInt()
-        ->and(Contract::filterByGroupIds($item->type->group_id)->get())->toHaveCount(1)
-        ->and(Contract::filterByGroupIds($item->type->group_id + 1)->get())->toHaveCount(0);
+        ->and(Contract::query()->filterByGroupIds($item->type->group_id)->get())->toHaveCount(1)
+        ->and(Contract::query()->filterByGroupIds($item->type->group_id + 1)->get())->toHaveCount(0);
 
 });
 
@@ -107,8 +107,8 @@ it('has ofCategories scope', function () {
         ->type->toBeInstanceOf(Type::class)
         ->type->group->toBeInstanceOf(Group::class)
         ->type->group->category->toBeInstanceOf(Category::class)
-        ->and(Contract::filterByCategoryIds($item->type->group->category->category_id)->get())->toHaveCount(1)
-        ->and(Contract::filterByCategoryIds($item->type->group->category->category_id + 1)->get())->toHaveCount(0);
+        ->and(Contract::query()->filterByCategoryIds($item->type->group->category->category_id)->get())->toHaveCount(1)
+        ->and(Contract::query()->filterByCategoryIds($item->type->group->category->category_id + 1)->get())->toHaveCount(0);
 
 });
 
