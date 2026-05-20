@@ -55,7 +55,7 @@ abstract class WalletTransactionBase extends EsiJob
                     'client_id' => $item->client_id,
                     'date' => carbon($item->date),
                     'is_buy' => $item->is_buy,
-                    'is_personal' => isset($item->is_personal) ? $item->is_personal : null,
+                    'is_personal' => $item->is_personal ?? false,
                     'journal_ref_id' => $item->journal_ref_id,
                     'location_id' => $item->location_id,
                     'quantity' => $item->quantity,
