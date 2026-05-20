@@ -36,7 +36,7 @@ class CorporationMemberTrackingJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = GetCorporationsCorporationIdMembertracking::execute($esi, $this->corporation_id);
+        $response = static::OPERATION_CLASS::execute($esi, $this->corporation_id);
         if ($response->isCachedLoad) {
             return;
         }

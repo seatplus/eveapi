@@ -61,7 +61,7 @@ class CharacterAffiliationJob extends EsiJob
     {
         $timestamp = now();
         try {
-            $response = PostCharactersAffiliation::execute($esi, $characterIds);
+            $response = static::OPERATION_CLASS::execute($esi, $characterIds);
             foreach ($response->data as $result) {
                 $this->character_affiliations->push([
                     'character_id' => $result->character_id,

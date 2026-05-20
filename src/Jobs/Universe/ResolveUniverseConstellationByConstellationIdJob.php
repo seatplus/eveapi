@@ -22,7 +22,7 @@ class ResolveUniverseConstellationByConstellationIdJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = GetUniverseConstellationsConstellationId::execute($esi, $this->constellation_id);
+        $response = static::OPERATION_CLASS::execute($esi, $this->constellation_id);
 
         Constellation::firstOrCreate(
             ['constellation_id' => $response->constellation_id],

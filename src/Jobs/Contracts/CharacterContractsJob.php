@@ -36,7 +36,7 @@ class CharacterContractsJob extends EsiJob
         $contracts = collect();
         $page = 1;
         do {
-            $response = GetCharactersCharacterIdContracts::execute($esi, $this->character_id, $page);
+            $response = static::OPERATION_CLASS::execute($esi, $this->character_id, $page);
             if ($response->isCachedLoad) {
                 return;
             }

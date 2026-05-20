@@ -23,7 +23,7 @@ class CharacterWalletJournalJob extends WalletJournalBase
     #[\Override]
     protected function fetchPage(EsiClient $esi, int $page): EsiResult
     {
-        return GetCharactersCharacterIdWalletJournal::execute($esi, $this->character_id, $page);
+        return static::OPERATION_CLASS::execute($esi, $this->character_id, $page);
     }
 
     #[\Override]

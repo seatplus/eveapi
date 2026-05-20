@@ -34,7 +34,7 @@ class CorporationWalletJournalByDivisionJob extends WalletJournalBase
     #[\Override]
     protected function fetchPage(EsiClient $esi, int $page): EsiResult
     {
-        return GetCorporationsCorporationIdWalletsDivisionJournal::execute($esi, $this->corporation_id, $this->division, $page);
+        return static::OPERATION_CLASS::execute($esi, $this->corporation_id, $this->division, $page);
     }
 
     #[\Override]

@@ -29,7 +29,7 @@ class MailBodyJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = GetCharactersCharacterIdMailMailId::execute($esi, $this->character_id, $this->mail_id);
+        $response = static::OPERATION_CLASS::execute($esi, $this->character_id, $this->mail_id);
         if ($response->isCachedLoad) {
             return;
         }

@@ -23,7 +23,7 @@ class CharacterWalletTransactionJob extends WalletTransactionBase
     #[\Override]
     protected function fetchTransactions(EsiClient $esi, ?int $fromId): EsiResult
     {
-        return GetCharactersCharacterIdWalletTransactions::execute($esi, $this->character_id, $fromId);
+        return static::OPERATION_CLASS::execute($esi, $this->character_id, $fromId);
     }
 
     #[\Override]

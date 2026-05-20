@@ -22,7 +22,7 @@ class ResolveUniverseRegionByRegionIdJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = GetUniverseRegionsRegionId::execute($esi, $this->region_id);
+        $response = static::OPERATION_CLASS::execute($esi, $this->region_id);
 
         Region::firstOrCreate(
             ['region_id' => $response->region_id],

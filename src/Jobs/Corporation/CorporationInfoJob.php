@@ -22,7 +22,7 @@ class CorporationInfoJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = GetCorporationsCorporationId::execute($esi, $this->corporation_id);
+        $response = static::OPERATION_CLASS::execute($esi, $this->corporation_id);
         if ($response->isCachedLoad) {
             return;
         }

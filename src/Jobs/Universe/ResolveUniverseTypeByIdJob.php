@@ -22,7 +22,7 @@ class ResolveUniverseTypeByIdJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = GetUniverseTypesTypeId::execute($esi, $this->type_id);
+        $response = static::OPERATION_CLASS::execute($esi, $this->type_id);
 
         Type::firstOrCreate(
             ['type_id' => $response->type_id],

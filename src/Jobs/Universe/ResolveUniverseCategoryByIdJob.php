@@ -22,7 +22,7 @@ class ResolveUniverseCategoryByIdJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = GetUniverseCategoriesCategoryId::execute($esi, $this->category_id);
+        $response = static::OPERATION_CLASS::execute($esi, $this->category_id);
 
         Category::firstOrCreate(
             ['category_id' => $response->category_id],

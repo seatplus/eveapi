@@ -22,7 +22,7 @@ class ResolveUniverseSystemBySystemIdJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = GetUniverseSystemsSystemId::execute($esi, $this->system_id);
+        $response = static::OPERATION_CLASS::execute($esi, $this->system_id);
 
         System::firstOrCreate(
             ['system_id' => $response->system_id],

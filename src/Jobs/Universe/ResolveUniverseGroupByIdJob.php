@@ -22,7 +22,7 @@ class ResolveUniverseGroupByIdJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = GetUniverseGroupsGroupId::execute($esi, $this->group_id);
+        $response = static::OPERATION_CLASS::execute($esi, $this->group_id);
 
         Group::firstOrCreate(
             ['group_id' => $response->group_id],

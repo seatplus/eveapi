@@ -26,7 +26,7 @@ class AllianceInfoJob extends EsiJob
             return;
         }
 
-        $response = GetAlliancesAllianceId::execute($esi, $this->alliance_id);
+        $response = static::OPERATION_CLASS::execute($esi, $this->alliance_id);
         if ($response->isCachedLoad) {
             return;
         }

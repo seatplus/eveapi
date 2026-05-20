@@ -40,7 +40,7 @@ class CharacterAssetJob extends EsiJob
     {
         $page = 1;
         do {
-            $response = GetCharactersCharacterIdAssets::execute($esi, $this->character_id, $page);
+            $response = self::OPERATION_CLASS::execute($esi, $this->character_id, $page);
             if ($response->isCachedLoad) {
                 return;
             }

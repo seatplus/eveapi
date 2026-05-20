@@ -29,7 +29,7 @@ class ResolveUniverseStationByIdJob extends EsiJob
             return;
         }
 
-        $response = GetUniverseStationsStationId::execute($esi, $this->location_id);
+        $response = static::OPERATION_CLASS::execute($esi, $this->location_id);
 
         Station::updateOrCreate(['station_id' => $this->location_id], [
             'type_id' => $response->type_id,

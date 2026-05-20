@@ -48,7 +48,7 @@ class ResolveUniverseStructureByIdJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = GetUniverseStructuresStructureId::execute($esi, $this->location_id);
+        $response = static::OPERATION_CLASS::execute($esi, $this->location_id);
         if ($response->isCachedLoad) {
             return;
         }

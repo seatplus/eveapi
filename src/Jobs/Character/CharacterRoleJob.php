@@ -29,7 +29,7 @@ class CharacterRoleJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = GetCharactersCharacterIdRoles::execute($esi, $this->character_id);
+        $response = static::OPERATION_CLASS::execute($esi, $this->character_id);
         if ($response->isCachedLoad) {
             return;
         }

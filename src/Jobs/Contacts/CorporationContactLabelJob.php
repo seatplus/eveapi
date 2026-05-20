@@ -27,7 +27,7 @@ class CorporationContactLabelJob extends ContactBaseJob
     #[\Override]
     protected function fetchPage(EsiClient $esi, int $page): EsiResult
     {
-        return GetCorporationsCorporationIdContactsLabels::execute($esi, $this->corporation_id);
+        return static::OPERATION_CLASS::execute($esi, $this->corporation_id);
     }
 
     #[\Override]

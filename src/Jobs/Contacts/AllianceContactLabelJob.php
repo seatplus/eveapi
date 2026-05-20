@@ -27,7 +27,7 @@ class AllianceContactLabelJob extends ContactBaseJob
     #[\Override]
     protected function fetchPage(EsiClient $esi, int $page): EsiResult
     {
-        return GetAlliancesAllianceIdContactsLabels::execute($esi, $this->alliance_id);
+        return static::OPERATION_CLASS::execute($esi, $this->alliance_id);
     }
 
     #[\Override]

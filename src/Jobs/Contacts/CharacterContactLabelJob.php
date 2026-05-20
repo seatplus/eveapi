@@ -24,7 +24,7 @@ class CharacterContactLabelJob extends ContactBaseJob
     #[\Override]
     protected function fetchPage(EsiClient $esi, int $page): EsiResult
     {
-        return GetCharactersCharacterIdContactsLabels::execute($esi, $this->character_id);
+        return static::OPERATION_CLASS::execute($esi, $this->character_id);
     }
 
     #[\Override]

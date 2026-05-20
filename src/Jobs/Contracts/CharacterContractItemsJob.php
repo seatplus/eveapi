@@ -25,7 +25,7 @@ class CharacterContractItemsJob extends ContractItemsJob
     #[\Override]
     protected function fetchItems(EsiClient $esi): EsiResult
     {
-        return GetCharactersCharacterIdContractsContractIdItems::execute($esi, $this->character_id, $this->contract_id);
+        return static::OPERATION_CLASS::execute($esi, $this->character_id, $this->contract_id);
     }
 
     #[\Override]

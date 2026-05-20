@@ -34,7 +34,7 @@ class CorporationWalletTransactionByDivisionJob extends WalletTransactionBase
     #[\Override]
     protected function fetchTransactions(EsiClient $esi, ?int $fromId): EsiResult
     {
-        return GetCorporationsCorporationIdWalletsDivisionTransactions::execute($esi, $this->corporation_id, $this->division, $fromId);
+        return static::OPERATION_CLASS::execute($esi, $this->corporation_id, $this->division, $fromId);
     }
 
     #[\Override]

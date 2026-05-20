@@ -63,7 +63,7 @@ class CharacterAssetsNameJob extends EsiJob
             ->pluck('item_id')
             ->chunk(1000)
             ->each(function (Collection $itemIds) use ($esi) {
-                $response = PostCharactersCharacterIdAssetsNames::execute(
+                $response = static::OPERATION_CLASS::execute(
                     $esi,
                     $itemIds->values()->toArray(),
                     $this->character_id
