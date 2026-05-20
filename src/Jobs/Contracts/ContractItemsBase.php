@@ -9,7 +9,7 @@ use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Contracts\ContractItem;
 
-abstract class ContractItemsJob extends EsiJob implements ShouldBeUnique
+abstract class ContractItemsBase extends EsiJob implements ShouldBeUnique
 {
     public int $contract_id;
 

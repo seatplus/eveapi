@@ -7,7 +7,7 @@ use Seatplus\EsiSchema\Resources\Character\GetCharactersCharacterId;
 use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
-class CharacterInfoJob extends EsiJob
+final class CharacterInfoJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetCharactersCharacterId::class;
 
@@ -22,7 +22,7 @@ class CharacterInfoJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = static::OPERATION_CLASS::execute($esi, $this->character_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->character_id);
         if ($response->isCachedLoad) {
             return;
         }

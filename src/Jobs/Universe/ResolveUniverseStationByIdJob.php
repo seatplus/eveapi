@@ -8,7 +8,7 @@ use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
 
-class ResolveUniverseStationByIdJob extends EsiJob
+final class ResolveUniverseStationByIdJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetUniverseStationsStationId::class;
 
@@ -29,7 +29,7 @@ class ResolveUniverseStationByIdJob extends EsiJob
             return;
         }
 
-        $response = static::OPERATION_CLASS::execute($esi, $this->location_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->location_id);
 
         Station::updateOrCreate(['station_id' => $this->location_id], [
             'type_id' => $response->type_id,

@@ -7,7 +7,7 @@ use Seatplus\EsiSchema\Resources\Universe\GetUniverseCategoriesCategoryId;
 use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Models\Universe\Category;
 
-class ResolveUniverseCategoryByIdJob extends EsiJob
+final class ResolveUniverseCategoryByIdJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetUniverseCategoriesCategoryId::class;
 
@@ -22,7 +22,7 @@ class ResolveUniverseCategoryByIdJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = static::OPERATION_CLASS::execute($esi, $this->category_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->category_id);
 
         Category::firstOrCreate(
             ['category_id' => $response->category_id],

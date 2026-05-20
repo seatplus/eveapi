@@ -9,7 +9,7 @@ use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\Contacts\ProcessContactResponse;
 
-class AllianceContactJob extends ContactBaseJob
+final class AllianceContactJob extends ContactBaseJob
 {
     protected const string OPERATION_CLASS = GetAlliancesAllianceIdContacts::class;
 
@@ -19,7 +19,7 @@ class AllianceContactJob extends ContactBaseJob
     ) {}
 
     #[\Override]
-    public function getRefreshToken(): ?RefreshToken
+    public function getRefreshToken(): RefreshToken
     {
         return RefreshToken::findOrFail($this->character_id);
     }
@@ -27,7 +27,7 @@ class AllianceContactJob extends ContactBaseJob
     #[\Override]
     protected function fetchPage(EsiClient $esi, int $page): EsiResult
     {
-        return static::OPERATION_CLASS::execute($esi, $this->alliance_id, $page);
+        return self::OPERATION_CLASS::execute($esi, $this->alliance_id, $page);
     }
 
     #[\Override]

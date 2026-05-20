@@ -9,14 +9,14 @@ use Seatplus\Eveapi\Models\Corporation\CorporationDivision;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 
-class CorporationDivisionsJob extends EsiJob
+final class CorporationDivisionsJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetCorporationsCorporationIdDivisions::class;
 
     public function __construct(public int $corporation_id) {}
 
     #[\Override]
-    public function getRefreshToken(): ?RefreshToken
+    public function getRefreshToken(): RefreshToken
     {
         $token = (new FindCorporationRefreshToken)($this->corporation_id, 'esi-corporations.read_divisions.v1', 'Director');
         throw_unless($token, new \Exception("No eligible refresh token found for corporation {$this->corporation_id}"));
@@ -33,7 +33,7 @@ class CorporationDivisionsJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = static::OPERATION_CLASS::execute($esi, $this->corporation_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->corporation_id);
         if ($response->isCachedLoad) {
             return;
         }

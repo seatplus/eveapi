@@ -10,7 +10,7 @@ use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\RefreshToken;
 
-class CharacterAssetsNameJob extends EsiJob
+final class CharacterAssetsNameJob extends EsiJob
 {
     protected const string OPERATION_CLASS = PostCharactersCharacterIdAssetsNames::class;
 
@@ -34,7 +34,7 @@ class CharacterAssetsNameJob extends EsiJob
     }
 
     #[\Override]
-    public function getRefreshToken(): ?RefreshToken
+    public function getRefreshToken(): RefreshToken
     {
         return RefreshToken::findOrFail($this->character_id);
     }

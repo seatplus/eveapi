@@ -9,14 +9,14 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Wallet\Balance;
 
-class CharacterBalanceJob extends EsiJob
+final class CharacterBalanceJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetCharactersCharacterIdWallet::class;
 
     public function __construct(public int $character_id) {}
 
     #[\Override]
-    public function getRefreshToken(): ?RefreshToken
+    public function getRefreshToken(): RefreshToken
     {
         return RefreshToken::findOrFail($this->character_id);
     }
@@ -30,7 +30,7 @@ class CharacterBalanceJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = static::OPERATION_CLASS::execute($esi, $this->character_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->character_id);
         if ($response->isCachedLoad) {
             return;
         }

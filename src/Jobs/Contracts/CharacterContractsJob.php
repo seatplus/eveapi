@@ -12,14 +12,14 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\RefreshToken;
 
-class CharacterContractsJob extends EsiJob
+final class CharacterContractsJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetCharactersCharacterIdContracts::class;
 
     public function __construct(public int $character_id) {}
 
     #[\Override]
-    public function getRefreshToken(): ?RefreshToken
+    public function getRefreshToken(): RefreshToken
     {
         return RefreshToken::findOrFail($this->character_id);
     }
@@ -36,7 +36,7 @@ class CharacterContractsJob extends EsiJob
         $contracts = collect();
         $page = 1;
         do {
-            $response = static::OPERATION_CLASS::execute($esi, $this->character_id, $page);
+            $response = self::OPERATION_CLASS::execute($esi, $this->character_id, $page);
             if ($response->isCachedLoad) {
                 return;
             }

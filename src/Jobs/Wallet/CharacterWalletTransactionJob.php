@@ -8,14 +8,14 @@ use Seatplus\EsiSchema\Resources\Wallet\GetCharactersCharacterIdWalletTransactio
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 
-class CharacterWalletTransactionJob extends WalletTransactionBase
+final class CharacterWalletTransactionJob extends WalletTransactionBase
 {
     protected const string OPERATION_CLASS = GetCharactersCharacterIdWalletTransactions::class;
 
     public function __construct(public int $character_id) {}
 
     #[\Override]
-    public function getRefreshToken(): ?RefreshToken
+    public function getRefreshToken(): RefreshToken
     {
         return RefreshToken::findOrFail($this->character_id);
     }
@@ -23,7 +23,7 @@ class CharacterWalletTransactionJob extends WalletTransactionBase
     #[\Override]
     protected function fetchTransactions(EsiClient $esi, ?int $fromId): EsiResult
     {
-        return static::OPERATION_CLASS::execute($esi, $this->character_id, $fromId);
+        return self::OPERATION_CLASS::execute($esi, $this->character_id, $fromId);
     }
 
     #[\Override]

@@ -7,7 +7,7 @@ use Seatplus\EsiSchema\Resources\Universe\GetUniverseSystemsSystemId;
 use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Models\Universe\System;
 
-class ResolveUniverseSystemBySystemIdJob extends EsiJob
+final class ResolveUniverseSystemBySystemIdJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetUniverseSystemsSystemId::class;
 
@@ -22,7 +22,7 @@ class ResolveUniverseSystemBySystemIdJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = static::OPERATION_CLASS::execute($esi, $this->system_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->system_id);
 
         System::firstOrCreate(
             ['system_id' => $response->system_id],

@@ -7,7 +7,7 @@ use Seatplus\EsiSchema\Resources\Corporation\GetCorporationsCorporationId;
 use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
-class CorporationInfoJob extends EsiJob
+final class CorporationInfoJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetCorporationsCorporationId::class;
 
@@ -22,7 +22,7 @@ class CorporationInfoJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = static::OPERATION_CLASS::execute($esi, $this->corporation_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->corporation_id);
         if ($response->isCachedLoad) {
             return;
         }

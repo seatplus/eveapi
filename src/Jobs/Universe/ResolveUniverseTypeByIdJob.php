@@ -7,7 +7,7 @@ use Seatplus\EsiSchema\Resources\Universe\GetUniverseTypesTypeId;
 use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Models\Universe\Type;
 
-class ResolveUniverseTypeByIdJob extends EsiJob
+final class ResolveUniverseTypeByIdJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetUniverseTypesTypeId::class;
 
@@ -22,7 +22,7 @@ class ResolveUniverseTypeByIdJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = static::OPERATION_CLASS::execute($esi, $this->type_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->type_id);
 
         Type::firstOrCreate(
             ['type_id' => $response->type_id],

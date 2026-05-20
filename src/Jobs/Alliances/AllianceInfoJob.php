@@ -7,7 +7,7 @@ use Seatplus\EsiSchema\Resources\Alliance\GetAlliancesAllianceId;
 use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 
-class AllianceInfoJob extends EsiJob
+final class AllianceInfoJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetAlliancesAllianceId::class;
 
@@ -26,7 +26,7 @@ class AllianceInfoJob extends EsiJob
             return;
         }
 
-        $response = static::OPERATION_CLASS::execute($esi, $this->alliance_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->alliance_id);
         if ($response->isCachedLoad) {
             return;
         }

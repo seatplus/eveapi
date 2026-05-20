@@ -9,14 +9,14 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\Contacts\ProcessContactLabelsResponse;
 
-class CharacterContactLabelJob extends ContactBaseJob
+final class CharacterContactLabelJob extends ContactBaseJob
 {
     protected const string OPERATION_CLASS = GetCharactersCharacterIdContactsLabels::class;
 
     public function __construct(public int $character_id) {}
 
     #[\Override]
-    public function getRefreshToken(): ?RefreshToken
+    public function getRefreshToken(): RefreshToken
     {
         return RefreshToken::findOrFail($this->character_id);
     }
@@ -24,7 +24,7 @@ class CharacterContactLabelJob extends ContactBaseJob
     #[\Override]
     protected function fetchPage(EsiClient $esi, int $page): EsiResult
     {
-        return static::OPERATION_CLASS::execute($esi, $this->character_id);
+        return self::OPERATION_CLASS::execute($esi, $this->character_id);
     }
 
     #[\Override]

@@ -13,14 +13,14 @@ use Seatplus\Eveapi\Models\Mail\Mail;
 use Seatplus\Eveapi\Models\Mail\MailRecipients;
 use Seatplus\Eveapi\Models\RefreshToken;
 
-class MailHeaderJob extends EsiJob
+final class MailHeaderJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetCharactersCharacterIdMail::class;
 
     public function __construct(public int $character_id) {}
 
     #[\Override]
-    public function getRefreshToken(): ?RefreshToken
+    public function getRefreshToken(): RefreshToken
     {
         return RefreshToken::findOrFail($this->character_id);
     }
@@ -38,7 +38,7 @@ class MailHeaderJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = static::OPERATION_CLASS::execute($esi, $this->character_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->character_id);
         if ($response->isCachedLoad) {
             return;
         }

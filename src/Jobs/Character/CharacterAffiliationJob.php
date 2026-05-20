@@ -12,7 +12,7 @@ use Seatplus\Eveapi\Jobs\Corporation\CorporationInfoJob;
 use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 
-class CharacterAffiliationJob extends EsiJob
+final class CharacterAffiliationJob extends EsiJob
 {
     protected const string OPERATION_CLASS = PostCharactersAffiliation::class;
 
@@ -61,7 +61,7 @@ class CharacterAffiliationJob extends EsiJob
     {
         $timestamp = now();
         try {
-            $response = static::OPERATION_CLASS::execute($esi, $characterIds);
+            $response = self::OPERATION_CLASS::execute($esi, $characterIds);
             foreach ($response->data as $result) {
                 $this->character_affiliations->push([
                     'character_id' => $result->character_id,

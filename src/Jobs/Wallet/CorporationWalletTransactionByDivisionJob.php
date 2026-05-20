@@ -9,7 +9,7 @@ use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 
-class CorporationWalletTransactionByDivisionJob extends WalletTransactionBase
+final class CorporationWalletTransactionByDivisionJob extends WalletTransactionBase
 {
     protected const string OPERATION_CLASS = GetCorporationsCorporationIdWalletsDivisionTransactions::class;
 
@@ -19,7 +19,7 @@ class CorporationWalletTransactionByDivisionJob extends WalletTransactionBase
     ) {}
 
     #[\Override]
-    public function getRefreshToken(): ?RefreshToken
+    public function getRefreshToken(): RefreshToken
     {
         $token = (new FindCorporationRefreshToken)(
             $this->corporation_id,
@@ -34,7 +34,7 @@ class CorporationWalletTransactionByDivisionJob extends WalletTransactionBase
     #[\Override]
     protected function fetchTransactions(EsiClient $esi, ?int $fromId): EsiResult
     {
-        return static::OPERATION_CLASS::execute($esi, $this->corporation_id, $this->division, $fromId);
+        return self::OPERATION_CLASS::execute($esi, $this->corporation_id, $this->division, $fromId);
     }
 
     #[\Override]
@@ -50,7 +50,7 @@ class CorporationWalletTransactionByDivisionJob extends WalletTransactionBase
     }
 
     #[\Override]
-    protected function division(): ?int
+    protected function division(): int
     {
         return $this->division;
     }

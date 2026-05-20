@@ -7,7 +7,7 @@ use Seatplus\EsiSchema\Resources\Universe\GetUniverseGroupsGroupId;
 use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Models\Universe\Group;
 
-class ResolveUniverseGroupByIdJob extends EsiJob
+final class ResolveUniverseGroupByIdJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetUniverseGroupsGroupId::class;
 
@@ -22,7 +22,7 @@ class ResolveUniverseGroupByIdJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = static::OPERATION_CLASS::execute($esi, $this->group_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->group_id);
 
         Group::firstOrCreate(
             ['group_id' => $response->group_id],

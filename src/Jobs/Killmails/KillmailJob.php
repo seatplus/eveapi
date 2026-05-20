@@ -13,7 +13,7 @@ use Seatplus\Eveapi\Models\Killmails\KillmailAttacker;
 use Seatplus\Eveapi\Models\Killmails\KillmailItem;
 use Seatplus\Eveapi\Services\Jobs\GetLocationFlagNameService;
 
-class KillmailJob extends EsiJob
+final class KillmailJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetKillmailsKillmailIdKillmailHash::class;
 
@@ -31,7 +31,7 @@ class KillmailJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = static::OPERATION_CLASS::execute($esi, $this->killmail_hash, $this->killmail_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->killmail_hash, $this->killmail_id);
         if ($response->isCachedLoad) {
             return;
         }

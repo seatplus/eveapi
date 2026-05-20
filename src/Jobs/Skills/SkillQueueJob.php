@@ -9,14 +9,14 @@ use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Skills\SkillQueue;
 
-class SkillQueueJob extends EsiJob
+final class SkillQueueJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetCharactersCharacterIdSkillqueue::class;
 
     public function __construct(private int $character_id) {}
 
     #[\Override]
-    public function getRefreshToken(): ?RefreshToken
+    public function getRefreshToken(): RefreshToken
     {
         return RefreshToken::findOrFail($this->character_id);
     }
@@ -30,7 +30,7 @@ class SkillQueueJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = static::OPERATION_CLASS::execute($esi, $this->character_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->character_id);
         if ($response->isCachedLoad) {
             return;
         }

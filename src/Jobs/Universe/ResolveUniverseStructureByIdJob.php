@@ -11,7 +11,7 @@ use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Structure;
 
-class ResolveUniverseStructureByIdJob extends EsiJob
+final class ResolveUniverseStructureByIdJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetUniverseStructuresStructureId::class;
 
@@ -40,7 +40,7 @@ class ResolveUniverseStructureByIdJob extends EsiJob
     }
 
     #[\Override]
-    public function getRefreshToken(): ?RefreshToken
+    public function getRefreshToken(): RefreshToken
     {
         return RefreshToken::findOrFail($this->character_id);
     }
@@ -48,7 +48,7 @@ class ResolveUniverseStructureByIdJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = static::OPERATION_CLASS::execute($esi, $this->location_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->location_id);
         if ($response->isCachedLoad) {
             return;
         }

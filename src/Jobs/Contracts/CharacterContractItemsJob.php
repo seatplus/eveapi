@@ -7,7 +7,7 @@ use Seatplus\EsiSchema\EsiResult;
 use Seatplus\EsiSchema\Resources\Contracts\GetCharactersCharacterIdContractsContractIdItems;
 use Seatplus\Eveapi\Models\RefreshToken;
 
-class CharacterContractItemsJob extends ContractItemsJob
+final class CharacterContractItemsJob extends ContractItemsBase
 {
     protected const string OPERATION_CLASS = GetCharactersCharacterIdContractsContractIdItems::class;
 
@@ -17,7 +17,7 @@ class CharacterContractItemsJob extends ContractItemsJob
     ) {}
 
     #[\Override]
-    public function getRefreshToken(): ?RefreshToken
+    public function getRefreshToken(): RefreshToken
     {
         return RefreshToken::findOrFail($this->character_id);
     }
@@ -25,7 +25,7 @@ class CharacterContractItemsJob extends ContractItemsJob
     #[\Override]
     protected function fetchItems(EsiClient $esi): EsiResult
     {
-        return static::OPERATION_CLASS::execute($esi, $this->character_id, $this->contract_id);
+        return self::OPERATION_CLASS::execute($esi, $this->character_id, $this->contract_id);
     }
 
     #[\Override]

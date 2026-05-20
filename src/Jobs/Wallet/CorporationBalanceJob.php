@@ -11,14 +11,14 @@ use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Wallet\Balance;
 use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 
-class CorporationBalanceJob extends EsiJob
+final class CorporationBalanceJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetCorporationsCorporationIdWallets::class;
 
     public function __construct(public int $corporation_id) {}
 
     #[\Override]
-    public function getRefreshToken(): ?RefreshToken
+    public function getRefreshToken(): RefreshToken
     {
         $token = (new FindCorporationRefreshToken)(
             $this->corporation_id,
@@ -39,7 +39,7 @@ class CorporationBalanceJob extends EsiJob
     #[\Override]
     protected function executeJob(EsiClient $esi): void
     {
-        $response = static::OPERATION_CLASS::execute($esi, $this->corporation_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->corporation_id);
         if ($response->isCachedLoad) {
             return;
         }
