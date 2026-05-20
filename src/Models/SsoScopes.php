@@ -26,23 +26,25 @@
 
 namespace Seatplus\Eveapi\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
+#[Fillable(['selected_scopes', 'morphable_type', 'morphable_id', 'type'])]
 class SsoScopes extends Model
 {
     use HasFactory;
-
-    protected $fillable = ['selected_scopes', 'morphable_type', 'morphable_id', 'type'];
 
     public function morphable(): MorphTo
     {
         return $this->morphTo();
     }
 
-    public function scopeGlobal(Builder $query): Builder
+    #[Scope]
+    protected function global(Builder $query): Builder
     {
         return $query->where('type', 'global');
     }

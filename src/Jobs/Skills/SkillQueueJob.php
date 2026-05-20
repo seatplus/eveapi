@@ -13,7 +13,7 @@ final class SkillQueueJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetCharactersCharacterIdSkillqueue::class;
 
-    public function __construct(private int $character_id) {}
+    public function __construct(private readonly int $character_id) {}
 
     #[\Override]
     public function getRefreshToken(): RefreshToken

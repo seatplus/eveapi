@@ -2,6 +2,7 @@
 
 namespace Seatplus\Eveapi\Jobs\Universe;
 
+use Illuminate\Queue\Attributes\MaxExceptions;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiSchema\Resources\Universe\GetUniverseStructuresStructureId;
@@ -11,11 +12,10 @@ use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Structure;
 
+#[MaxExceptions(1)]
 final class ResolveUniverseStructureByIdJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetUniverseStructuresStructureId::class;
-
-    public int $maxExceptions = 1;
 
     public function __construct(
         public int $character_id,

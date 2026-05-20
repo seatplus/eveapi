@@ -28,13 +28,9 @@ namespace Seatplus\Eveapi\Jobs;
 
 use Exception;
 use Illuminate\Bus\Batchable;
-use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiClient\Exceptions\EsiErrorLimitedException;
@@ -47,10 +43,7 @@ use Seatplus\Eveapi\Services\Esi\RecordingEsiClient;
 abstract class EsiJob implements ShouldBeUnique, ShouldQueue
 {
     use Batchable;
-    use Dispatchable;
-    use InteractsWithQueue;
-    use Queueable;
-    use SerializesModels;
+    use \Illuminate\Foundation\Queue\Queueable;
 
     /**
      * The number of times the job may be attempted.

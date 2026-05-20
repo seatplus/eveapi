@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Models\Assets;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -86,19 +87,22 @@ class Asset extends Model implements TypeWatchListInterface
         return $this->hasOne(Location::class, 'location_id', 'location_id');
     }
 
-    public function scopeAssetsLocationIds(Builder $query): Builder
+    #[Scope]
+    protected function assetsLocationIds(Builder $query): Builder
     {
         return $query->whereIn('location_flag', ['Hangar', 'AssetSafety', 'Deliveries'])
             ->addSelect('location_id');
     }
 
-    public function scopeWithoutAssetSafety(Builder $query): Builder
+    #[Scope]
+    protected function withoutAssetSafety(Builder $query): Builder
     {
         return $query->where('location_id', '<>', self::ASSET_SAFETY);
     }
 
     #[\Override]
-    public function scopeFilterByTypeIds(Builder $query, int|array $types): Builder
+    #[Scope]
+    public function filterByTypeIds(Builder $query, int|array $types): Builder
     {
         $type_ids = is_array($types) ? $types : [$types];
 
@@ -106,7 +110,8 @@ class Asset extends Model implements TypeWatchListInterface
     }
 
     #[\Override]
-    public function scopeFilterByGroupIds(Builder $query, int|array $groups): Builder
+    #[Scope]
+    public function filterByGroupIds(Builder $query, int|array $groups): Builder
     {
         $group_ids = is_array($groups) ? $groups : [$groups];
 
@@ -114,7 +119,8 @@ class Asset extends Model implements TypeWatchListInterface
     }
 
     #[\Override]
-    public function scopeFilterByCategoryIds(Builder $query, int|array $categories): Builder
+    #[Scope]
+    public function filterByCategoryIds(Builder $query, int|array $categories): Builder
     {
         $category_ids = is_array($categories) ? $categories : [$categories];
 

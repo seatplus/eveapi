@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Models\Recruitment;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
@@ -48,27 +49,24 @@ class Enlistments extends Model
         return $this->belongsTo(CorporationInfo::class, 'corporation_id', 'corporation_id');
     }
 
-    public function getStepsCountAttribute(): int
+    protected function stepsCount(): Attribute
     {
-        return count($this->steps);
+        return Attribute::make(get: fn () => count($this->steps));
     }
 
-    public function getStepsAttribute(?string $value): array
+    /** @return Attribute<array<string>, string> */
+    protected function steps(): Attribute
     {
+        return Attribute::make(get: function (?string $value) {
+            // if value is an empty string return array with 'open' as first element
+            if (empty($value)) {
+                return ['Open'];
+            }
 
-        // if value is an empty string return array with 'open' as first element
-        if (empty($value)) {
-            return ['Open'];
-        }
-
-        return explode('; ', $value);
-    }
-
-    public function setStepsAttribute(string $value): void
-    {
-        $this->attributes['steps'] = collect(explode(';', $value))
+            return explode('; ', $value);
+        }, set: fn (string $value) => ['steps' => collect(explode(';', $value))
             ->filter()
             ->map(fn (string $step) => trim($step))
-            ->implode('; ');
+            ->implode('; ')]);
     }
 }

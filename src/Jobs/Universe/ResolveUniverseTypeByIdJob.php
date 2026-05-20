@@ -11,7 +11,7 @@ final class ResolveUniverseTypeByIdJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetUniverseTypesTypeId::class;
 
-    public function __construct(private int $type_id) {}
+    public function __construct(private readonly int $type_id) {}
 
     #[\Override]
     public function tags(): array

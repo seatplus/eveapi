@@ -35,7 +35,7 @@ it('recordResponse writes rate-limit state to Redis keyed by group:charId', func
 
     EsiProactiveRateLimitMiddleware::recordResponse(1200, 'characters', '12345678');
 
-    $stored = json_decode(Redis::get('esi_ratelimit:characters:12345678'), true);
+    $stored = json_decode((string) Redis::get('esi_ratelimit:characters:12345678'), true);
 
     expect($stored)->toHaveKey('remaining')
         ->and($stored['remaining'])->toBe(1200)
@@ -47,7 +47,7 @@ it('recordResponse defaults to global:public when no group/charId given', functi
 
     EsiProactiveRateLimitMiddleware::recordResponse(900);
 
-    $stored = json_decode(Redis::get('esi_ratelimit:global:public'), true);
+    $stored = json_decode((string) Redis::get('esi_ratelimit:global:public'), true);
 
     expect($stored)->not->toBeNull()
         ->and($stored['remaining'])->toBe(900);
@@ -203,7 +203,7 @@ it('recordErrorLimitResponse writes error-limit state to Redis', function (): vo
 
     EsiProactiveRateLimitMiddleware::recordErrorLimitResponse(remaining: 45, resetIn: 30);
 
-    $stored = json_decode(Redis::get('esi_errorlimit:global'), true);
+    $stored = json_decode((string) Redis::get('esi_errorlimit:global'), true);
 
     expect($stored)->toHaveKey('remaining')
         ->and($stored['remaining'])->toBe(45)

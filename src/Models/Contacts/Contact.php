@@ -26,7 +26,9 @@
 
 namespace Seatplus\Eveapi\Models\Contacts;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -50,28 +52,31 @@ class Contact extends Model
         return $this->hasMany(ContactLabel::class);
     }
 
-    public function scopeEntityFilter(Builder $query, array $contactable_ids): Builder
+    #[Scope]
+    protected function entityFilter(Builder $query, array $contactable_ids): Builder
     {
         return $query->whereIn('contactable_id', $contactable_ids);
     }
 
-    public function getAffiliationAttribute(): ?CharacterAffiliation
+    protected function affiliation(): Attribute
     {
-        $this->loadMissing([
-            'character_affiliation',
-            'corporation_affiliation',
-            'alliance_affiliation',
-            'faction_affiliation',
-        ]);
+        return Attribute::make(get: function () {
+            $this->loadMissing([
+                'character_affiliation',
+                'corporation_affiliation',
+                'alliance_affiliation',
+                'faction_affiliation',
+            ]);
 
-        return collect([
-            $this->character_affiliation,
-            $this->corporation_affiliation,
-            $this->alliance_affiliation,
-            $this->faction_affiliation,
-        ])
-            ->filter()
-            ->first();
+            return collect([
+                $this->character_affiliation,
+                $this->corporation_affiliation,
+                $this->alliance_affiliation,
+                $this->faction_affiliation,
+            ])
+                ->filter()
+                ->first();
+        });
     }
 
     /** @return HasOne<CharacterAffiliation, $this> */

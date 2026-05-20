@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 interface LocationWatchListInterface
 {
-    public function scopeFilterByRegionIds(Builder $query, int|array $regions): Builder;
+    public function filterByRegionIds(Builder $query, int|array $regions): Builder;
 
-    public function scopeFilterBySystemIds(Builder $query, int|array $systems): Builder;
+    public function filterBySystemIds(Builder $query, int|array $systems): Builder;
 }

@@ -4,13 +4,9 @@ namespace Seatplus\Eveapi\Jobs\Seatplus\Batch;
 
 use Illuminate\Bus\Batch;
 use Illuminate\Bus\Batchable;
-use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\RateLimitedWithRedis;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
@@ -40,10 +36,7 @@ use Seatplus\Eveapi\Models\RefreshToken;
 class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
 {
     use Batchable;
-    use Dispatchable;
-    use InteractsWithQueue;
-    use Queueable;
-    use SerializesModels;
+    use \Illuminate\Foundation\Queue\Queueable;
 
     public RefreshToken $refresh_token;
 

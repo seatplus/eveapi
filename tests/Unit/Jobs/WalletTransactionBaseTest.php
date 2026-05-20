@@ -29,7 +29,6 @@ it('sets from_id to latest transaction id minus one when latest transaction exis
 
     $reflection = new ReflectionClass($job);
     $property = $reflection->getProperty('from_id');
-    $property->setAccessible(true);
 
     expect($property->getValue($job))->toBe(99);
 });
@@ -50,7 +49,6 @@ it('keeps from_id as PHP_INT_MAX when no latest transaction exists', function ()
 
     $reflection = new ReflectionClass($job);
     $property = $reflection->getProperty('from_id');
-    $property->setAccessible(true);
 
     expect($property->getValue($job))->toBe(PHP_INT_MAX);
 });
@@ -88,7 +86,6 @@ it('breaks when transaction_id is equal to the from_id', function () {
 
     $reflection = new ReflectionClass($job);
     $property = $reflection->getProperty('from_id');
-    $property->setAccessible(true);
 
     expect($property->getValue($job))->not()->toBe(100);
 });

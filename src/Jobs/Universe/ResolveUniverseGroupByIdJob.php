@@ -11,7 +11,7 @@ final class ResolveUniverseGroupByIdJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetUniverseGroupsGroupId::class;
 
-    public function __construct(private int $group_id) {}
+    public function __construct(private readonly int $group_id) {}
 
     #[\Override]
     public function tags(): array

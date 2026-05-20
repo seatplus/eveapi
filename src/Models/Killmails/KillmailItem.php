@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Models\Killmails;
 
+use Illuminate\Database\Eloquent\Attributes\Appends;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -33,17 +34,14 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Seatplus\Eveapi\Models\Universe\Type;
 
 /** @property bool $has_content */
+#[Appends(['has_content'])]
 class KillmailItem extends Model
 {
-    protected $appends = ['has_content'];
-
     protected $guarded = [];
 
     protected function hasContent(): Attribute
     {
-        return new Attribute(get: function () {
-            return $this->content()->exists();
-        });
+        return new Attribute(get: fn () => $this->content()->exists());
     }
 
     public function content(): HasMany

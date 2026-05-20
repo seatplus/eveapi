@@ -37,7 +37,7 @@ class MigrateDb
             DB::connection($connection)->getPdo();
 
             return true;
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return false;
         }
 

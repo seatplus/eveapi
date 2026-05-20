@@ -55,7 +55,7 @@ class CheckJobsCommand extends Command
     private bool $has_errors = false;
 
     public function __construct(
-        private JobChecker $jobChecker
+        private readonly JobChecker $jobChecker
     ) {
         parent::__construct();
     }

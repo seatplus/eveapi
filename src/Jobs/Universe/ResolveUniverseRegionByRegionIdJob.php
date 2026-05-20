@@ -11,7 +11,7 @@ final class ResolveUniverseRegionByRegionIdJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetUniverseRegionsRegionId::class;
 
-    public function __construct(private int $region_id) {}
+    public function __construct(private readonly int $region_id) {}
 
     #[\Override]
     public function tags(): array

@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Models\Character;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -112,14 +113,16 @@ class CharacterInfo extends Model
         return $this->morphOne(Application::class, 'applicationable')->whereStatus('open');
     }
 
-    public function getCorporationIdAttribute(): ?int
+    /** @return Attribute<int|null, never> */
+    protected function corporationId(): Attribute
     {
-        return $this->character_affiliation?->corporation_id;
+        return Attribute::make(get: fn () => $this->character_affiliation?->corporation_id);
     }
 
-    public function getAllianceIdAttribute(): ?int
+    /** @return Attribute<int|null, never> */
+    protected function allianceId(): Attribute
     {
-        return $this->character_affiliation?->alliance_id;
+        return Attribute::make(get: fn () => $this->character_affiliation?->alliance_id);
     }
 
     public function assets(): MorphMany

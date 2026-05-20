@@ -89,21 +89,19 @@ final class MailHeaderJob extends EsiJob
 
         $recipients = $mails
             ->filter(fn (array $mail) => ! in_array(data_get($mail, 'id'), $existing_recipients))
-            ->map(function (array $mail) {
-                return collect(data_get($mail, 'recipients'))
-                    ->map(fn (object $recipient) => [
-                        'mail_id' => data_get($mail, 'id'),
-                        'receivable_id' => data_get($recipient, 'recipient_id'),
-                        'receivable_type' => $this->getReceivableType(data_get($recipient, 'recipient_type')),
-                    ])
-                    ->push([
-                        'mail_id' => data_get($mail, 'id'),
-                        'receivable_id' => $this->character_id,
-                        'receivable_type' => CharacterInfo::class,
-                    ])
-                    ->unique()
-                    ->toArray();
-            })
+            ->map(fn (array $mail) => collect(data_get($mail, 'recipients'))
+                ->map(fn (object $recipient) => [
+                    'mail_id' => data_get($mail, 'id'),
+                    'receivable_id' => data_get($recipient, 'recipient_id'),
+                    'receivable_type' => $this->getReceivableType(data_get($recipient, 'recipient_type')),
+                ])
+                ->push([
+                    'mail_id' => data_get($mail, 'id'),
+                    'receivable_id' => $this->character_id,
+                    'receivable_type' => CharacterInfo::class,
+                ])
+                ->unique()
+                ->toArray())
             ->flatten(1)
             ->toArray();
 

@@ -11,7 +11,7 @@ final class ResolveUniverseSystemBySystemIdJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetUniverseSystemsSystemId::class;
 
-    public function __construct(private int $system_id) {}
+    public function __construct(private readonly int $system_id) {}
 
     #[\Override]
     public function tags(): array

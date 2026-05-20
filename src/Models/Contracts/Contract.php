@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Models\Contracts;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -117,7 +118,8 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
     }
 
     #[\Override]
-    public function scopeFilterByRegionIds(Builder $query, int|array $regions): Builder
+    #[Scope]
+    public function filterByRegionIds(Builder $query, int|array $regions): Builder
     {
         $region_ids = is_array($regions) ? $regions : [$regions];
 
@@ -127,7 +129,8 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
     }
 
     #[\Override]
-    public function scopeFilterBySystemIds(Builder $query, int|array $systems): Builder
+    #[Scope]
+    public function filterBySystemIds(Builder $query, int|array $systems): Builder
     {
         $system_ids = is_array($systems) ? $systems : [$systems];
 
@@ -137,7 +140,8 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
     }
 
     #[\Override]
-    public function scopeFilterByTypeIds(Builder $query, int|array $types): Builder
+    #[Scope]
+    public function filterByTypeIds(Builder $query, int|array $types): Builder
     {
         $type_ids = is_array($types) ? $types : [$types];
 
@@ -145,7 +149,8 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
     }
 
     #[\Override]
-    public function scopeFilterByGroupIds(Builder $query, int|array $groups): Builder
+    #[Scope]
+    public function filterByGroupIds(Builder $query, int|array $groups): Builder
     {
         $group_ids = is_array($groups) ? $groups : [$groups];
 
@@ -153,7 +158,8 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
     }
 
     #[\Override]
-    public function scopeFilterByCategoryIds(Builder $query, int|array $category): Builder
+    #[Scope]
+    public function filterByCategoryIds(Builder $query, int|array $category): Builder
     {
         $category_ids = is_array($category) ? $category : [$category];
 

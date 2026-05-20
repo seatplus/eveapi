@@ -77,7 +77,6 @@ it('does not add AllianceContactsJob if no alliance_id is present', function () 
     $reflection = new ReflectionClass($job);
     // get the protected property batch_jobs
     $property = $reflection->getProperty('batch_jobs');
-    $property->setAccessible(true);
 
     $batch_jobs = $property->getValue($job);
 

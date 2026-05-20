@@ -28,11 +28,7 @@ namespace Seatplus\Eveapi\Jobs\Seatplus;
 
 use Cron\CronExpression;
 use Illuminate\Bus\Batchable;
-use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Jobs\Seatplus\Batch\CharacterBatchJob;
 use Seatplus\Eveapi\Models\BatchUpdate;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
@@ -42,10 +38,7 @@ use Seatplus\Eveapi\Models\Schedules;
 class UpdateCharacter implements ShouldQueue
 {
     use Batchable;
-    use Dispatchable;
-    use InteractsWithQueue;
-    use Queueable;
-    use SerializesModels;
+    use \Illuminate\Foundation\Queue\Queueable;
 
     private int $interval_in_minutes;
 

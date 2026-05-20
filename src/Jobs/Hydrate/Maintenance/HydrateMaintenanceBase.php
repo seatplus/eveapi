@@ -27,17 +27,10 @@
 namespace Seatplus\Eveapi\Jobs\Hydrate\Maintenance;
 
 use Illuminate\Bus\Batchable;
-use Illuminate\Bus\Queueable;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use Seatplus\Eveapi\Jobs\Hydrate\Hydrate;
 
 abstract class HydrateMaintenanceBase implements Hydrate
 {
     use Batchable;
-    use Dispatchable;
-    use InteractsWithQueue;
-    use Queueable;
-    use SerializesModels;
+    use \Illuminate\Foundation\Queue\Queueable;
 }

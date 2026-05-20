@@ -28,6 +28,7 @@ namespace Seatplus\Eveapi\Models;
 
 use Carbon\Carbon;
 use Firebase\JWT\JWT;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -66,17 +67,16 @@ class RefreshToken extends Model
         'updating' => UpdatingRefreshTokenEvent::class,
     ];
 
-    /**
-     * Only return a token value if it is not already
-     * considered expired.
-     */
-    public function getTokenAttribute(string $value): ?string
+    /** @return Attribute<string|null, never> */
+    protected function token(): Attribute
     {
-        if ($this->expires_on->gt(Carbon::now())) {
-            return $value;
-        }
+        return Attribute::make(get: function (string $value) {
+            if ($this->expires_on->gt(Carbon::now())) {
+                return $value;
+            }
 
-        return null;
+            return null;
+        });
     }
 
     /** @return BelongsTo<CharacterInfo, $this> */
@@ -98,28 +98,28 @@ class RefreshToken extends Model
         );
     }
 
-    public function getCorporationIdAttribute(): int
+    /** @return Attribute<int, never> */
+    protected function corporationId(): Attribute
     {
-        return $this->corporation->corporation_id;
+        return Attribute::make(get: fn () => $this->corporation->corporation_id);
     }
 
-    public function getScopesAttribute(): array
+    /** @return Attribute<array<string>, never> */
+    protected function scopes(): Attribute
     {
-        $jwt = $this->getRawOriginal('token');
-        $jwt_payload_base64_encoded = explode('.', (string) $jwt)[1];
+        return Attribute::make(get: function () {
+            $jwt = $this->getRawOriginal('token');
+            $jwt_payload_base64_encoded = explode('.', (string) $jwt)[1];
+            $jwt_payload = JWT::urlsafeB64Decode($jwt_payload_base64_encoded);
+            $scopes = data_get(json_decode($jwt_payload), 'scp', []);
 
-        $jwt_payload = JWT::urlsafeB64Decode($jwt_payload_base64_encoded);
-
-        $scopes = data_get(json_decode($jwt_payload), 'scp', []);
-
-        return is_array($scopes) ? $scopes : [$scopes];
+            return is_array($scopes) ? $scopes : [$scopes];
+        });
     }
 
     public function hasScope(string $scope): bool
     {
-        $scopes = $this->getScopesAttribute();
-
-        return in_array($scope, $scopes);
+        return in_array($scope, $this->scopes);
     }
 
     #[\Override]

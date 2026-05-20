@@ -10,7 +10,7 @@ use Seatplus\Eveapi\Jobs\Middleware\EsiProactiveRateLimitMiddleware;
 class JobChecker
 {
     public function __construct(
-        private FileGetContentsAction $fileGetContentsAction
+        private readonly FileGetContentsAction $fileGetContentsAction
     ) {}
 
     public function checkJob(object $job): Collection

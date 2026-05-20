@@ -18,7 +18,7 @@ final class CharacterAffiliationJob extends EsiJob
 
     private array $manual_ids = [];
 
-    private Collection $character_affiliations;
+    private readonly Collection $character_affiliations;
 
     public function __construct(int|array $character_ids)
     {

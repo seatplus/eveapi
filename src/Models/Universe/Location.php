@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Models\Universe;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -65,7 +66,8 @@ class Location extends Model implements LocationWatchListInterface
     }
 
     #[\Override]
-    public function scopeFilterByRegionIds(Builder $query, int|array $regions): Builder
+    #[Scope]
+    public function filterByRegionIds(Builder $query, int|array $regions): Builder
     {
         $region_ids = is_array($regions) ? $regions : [$regions];
 
@@ -75,7 +77,8 @@ class Location extends Model implements LocationWatchListInterface
     }
 
     #[\Override]
-    public function scopeFilterBySystemIds(Builder $query, int|array $systems): Builder
+    #[Scope]
+    public function filterBySystemIds(Builder $query, int|array $systems): Builder
     {
         $system_ids = is_array($systems) ? $systems : [$systems];
 

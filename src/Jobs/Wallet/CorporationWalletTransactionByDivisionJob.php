@@ -15,7 +15,7 @@ final class CorporationWalletTransactionByDivisionJob extends WalletTransactionB
 
     public function __construct(
         public int $corporation_id,
-        private int $division
+        private readonly int $division
     ) {}
 
     #[\Override]

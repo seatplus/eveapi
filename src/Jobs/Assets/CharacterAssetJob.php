@@ -16,7 +16,7 @@ final class CharacterAssetJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetCharactersCharacterIdAssets::class;
 
-    private Collection $assets;
+    private readonly Collection $assets;
 
     public function __construct(public int $character_id)
     {

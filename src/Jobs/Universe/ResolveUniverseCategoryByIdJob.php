@@ -11,7 +11,7 @@ final class ResolveUniverseCategoryByIdJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetUniverseCategoriesCategoryId::class;
 
-    public function __construct(private int $category_id) {}
+    public function __construct(private readonly int $category_id) {}
 
     #[\Override]
     public function tags(): array
