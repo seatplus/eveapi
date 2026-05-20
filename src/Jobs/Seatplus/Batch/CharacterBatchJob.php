@@ -6,6 +6,7 @@ use Illuminate\Bus\Batch;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Middleware\RateLimitedWithRedis;
 use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
@@ -36,7 +37,7 @@ use Seatplus\Eveapi\Models\RefreshToken;
 class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
 {
     use Batchable;
-    use \Illuminate\Foundation\Queue\Queueable;
+    use Queueable;
 
     public RefreshToken $refresh_token;
 

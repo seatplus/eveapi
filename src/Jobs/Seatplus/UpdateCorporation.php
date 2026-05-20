@@ -28,6 +28,7 @@ namespace Seatplus\Eveapi\Jobs\Seatplus;
 
 use Illuminate\Bus\Batch;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Middleware\RateLimitedWithRedis;
 use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationDivisionsJob;
@@ -41,7 +42,7 @@ use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 
 class UpdateCorporation implements ShouldQueue
 {
-    use \Illuminate\Foundation\Queue\Queueable;
+    use Queueable;
 
     private FindCorporationRefreshToken $findCorporationRefreshToken;
 

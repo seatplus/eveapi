@@ -29,6 +29,7 @@ namespace Seatplus\Eveapi\Jobs\Seatplus;
 use Illuminate\Bus\Batch;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Jobs\Assets\EnrichAssetTypeGroupCategoryJob;
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\GetMissingBodysFromMails;
@@ -54,7 +55,7 @@ use Seatplus\Eveapi\Models\BatchStatistic;
 class MaintenanceJob implements ShouldQueue
 {
     use Batchable;
-    use \Illuminate\Foundation\Queue\Queueable;
+    use Queueable;
 
     public function tags(): array
     {

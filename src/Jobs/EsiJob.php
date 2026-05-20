@@ -30,6 +30,7 @@ use Exception;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Middleware\ThrottlesExceptionsWithRedis;
 use Illuminate\Support\Facades\DB;
 use Seatplus\EsiClient\EsiClient;
@@ -43,7 +44,7 @@ use Seatplus\Eveapi\Services\Esi\RecordingEsiClient;
 abstract class EsiJob implements ShouldBeUnique, ShouldQueue
 {
     use Batchable;
-    use \Illuminate\Foundation\Queue\Queueable;
+    use Queueable;
 
     /**
      * The number of times the job may be attempted.
