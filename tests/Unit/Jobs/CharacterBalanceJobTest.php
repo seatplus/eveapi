@@ -19,7 +19,7 @@ it('returns correct tags array for character balance job', function () {
 
 it('does not upsert balances when response is cached', function () {
     $esi = Mockery::mock(EsiClient::class);
-    $esi->shouldReceive('wallet->getCharactersCharacterIdWallet')->andReturn(makeEsiResult(null, isCachedLoad: true));
+    mockEsiTransport($esi, makeEsiResult(null, isCachedLoad: true));
 
     $job = mock(CharacterBalanceJob::class)->makePartial();
     $job->executeJob($esi);

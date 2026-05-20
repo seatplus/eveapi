@@ -16,8 +16,7 @@ it('fails when server exception is handled', function () {
     );
 
     $esi = Mockery::mock(EsiClient::class);
-    $esi->shouldReceive('withToken')->andReturnSelf();
-    $esi->shouldReceive('assets->getCharactersCharacterIdAssets')->andThrow($exception);
+    mockEsiTransport($esi, $exception);
     app()->instance(EsiClient::class, $esi);
 
     mockTokenService();
@@ -32,8 +31,7 @@ it('fails when client exception is handled', function () {
     );
 
     $esi = Mockery::mock(EsiClient::class);
-    $esi->shouldReceive('withToken')->andReturnSelf();
-    $esi->shouldReceive('assets->getCharactersCharacterIdAssets')->andThrow($exception);
+    mockEsiTransport($esi, $exception);
     app()->instance(EsiClient::class, $esi);
 
     mockTokenService();

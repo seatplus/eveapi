@@ -18,6 +18,7 @@ use Faker\Factory;
 use Firebase\JWT\JWT;
 use Mockery\MockInterface;
 use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Contracts\EsiRawResponse;
 use Seatplus\EsiSchema\EsiResult;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
@@ -72,46 +73,70 @@ function mockTokenService(): void
     app()->instance(GetUpToDateRefreshTokenService::class, $mock);
 }
 
+function makeEsiRawResponse(mixed $result): EsiRawResponse
+{
+    if ($result instanceof EsiResult) {
+        return new EsiRawResponse(
+            data: $result->data,
+            isCachedLoad: $result->isCachedLoad,
+            pages: $result->pages,
+            rateLimitRemaining: $result->rateLimitRemaining,
+        );
+    }
+
+    $isCachedLoad = false;
+    $pages = 1;
+    $rateLimitRemaining = null;
+    $data = $result;
+
+    if (is_object($result)) {
+        $isCachedLoad = $result->isCachedLoad ?? false;
+        $pages = $result->pages ?? 1;
+        $rateLimitRemaining = $result->rateLimitRemaining ?? null;
+        $data = (object) collect(get_object_vars($result))
+            ->except(['isCachedLoad', 'pages', 'rateLimitRemaining'])
+            ->all();
+    }
+
+    return new EsiRawResponse(
+        data: $data,
+        isCachedLoad: $isCachedLoad,
+        pages: $pages,
+        rateLimitRemaining: $rateLimitRemaining,
+    );
+}
+
+function mockEsiTransport(MockInterface $esi, mixed $result): void
+{
+    $esi->shouldReceive('withToken')->andReturnSelf();
+    $esi->shouldReceive('assertScope')->andReturnNull();
+
+    if ($result instanceof Throwable) {
+        $esi->shouldReceive('invoke')->andThrow($result);
+
+        return;
+    }
+
+    $esi->shouldReceive('invoke')->andReturn(makeEsiRawResponse($result));
+}
+
 function mockEsiClient(string $chain, mixed $result): EsiClient
 {
     $parts = explode('->', $chain, 2);
     $resourceGetter = $parts[0];
     $endMethod = $parts[1] ?? null;
 
-    // Determine the resource class from EsiClient
-    $esiReflection = new ReflectionClass(EsiClient::class);
-    $resourceClass = (string) $esiReflection->getMethod($resourceGetter)->getReturnType();
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, $result);
 
-    // If there's a chain, convert plain objects to the correct typed DTO
     if ($endMethod !== null) {
-        $resourceReflection = new ReflectionClass($resourceClass);
-        $dtoClass = (string) $resourceReflection->getMethod($endMethod)->getReturnType();
-
-        // Auto-convert stdClass/plain objects to the expected DTO type (if not EsiResult)
-        if (
-            $dtoClass !== EsiResult::class
-            && ! ($result instanceof $dtoClass)
-            && class_exists($dtoClass)
-            && method_exists($dtoClass, 'from')
-            && (is_object($result) && ! ($result instanceof EsiResult))
-        ) {
-            $isCachedLoad = $result->isCachedLoad ?? false;
-            $pages = $result->pages ?? 1;
-            $dto = $dtoClass::from($result);
-            $dto->isCachedLoad = $isCachedLoad;
-            $dto->pages = $pages;
-            $result = $dto;
-        }
+        $esiReflection = new ReflectionClass(EsiClient::class);
+        $resourceClass = (string) $esiReflection->getMethod($resourceGetter)->getReturnType();
 
         $resourceMock = Mockery::mock($resourceClass);
         $resourceMock->shouldReceive($endMethod)->andReturn($result);
-
-        $esi = Mockery::mock(EsiClient::class);
-        $esi->shouldReceive('withToken')->andReturnSelf();
         $esi->shouldReceive($resourceGetter)->andReturn($resourceMock);
     } else {
-        $esi = Mockery::mock(EsiClient::class);
-        $esi->shouldReceive('withToken')->andReturnSelf();
         $esi->shouldReceive($resourceGetter)->andReturn($result);
     }
 

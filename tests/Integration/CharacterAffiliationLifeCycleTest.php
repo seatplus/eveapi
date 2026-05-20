@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Queue;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
-use Seatplus\EsiSchema\Resources\CharacterResource;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfoJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationInfoJob;
@@ -81,14 +80,13 @@ it('applies binary search and caches it if one id is invalid', function () {
 
     $esi = Mockery::mock(EsiClient::class);
     $esi->shouldReceive('withToken')->andReturnSelf();
-    $characters = Mockery::mock(CharacterResource::class);
-    $esi->shouldReceive('characters')->andReturn($characters);
-    $characters->shouldReceive('postCharactersAffiliation')
+    $esi->shouldReceive('assertScope')->andReturnNull();
+    $esi->shouldReceive('invoke')
         ->once()->ordered()->andThrow($exception);
-    $characters->shouldReceive('postCharactersAffiliation')
+    $esi->shouldReceive('invoke')
         ->once()->ordered()->andThrow($exception);
-    $characters->shouldReceive('postCharactersAffiliation')
-        ->once()->ordered()->andReturn(makeEsiResult([(object) $mock_data->toArray()]));
+    $esi->shouldReceive('invoke')
+        ->once()->ordered()->andReturn(makeEsiRawResponse(makeEsiResult([(object) $mock_data->toArray()])));
 
     app()->instance(EsiClient::class, $esi);
     mockTokenService();

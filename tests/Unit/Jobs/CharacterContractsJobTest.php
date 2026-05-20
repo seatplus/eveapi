@@ -6,7 +6,7 @@ use Seatplus\Eveapi\Models\Contracts\Contract;
 
 test('returns early if cached', function () {
     $esi = Mockery::mock(EsiClient::class);
-    $esi->shouldReceive('contracts->getCharactersCharacterIdContracts')->andReturn(makeEsiResult([], isCachedLoad: true));
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
     $job = mock(CharacterContractsJob::class)->shouldAllowMockingProtectedMethods()->makePartial();
     $job->character_id = 1;
@@ -21,10 +21,9 @@ it('adds follow up jobs to batch if batching', function () {
     $contract = Contract::factory()->count(2)->make();
 
     $esi = Mockery::mock(EsiClient::class);
-    $esi->shouldReceive('contracts->getCharactersCharacterIdContracts')
-        ->andReturn(makeEsiResult(
-            array_map(fn ($c) => (object) $c, $contract->toArray())
-        ));
+    mockEsiTransport($esi, makeEsiResult(
+        array_map(fn ($c) => (object) $c, $contract->toArray())
+    ));
 
     $job = mock(CharacterContractsJob::class)->shouldAllowMockingProtectedMethods()->makePartial();
     $job->character_id = 1;

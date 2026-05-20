@@ -88,16 +88,15 @@ function runWalletTransactionJobWithMockData(array $mock_data)
 
     $esi = Mockery::mock(EsiClient::class);
     $esi->shouldReceive('withToken')->andReturnSelf();
+    $esi->shouldReceive('assertScope')->andReturnNull();
+    $esi->shouldReceive('invoke')
+        ->andReturn(makeEsiRawResponse(makeEsiResult($items)), makeEsiRawResponse(makeEsiResult([])));
 
     if ($is_corporation) {
-        $esi->shouldReceive('wallet->getCorporationsCorporationIdWalletsDivisionTransactions')
-            ->andReturn(makeEsiResult($items), makeEsiResult([]));
         app()->instance(EsiClient::class, $esi);
         mockTokenService();
         runJob(new CorporationWalletTransactionByDivisionJob($wallet_transactionable_id, $division_id));
     } else {
-        $esi->shouldReceive('wallet->getCharactersCharacterIdWalletTransactions')
-            ->andReturn(makeEsiResult($items), makeEsiResult([]));
         app()->instance(EsiClient::class, $esi);
         mockTokenService();
         runJob(new CharacterWalletTransactionJob($wallet_transactionable_id));
