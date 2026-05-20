@@ -40,7 +40,7 @@ class CorporationHistoryFactory extends Factory
     public function definition()
     {
         return [
-            'record_id' => fake()->numberBetween(100, 200),
+            'record_id' => fake()->unique()->numberBetween(100, 9999999),
             'character_id' => fake()->numberBetween(9000000, 98000000),
             'corporation_id' => fake()->numberBetween(98000000, 99000000),
             'is_deleted' => fake()->boolean,
