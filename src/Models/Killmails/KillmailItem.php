@@ -27,7 +27,6 @@
 namespace Seatplus\Eveapi\Models\Killmails;
 
 use Illuminate\Database\Eloquent\Attributes\Appends;
-use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
@@ -37,7 +36,6 @@ use Seatplus\Eveapi\Models\Universe\Type;
 
 /** @property bool $has_content */
 #[Appends(['has_content'])]
-#[Guarded]
 #[Unguarded]
 class KillmailItem extends Model
 {
