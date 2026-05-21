@@ -13,19 +13,15 @@ class JobChecker
         private readonly FileGetContentsAction $fileGetContentsAction
     ) {}
 
-    public function checkJob(object $job): Collection
+    public function checkJob(EsiJob $job): Collection
     {
         return collect()
             ->push($this->checkMiddleware($job))
             ->push($this->checkIsCachedLoad($job));
     }
 
-    private function checkMiddleware(object $job): array
+    private function checkMiddleware(EsiJob $job): array
     {
-        if (! $job instanceof EsiJob) {
-            return $this->assertionResult('warning', 'job does not extend EsiJob');
-        }
-
         $used_middlewares = collect($job->middleware());
 
         if (! $used_middlewares->first(fn (object $m) => $m instanceof ThrottlesExceptionsWithRedis)) {
@@ -39,12 +35,8 @@ class JobChecker
         return $this->assertionResult('success', 'all required middlewares are present');
     }
 
-    private function checkIsCachedLoad(object $job): array
+    private function checkIsCachedLoad(EsiJob $job): array
     {
-        if (! $job instanceof EsiJob) {
-            return $this->assertionResult('warning', 'cache check skipped: job does not extend EsiJob');
-        }
-
         $job_filename = (new \ReflectionClass($job))->getFileName();
         $job_source = $this->fileGetContentsAction->__invoke($job_filename);
 
