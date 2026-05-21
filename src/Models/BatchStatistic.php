@@ -14,9 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon $started_at
  * @property Carbon $finished_at
  */
-#[Appends([
-    'duration',
-])]
+#[Appends(['duration'])]
 #[Unguarded]
 class BatchStatistic extends Model
 {
