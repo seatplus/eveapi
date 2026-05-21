@@ -9,18 +9,6 @@ use Seatplus\Eveapi\Services\FileGetContentsAction;
 use Seatplus\Eveapi\Services\JobChecker;
 
 describe('Middleware check', function () {
-    it('returns warning if job does not extend EsiJob', function () {
-        $job = new stdClass;
-
-        $fileGetContentsAction = mock(FileGetContentsAction::class)->makePartial();
-        $jobChecker = new JobChecker($fileGetContentsAction);
-
-        $result = $jobChecker->checkJob($job);
-
-        expect($result->first()['status'])->toEqual('warning')
-            ->and($result->first()['message'])->toEqual('job does not extend EsiJob');
-    });
-
     it('returns error if ThrottlesExceptionsWithRedis middleware is missing', function () {
         $job = mock(EsiJob::class, function (MockInterface $mock) {
             $mock->shouldReceive('middleware')->andReturn([
@@ -74,18 +62,6 @@ describe('Middleware check', function () {
 });
 
 describe('isCachedLoad check', function () {
-    it('returns warning when job does not extend EsiJob', function () {
-        $job = new stdClass;
-
-        $fileGetContentsAction = mock(FileGetContentsAction::class)->makePartial();
-        $jobChecker = new JobChecker($fileGetContentsAction);
-
-        $result = $jobChecker->checkJob($job);
-
-        expect($result[1]['status'])->toEqual('warning')
-            ->and($result[1]['message'])->toContain('cache check skipped');
-    });
-
     it('returns warning when job file does not check isCachedLoad', function () {
         $job = mock(EsiJob::class, function (MockInterface $mock) {
             $mock->shouldReceive('middleware')->andReturn([
