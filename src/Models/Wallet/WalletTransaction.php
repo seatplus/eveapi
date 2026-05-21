@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Models\Wallet;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -33,13 +34,12 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Type;
 
+#[Unguarded]
 class WalletTransaction extends Model
 {
     use HasFactory;
 
     protected $primaryKey = 'transaction_id';
-
-    protected $guarded = [];
 
     public function wallet_transactionable(): MorphTo
     {

@@ -26,12 +26,12 @@
 
 namespace Seatplus\Eveapi\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Model;
 
+#[Unguarded]
 class Schedules extends Model
 {
-    protected $guarded = [];
-
     #[\Override]
     protected function casts(): array
     {

@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Models\Corporation;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -34,11 +35,10 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Type;
 
+#[Unguarded]
 class CorporationMemberTracking extends Model
 {
     use HasFactory;
-
-    protected $guarded = [];
 
     /** @return BelongsTo<CharacterInfo, $this> */
     public function character(): BelongsTo

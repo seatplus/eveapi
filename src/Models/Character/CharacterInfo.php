@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Models\Character;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -53,11 +54,10 @@ use Seatplus\Eveapi\Models\Wallet\Balance;
 use Seatplus\Eveapi\Models\Wallet\WalletJournal;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 
+#[Unguarded]
 class CharacterInfo extends Model
 {
     use HasFactory;
-
-    protected $guarded = [];
 
     public $incrementing = false;
 

@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Models\Universe;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -33,11 +34,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Seatplus\Eveapi\Events\UniverseStationCreated;
 
+#[Unguarded]
 class Station extends Model implements LocatableInterface
 {
     use HasFactory;
-
-    protected $guarded = [];
 
     /**
      * Indicates if the model's ID is auto-incrementing.

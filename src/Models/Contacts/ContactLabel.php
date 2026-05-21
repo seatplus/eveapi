@@ -27,6 +27,7 @@
 namespace Seatplus\Eveapi\Models\Contacts;
 
 use Illuminate\Database\Eloquent\Attributes\Appends;
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -36,10 +37,9 @@ use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
 /** @property string|null $label_name */
 #[Appends(['label_name'])]
+#[Unguarded]
 class ContactLabel extends Model
 {
-    protected $guarded = [];
-
     protected $with = ['contact.contactable.labels'];
 
     /** @return BelongsTo<Contact, $this> */

@@ -2,15 +2,15 @@
 
 namespace Seatplus\Eveapi\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Seatplus\Eveapi\Models\Universe\Location;
 
+#[Unguarded]
 class LocationRefreshToken extends Model
 {
     protected $table = 'location_refresh_tokens';
-
-    protected $guarded = [];
 
     public function location(): BelongsTo
     {

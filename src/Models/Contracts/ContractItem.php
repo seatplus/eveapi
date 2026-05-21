@@ -26,16 +26,16 @@
 
 namespace Seatplus\Eveapi\Models\Contracts;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Seatplus\Eveapi\Models\Universe\Type;
 
+#[Unguarded]
 class ContractItem extends Model
 {
     use HasFactory;
-
-    protected $guarded = [];
 
     /**
      * @var string

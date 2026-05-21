@@ -26,15 +26,15 @@
 
 namespace Seatplus\Eveapi\Models\Contacts;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
+#[Unguarded]
 class Label extends Model
 {
     use HasFactory;
-
-    protected $guarded = [];
 
     public function labelable(): MorphTo
     {

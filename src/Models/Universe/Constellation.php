@@ -26,16 +26,16 @@
 
 namespace Seatplus\Eveapi\Models\Universe;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Seatplus\Eveapi\Events\UniverseConstellationCreated;
 
+#[Unguarded]
 class Constellation extends Model
 {
     use HasFactory;
-
-    protected $guarded = [];
 
     /**
      * @var string

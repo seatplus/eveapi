@@ -26,14 +26,14 @@
 
 namespace Seatplus\Eveapi\Models\Universe;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+#[Unguarded]
 class Region extends Model
 {
     use HasFactory;
-
-    protected $guarded = [];
 
     /**
      * @var string

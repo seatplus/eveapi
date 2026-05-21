@@ -27,6 +27,7 @@
 namespace Seatplus\Eveapi\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -41,6 +42,7 @@ use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Recruitment\ApplicationLogs;
 use Seatplus\Eveapi\Models\Recruitment\Enlistments;
 
+#[Unguarded]
 class Application extends Model
 {
     use HasFactory;
@@ -56,8 +58,6 @@ class Application extends Model
             $model->setAttribute($model->getKeyName(), Str::uuid());
         });
     }
-
-    protected $guarded = [];
 
     public function corporation(): BelongsTo
     {

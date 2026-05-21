@@ -26,11 +26,13 @@
 
 namespace Seatplus\Eveapi\Models\Universe;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
+#[Unguarded]
 class Type extends Model
 {
     use HasFactory;
@@ -40,7 +42,6 @@ class Type extends Model
      *
      * @var array<string>
      */
-    protected $guarded = [];
 
     /**
      * @var string

@@ -27,6 +27,7 @@
 namespace Seatplus\Eveapi\Models\Contracts;
 
 use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -41,11 +42,10 @@ use Seatplus\Eveapi\Models\LocationWatchListInterface;
 use Seatplus\Eveapi\Models\TypeWatchListInterface;
 use Seatplus\Eveapi\Models\Universe\Location;
 
+#[Unguarded]
 class Contract extends Model implements LocationWatchListInterface, TypeWatchListInterface
 {
     use HasFactory;
-
-    protected $guarded = [];
 
     /**
      * @var string

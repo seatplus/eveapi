@@ -26,14 +26,14 @@
 
 namespace Seatplus\Eveapi\Models\Character;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+#[Unguarded]
 class CorporationHistory extends Model
 {
     use HasFactory;
-
-    protected $guarded = [];
 
     #[\Override]
     protected function casts(): array

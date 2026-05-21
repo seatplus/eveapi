@@ -26,10 +26,12 @@
 
 namespace Seatplus\Eveapi\Models\Mail;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+#[Unguarded]
 class Mail extends Model
 {
     use HasFactory;
@@ -38,8 +40,6 @@ class Mail extends Model
      * @var bool
      */
     public $incrementing = false;
-
-    protected $guarded = [];
 
     public function recipients(): HasMany
     {

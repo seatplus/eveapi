@@ -26,15 +26,15 @@
 
 namespace Seatplus\Eveapi\Models\Killmails;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Seatplus\Eveapi\Models\Universe\Type;
 
+#[Unguarded]
 class KillmailAttacker extends Model
 {
-    protected $guarded = [];
-
     public function ship(): HasOne
     {
         return $this->hasOne(Type::class, 'type_id', 'ship_type_id');

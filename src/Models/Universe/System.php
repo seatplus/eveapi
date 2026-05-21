@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Models\Universe;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -33,17 +34,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Seatplus\Eveapi\Events\UniverseSystemCreated;
 
+#[Unguarded]
 class System extends Model
 {
     use HasFactory;
 
     /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array<string>
+     * @var list<string>
      */
-    protected $guarded = [];
-
     protected $with = ['region'];
 
     /**

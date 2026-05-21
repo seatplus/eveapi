@@ -26,15 +26,15 @@
 
 namespace Seatplus\Eveapi\Models\Universe;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+#[Unguarded]
 class Category extends Model
 {
     use HasFactory;
-
-    protected $guarded = [];
 
     /**
      * @var string

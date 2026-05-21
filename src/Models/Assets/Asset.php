@@ -27,6 +27,7 @@
 namespace Seatplus\Eveapi\Models\Assets;
 
 use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -38,6 +39,7 @@ use Seatplus\Eveapi\Models\TypeWatchListInterface;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Type;
 
+#[Unguarded]
 class Asset extends Model implements TypeWatchListInterface
 {
     use HasFactory;
@@ -45,8 +47,6 @@ class Asset extends Model implements TypeWatchListInterface
     const int ASSET_SAFETY = 2004;
 
     protected array $affiliated_ids = [];
-
-    protected $guarded = [];
 
     /**
      * @var string

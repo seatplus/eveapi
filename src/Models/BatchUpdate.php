@@ -3,16 +3,16 @@
 namespace Seatplus\Eveapi\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
+#[Unguarded]
 class BatchUpdate extends Model
 {
-    protected $guarded = [];
-
     public function batchable(): MorphTo
     {
         return $this->morphTo();

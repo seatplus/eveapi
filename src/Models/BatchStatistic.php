@@ -5,6 +5,7 @@ namespace Seatplus\Eveapi\Models;
 use Carbon\Carbon;
 use Illuminate\Bus\Batch;
 use Illuminate\Database\Eloquent\Attributes\Appends;
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,13 +17,12 @@ use Illuminate\Database\Eloquent\Model;
 #[Appends([
     'duration',
 ])]
+#[Unguarded]
 class BatchStatistic extends Model
 {
     use HasFactory;
 
     protected $table = 'batch_statistics';
-
-    protected $guarded = [];
 
     protected function duration(): Attribute
     {

@@ -26,15 +26,15 @@
 
 namespace Seatplus\Eveapi\Models\Recruitment;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
+#[Unguarded]
 class Enlistments extends Model
 {
-    protected $guarded = [];
-
     /**
      * The primary key associated with the table.
      *
