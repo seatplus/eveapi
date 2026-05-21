@@ -38,12 +38,6 @@ class Type extends Model
     use HasFactory;
 
     /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array<string>
-     */
-
-    /**
      * @var string
      */
     protected $primaryKey = 'type_id';
