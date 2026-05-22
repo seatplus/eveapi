@@ -34,10 +34,10 @@ it('handles follow-up job', function (string $job_class, array $configuration = 
         ...$attributes,
     ]);
 
-    mockEsiClient(
-        'characters->postCharactersAffiliation',
-        makeEsiResult([(object) $character_affiliation->toArray()])
-    );
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([(object) $character_affiliation->toArray()]));
+    app()->instance(EsiClient::class, $esi);
+    mockTokenService();
 
     if ($job_class === CorporationInfoJob::class && $pushed) {
         $character_affiliation->corporation()->delete();
