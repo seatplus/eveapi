@@ -19,9 +19,10 @@ it('returns early if batch is cancelled', function () {
 it('checks if the response is cached', function () {
     $esi = Mockery::mock(EsiClient::class);
     mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
-    app()->instance(EsiClient::class, $esi);
 
-    runJob(new AllianceInfoJob(12345));
+    $job = new AllianceInfoJob(12345);
+    $method = new ReflectionMethod($job, 'executeJob');
+    $method->invoke($job, $esi);
 
     expect(true)->toBeTrue();
 });

@@ -7,10 +7,10 @@ use Seatplus\Eveapi\Models\Contracts\Contract;
 test('returns early if cached', function () {
     $esi = Mockery::mock(EsiClient::class);
     mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
-    app()->instance(EsiClient::class, $esi);
-    mockTokenService();
 
-    runJob(new CharacterContractsJob(testCharacter()->character_id));
+    $job = new CharacterContractsJob(1);
+    $method = new ReflectionMethod($job, 'executeJob');
+    $method->invoke($job, $esi);
 
     expect(true)->toBeTrue();
 });

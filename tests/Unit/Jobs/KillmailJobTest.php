@@ -9,9 +9,10 @@ use Seatplus\Eveapi\Models\Universe\System;
 it('returns early if cache is hit', function () {
     $esi = Mockery::mock(EsiClient::class);
     mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
-    app()->instance(EsiClient::class, $esi);
 
-    runJob(new KillmailJob(12345, 'abc123'));
+    $job = new KillmailJob(12345, 'abc123');
+    $method = new ReflectionMethod($job, 'executeJob');
+    $method->invoke($job, $esi);
 
     expect(Killmail::count())->toEqual(0);
 });
@@ -42,9 +43,10 @@ it('does not further execute if killmail is complete', function () {
 
     $esi = Mockery::mock(EsiClient::class);
     mockEsiTransport($esi, $data);
-    app()->instance(EsiClient::class, $esi);
 
-    runJob(new KillmailJob($killmail->killmail_id, $killmail->killmail_hash));
+    $job = new KillmailJob($killmail->killmail_id, $killmail->killmail_hash);
+    $method = new ReflectionMethod($job, 'executeJob');
+    $method->invoke($job, $esi);
 
     Queue::assertNothingPushed();
     expect(System::count())->toEqual(0);
