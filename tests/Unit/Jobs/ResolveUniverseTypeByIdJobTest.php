@@ -1,5 +1,6 @@
 <?php
 
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Universe\Type;
 
@@ -21,7 +22,9 @@ it('executes job and upserts type', function () {
         'volume' => 900,
     ];
 
-    mockEsiClient('universe->getUniverseTypesTypeId', $data);
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, $data);
+    app()->instance(EsiClient::class, $esi);
 
     runJob(new ResolveUniverseTypeByIdJob(12345));
 

@@ -6,10 +6,10 @@ use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 
 it('returns early if resonse is cached', function () {
     $esi = Mockery::mock(EsiClient::class);
-    $esi->shouldReceive('corporation->getCorporationsCorporationIdMembertracking')->andReturn(makeEsiResult([], isCachedLoad: true));
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
-    $job = mock(CorporationMemberTrackingJob::class)->makePartial();
-    $job->executeJob($esi);
+    $job = new CorporationMemberTrackingJob(12345);
+    (new ReflectionMethod($job, 'executeJob'))->invoke($job, $esi);
 
     expect(CorporationMemberTracking::query()->count())->toEqual(0);
 });

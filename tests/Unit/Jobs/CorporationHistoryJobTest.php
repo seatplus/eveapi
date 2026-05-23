@@ -6,10 +6,10 @@ use Seatplus\Eveapi\Models\Character\CorporationHistory;
 
 it('checks if the response is cached', function () {
     $esi = Mockery::mock(EsiClient::class);
-    $esi->shouldReceive('characters->getCharactersCharacterIdCorporationhistory')->andReturn(makeEsiResult([], isCachedLoad: true));
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
-    $job = mock(CorporationHistoryJob::class)->makePartial();
-    $job->executeJob($esi);
+    $job = new CorporationHistoryJob($character_id = 1);
+    (new ReflectionMethod($job, 'executeJob'))->invoke($job, $esi);
 
     expect(CorporationHistory::count())->toBe(0);
 });

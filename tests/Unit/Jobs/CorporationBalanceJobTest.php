@@ -18,10 +18,10 @@ it('returns correct tags array', function () {
 
 it('does not upsert balances when response is cached', function () {
     $esi = Mockery::mock(EsiClient::class);
-    $esi->shouldReceive('wallet->getCorporationsCorporationIdWallets')->andReturn(makeEsiResult([], isCachedLoad: true));
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
-    $job = mock(CorporationBalanceJob::class)->makePartial();
-    $job->executeJob($esi);
+    $job = new CorporationBalanceJob(12345);
+    (new ReflectionMethod($job, 'executeJob'))->invoke($job, $esi);
 
     expect(Balance::count())->toBe(0);
 });

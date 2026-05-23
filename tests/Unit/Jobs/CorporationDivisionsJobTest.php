@@ -25,10 +25,10 @@ it('has middleware', function () {
 
 it('returns early if response is cached', function () {
     $esi = Mockery::mock(EsiClient::class);
-    $esi->shouldReceive('corporation->getCorporationsCorporationIdDivisions')->andReturn((object) ['isCachedLoad' => true]);
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
-    $job = mock(CorporationDivisionsJob::class)->makePartial();
-    $job->executeJob($esi);
+    $job = new CorporationDivisionsJob(1);
+    (new ReflectionMethod($job, 'executeJob'))->invoke($job, $esi);
 
     expect(CorporationDivision::all())->toHaveCount(0);
 });

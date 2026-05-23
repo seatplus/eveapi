@@ -6,10 +6,10 @@ use Seatplus\Eveapi\Models\Assets\Asset;
 
 it('checks if the response is cached', function () {
     $esi = Mockery::mock(EsiClient::class);
-    $esi->shouldReceive('assets->getCharactersCharacterIdAssets')->andReturn(makeEsiResult([], isCachedLoad: true));
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
-    $job = mock(CharacterAssetJob::class)->makePartial();
-    $job->executeJob($esi);
+    $job = new CharacterAssetJob(12345);
+    (new ReflectionMethod($job, 'executeJob'))->invoke($job, $esi);
 
     expect(Asset::count())->toBe(0);
 });

@@ -19,10 +19,10 @@ it('returns correct tags array for character balance job', function () {
 
 it('does not upsert balances when response is cached', function () {
     $esi = Mockery::mock(EsiClient::class);
-    mockEsiTransport($esi, makeEsiResult(null, isCachedLoad: true));
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
-    $job = mock(CharacterBalanceJob::class)->makePartial();
-    $job->executeJob($esi);
+    $job = new CharacterBalanceJob(12345);
+    (new ReflectionMethod($job, 'executeJob'))->invoke($job, $esi);
 
     expect(Balance::count())->toBe(0);
 });

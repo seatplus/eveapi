@@ -1,65 +1,50 @@
 <?php
 
-use Mockery\MockInterface;
 use Seatplus\EsiClient\EsiClient;
-use Seatplus\Eveapi\Jobs\Wallet\WalletTransactionBase;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 
 beforeEach(fn () => Queue::fake());
 
 it('sets from_id to latest transaction id minus one when latest transaction exists', function () {
+    $character_id = testCharacter()->character_id;
+
     WalletTransaction::factory()->create([
-        'wallet_transactionable_id' => 12345,
+        'wallet_transactionable_id' => $character_id,
         'transaction_id' => 100,
     ]);
 
     $esi = Mockery::mock(EsiClient::class);
-    $result = makeEsiResult([]);
+    mockEsiTransport($esi, makeEsiResult([]));
 
-    $job = mock(WalletTransactionBase::class, function (MockInterface $mock) use ($result) {
-        $mock->shouldAllowMockingProtectedMethods();
-        $mock->shouldReceive('transactionableId')->andReturn(12345);
-        $mock->shouldReceive('transactionableType')->andReturn(CharacterInfo::class);
-        $mock->shouldReceive('fetchTransactions')->andReturn($result);
-        $mock->shouldReceive('getRefreshToken')->andReturn(testCharacter()->refresh_token);
-    })->makePartial();
+    $job = new CharacterWalletTransactionJob($character_id);
+    (new ReflectionMethod($job, 'executeJob'))->invoke($job, $esi);
 
-    $job->executeJob($esi);
-
-    $reflection = new ReflectionClass($job);
-    $property = $reflection->getProperty('from_id');
+    $property = (new ReflectionClass($job))->getProperty('from_id');
 
     expect($property->getValue($job))->toBe(99);
 });
 
 it('keeps from_id as PHP_INT_MAX when no latest transaction exists', function () {
     $esi = Mockery::mock(EsiClient::class);
-    $result = makeEsiResult([]);
+    mockEsiTransport($esi, makeEsiResult([]));
 
-    $job = mock(WalletTransactionBase::class, function (MockInterface $mock) use ($result) {
-        $mock->shouldAllowMockingProtectedMethods();
-        $mock->shouldReceive('transactionableId')->andReturn(12345);
-        $mock->shouldReceive('transactionableType')->andReturn(CharacterInfo::class);
-        $mock->shouldReceive('fetchTransactions')->andReturn($result);
-        $mock->shouldReceive('getRefreshToken')->andReturn(testCharacter()->refresh_token);
-    })->makePartial();
+    $job = new CharacterWalletTransactionJob(testCharacter()->character_id);
+    (new ReflectionMethod($job, 'executeJob'))->invoke($job, $esi);
 
-    $job->executeJob($esi);
-
-    $reflection = new ReflectionClass($job);
-    $property = $reflection->getProperty('from_id');
+    $property = (new ReflectionClass($job))->getProperty('from_id');
 
     expect($property->getValue($job))->toBe(PHP_INT_MAX);
 });
 
 it('breaks when transaction_id is equal to the from_id', function () {
+    $character_id = testCharacter()->character_id;
+
     WalletTransaction::factory()->create([
-        'wallet_transactionable_id' => 12345,
+        'wallet_transactionable_id' => $character_id,
         'transaction_id' => 100,
     ]);
 
-    $esi = Mockery::mock(EsiClient::class);
     $transactionData = [(object) [
         'transaction_id' => 100,
         'client_id' => 12345,
@@ -72,37 +57,24 @@ it('breaks when transaction_id is equal to the from_id', function () {
         'type_id' => 12345,
         'unit_price' => 12345,
     ]];
-    $result = makeEsiResult($transactionData);
 
-    $job = mock(WalletTransactionBase::class, function (MockInterface $mock) use ($result) {
-        $mock->shouldAllowMockingProtectedMethods();
-        $mock->shouldReceive('transactionableId')->andReturn(12345);
-        $mock->shouldReceive('transactionableType')->andReturn(CharacterInfo::class);
-        $mock->shouldReceive('fetchTransactions')->andReturn($result);
-        $mock->shouldReceive('getRefreshToken')->andReturn(testCharacter()->refresh_token);
-    })->makePartial();
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult($transactionData));
 
-    $job->executeJob($esi);
+    $job = new CharacterWalletTransactionJob($character_id);
+    (new ReflectionMethod($job, 'executeJob'))->invoke($job, $esi);
 
-    $reflection = new ReflectionClass($job);
-    $property = $reflection->getProperty('from_id');
+    $property = (new ReflectionClass($job))->getProperty('from_id');
 
     expect($property->getValue($job))->not()->toBe(100);
 });
 
 it('returns early when result is cached', function () {
     $esi = Mockery::mock(EsiClient::class);
-    $result = makeEsiResult([], isCachedLoad: true);
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
-    $job = mock(WalletTransactionBase::class, function (MockInterface $mock) use ($result) {
-        $mock->shouldAllowMockingProtectedMethods();
-        $mock->shouldReceive('transactionableId')->andReturn(12345);
-        $mock->shouldReceive('transactionableType')->andReturn(CharacterInfo::class);
-        $mock->shouldReceive('fetchTransactions')->andReturn($result);
-        $mock->shouldReceive('getRefreshToken')->andReturn(testCharacter()->refresh_token);
-    })->makePartial();
-
-    $job->executeJob($esi);
+    $job = new CharacterWalletTransactionJob(testCharacter()->character_id);
+    (new ReflectionMethod($job, 'executeJob'))->invoke($job, $esi);
 
     expect(WalletTransaction::count())->toBe(0);
 });

@@ -17,11 +17,11 @@ it('returns early if batch is cancelled', function () {
 });
 
 it('checks if the response is cached', function () {
-    $esi = mockEsiClient('alliance->getAlliancesAllianceId', (object) ['isCachedLoad' => true]);
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
+    app()->instance(EsiClient::class, $esi);
 
-    $job = mock(AllianceInfoJob::class)->shouldAllowMockingProtectedMethods()->makePartial();
-    $job->alliance_id = 12345;
-    $job->executeJob($esi);
+    runJob(new AllianceInfoJob(12345));
 
     expect(true)->toBeTrue();
 });

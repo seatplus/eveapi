@@ -1,19 +1,17 @@
 <?php
 
-use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Mail\MailBodyJob;
 use Seatplus\Eveapi\Models\Mail\Mail;
 
 it('returns early if cache is hit', function () {
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
-    $response = mock(EsiResponse::class, function ($mock) {
-        $mock->shouldReceive('isCachedLoad')->andReturn(true);
-    });
+    $mail = Mail::factory()->create();
+    $job = new MailBodyJob(testCharacter()->character_id, $mail->id);
+    (new ReflectionMethod($job, 'executeJob'))->invoke($job, $esi);
 
-    $job = mock(MailBodyJob::class)->makePartial();
-    $job->shouldReceive('retrieve')->andReturn($response);
-
-    $job->executeJob();
-
-    expect(Mail::all())->toHaveCount(0);
+    expect(Mail::all())->toHaveCount(1)
+        ->and(Mail::first()->body)->toBeNull();
 });

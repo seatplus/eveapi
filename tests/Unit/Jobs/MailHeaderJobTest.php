@@ -15,10 +15,10 @@ it('has tags', function () {
 
 it('returns early if response is cached', function () {
     $esi = Mockery::mock(EsiClient::class);
-    $esi->shouldReceive('mail->getCharactersCharacterIdMail')->andReturn(makeEsiResult([], isCachedLoad: true));
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
-    $job = mock(MailHeaderJob::class)->makePartial();
-    $job->executeJob($esi);
+    $job = new MailHeaderJob(1);
+    (new ReflectionMethod($job, 'executeJob'))->invoke($job, $esi);
 
     expect(Mail::all())->toHaveCount(0);
 });

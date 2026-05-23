@@ -1,17 +1,17 @@
 <?php
 
 use Illuminate\Support\Facades\Event;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Killmails\KillmailJob;
 use Seatplus\Eveapi\Models\Killmails\Killmail;
 use Seatplus\Eveapi\Models\Universe\System;
 
 it('returns early if cache is hit', function () {
-    $esi = mockEsiClient('killmails->getKillmailsKillmailIdKillmailHash', (object) ['isCachedLoad' => true]);
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
+    app()->instance(EsiClient::class, $esi);
 
-    $job = mock(KillmailJob::class)->shouldAllowMockingProtectedMethods()->makePartial();
-    $job->killmail_id = 12345;
-    $job->killmail_hash = 'abc123';
-    $job->executeJob($esi);
+    runJob(new KillmailJob(12345, 'abc123'));
 
     expect(Killmail::count())->toEqual(0);
 });
@@ -40,13 +40,11 @@ it('does not further execute if killmail is complete', function () {
         'killmail_time' => now()->toIso8601String(),
     ];
 
-    $esi = mockEsiClient('killmails->getKillmailsKillmailIdKillmailHash', $data);
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, $data);
+    app()->instance(EsiClient::class, $esi);
 
-    $job = mock(KillmailJob::class)->shouldAllowMockingProtectedMethods()->makePartial();
-    $job->killmail_id = $killmail->killmail_id;
-    $job->killmail_hash = $killmail->killmail_hash;
-
-    $job->executeJob($esi);
+    runJob(new KillmailJob($killmail->killmail_id, $killmail->killmail_hash));
 
     Queue::assertNothingPushed();
     expect(System::count())->toEqual(0);
@@ -79,7 +77,8 @@ it('adds to batch', function () {
         'killmail_time' => now()->toIso8601String(),
     ];
 
-    $esi = mockEsiClient('killmails->getKillmailsKillmailIdKillmailHash', $data);
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, $data);
 
     $job = mock(KillmailJob::class)->shouldAllowMockingProtectedMethods()->makePartial();
     $job->killmail_id = $killmail->killmail_id;
