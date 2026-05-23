@@ -29,8 +29,6 @@ it('returns early if batch is cancelled', function (string $job) {
     $job->handle();
 
     $job->shouldNotHaveReceived('batch->add');
-
-    expect(true)->toBeTrue();
 })->with([
     GetMissingBodysFromMails::class,
     GetMissingCategorys::class,
@@ -61,9 +59,7 @@ it('returns null if no refresh token is found', function () {
     $job = mock(GetMissingBodysFromMails::class)->makePartial();
 
     $job->shouldReceive('batch->cancelled')->andReturn(false);
-    $job->shouldReceive('batch->add')->with([]);
+    $job->shouldReceive('batch->add')->once()->with([]);
 
     $job->handle();
-
-    expect(true)->toBeTrue();
 });

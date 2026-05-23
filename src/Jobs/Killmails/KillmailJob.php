@@ -29,7 +29,7 @@ final class KillmailJob extends EsiJob
     }
 
     #[\Override]
-    protected function executeJob(EsiClient $esi): void
+    public function executeJob(EsiClient $esi): void
     {
         $response = self::OPERATION_CLASS::execute($esi, $this->killmail_hash, $this->killmail_id);
         if ($response->isCachedLoad) {

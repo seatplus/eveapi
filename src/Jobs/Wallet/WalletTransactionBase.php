@@ -27,7 +27,7 @@ abstract class WalletTransactionBase extends EsiJob
     }
 
     #[\Override]
-    protected function executeJob(EsiClient $esi): void
+    public function executeJob(EsiClient $esi): void
     {
         $latest = WalletTransaction::where('wallet_transactionable_id', $this->transactionableId())->latest()->first();
         if ($latest) {

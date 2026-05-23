@@ -18,7 +18,7 @@ it('returns early if response is cached', function () {
     mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
     $job = new MailHeaderJob(1);
-    (new ReflectionMethod($job, 'executeJob'))->invoke($job, $esi);
+    $job->executeJob($esi);
 
     expect(Mail::all())->toHaveCount(0);
 });

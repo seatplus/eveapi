@@ -22,7 +22,7 @@ it('does not upsert balances when response is cached', function () {
     mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
     $job = new CharacterBalanceJob(12345);
-    (new ReflectionMethod($job, 'executeJob'))->invoke($job, $esi);
+    $job->executeJob($esi);
 
     expect(Balance::count())->toBe(0);
 });

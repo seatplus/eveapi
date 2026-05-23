@@ -31,7 +31,7 @@ abstract class WalletJournalBase extends EsiJob
     }
 
     #[\Override]
-    protected function executeJob(EsiClient $esi): void
+    public function executeJob(EsiClient $esi): void
     {
         $page = 1;
         do {

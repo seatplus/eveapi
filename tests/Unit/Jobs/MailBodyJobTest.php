@@ -10,7 +10,7 @@ it('returns early if cache is hit', function () {
 
     $mail = Mail::factory()->create();
     $job = new MailBodyJob(testCharacter()->character_id, $mail->id);
-    (new ReflectionMethod($job, 'executeJob'))->invoke($job, $esi);
+    $job->executeJob($esi);
 
     expect(Mail::all())->toHaveCount(1)
         ->and(Mail::first()->body)->toBeNull();

@@ -9,7 +9,7 @@ it('returns early if resonse is cached', function () {
     mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
     $job = new CorporationMemberTrackingJob(12345);
-    (new ReflectionMethod($job, 'executeJob'))->invoke($job, $esi);
+    $job->executeJob($esi);
 
     expect(CorporationMemberTracking::query()->count())->toEqual(0);
 });

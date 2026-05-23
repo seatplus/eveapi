@@ -18,7 +18,7 @@ it('sets from_id to latest transaction id minus one when latest transaction exis
     mockEsiTransport($esi, makeEsiResult([]));
 
     $job = new CharacterWalletTransactionJob($character_id);
-    (new ReflectionMethod($job, 'executeJob'))->invoke($job, $esi);
+    $job->executeJob($esi);
 
     $property = (new ReflectionClass($job))->getProperty('from_id');
 
@@ -30,7 +30,7 @@ it('keeps from_id as PHP_INT_MAX when no latest transaction exists', function ()
     mockEsiTransport($esi, makeEsiResult([]));
 
     $job = new CharacterWalletTransactionJob(testCharacter()->character_id);
-    (new ReflectionMethod($job, 'executeJob'))->invoke($job, $esi);
+    $job->executeJob($esi);
 
     $property = (new ReflectionClass($job))->getProperty('from_id');
 
@@ -62,7 +62,7 @@ it('breaks when transaction_id is equal to the from_id', function () {
     mockEsiTransport($esi, makeEsiResult($transactionData));
 
     $job = new CharacterWalletTransactionJob($character_id);
-    (new ReflectionMethod($job, 'executeJob'))->invoke($job, $esi);
+    $job->executeJob($esi);
 
     $property = (new ReflectionClass($job))->getProperty('from_id');
 
@@ -74,7 +74,7 @@ it('returns early when result is cached', function () {
     mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
     $job = new CharacterWalletTransactionJob(testCharacter()->character_id);
-    (new ReflectionMethod($job, 'executeJob'))->invoke($job, $esi);
+    $job->executeJob($esi);
 
     expect(WalletTransaction::count())->toBe(0);
 });

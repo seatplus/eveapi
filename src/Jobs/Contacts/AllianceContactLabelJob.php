@@ -37,7 +37,7 @@ final class AllianceContactLabelJob extends ContactBaseJob
     }
 
     #[\Override]
-    protected function executeJob(EsiClient $esi): void
+    public function executeJob(EsiClient $esi): void
     {
         $this->handleProcessor(new ProcessContactLabelsResponse($this->alliance_id, AllianceInfo::class), $esi);
     }

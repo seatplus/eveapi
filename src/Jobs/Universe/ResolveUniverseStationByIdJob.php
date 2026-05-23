@@ -23,7 +23,7 @@ final class ResolveUniverseStationByIdJob extends EsiJob
     }
 
     #[\Override]
-    protected function executeJob(EsiClient $esi): void
+    public function executeJob(EsiClient $esi): void
     {
         if ($this->location_id < head(self::STATION_IDS_RANGE) || $this->location_id > last(self::STATION_IDS_RANGE)) {
             return;

@@ -34,7 +34,7 @@ final class CharacterAffiliationJob extends EsiJob
     }
 
     #[\Override]
-    protected function executeJob(EsiClient $esi): void
+    public function executeJob(EsiClient $esi): void
     {
         $this->updateOrCreateCharacterAffiliations($this->getManualIds(), $esi);
 

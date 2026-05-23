@@ -2,6 +2,7 @@
 
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfoJob;
+use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 
 it('returns early if batch is cancelled', function () {
     $esi = Mockery::mock(EsiClient::class);
@@ -12,8 +13,6 @@ it('returns early if batch is cancelled', function () {
     })->shouldAllowMockingProtectedMethods()->makePartial();
 
     $job->executeJob($esi);
-
-    expect(true)->toBeTrue();
 });
 
 it('checks if the response is cached', function () {
@@ -21,8 +20,7 @@ it('checks if the response is cached', function () {
     mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
     $job = new AllianceInfoJob(12345);
-    $method = new ReflectionMethod($job, 'executeJob');
-    $method->invoke($job, $esi);
+    $job->executeJob($esi);
 
-    expect(true)->toBeTrue();
+    expect(AllianceInfo::where('alliance_id', 12345)->count())->toBe(0);
 });

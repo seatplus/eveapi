@@ -2,13 +2,14 @@
 
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
 it('checks if the response is cached', function () {
     $esi = Mockery::mock(EsiClient::class);
     mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
     $job = new CharacterInfoJob(12345);
-    (new ReflectionMethod($job, 'executeJob'))->invoke($job, $esi);
+    $job->executeJob($esi);
 
-    expect(true)->toBeTrue();
+    expect(CharacterInfo::where('character_id', 12345)->count())->toBe(0);
 });

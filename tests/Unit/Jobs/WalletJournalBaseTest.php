@@ -8,7 +8,7 @@ it('does not execute job if response is cached', function () {
     mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
     $job = new CharacterWalletJournalJob(testCharacter()->character_id);
-    (new ReflectionMethod($job, 'executeJob'))->invoke($job, $esi);
+    $job->executeJob($esi);
 
     $this->assertDatabaseMissing('wallet_journals', [
         'wallet_journable_id' => testCharacter()->character_id,
@@ -36,8 +36,12 @@ it('handles contextable type', function ($context_id_type) {
     mockEsiTransport($esi, makeEsiResult($data));
 
     $job = new CharacterWalletJournalJob(testCharacter()->character_id);
-    (new ReflectionMethod($job, 'executeJob'))->invoke($job, $esi);
+    $job->executeJob($esi);
 
+    $this->assertDatabaseHas('wallet_journals', [
+        'id' => 12345,
+        'wallet_journable_id' => testCharacter()->character_id,
+    ]);
 })->with([
     'structure_id',
     'station_id',

@@ -13,6 +13,4 @@ it('adds resolve location job to batch', function () {
     $job->shouldReceive('batch->add')->once();
 
     $job->handle();
-
-    expect(true)->toBeTrue();
 });

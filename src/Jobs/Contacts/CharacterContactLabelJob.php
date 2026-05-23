@@ -34,7 +34,7 @@ final class CharacterContactLabelJob extends ContactBaseJob
     }
 
     #[\Override]
-    protected function executeJob(EsiClient $esi): void
+    public function executeJob(EsiClient $esi): void
     {
         $this->handleProcessor(new ProcessContactLabelsResponse($this->character_id, CharacterInfo::class), $esi);
     }

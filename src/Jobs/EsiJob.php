@@ -164,7 +164,7 @@ abstract class EsiJob implements ShouldBeUnique, ShouldQueue
      * Execute the ESI job. The $esi client is already authenticated when getRefreshToken() returns a token.
      * At runtime $esi is always a RecordingEsiClient — see EveapiServiceProvider::register().
      */
-    abstract protected function executeJob(EsiClient $esi): void;
+    abstract public function executeJob(EsiClient $esi): void;
 
     /**
      * Get the tags that should be assigned to the job.

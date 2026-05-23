@@ -9,10 +9,9 @@ test('returns early if cached', function () {
     mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
     $job = new CharacterContractsJob(1);
-    $method = new ReflectionMethod($job, 'executeJob');
-    $method->invoke($job, $esi);
+    $job->executeJob($esi);
 
-    expect(true)->toBeTrue();
+    expect(Contract::count())->toBe(0);
 });
 
 it('adds follow up jobs to batch if batching', function () {

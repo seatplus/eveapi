@@ -26,7 +26,7 @@ abstract class ContractItemsBase extends EsiJob implements ShouldBeUnique
     }
 
     #[\Override]
-    protected function executeJob(EsiClient $esi): void
+    public function executeJob(EsiClient $esi): void
     {
         if ($this->batching() && $this->batch()->cancelled()) {
             return;

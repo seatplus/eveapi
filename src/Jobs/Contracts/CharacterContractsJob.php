@@ -31,7 +31,7 @@ final class CharacterContractsJob extends EsiJob
     }
 
     #[\Override]
-    protected function executeJob(EsiClient $esi): void
+    public function executeJob(EsiClient $esi): void
     {
         $contracts = collect();
         $page = 1;

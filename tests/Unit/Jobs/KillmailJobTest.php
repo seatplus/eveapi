@@ -11,8 +11,7 @@ it('returns early if cache is hit', function () {
     mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
     $job = new KillmailJob(12345, 'abc123');
-    $method = new ReflectionMethod($job, 'executeJob');
-    $method->invoke($job, $esi);
+    $job->executeJob($esi);
 
     expect(Killmail::count())->toEqual(0);
 });
@@ -45,8 +44,7 @@ it('does not further execute if killmail is complete', function () {
     mockEsiTransport($esi, $data);
 
     $job = new KillmailJob($killmail->killmail_id, $killmail->killmail_hash);
-    $method = new ReflectionMethod($job, 'executeJob');
-    $method->invoke($job, $esi);
+    $job->executeJob($esi);
 
     Queue::assertNothingPushed();
     expect(System::count())->toEqual(0);

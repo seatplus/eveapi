@@ -9,7 +9,7 @@ it('checks if the response is cached', function () {
     mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
     $job = new CharacterAssetJob(12345);
-    (new ReflectionMethod($job, 'executeJob'))->invoke($job, $esi);
+    $job->executeJob($esi);
 
     expect(Asset::count())->toBe(0);
 });

@@ -2,6 +2,7 @@
 
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Contracts\CharacterContractItemsJob;
+use Seatplus\Eveapi\Models\Contracts\ContractItem;
 
 it('has tags', function () {
     $job = new CharacterContractItemsJob(character_id: 1, contract_id: 42);
@@ -18,8 +19,6 @@ it('stops executing when batch is cancelled', function () {
     $job->shouldReceive('batch->cancelled')->once()->andReturn(true);
 
     $job->executeJob($esi);
-
-    expect(true)->toBeTrue();
 });
 
 it('does stop executing if response is cached', function () {
@@ -27,7 +26,7 @@ it('does stop executing if response is cached', function () {
     mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
     $job = new CharacterContractItemsJob(character_id: 1, contract_id: 1);
-    (new ReflectionMethod($job, 'executeJob'))->invoke($job, $esi);
+    $job->executeJob($esi);
 
-    expect(true)->toBeTrue();
+    expect(ContractItem::count())->toBe(0);
 });
