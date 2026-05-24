@@ -194,9 +194,68 @@ it('middleware uses public as charId when rateLimitCharacterId() returns null', 
     expect($job->released)->toBeTrue();
 });
 
-// ---------------------------------------------------------------------------
-// EsiProactiveRateLimitMiddleware — error limit tracking
-// ---------------------------------------------------------------------------
+it('middleware releases job when rate-limit is critically low and job has no rateLimitCharacterId()', function (): void {
+    Redis::flushdb();
+    EsiProactiveRateLimitMiddleware::recordResponse(1, 'characters', 'public');
+
+    $middleware = new EsiProactiveRateLimitMiddleware;
+
+    $job = new class
+    {
+        public bool $released = false;
+
+        public function rateLimitGroup(): string
+        {
+            return 'characters';
+        }
+
+        // intentionally no rateLimitCharacterId() method
+
+        public function release(int $delay): void
+        {
+            $this->released = true;
+        }
+    };
+
+    $middleware->handle($job, function (): void {});
+
+    expect($job->released)->toBeTrue();
+});
+
+it('computeReleaseDelay returns 0 when Redis state has limit=0', function (): void {
+    Redis::flushdb();
+
+    // Write a state with limit=0 — simulates corrupt/missing limit field
+    Redis::setex('esi_ratelimit:characters:public', 1800, json_encode([
+        'remaining' => 100,
+        'limit' => 0,
+        'window_seconds' => 900,
+    ]));
+
+    $middleware = new EsiProactiveRateLimitMiddleware;
+    $passed = false;
+
+    $job = new class
+    {
+        public function rateLimitGroup(): string
+        {
+            return 'characters';
+        }
+
+        public function rateLimitCharacterId(): ?int
+        {
+            return null;
+        }
+
+        public function release(int $delay): void {}
+    };
+
+    $middleware->handle($job, function () use (&$passed): void {
+        $passed = true;
+    });
+
+    expect($passed)->toBeTrue();
+});
 
 it('recordErrorLimitResponse writes error-limit state to Redis', function (): void {
     Redis::flushdb();

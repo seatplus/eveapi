@@ -15,6 +15,12 @@ beforeEach(function () {
     Queue::fake();
 });
 
+it('has tags', function () {
+    $job = new ResolveUniverseRegionByRegionIdJob(10000002);
+
+    expect($job->tags())->toContain('region', 'resolve', 'universe', 'region_id:10000002');
+});
+
 it('resolves system', function () {
     $mock_data = System::factory()->make();
 

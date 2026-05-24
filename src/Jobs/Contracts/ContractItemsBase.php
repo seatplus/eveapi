@@ -16,14 +16,7 @@ abstract class ContractItemsBase extends EsiJob implements ShouldBeUnique
     abstract protected function fetchItems(EsiClient $esi): EsiResult;
 
     #[\Override]
-    public function tags(): array
-    {
-        return [
-            "contract:{$this->contract_id}",
-            'items',
-            'contract_items',
-        ];
-    }
+    abstract public function tags(): array;
 
     #[\Override]
     public function executeJob(EsiClient $esi): void

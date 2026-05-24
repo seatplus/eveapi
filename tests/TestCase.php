@@ -2,7 +2,6 @@
 
 namespace Seatplus\Eveapi\Tests;
 
-use Illuminate\Config\Repository;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
@@ -58,16 +57,6 @@ abstract class TestCase extends OrchestraTestCase
      * @param  Application  $app
      * @return void
      */
-    protected function defineEnvironment($app)
-    {
-
-        tap($app['config'], function (Repository $config) {
-            $config->set('database.connections.mysql.port', '3306');
-            $config->set('database.connections.mysql.password', 'secret');
-        });
-
-    }
-
     #[\Override]
     protected function tearDown(): void
     {

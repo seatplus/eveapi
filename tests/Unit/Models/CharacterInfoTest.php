@@ -11,6 +11,7 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Models\Skills\SkillQueue;
 use Seatplus\Eveapi\Models\Wallet\Balance;
 
 beforeEach(function () {
@@ -87,4 +88,12 @@ test('character has balance relationship', function () {
     ]);
 
     expect($this->test_character->refresh()->balance)->toBeInstanceOf(Balance::class);
+});
+
+it('has skill_queues relationship', function () {
+    SkillQueue::factory()->create([
+        'character_id' => $this->test_character->character_id,
+    ]);
+
+    expect($this->test_character->refresh()->skill_queues->first())->toBeInstanceOf(SkillQueue::class);
 });

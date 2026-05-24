@@ -139,3 +139,9 @@ it('uniqueId returns tags joined with comma and space', function () {
 
     expect($job->uniqueId())->toBe('test, esijob');
 });
+
+it('backoff returns array of delay values in seconds', function () {
+    $job = new TestableEsiJob;
+
+    expect($job->backoff())->toBe([60, 300, 600, 900, 900, 900, 900, 900, 900]);
+});
