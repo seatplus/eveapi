@@ -55,7 +55,6 @@ abstract class TestCase extends OrchestraTestCase
      * Define environment setup.
      *
      * @param  Application  $app
-     * @return void
      */
     #[\Override]
     protected function tearDown(): void
