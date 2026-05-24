@@ -98,3 +98,17 @@ it('applies binary search and caches it if one id is invalid', function () {
         ->and(CharacterAffiliation::first())->character_id
         ->toBe($mock_data->character_id);
 });
+
+it('skips db write when character affiliation response is a cached load', function () {
+    CharacterAffiliation::query()->delete();
+    $mock_data = CharacterAffiliation::factory()->make();
+
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([(object) $mock_data->toArray()], isCachedLoad: true));
+    app()->instance(EsiClient::class, $esi);
+    mockTokenService();
+
+    runJob(new CharacterAffiliationJob($mock_data->character_id));
+
+    expect(CharacterAffiliation::count())->toBe(0);
+});

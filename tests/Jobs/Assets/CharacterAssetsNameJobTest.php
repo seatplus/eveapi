@@ -182,3 +182,35 @@ it('runs the job', function () {
             ->get()
     );
 });
+
+it('skips name update when response is a cached load', function () {
+    $type = Event::fakeFor(fn () => Type::factory()->create([
+        'group_id' => Group::factory()->create([
+            'category_id' => Category::factory()->create([
+                'category_id' => 22,
+            ]),
+        ]),
+    ]));
+
+    $asset = Asset::factory()->create([
+        'assetable_id' => $this->test_character->character_id,
+        'type_id' => $type->type_id,
+        'is_singleton' => true,
+    ]);
+
+    mockEsiClient(
+        'assets->postCharactersCharacterIdAssetsNames',
+        makeEsiResult([(object) [
+            'item_id' => $asset->item_id,
+            'name' => $this->name_to_create,
+        ]], isCachedLoad: true)
+    );
+
+    runJob(new CharacterAssetsNameJob($this->test_character->character_id));
+
+    $this->assertDatabaseHas('assets', [
+        'assetable_id' => $asset->assetable_id,
+        'item_id' => $asset->item_id,
+        'name' => null,
+    ]);
+});

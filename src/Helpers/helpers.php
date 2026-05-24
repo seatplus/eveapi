@@ -28,7 +28,7 @@ use Carbon\Carbon;
 use Seatplus\Eveapi\Exceptions\SettingException;
 use Seatplus\Eveapi\Models\Settings\GlobalSettings;
 
-if (! function_exists('setting')) {
+if (! function_exists('setting')) { // @codeCoverageIgnore
 
     function setting(array|string $name): mixed
     {
@@ -56,7 +56,7 @@ if (! function_exists('setting')) {
     }
 }
 
-if (! function_exists('carbon')) {
+if (! function_exists('carbon')) { // @codeCoverageIgnore
 
     function carbon(DateTimeInterface|null|string $data = null): Carbon
     {
