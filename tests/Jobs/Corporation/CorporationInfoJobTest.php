@@ -27,11 +27,13 @@ test('retrieve test', function () {
 });
 
 test('returns early if cached', function () {
-    $esi = Mockery::mock(EsiClient::class);
-    $esi->shouldReceive('corporation->getCorporationsCorporationId')->andReturn((object) ['isCachedLoad' => true]);
+    CorporationInfo::where('corporation_id', $this->corporation_id)->delete();
 
-    $job = mock(CorporationInfoJob::class)->makePartial();
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
+
+    $job = new CorporationInfoJob($this->corporation_id);
     $job->executeJob($esi);
 
-    expect(true)->toBeTrue();
+    expect(CorporationInfo::where('corporation_id', $this->corporation_id)->count())->toBe(0);
 });

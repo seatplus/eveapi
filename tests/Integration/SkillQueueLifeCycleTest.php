@@ -35,7 +35,7 @@ it('does not update skill queue if response is cached', function () {
     $esi = Mockery::mock(EsiClient::class);
     mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
-    $job = mock(SkillQueueJob::class)->makePartial();
+    $job = new SkillQueueJob(testCharacter()->character_id);
     $job->executeJob($esi);
 
     expect(SkillQueue::all())->toHaveCount(0);

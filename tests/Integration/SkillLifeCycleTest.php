@@ -66,10 +66,9 @@ it('Dispatch Type job if skill is missing', function () {
 
 it('does not update skills and character info if response is cached', function () {
     $esi = Mockery::mock(EsiClient::class);
-    $esi->shouldReceive('skills->getCharactersCharacterIdSkills')
-        ->andReturn((object) ['isCachedLoad' => true]);
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
-    $job = mock(SkillsJob::class)->makePartial();
+    $job = new SkillsJob(testCharacter()->character_id);
     $job->executeJob($esi);
 
     expect(Skill::all())->toHaveCount(0);

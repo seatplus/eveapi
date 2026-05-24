@@ -2,6 +2,7 @@
 
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletJournalJob;
+use Seatplus\Eveapi\Models\Wallet\WalletJournal;
 
 it('does not execute job if response is cached', function () {
     $esi = Mockery::mock(EsiClient::class);
@@ -13,6 +14,37 @@ it('does not execute job if response is cached', function () {
     $this->assertDatabaseMissing('wallet_journals', [
         'wallet_journable_id' => testCharacter()->character_id,
     ]);
+});
+
+it('handles multiple pages correctly', function () {
+    $entry = fn (int $id) => (object) [
+        'context_id_type' => 'character_id',
+        'context_id' => 11111,
+        'id' => $id,
+        'date' => now(),
+        'description' => 'test',
+        'ref_type' => 'test',
+        'amount' => 100.0,
+        'balance' => 200.0,
+        'first_party_id' => null,
+        'second_party_id' => null,
+        'reason' => null,
+        'tax' => null,
+        'tax_receiver_id' => null,
+    ];
+
+    $page1 = makeEsiRawResponse(makeEsiResult([$entry(111)], pages: 2));
+    $page2 = makeEsiRawResponse(makeEsiResult([$entry(222)], pages: 2));
+
+    $esi = Mockery::mock(EsiClient::class);
+    $esi->shouldReceive('withToken')->andReturnSelf();
+    $esi->shouldReceive('assertScope')->andReturnNull();
+    $esi->shouldReceive('invoke')->andReturn($page1, $page2);
+
+    $job = new CharacterWalletJournalJob(testCharacter()->character_id);
+    $job->executeJob($esi);
+
+    expect(WalletJournal::count())->toBe(2);
 });
 
 it('handles contextable type', function ($context_id_type) {
