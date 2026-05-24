@@ -67,3 +67,16 @@ it('does not create structure if location id is not in range', function () {
         'station_id' => 1234,
     ]);
 });
+
+it('skips db write when response is a cached load', function () {
+    $mock_data = Station::factory()->make();
+
+    $dto = (object) array_merge(['isCachedLoad' => true], $mock_data->toArray());
+    mockEsiClient('universe->getUniverseStationsStationId', $dto);
+
+    runJob(new ResolveUniverseStationByIdJob($mock_data->station_id));
+
+    $this->assertDatabaseMissing('universe_stations', [
+        'station_id' => $mock_data->station_id,
+    ]);
+});
