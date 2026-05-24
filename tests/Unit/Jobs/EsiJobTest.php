@@ -10,68 +10,10 @@ use Seatplus\EsiClient\Exceptions\EsiErrorLimitedException;
 use Seatplus\EsiClient\Exceptions\EsiRateLimitedException;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\EsiSchema\Resources\Mail\GetCharactersCharacterIdMail;
-use Seatplus\Eveapi\Jobs\EsiJob;
-use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\Esi\GetUpToDateRefreshTokenService;
 use Seatplus\Eveapi\Services\Esi\RecordingEsiClient;
-
-/**
- * Minimal concrete EsiJob for testing the base class behaviours.
- *
- * Overrides release() so tests can assert it was called without
- * needing a real queue connection.
- */
-class TestableEsiJob extends EsiJob
-{
-    public bool $executed = false;
-
-    public ?EsiClient $receivedEsi = null;
-
-    public bool $released = false;
-
-    public int $releasedAfter = 0;
-
-    public mixed $executeCallback = null;
-
-    public ?RefreshToken $refreshToken = null;
-
-    public function release($delay = 0): void
-    {
-        $this->released = true;
-        $this->releasedAfter = $delay;
-    }
-
-    public function getRefreshToken(): ?RefreshToken
-    {
-        return $this->refreshToken;
-    }
-
-    public function executeJob(EsiClient $esi): void
-    {
-        $this->executed = true;
-        $this->receivedEsi = $esi;
-
-        if ($this->executeCallback !== null) {
-            ($this->executeCallback)($esi);
-        }
-    }
-
-    public function tags(): array
-    {
-        return ['test', 'esijob'];
-    }
-}
-
-/**
- * Concrete job whose OPERATION_CLASS carries a RATE_LIMIT_GROUP constant.
- * Used to verify rateLimitGroup() resolves the group from the operation class.
- */
-class TestableEsiJobWithOperation extends TestableEsiJob
-{
-    protected const string OPERATION_CLASS = GetCharactersCharacterIdMail::class;
-}
-
-// ---------------------------------------------------------------------------
+use Seatplus\Eveapi\Tests\Unit\Jobs\Support\TestableEsiJob;
+use Seatplus\Eveapi\Tests\Unit\Jobs\Support\TestableEsiJobWithOperation;
 
 it('calls executeJob via handle', function () {
     $esi = Mockery::mock(EsiClient::class);
