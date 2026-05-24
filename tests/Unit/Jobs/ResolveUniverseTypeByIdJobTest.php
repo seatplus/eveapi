@@ -24,9 +24,9 @@ it('executes job and upserts type', function () {
 
     $esi = Mockery::mock(EsiClient::class);
     mockEsiTransport($esi, $data);
-    app()->instance(EsiClient::class, $esi);
 
-    runJob(new ResolveUniverseTypeByIdJob(12345));
+    $job = new ResolveUniverseTypeByIdJob(12345);
+    $job->executeJob($esi);
 
     expect(Type::count())->toEqual(1)
         ->and(Type::first()->type_id)->toEqual(12345);
