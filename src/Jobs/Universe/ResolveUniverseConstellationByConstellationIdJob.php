@@ -24,6 +24,10 @@ final class ResolveUniverseConstellationByConstellationIdJob extends EsiJob
     {
         $response = self::OPERATION_CLASS::execute($esi, $this->constellation_id);
 
+        if ($response->isCachedLoad) {
+            return;
+        }
+
         Constellation::firstOrCreate(
             ['constellation_id' => $response->constellation_id],
             ['region_id' => $response->region_id, 'name' => $response->name]

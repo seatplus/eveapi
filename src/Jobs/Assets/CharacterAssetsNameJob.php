@@ -69,6 +69,10 @@ final class CharacterAssetsNameJob extends EsiJob
                     $this->character_id
                 );
 
+                if ($response->isCachedLoad) {
+                    return;
+                }
+
                 $this->assetNames = $this->assetNames->merge(collect($response->data));
             });
 

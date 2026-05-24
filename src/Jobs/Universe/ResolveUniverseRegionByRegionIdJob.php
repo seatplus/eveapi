@@ -24,6 +24,10 @@ final class ResolveUniverseRegionByRegionIdJob extends EsiJob
     {
         $response = self::OPERATION_CLASS::execute($esi, $this->region_id);
 
+        if ($response->isCachedLoad) {
+            return;
+        }
+
         Region::firstOrCreate(
             ['region_id' => $response->region_id],
             ['name' => $response->name, 'description' => $response->description]

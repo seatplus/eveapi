@@ -62,6 +62,11 @@ final class CharacterAffiliationJob extends EsiJob
         $timestamp = now();
         try {
             $response = self::OPERATION_CLASS::execute($esi, $characterIds);
+
+            if ($response->isCachedLoad) {
+                return;
+            }
+
             foreach ($response->data as $result) {
                 $this->character_affiliations->push([
                     'character_id' => $result->character_id,

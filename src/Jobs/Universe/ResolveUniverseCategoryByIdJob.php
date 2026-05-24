@@ -24,6 +24,10 @@ final class ResolveUniverseCategoryByIdJob extends EsiJob
     {
         $response = self::OPERATION_CLASS::execute($esi, $this->category_id);
 
+        if ($response->isCachedLoad) {
+            return;
+        }
+
         Category::firstOrCreate(
             ['category_id' => $response->category_id],
             ['name' => $response->name, 'published' => $response->published]

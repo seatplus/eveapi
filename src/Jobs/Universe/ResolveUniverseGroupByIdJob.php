@@ -24,6 +24,10 @@ final class ResolveUniverseGroupByIdJob extends EsiJob
     {
         $response = self::OPERATION_CLASS::execute($esi, $this->group_id);
 
+        if ($response->isCachedLoad) {
+            return;
+        }
+
         Group::firstOrCreate(
             ['group_id' => $response->group_id],
             ['category_id' => $response->category_id, 'name' => $response->name, 'published' => $response->published]

@@ -24,6 +24,10 @@ final class ResolveUniverseTypeByIdJob extends EsiJob
     {
         $response = self::OPERATION_CLASS::execute($esi, $this->type_id);
 
+        if ($response->isCachedLoad) {
+            return;
+        }
+
         Type::firstOrCreate(
             ['type_id' => $response->type_id],
             [

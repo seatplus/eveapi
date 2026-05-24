@@ -37,23 +37,24 @@ class JobChecker
 
     private function checkIsCachedLoad(EsiJob $job): array
     {
-        $job_filename = (new \ReflectionClass($job))->getFileName();
-        $job_source = $this->fileGetContentsAction->__invoke($job_filename);
+        $reflection = new \ReflectionClass($job);
 
-        $checks_cache = str_contains($job_source, 'isCachedLoad');
+        $current = $reflection;
+        while ($current !== false) {
+            $filename = $current->getFileName();
 
-        if (! $checks_cache) {
-            // Check parent (abstract base classes implement isCachedLoad check)
-            $parent = (new \ReflectionClass($job))->getParentClass();
-            if ($parent && $parent->getFilename()) {
-                $parent_source = $this->fileGetContentsAction->__invoke($parent->getFilename());
-                $checks_cache = str_contains($parent_source, 'isCachedLoad');
+            if ($filename) {
+                $source = $this->fileGetContentsAction->__invoke($filename);
+
+                if (str_contains($source, 'isCachedLoad')) {
+                    return $this->assertionResult('success', 'job checks isCachedLoad');
+                }
             }
+
+            $current = $current->getParentClass();
         }
 
-        return $checks_cache
-            ? $this->assertionResult('success', 'job checks isCachedLoad')
-            : $this->assertionResult('warning', 'job does not check isCachedLoad');
+        return $this->assertionResult('warning', 'job does not check isCachedLoad');
     }
 
     private function assertionResult(string $status, string $message): array

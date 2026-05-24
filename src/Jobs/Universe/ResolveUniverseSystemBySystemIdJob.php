@@ -24,6 +24,10 @@ final class ResolveUniverseSystemBySystemIdJob extends EsiJob
     {
         $response = self::OPERATION_CLASS::execute($esi, $this->system_id);
 
+        if ($response->isCachedLoad) {
+            return;
+        }
+
         System::firstOrCreate(
             ['system_id' => $response->system_id],
             [
