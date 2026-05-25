@@ -23,6 +23,10 @@ class TestableEsiJob extends EsiJob
 
     public int $releasedAfter = 0;
 
+    public bool $failed = false;
+
+    public ?\Throwable $failedWith = null;
+
     public mixed $executeCallback = null;
 
     public ?RefreshToken $refreshToken = null;
@@ -31,6 +35,12 @@ class TestableEsiJob extends EsiJob
     {
         $this->released = true;
         $this->releasedAfter = $delay;
+    }
+
+    public function fail($exception = null): void
+    {
+        $this->failed = true;
+        $this->failedWith = $exception;
     }
 
     public function getRefreshToken(): ?RefreshToken

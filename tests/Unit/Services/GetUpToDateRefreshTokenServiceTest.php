@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Event;
 use Mockery\MockInterface;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
+use Seatplus\Eveapi\Exceptions\InvalidRefreshTokenException;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\Esi\GetUpToDateRefreshTokenService;
 use Seatplus\Eveapi\Services\Esi\UpdateRefreshTokenService;
@@ -62,4 +63,59 @@ it('throws request failed exception', function () {
     $service = new GetUpToDateRefreshTokenService;
 
     expect(fn () => $service->get($refreshToken))->toThrow(RequestFailedException::class);
+});
+
+it('throws InvalidRefreshTokenException when OAuth returns 400', function () {
+
+    $refreshToken = RefreshToken::factory()->create([
+        'character_id' => 12345,
+        'expires_on' => now()->addSeconds(30),
+    ]);
+
+    $updateRefreshTokenService = mock(UpdateRefreshTokenService::class, function (MockInterface $mock) {
+        $mock->shouldReceive('update')
+            ->once()
+            ->andThrow(new RequestFailedException(
+                new Exception('invalid_grant', 400),
+                new EsiResponse(json_encode(['error' => 'invalid_grant']), [], 'now', 400),
+            ));
+    });
+
+    $service = new GetUpToDateRefreshTokenService($updateRefreshTokenService);
+
+    expect(fn () => $service->get($refreshToken))->toThrow(InvalidRefreshTokenException::class);
+});
+
+it('calls update only once when two calls race for the same token', function () {
+
+    $refreshToken = RefreshToken::factory()->create([
+        'character_id' => 12345,
+        'expires_on' => now()->addSeconds(30),
+    ]);
+
+    $callCount = 0;
+
+    $updateRefreshTokenService = mock(UpdateRefreshTokenService::class, function (MockInterface $mock) use ($refreshToken, &$callCount) {
+        $mock->shouldReceive('update')
+            ->once()
+            ->andReturnUsing(function () use ($refreshToken, &$callCount) {
+                $callCount++;
+
+                return RefreshToken::updateOrCreate(
+                    ['character_id' => $refreshToken->character_id],
+                    ['expires_on' => now()->addMinutes(20)],
+                );
+            });
+    });
+
+    $service = new GetUpToDateRefreshTokenService($updateRefreshTokenService);
+
+    // First call acquires lock, refreshes token
+    $result1 = $service->get($refreshToken);
+    // Second call re-reads the now-fresh token from DB, skips update
+    $result2 = $service->get($refreshToken);
+
+    expect($callCount)->toBe(1)
+        ->and($result1->character_id)->toBe(12345)
+        ->and($result2->character_id)->toBe(12345);
 });

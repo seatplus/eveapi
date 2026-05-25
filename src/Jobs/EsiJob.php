@@ -36,6 +36,7 @@ use Illuminate\Support\Facades\DB;
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiClient\Exceptions\EsiErrorLimitedException;
 use Seatplus\EsiClient\Exceptions\EsiRateLimitedException;
+use Seatplus\Eveapi\Exceptions\InvalidRefreshTokenException;
 use Seatplus\Eveapi\Jobs\Middleware\EsiProactiveRateLimitMiddleware;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\Esi\GetUpToDateRefreshTokenService;
@@ -102,21 +103,23 @@ abstract class EsiJob implements ShouldBeUnique, ShouldQueue
      */
     final public function handle(EsiClient $esi, GetUpToDateRefreshTokenService $tokenService): void
     {
-        $token = $this->getRefreshToken();
-
-        if ($token !== null) {
-            $upToDate = $tokenService->get($token);
-            $esi = $esi->withToken($upToDate->getRawOriginal('token'));
-        }
-
-        if ($esi instanceof RecordingEsiClient) {
-            $esi->setContext($this->rateLimitGroup(), $this->rateLimitCharacterId());
-        }
-
         try {
+            $token = $this->getRefreshToken();
+
+            if ($token !== null) {
+                $upToDate = $tokenService->get($token);
+                $esi = $esi->withToken($upToDate->getRawOriginal('token'));
+            }
+
+            if ($esi instanceof RecordingEsiClient) {
+                $esi->setContext($this->rateLimitGroup(), $this->rateLimitCharacterId());
+            }
+
             DB::transaction(fn () => $this->executeJob($esi));
         } catch (EsiRateLimitedException|EsiErrorLimitedException $e) {
             $this->release($e->retryAfter);
+        } catch (InvalidRefreshTokenException $e) {
+            $this->fail($e);
         } catch (Exception $e) {
             report($e);
 

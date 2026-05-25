@@ -10,6 +10,7 @@ use Seatplus\EsiClient\Exceptions\EsiErrorLimitedException;
 use Seatplus\EsiClient\Exceptions\EsiRateLimitedException;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\EsiSchema\Resources\Mail\GetCharactersCharacterIdMail;
+use Seatplus\Eveapi\Exceptions\InvalidRefreshTokenException;
 use Seatplus\Eveapi\Services\Esi\GetUpToDateRefreshTokenService;
 use Seatplus\Eveapi\Services\Esi\RecordingEsiClient;
 use Seatplus\Eveapi\Tests\Unit\Jobs\Support\TestableEsiJob;
@@ -95,6 +96,24 @@ it('rethrows unexpected exceptions from executeJob', function () {
 
     $job->handle($esi, $tokenService);
 })->throws(RequestFailedException::class);
+
+it('permanently fails the job when token service throws InvalidRefreshTokenException', function () {
+    $esi = Mockery::mock(EsiClient::class);
+
+    $tokenService = Mockery::mock(GetUpToDateRefreshTokenService::class);
+    $tokenService->shouldReceive('get')
+        ->once()
+        ->andThrow(new InvalidRefreshTokenException('Token is invalid', 400));
+
+    $refreshToken = testCharacter()->refresh_token;
+
+    $job = new TestableEsiJob;
+    $job->refreshToken = $refreshToken;
+    $job->handle($esi, $tokenService);
+
+    expect($job->failed)->toBeTrue()
+        ->and($job->failedWith)->toBeInstanceOf(InvalidRefreshTokenException::class);
+});
 
 it('calls setContext on RecordingEsiClient before executeJob', function () {
     $esi = Mockery::mock(RecordingEsiClient::class, function (MockInterface $mock) {
