@@ -86,6 +86,27 @@ it('throws InvalidRefreshTokenException when OAuth returns 400', function () {
     expect(fn () => $service->get($refreshToken))->toThrow(InvalidRefreshTokenException::class);
 });
 
+it('re-throws non-401 RequestFailedException as-is', function () {
+
+    $refreshToken = RefreshToken::factory()->create([
+        'character_id' => 12345,
+        'expires_on' => now()->addSeconds(30),
+    ]);
+
+    $updateRefreshTokenService = mock(UpdateRefreshTokenService::class, function (MockInterface $mock) {
+        $mock->shouldReceive('update')
+            ->once()
+            ->andThrow(new RequestFailedException(
+                new Exception('server error', 500),
+                new EsiResponse(json_encode(['error' => 'server_error']), [], 'now', 500),
+            ));
+    });
+
+    $service = new GetUpToDateRefreshTokenService($updateRefreshTokenService);
+
+    expect(fn () => $service->get($refreshToken))->toThrow(RequestFailedException::class);
+});
+
 it('calls update only once when two calls race for the same token', function () {
 
     $refreshToken = RefreshToken::factory()->create([
