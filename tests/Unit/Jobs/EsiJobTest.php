@@ -12,6 +12,7 @@ use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\EsiSchema\Resources\Mail\GetCharactersCharacterIdMail;
 use Seatplus\Eveapi\Exceptions\InvalidRefreshTokenException;
 use Seatplus\Eveapi\Services\Esi\GetUpToDateRefreshTokenService;
+use Seatplus\Eveapi\Services\Esi\InvalidTokenThrottleService;
 use Seatplus\Eveapi\Services\Esi\RecordingEsiClient;
 use Seatplus\Eveapi\Tests\Unit\Jobs\Support\TestableEsiJob;
 use Seatplus\Eveapi\Tests\Unit\Jobs\Support\TestableEsiJobWithOperation;
@@ -19,9 +20,10 @@ use Seatplus\Eveapi\Tests\Unit\Jobs\Support\TestableEsiJobWithOperation;
 it('calls executeJob via handle', function () {
     $esi = Mockery::mock(EsiClient::class);
     $tokenService = Mockery::mock(GetUpToDateRefreshTokenService::class);
+    $throttle = Mockery::mock(InvalidTokenThrottleService::class);
 
     $job = new TestableEsiJob;
-    $job->handle($esi, $tokenService);
+    $job->handle($esi, $tokenService, $throttle);
 
     expect($job->executed)->toBeTrue();
 });
@@ -33,8 +35,10 @@ it('does not apply auth for public endpoints', function () {
     $tokenService = Mockery::mock(GetUpToDateRefreshTokenService::class);
     $tokenService->shouldNotReceive('get');
 
+    $throttle = Mockery::mock(InvalidTokenThrottleService::class);
+
     $job = new TestableEsiJob;
-    $job->handle($esi, $tokenService);
+    $job->handle($esi, $tokenService, $throttle);
 });
 
 it('injects auth token when getRefreshToken returns a token', function () {
@@ -51,9 +55,11 @@ it('injects auth token when getRefreshToken returns a token', function () {
     $tokenService = Mockery::mock(GetUpToDateRefreshTokenService::class);
     $tokenService->shouldReceive('get')->with($refreshToken)->once()->andReturn($refreshToken);
 
+    $throttle = Mockery::mock(InvalidTokenThrottleService::class);
+
     $job = new TestableEsiJob;
     $job->refreshToken = $refreshToken;
-    $job->handle($esi, $tokenService);
+    $job->handle($esi, $tokenService, $throttle);
 
     expect($job->receivedEsi)->toBe($authenticatedEsi);
 });
@@ -61,11 +67,12 @@ it('injects auth token when getRefreshToken returns a token', function () {
 it('catches EsiRateLimitedException and releases the job', function () {
     $esi = Mockery::mock(EsiClient::class);
     $tokenService = Mockery::mock(GetUpToDateRefreshTokenService::class);
+    $throttle = Mockery::mock(InvalidTokenThrottleService::class);
 
     $job = new TestableEsiJob;
     $job->executeCallback = fn () => throw new EsiRateLimitedException(120);
 
-    $job->handle($esi, $tokenService);
+    $job->handle($esi, $tokenService, $throttle);
 
     expect($job->released)->toBeTrue()
         ->and($job->releasedAfter)->toBe(120);
@@ -74,11 +81,12 @@ it('catches EsiRateLimitedException and releases the job', function () {
 it('catches EsiErrorLimitedException and releases the job', function () {
     $esi = Mockery::mock(EsiClient::class);
     $tokenService = Mockery::mock(GetUpToDateRefreshTokenService::class);
+    $throttle = Mockery::mock(InvalidTokenThrottleService::class);
 
     $job = new TestableEsiJob;
     $job->executeCallback = fn () => throw new EsiErrorLimitedException(60);
 
-    $job->handle($esi, $tokenService);
+    $job->handle($esi, $tokenService, $throttle);
 
     expect($job->released)->toBeTrue()
         ->and($job->releasedAfter)->toBe(60);
@@ -87,6 +95,7 @@ it('catches EsiErrorLimitedException and releases the job', function () {
 it('rethrows unexpected exceptions from executeJob', function () {
     $esi = Mockery::mock(EsiClient::class);
     $tokenService = Mockery::mock(GetUpToDateRefreshTokenService::class);
+    $throttle = Mockery::mock(InvalidTokenThrottleService::class);
 
     $job = new TestableEsiJob;
     $job->executeCallback = fn () => throw new RequestFailedException(
@@ -94,7 +103,7 @@ it('rethrows unexpected exceptions from executeJob', function () {
         new EsiResponse(json_encode([]), [], 'now', 500)
     );
 
-    $job->handle($esi, $tokenService);
+    $job->handle($esi, $tokenService, $throttle);
 })->throws(RequestFailedException::class);
 
 it('permanently fails the job when token service throws InvalidRefreshTokenException', function () {
@@ -107,9 +116,12 @@ it('permanently fails the job when token service throws InvalidRefreshTokenExcep
 
     $refreshToken = testCharacter()->refresh_token;
 
+    $throttle = Mockery::mock(InvalidTokenThrottleService::class);
+    $throttle->shouldReceive('hit')->with($refreshToken->character_id)->once()->andReturn(false);
+
     $job = new TestableEsiJob;
     $job->refreshToken = $refreshToken;
-    $job->handle($esi, $tokenService);
+    $job->handle($esi, $tokenService, $throttle);
 
     expect($job->failed)->toBeTrue()
         ->and($job->failedWith)->toBeInstanceOf(InvalidRefreshTokenException::class);
@@ -121,11 +133,56 @@ it('calls setContext on RecordingEsiClient before executeJob', function () {
     });
 
     $tokenService = Mockery::mock(GetUpToDateRefreshTokenService::class);
+    $throttle = Mockery::mock(InvalidTokenThrottleService::class);
 
     $job = new TestableEsiJob;
-    $job->handle($esi, $tokenService);
+    $job->handle($esi, $tokenService, $throttle);
 
     expect($job->receivedEsi)->toBe($esi);
+});
+
+it('does not soft-delete the token when failure count is below threshold', function () {
+    $esi = Mockery::mock(EsiClient::class);
+
+    $refreshToken = testCharacter()->refresh_token;
+
+    $tokenService = Mockery::mock(GetUpToDateRefreshTokenService::class);
+    $tokenService->shouldReceive('get')
+        ->once()
+        ->andThrow(new InvalidRefreshTokenException('Token is invalid', 400));
+
+    $throttle = Mockery::mock(InvalidTokenThrottleService::class);
+    $throttle->shouldReceive('hit')->with($refreshToken->character_id)->once()->andReturn(false);
+
+    $job = new TestableEsiJob;
+    $job->refreshToken = $refreshToken;
+    $job->handle($esi, $tokenService, $throttle);
+
+    expect($refreshToken->fresh())->not->toBeNull()
+        ->and($refreshToken->fresh()->deleted_at)->toBeNull();
+});
+
+it('soft-deletes the token when failure count reaches the threshold', function () {
+    $esi = Mockery::mock(EsiClient::class);
+
+    $refreshToken = testCharacter()->refresh_token;
+
+    $tokenService = Mockery::mock(GetUpToDateRefreshTokenService::class);
+    $tokenService->shouldReceive('get')
+        ->once()
+        ->andThrow(new InvalidRefreshTokenException('Token is invalid', 400));
+
+    $throttle = Mockery::mock(InvalidTokenThrottleService::class);
+    $throttle->shouldReceive('hit')->with($refreshToken->character_id)->once()->andReturn(true);
+
+    $job = new TestableEsiJob;
+    $job->refreshToken = $refreshToken;
+    $job->handle($esi, $tokenService, $throttle);
+
+    expect($job->failed)->toBeTrue();
+
+    $refreshToken->refresh();
+    expect($refreshToken->deleted_at)->not->toBeNull();
 });
 
 it('rateLimitGroup returns global when OPERATION_CLASS is empty', function () {

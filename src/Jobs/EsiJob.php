@@ -40,6 +40,7 @@ use Seatplus\Eveapi\Exceptions\InvalidRefreshTokenException;
 use Seatplus\Eveapi\Jobs\Middleware\EsiProactiveRateLimitMiddleware;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\Esi\GetUpToDateRefreshTokenService;
+use Seatplus\Eveapi\Services\Esi\InvalidTokenThrottleService;
 use Seatplus\Eveapi\Services\Esi\RecordingEsiClient;
 
 abstract class EsiJob implements ShouldBeUnique, ShouldQueue
@@ -101,8 +102,10 @@ abstract class EsiJob implements ShouldBeUnique, ShouldQueue
      * @see RecordingEsiClient
      * @see EveapiServiceProvider::register()
      */
-    final public function handle(EsiClient $esi, GetUpToDateRefreshTokenService $tokenService): void
+    final public function handle(EsiClient $esi, GetUpToDateRefreshTokenService $tokenService, InvalidTokenThrottleService $throttle): void
     {
+        $token = null;
+
         try {
             $token = $this->getRefreshToken();
 
@@ -119,6 +122,10 @@ abstract class EsiJob implements ShouldBeUnique, ShouldQueue
         } catch (EsiRateLimitedException|EsiErrorLimitedException $e) {
             $this->release($e->retryAfter);
         } catch (InvalidRefreshTokenException $e) {
+            if ($token !== null && $throttle->hit($token->character_id)) {
+                $token->delete();
+            }
+
             $this->fail($e);
         } catch (Exception $e) {
             report($e);
