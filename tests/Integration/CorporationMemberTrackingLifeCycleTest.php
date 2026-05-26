@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Queue;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
@@ -29,12 +30,11 @@ it('handles missing jobs after corporation member job', function (string $job_cl
         ...$configuration,
     ]);
 
-    mockEsiClient(
-        'corporation->getCorporationsCorporationIdMembertracking',
-        makeEsiResult([(object) $tracking->toArray()])
-    );
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([(object) $tracking->toArray()]));
 
-    runJob(new CorporationMemberTrackingJob($tracking->corporation_id));
+    $job = new CorporationMemberTrackingJob($tracking->corporation_id);
+    $job->executeJob($esi);
 
     match ($should_be_queued) {
         true => Queue::assertPushedOn('high', $job_class),

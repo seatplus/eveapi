@@ -36,14 +36,13 @@ it('handles follow-up job', function (string $job_class, array $configuration = 
 
     $esi = Mockery::mock(EsiClient::class);
     mockEsiTransport($esi, makeEsiResult([(object) $character_affiliation->toArray()]));
-    app()->instance(EsiClient::class, $esi);
-    mockTokenService();
 
     if ($job_class === CorporationInfoJob::class && $pushed) {
         $character_affiliation->corporation()->delete();
     }
 
-    runJob(new CharacterAffiliationJob($character_id));
+    $job = new CharacterAffiliationJob($character_id);
+    $job->executeJob($esi);
 
     if ($pushed) {
         Queue::assertPushedOn('high', $job_class);
@@ -88,10 +87,8 @@ it('applies binary search and caches it if one id is invalid', function () {
     $esi->shouldReceive('invoke')
         ->once()->ordered()->andReturn(makeEsiRawResponse(makeEsiResult([(object) $mock_data->toArray()])));
 
-    app()->instance(EsiClient::class, $esi);
-    mockTokenService();
-
-    runJob(new CharacterAffiliationJob($ids));
+    $job = new CharacterAffiliationJob($ids);
+    $job->executeJob($esi);
 
     expect(cache('invalid_character_ids'))->toBe([123456789])
         ->and(CharacterAffiliation::all())->toHaveCount(1)
@@ -105,10 +102,9 @@ it('skips db write when character affiliation response is a cached load', functi
 
     $esi = Mockery::mock(EsiClient::class);
     mockEsiTransport($esi, makeEsiResult([(object) $mock_data->toArray()], isCachedLoad: true));
-    app()->instance(EsiClient::class, $esi);
-    mockTokenService();
 
-    runJob(new CharacterAffiliationJob($mock_data->character_id));
+    $job = new CharacterAffiliationJob($mock_data->character_id);
+    $job->executeJob($esi);
 
     expect(CharacterAffiliation::count())->toBe(0);
 });

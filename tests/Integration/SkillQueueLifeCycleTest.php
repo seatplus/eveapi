@@ -20,12 +20,11 @@ it('runs skill queue job', function () {
             ->make()
     );
 
-    mockEsiClient(
-        'skills->getCharactersCharacterIdSkillqueue',
-        makeEsiResult(array_map(fn ($s) => (object) $s, $mocked_skill_queue->toArray()))
-    );
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult(array_map(fn ($s) => (object) $s, $mocked_skill_queue->toArray())));
 
-    runJob(new SkillQueueJob(testCharacter()->character_id));
+    $job = new SkillQueueJob(testCharacter()->character_id);
+    $job->executeJob($esi);
 
     expect(SkillQueue::all())->toHaveCount(5);
     expect(SkillQueue::first()->type)->toBeInstanceOf(Type::class);

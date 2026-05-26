@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
-use Seatplus\EsiSchema\Responses\KillmailsKillmailIdKillmailHashGet;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Killmails\KillmailJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseSystemBySystemIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
@@ -21,14 +21,14 @@ it('dispatches killmail job', function () {
 
 it('creates killmail', function () {
     $killmailData = json_decode(file_get_contents('tests/Stubs/19c919549fb5b4359324fc7938b21f2965f1baf0.json'));
-    $dto = KillmailsKillmailIdKillmailHashGet::from($killmailData);
-    $dto->isCachedLoad = false;
 
-    mockEsiClient('killmails->getKillmailsKillmailIdKillmailHash', $dto);
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult($killmailData));
 
     Queue::fake();
 
-    runJob(new KillmailJob(123, 'asd'));
+    $job = new KillmailJob(123, 'asd');
+    $job->executeJob($esi);
 
     Queue::assertPushed(ResolveUniverseSystemBySystemIdJob::class);
     Queue::assertPushed(ResolveUniverseTypeByIdJob::class);

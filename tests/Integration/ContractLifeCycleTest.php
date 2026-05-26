@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Queue;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Contracts\CharacterContractsJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Contracts\Contract;
@@ -17,12 +18,11 @@ test('job dispatches nothing by default upon creation with factory', function ()
         ->and($contract->end_location)->not()->toBeNull()
         ->and($contract->issuer)->not()->toBeNull();
 
-    mockEsiClient(
-        'contracts->getCharactersCharacterIdContracts',
-        makeEsiResult([(object) $contract->toArray()])
-    );
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([(object) $contract->toArray()]));
 
-    runJob(new CharacterContractsJob($contract->issuer_id));
+    $job = new CharacterContractsJob($contract->issuer_id);
+    $job->executeJob($esi);
 
     Queue::assertNotPushed(ResolveLocationJob::class);
 });
@@ -36,12 +36,11 @@ test('job dispatches location job with unknown location id', function () {
         'for_corporation' => true,
     ]);
 
-    mockEsiClient(
-        'contracts->getCharactersCharacterIdContracts',
-        makeEsiResult([(object) $contract->toArray()])
-    );
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([(object) $contract->toArray()]));
 
-    runJob(new CharacterContractsJob(testCharacter()->character_id));
+    $job = new CharacterContractsJob(testCharacter()->character_id);
+    $job->executeJob($esi);
 
     expect($contract->start_location)->toBeNull()
         ->and($contract->end_location)->not()->toBeNull()

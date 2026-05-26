@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\EsiClient\EsiClient;
-use Seatplus\EsiSchema\Responses\CharactersSkills;
 use Seatplus\Eveapi\Jobs\Skills\SkillsJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Skills\Skill;
@@ -22,18 +21,17 @@ it('runs skill job', function () {
             ->make()
     );
 
-    $skillsDto = CharactersSkills::from((object) [
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult((object) [
         'skills' => array_map(fn ($s) => (object) $s, $mocked_skills->toArray()),
         'total_sp' => 1337,
         'unallocated_sp' => 42,
-    ]);
-    $skillsDto->isCachedLoad = false;
-
-    mockEsiClient('skills->getCharactersCharacterIdSkills', $skillsDto);
+    ]));
 
     expect($this->test_character->total_sp)->toBeNull();
 
-    runJob(new SkillsJob(testCharacter()->character_id));
+    $job = new SkillsJob(testCharacter()->character_id);
+    $job->executeJob($esi);
 
     expect(Skill::all())->toHaveCount(5);
     expect(Skill::first()->type)->toBeInstanceOf(Type::class);
@@ -50,16 +48,15 @@ it('Dispatch Type job if skill is missing', function () {
 
     expect($skill->type)->toBeNull();
 
-    $skillsDto = CharactersSkills::from((object) [
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult((object) [
         'skills' => [(object) $skill->toArray()],
         'total_sp' => 1337,
         'unallocated_sp' => 42,
-    ]);
-    $skillsDto->isCachedLoad = false;
+    ]));
 
-    mockEsiClient('skills->getCharactersCharacterIdSkills', $skillsDto);
-
-    runJob(new SkillsJob(testCharacter()->character_id));
+    $job = new SkillsJob(testCharacter()->character_id);
+    $job->executeJob($esi);
 
     Queue::assertPushed(ResolveUniverseTypeByIdJob::class);
 });

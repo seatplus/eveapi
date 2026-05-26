@@ -71,17 +71,10 @@ test('it dispatches follow up jobs', function (string $job_class, array $configu
     ],
 ]);
 
-function runWalletTransactionJobWithMockData(array $mock_data)
+function runWalletTransactionJobWithMockData(array $mock_data): void
 {
-    updateRefreshTokenScopes(testCharacter()->refresh_token, ['esi-wallet.read_character_wallet.v1'])->save();
-
     $division_id = Arr::get($mock_data, '0.division', null);
     $is_corporation = ! is_null($division_id);
-
-    if ($is_corporation) {
-        updateRefreshTokenScopes(testCharacter()->refresh_token, ['esi-wallet.read_corporation_wallets.v1'])->save();
-        updateCharacterRoles(['Director']);
-    }
 
     $wallet_transactionable_id = Arr::get($mock_data, '0.wallet_transactionable_id');
     $items = array_map(fn ($t) => (object) (is_array($t) ? $t : $t->toArray()), $mock_data);
@@ -93,12 +86,15 @@ function runWalletTransactionJobWithMockData(array $mock_data)
         ->andReturn(makeEsiRawResponse(makeEsiResult($items)), makeEsiRawResponse(makeEsiResult([])));
 
     if ($is_corporation) {
-        app()->instance(EsiClient::class, $esi);
-        mockTokenService();
-        runJob(new CorporationWalletTransactionByDivisionJob($wallet_transactionable_id, $division_id));
-    } else {
-        app()->instance(EsiClient::class, $esi);
-        mockTokenService();
-        runJob(new CharacterWalletTransactionJob($wallet_transactionable_id));
+        updateRefreshTokenScopes(testCharacter()->refresh_token, ['esi-wallet.read_corporation_wallets.v1'])->save();
+        updateCharacterRoles(['Director']);
+
+        $job = new CorporationWalletTransactionByDivisionJob($wallet_transactionable_id, $division_id);
+        $job->executeJob($esi);
+
+        return;
     }
+
+    $job = new CharacterWalletTransactionJob($wallet_transactionable_id);
+    $job->executeJob($esi);
 }

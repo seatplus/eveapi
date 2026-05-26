@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Queue;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletJournalJob;
 use Seatplus\Eveapi\Models\Wallet\WalletJournal;
 
@@ -27,12 +28,11 @@ test('run wallet journal job', function () {
         'tax_receiver_id' => null,
     ])->toArray();
 
-    mockEsiClient(
-        'wallet->getCharactersCharacterIdWalletJournal',
-        makeEsiResult($esi_data)
-    );
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult($esi_data));
 
-    runJob(new CharacterWalletJournalJob(testCharacter()->character_id));
+    $job = new CharacterWalletJournalJob(testCharacter()->character_id);
+    $job->executeJob($esi);
 
     foreach ($mock_data as $data) {
         $this->assertDatabaseHas('wallet_journals', [

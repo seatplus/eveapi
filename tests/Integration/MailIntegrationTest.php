@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Mockery\MockInterface;
-use Seatplus\EsiSchema\Responses\CharactersCharacterIdMailMailIdGet;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Mail\MailBodyJob;
 use Seatplus\Eveapi\Jobs\Mail\MailHeaderJob;
 use Seatplus\Eveapi\Models\Mail\Mail;
@@ -34,12 +34,11 @@ it('runs mail header job', function () {
         ],
     ]);
 
-    mockEsiClient(
-        'mail->getCharactersCharacterIdMail',
-        makeEsiResult($mock_data->values()->toArray())
-    );
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult($mock_data->values()->toArray()));
 
-    runJob(new MailHeaderJob(testCharacter()->character_id));
+    $job = new MailHeaderJob(testCharacter()->character_id);
+    $job->executeJob($esi);
 
     expect(Mail::all())->toHaveCount(5);
     expect(MailRecipients::all())->toHaveCount(25);
@@ -51,13 +50,13 @@ it('runs mail header job', function () {
 it('runs mail body job', function () {
     $mail = Mail::factory()->create();
 
-    $dto = new CharactersCharacterIdMailMailIdGet(body: 'some elaborate long text body');
-    $dto->isCachedLoad = false;
-    mockEsiClient('mail->getCharactersCharacterIdMailMailId', $dto);
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult((object) ['body' => 'some elaborate long text body']));
 
     expect($mail->body)->toBeNull();
 
-    runJob(new MailBodyJob(testCharacter()->character_id, $mail->id));
+    $job = new MailBodyJob(testCharacter()->character_id, $mail->id);
+    $job->executeJob($esi);
 
     $this->assertNotNull($mail->refresh()->body);
 });

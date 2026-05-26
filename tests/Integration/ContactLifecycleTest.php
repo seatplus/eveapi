@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Queue;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Contacts\AllianceContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\CharacterContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\CorporationContactJob;
@@ -14,14 +15,11 @@ beforeEach(function () {
 test('run character contact', function () {
     $mock_data = Contact::factory()->count(5)->make();
 
-    mockEsiClient(
-        'contacts->getCharactersCharacterIdContacts',
-        makeEsiResult(array_map(fn ($c) => (object) $c, $mock_data->toArray()))
-    );
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult(array_map(fn ($c) => (object) $c, $mock_data->toArray())));
 
-    updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-characters.read_contacts.v1'])->save();
-
-    runJob(new CharacterContactJob(testCharacter()->character_id));
+    $job = new CharacterContactJob(testCharacter()->character_id);
+    $job->executeJob($esi);
 
     $cached_ids = CacheCharacterAffiliationIdsService::make()->retrieve();
 
@@ -40,14 +38,11 @@ test('run character contact', function () {
 test('run corporation contact', function () {
     $mock_data = Contact::factory()->count(5)->make();
 
-    mockEsiClient(
-        'contacts->getCorporationsCorporationIdContacts',
-        makeEsiResult(array_map(fn ($c) => (object) $c, $mock_data->toArray()))
-    );
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult(array_map(fn ($c) => (object) $c, $mock_data->toArray())));
 
-    updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-corporations.read_contacts.v1'])->save();
-
-    runJob(new CorporationContactJob(testCharacter()->corporation->corporation_id, testCharacter()->character_id));
+    $job = new CorporationContactJob(testCharacter()->corporation->corporation_id, testCharacter()->character_id);
+    $job->executeJob($esi);
 
     $cached_ids = CacheCharacterAffiliationIdsService::make()->retrieve();
 
@@ -66,14 +61,11 @@ test('run corporation contact', function () {
 test('run alliance contact', function () {
     $mock_data = Contact::factory()->count(5)->make();
 
-    mockEsiClient(
-        'contacts->getAlliancesAllianceIdContacts',
-        makeEsiResult(array_map(fn ($c) => (object) $c, $mock_data->toArray()))
-    );
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult(array_map(fn ($c) => (object) $c, $mock_data->toArray())));
 
-    updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-alliances.read_contacts.v1'])->save();
-
-    runJob(new AllianceContactJob(testCharacter()->corporation->alliance_id, testCharacter()->character_id));
+    $job = new AllianceContactJob(testCharacter()->corporation->alliance_id, testCharacter()->character_id);
+    $job->executeJob($esi);
 
     foreach ($mock_data as $data) {
         $this->assertDatabaseHas('contacts', [
@@ -86,16 +78,13 @@ test('run alliance contact', function () {
 it('has labels', function () {
     $mock_data = Contact::factory()->withLabels()->make();
 
-    mockEsiClient(
-        'contacts->getCharactersCharacterIdContacts',
-        makeEsiResult([(object) $mock_data->toArray()])
-    );
-
-    updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-characters.read_contacts.v1'])->save();
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([(object) $mock_data->toArray()]));
 
     expect($this->test_character->contacts)->toHaveCount(0);
 
-    runJob(new CharacterContactJob(testCharacter()->character_id));
+    $job = new CharacterContactJob(testCharacter()->character_id);
+    $job->executeJob($esi);
 
     expect($this->test_character->refresh()->contacts)->toHaveCount(1);
 
