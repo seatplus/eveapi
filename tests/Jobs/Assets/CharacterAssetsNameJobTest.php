@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Queue;
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
+use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Category;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Type;
@@ -163,4 +164,13 @@ it('skips name update when response is a cached load', function () {
         ->where('item_id', $asset->item_id)
         ->whereNull('name')
         ->exists())->toBeTrue();
+});
+
+it('returns the refresh token', function () {
+    $token = RefreshToken::factory()->create();
+
+    $job = new CharacterAssetsNameJob($token->character_id);
+
+    expect($job->getRefreshToken())->toBeInstanceOf(RefreshToken::class)
+        ->and($job->getRefreshToken()->character_id)->toBe($token->character_id);
 });

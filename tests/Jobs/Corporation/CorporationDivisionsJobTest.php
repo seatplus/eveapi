@@ -3,8 +3,10 @@
 use Illuminate\Support\Facades\Queue;
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationDivisionsJob;
+use Seatplus\Eveapi\Models\Character\CharacterRole;
 use Seatplus\Eveapi\Models\Corporation\CorporationDivision;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
+use Seatplus\Eveapi\Models\RefreshToken;
 
 it('runs the job', function () {
     Queue::fake();
@@ -39,4 +41,25 @@ it('runs the job', function () {
     expect(CorporationDivision::all())->toHaveCount(14);
 
     expect(CorporationDivision::first()->corporation instanceof CorporationInfo)->toBeTrue();
+});
+
+it('returns the corporation refresh token for a director', function () {
+    $scope = 'esi-corporations.read_divisions.v1';
+    $token = updateRefreshTokenScopes(testCharacter()->refresh_token, [$scope]);
+    $token->save();
+
+    CharacterRole::updateOrCreate(
+        ['character_id' => testCharacter()->character_id],
+        ['roles' => ['Director']],
+    );
+
+    $job = new CorporationDivisionsJob(testCharacter()->corporation_id);
+
+    expect($job->getRefreshToken())->toBeInstanceOf(RefreshToken::class);
+});
+
+it('throws when no eligible token is found for corporation', function () {
+    $job = new CorporationDivisionsJob(99999999);
+
+    expect(fn () => $job->getRefreshToken())->toThrow(Exception::class);
 });

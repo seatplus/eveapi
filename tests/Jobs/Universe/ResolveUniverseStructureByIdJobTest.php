@@ -5,6 +5,7 @@ use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Events\RefreshTokenCreated;
 use Seatplus\Eveapi\Events\UniverseStructureCreated;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseStructureByIdJob;
+use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Structure;
 
@@ -75,4 +76,13 @@ it('does not upsert structure and location when response is cached', function ()
 
     expect(Structure::count())->toBe(0)
         ->and(Location::count())->toBe(0);
+});
+
+it('returns the refresh token for the character', function () {
+    $token = RefreshToken::factory()->create();
+
+    $job = new ResolveUniverseStructureByIdJob($token->character_id, 99999999);
+
+    expect($job->getRefreshToken())->toBeInstanceOf(RefreshToken::class)
+        ->and($job->getRefreshToken()->character_id)->toBe($token->character_id);
 });

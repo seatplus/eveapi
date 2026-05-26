@@ -7,6 +7,7 @@ use Seatplus\Eveapi\Jobs\Contracts\CharacterContractItemsJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\Contracts\ContractItem;
+use Seatplus\Eveapi\Models\RefreshToken;
 
 test('job is being dispatched', function () {
     Queue::fake();
@@ -38,4 +39,13 @@ it('dispatches resolve universe type job if type is unknown', function () {
     expect(ContractItem::all())->toHaveCount(5);
 
     Queue::assertPushed(ResolveUniverseTypeByIdJob::class);
+});
+
+it('returns the refresh token', function () {
+    $token = RefreshToken::factory()->create();
+
+    $job = new CharacterContractItemsJob($token->character_id, 123);
+
+    expect($job->getRefreshToken())->toBeInstanceOf(RefreshToken::class)
+        ->and($job->getRefreshToken()->character_id)->toBe($token->character_id);
 });

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Queue;
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Character\CharacterRoleJob;
 use Seatplus\Eveapi\Models\Character\CharacterRole;
+use Seatplus\Eveapi\Models\RefreshToken;
 
 test('if job is queued', function () {
     Queue::fake();
@@ -28,4 +29,13 @@ test('retrieve test', function () {
     $job->executeJob($esi);
 
     expect(CharacterRole::where('character_id', $mock_data->character_id)->exists())->toBeTrue();
+});
+
+it('returns the refresh token', function () {
+    $token = RefreshToken::factory()->create();
+
+    $job = new CharacterRoleJob($token->character_id);
+
+    expect($job->getRefreshToken())->toBeInstanceOf(RefreshToken::class)
+        ->and($job->getRefreshToken()->character_id)->toBe($token->character_id);
 });
