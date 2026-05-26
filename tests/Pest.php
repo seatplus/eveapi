@@ -17,7 +17,6 @@ use DG\BypassFinals;
 use Faker\Factory;
 use Firebase\JWT\JWT;
 use Mockery\MockInterface;
-use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiSchema\Contracts\EsiRawResponse;
 use Seatplus\EsiSchema\EsiResult;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
