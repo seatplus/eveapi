@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Queue;
 use Mockery\MockInterface;
 use Seatplus\EsiClient\EsiClient;
@@ -115,7 +116,7 @@ it('does not dispatch ResolveLocationJob if location is known', function () {
 });
 
 // Helpers
-function buildAssetMockEsiData(MockInterface $esi): \Illuminate\Support\Collection
+function buildAssetMockEsiData(MockInterface $esi): Collection
 {
     $mock_data = Asset::factory()->count(5)->make([
         'assetable_id' => testCharacter()->character_id,
