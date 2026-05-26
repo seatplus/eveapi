@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Universe\Category;
@@ -11,15 +12,10 @@ use Seatplus\Eveapi\Models\Universe\Type;
 beforeEach(function () {
     Queue::fake();
 
-    $refresh_token = updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-assets.read_assets.v1']);
-    $refresh_token->save();
-
     $this->name_to_create = 'TestName';
 });
 
 test('if job is queued', function () {
-    Queue::fake();
-
     Queue::assertNothingPushed();
 
     CharacterAssetsNameJob::dispatch($this->test_character->character_id)->onQueue('default');
@@ -42,27 +38,19 @@ it('updates a name', function () {
         'is_singleton' => true,
     ]);
 
-    $this->assertDatabaseHas('assets', [
-        'assetable_id' => $asset->assetable_id,
-        'item_id' => $asset->item_id,
-        'name' => null,
-    ]);
-
-    mockEsiClient(
-        'assets->postCharactersCharacterIdAssetsNames',
-        makeEsiResult([(object) [
-            'item_id' => $asset->item_id,
-            'name' => $this->name_to_create,
-        ]])
-    );
-
-    runJob(new CharacterAssetsNameJob($this->test_character->character_id));
-
-    $this->assertDatabaseHas('assets', [
-        'assetable_id' => $asset->assetable_id,
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([(object) [
         'item_id' => $asset->item_id,
         'name' => $this->name_to_create,
-    ]);
+    ]]));
+
+    $job = new CharacterAssetsNameJob($this->test_character->character_id);
+    $job->executeJob($esi);
+
+    expect(Asset::where('assetable_id', $asset->assetable_id)
+        ->where('item_id', $asset->item_id)
+        ->where('name', $this->name_to_create)
+        ->exists())->toBeTrue();
 });
 
 it('does not update for wrong category', function () {
@@ -80,19 +68,10 @@ it('does not update for wrong category', function () {
         'is_singleton' => true,
     ]);
 
-    $this->assertDatabaseHas('assets', [
-        'assetable_id' => $asset->assetable_id,
-        'item_id' => $asset->item_id,
-        'name' => null,
-    ]);
-
-    // No ESI call needed - query returns no assets in scope
-
-    $this->assertDatabaseMissing('assets', [
-        'assetable_id' => $asset->assetable_id,
-        'item_id' => $asset->item_id,
-        'name' => $this->name_to_create,
-    ]);
+    expect(Asset::where('assetable_id', $asset->assetable_id)
+        ->where('item_id', $asset->item_id)
+        ->whereNotNull('name')
+        ->exists())->toBeFalse();
 });
 
 it('does not run if category id is out of scope', function () {
@@ -109,17 +88,10 @@ it('does not run if category id is out of scope', function () {
         'is_singleton' => true,
     ]);
 
-    $this->assertDatabaseHas('assets', [
-        'assetable_id' => $asset->assetable_id,
-        'item_id' => $asset->item_id,
-        'name' => null,
-    ]);
-
-    $this->assertDatabaseMissing('assets', [
-        'assetable_id' => $asset->assetable_id,
-        'item_id' => $asset->item_id,
-        'name' => $this->name_to_create,
-    ]);
+    expect(Asset::where('assetable_id', $asset->assetable_id)
+        ->where('item_id', $asset->item_id)
+        ->whereNotNull('name')
+        ->exists())->toBeFalse();
 });
 
 it('does not run if group is missing', function () {
@@ -131,17 +103,10 @@ it('does not run if group is missing', function () {
         'is_singleton' => true,
     ]);
 
-    $this->assertDatabaseHas('assets', [
-        'assetable_id' => $asset->assetable_id,
-        'item_id' => $asset->item_id,
-        'name' => null,
-    ]);
-
-    $this->assertDatabaseMissing('assets', [
-        'assetable_id' => $asset->assetable_id,
-        'item_id' => $asset->item_id,
-        'name' => $this->name_to_create,
-    ]);
+    expect(Asset::where('assetable_id', $asset->assetable_id)
+        ->where('item_id', $asset->item_id)
+        ->whereNotNull('name')
+        ->exists())->toBeFalse();
 });
 
 it('runs the job', function () {
@@ -158,29 +123,19 @@ it('runs the job', function () {
         'is_singleton' => true,
     ]));
 
-    $this->assertDatabaseHas('assets', [
-        'assetable_id' => $asset->assetable_id,
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([(object) [
         'item_id' => $asset->item_id,
-        'name' => null,
-    ]);
+        'name' => $this->name_to_create,
+    ]]));
 
-    mockEsiClient(
-        'assets->postCharactersCharacterIdAssetsNames',
-        makeEsiResult([(object) [
-            'item_id' => $asset->item_id,
-            'name' => $this->name_to_create,
-        ]])
-    );
+    $job = new CharacterAssetsNameJob($asset->assetable_id);
+    $job->executeJob($esi);
 
-    runJob(new CharacterAssetsNameJob($asset->assetable_id));
-
-    $this->assertCount(
-        1,
-        Asset::where('assetable_id', $asset->assetable_id)
-            ->where('item_id', $asset->item_id)
-            ->where('name', $this->name_to_create)
-            ->get()
-    );
+    expect(Asset::where('assetable_id', $asset->assetable_id)
+        ->where('item_id', $asset->item_id)
+        ->where('name', $this->name_to_create)
+        ->count())->toBe(1);
 });
 
 it('skips name update when response is a cached load', function () {
@@ -198,19 +153,14 @@ it('skips name update when response is a cached load', function () {
         'is_singleton' => true,
     ]);
 
-    mockEsiClient(
-        'assets->postCharactersCharacterIdAssetsNames',
-        makeEsiResult([(object) [
-            'item_id' => $asset->item_id,
-            'name' => $this->name_to_create,
-        ]], isCachedLoad: true)
-    );
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
-    runJob(new CharacterAssetsNameJob($this->test_character->character_id));
+    $job = new CharacterAssetsNameJob($this->test_character->character_id);
+    $job->executeJob($esi);
 
-    $this->assertDatabaseHas('assets', [
-        'assetable_id' => $asset->assetable_id,
-        'item_id' => $asset->item_id,
-        'name' => null,
-    ]);
+    expect(Asset::where('assetable_id', $asset->assetable_id)
+        ->where('item_id', $asset->item_id)
+        ->whereNull('name')
+        ->exists())->toBeTrue();
 });

@@ -1,35 +1,16 @@
 <?php
 
-use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Queue;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationDivisionsJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationDivision;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
-beforeEach(function () {
-    Event::fakeFor(function () {
-        updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-corporations.read_divisions.v1'])->save();
-        $this->test_character->roles()->update(['roles' => ['Director']]);
-        updateCharacterRoles(['Director']);
-    });
-});
-
 it('runs the job', function () {
-    buildCorporationDivisionEsiResponseMockData();
+    Queue::fake();
 
-    expect(CorporationDivision::all())->toHaveCount(0);
-
-    runJob(new CorporationDivisionsJob(testCharacter()->corporation->corporation_id));
-
-    expect(CorporationDivision::all())->toHaveCount(14);
-
-    expect(CorporationDivision::first()->corporation instanceof CorporationInfo)->toBeTrue();
-});
-
-// Helpers
-function buildCorporationDivisionEsiResponseMockData(): void
-{
-    $mock_data = (object) [
-        'isCachedLoad' => false,
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult((object) [
         'hangar' => [
             (object) ['division' => 1, 'name' => 'Loot and Salavage'],
             (object) ['division' => 2, 'name' => 'Directors'],
@@ -48,7 +29,14 @@ function buildCorporationDivisionEsiResponseMockData(): void
             (object) ['division' => 6, 'name' => 'Wallet 6'],
             (object) ['division' => 7, 'name' => 'Wallet 7'],
         ],
-    ];
+    ]));
 
-    mockEsiClient('corporation->getCorporationsCorporationIdDivisions', $mock_data);
-}
+    expect(CorporationDivision::all())->toHaveCount(0);
+
+    $job = new CorporationDivisionsJob(testCharacter()->corporation->corporation_id);
+    $job->executeJob($esi);
+
+    expect(CorporationDivision::all())->toHaveCount(14);
+
+    expect(CorporationDivision::first()->corporation instanceof CorporationInfo)->toBeTrue();
+});

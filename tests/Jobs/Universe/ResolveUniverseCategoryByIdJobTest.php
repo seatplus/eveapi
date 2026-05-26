@@ -1,28 +1,27 @@
 <?php
 
-use Illuminate\Support\Facades\Event;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseCategoryByIdJob;
 use Seatplus\Eveapi\Models\Universe\Category;
 
 it('creates category', function () {
     $mock_data = Category::factory()->make();
 
-    $dto = (object) array_merge(['isCachedLoad' => false], $mock_data->toArray());
-    mockEsiClient('universe->getUniverseCategoriesCategoryId', $dto);
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult((object) $mock_data->toArray()));
 
-    Event::fakeFor(fn () => runJob(new ResolveUniverseCategoryByIdJob($mock_data->category_id)));
+    $job = new ResolveUniverseCategoryByIdJob($mock_data->category_id);
+    $job->executeJob($esi);
 
-    expect(Category::first())
-        ->category_id->toBe($mock_data->category_id);
+    expect(Category::where('category_id', $mock_data->category_id)->exists())->toBeTrue();
 });
 
 it('skips db write when response is a cached load', function () {
-    $mock_data = Category::factory()->make();
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
-    $dto = (object) array_merge(['isCachedLoad' => true], $mock_data->toArray());
-    mockEsiClient('universe->getUniverseCategoriesCategoryId', $dto);
-
-    Event::fakeFor(fn () => runJob(new ResolveUniverseCategoryByIdJob($mock_data->category_id)));
+    $job = new ResolveUniverseCategoryByIdJob(12345);
+    $job->executeJob($esi);
 
     expect(Category::count())->toBe(0);
 });

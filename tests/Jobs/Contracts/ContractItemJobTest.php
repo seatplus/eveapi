@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Contracts\CharacterContractItemsJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Contracts\Contract;
@@ -28,17 +29,11 @@ it('dispatches resolve universe type job if type is unknown', function () {
         'contract_id' => $mock_data->first()->contract_id,
     ]));
 
-    mockEsiClient(
-        'contracts->getCharactersCharacterIdContractsContractIdItems',
-        makeEsiResult(array_map(fn ($i) => (object) $i, $mock_data->toArray()))
-    );
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult(array_map(fn ($i) => (object) $i, $mock_data->toArray())));
 
     $job = new CharacterContractItemsJob(testCharacter()->character_id, $contract->contract_id);
-
-    $refresh_token = updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-contracts.read_character_contracts.v1']);
-    $refresh_token->save();
-
-    runJob($job);
+    $job->executeJob($esi);
 
     expect(ContractItem::all())->toHaveCount(5);
 

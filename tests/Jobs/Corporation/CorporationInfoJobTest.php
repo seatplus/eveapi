@@ -16,14 +16,13 @@ test('retrieve test', function () {
 
     Bus::fake();
 
-    $dto = (object) array_merge(['isCachedLoad' => false], $mock_data->toArray());
-    mockEsiClient('corporation->getCorporationsCorporationId', $dto);
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult((object) $mock_data->toArray()));
 
-    runJob(new CorporationInfoJob($this->corporation_id));
+    $job = new CorporationInfoJob($this->corporation_id);
+    $job->executeJob($esi);
 
-    $this->assertDatabaseHas('corporation_infos', [
-        'name' => $mock_data->name,
-    ]);
+    expect(CorporationInfo::where('name', $mock_data->name)->exists())->toBeTrue();
 });
 
 test('returns early if cached', function () {

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Queue;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
@@ -20,12 +21,11 @@ test('retrieve test', function () {
 
     Bus::fake();
 
-    $dto = (object) array_merge(['isCachedLoad' => false], $mock_data->toArray());
-    mockEsiClient('characters->getCharactersCharacterId', $dto);
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult((object) $mock_data->toArray()));
 
-    runJob(new CharacterInfoJob($mock_data['character_id']));
+    $job = new CharacterInfoJob($mock_data['character_id']);
+    $job->executeJob($esi);
 
-    $this->assertDatabaseHas('character_infos', [
-        'name' => $mock_data['name'],
-    ]);
+    expect(CharacterInfo::where('name', $mock_data['name'])->exists())->toBeTrue();
 });

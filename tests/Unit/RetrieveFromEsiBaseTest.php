@@ -17,11 +17,9 @@ it('fails when server exception is handled', function () {
 
     $esi = Mockery::mock(EsiClient::class);
     mockEsiTransport($esi, $exception);
-    app()->instance(EsiClient::class, $esi);
 
-    mockTokenService();
-
-    runJob(new CharacterAssetJob(testCharacter()->character_id));
+    $job = new CharacterAssetJob(testCharacter()->character_id);
+    $job->executeJob($esi);
 })->throws(RequestFailedException::class);
 
 it('fails when client exception is handled', function () {
@@ -32,9 +30,7 @@ it('fails when client exception is handled', function () {
 
     $esi = Mockery::mock(EsiClient::class);
     mockEsiTransport($esi, $exception);
-    app()->instance(EsiClient::class, $esi);
 
-    mockTokenService();
-
-    runJob(new CharacterAssetJob(testCharacter()->character_id));
+    $job = new CharacterAssetJob(testCharacter()->character_id);
+    $job->executeJob($esi);
 })->throws(RequestFailedException::class);

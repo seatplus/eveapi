@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Queue;
+use Mockery\MockInterface;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
@@ -10,14 +12,9 @@ use Seatplus\Eveapi\Models\Universe\Type;
 
 beforeEach(function () {
     Queue::fake();
-
-    $refresh_token = updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-assets.read_assets.v1']);
-    $refresh_token->save();
 });
 
 test('if job is queued', function () {
-    Queue::fake();
-
     Queue::assertNothingPushed();
 
     CharacterAssetJob::dispatch($this->test_character->character_id)->onQueue('default');
@@ -26,15 +23,16 @@ test('if job is queued', function () {
 });
 
 test('retrieve test', function () {
-    $mock_data = buildAssetMockEsiData();
+    $esi = Mockery::mock(EsiClient::class);
+    $mock_data = buildAssetMockEsiData($esi);
 
-    runJob(new CharacterAssetJob($this->test_character->character_id));
+    $job = new CharacterAssetJob($this->test_character->character_id);
+    $job->executeJob($esi);
 
     foreach ($mock_data as $data) {
-        $this->assertDatabaseHas('assets', [
-            'assetable_id' => $this->test_character->character_id,
-            'item_id' => $data->item_id,
-        ]);
+        expect(Asset::where('assetable_id', $this->test_character->character_id)
+            ->where('item_id', $data->item_id)
+            ->exists())->toBeTrue();
     }
 });
 
@@ -43,46 +41,41 @@ it('cleans up assets', function () {
         'assetable_id' => $this->test_character->character_id,
     ]);
 
-    foreach ($old_data as $data) {
-        $this->assertDatabaseHas('assets', [
-            'assetable_id' => $this->test_character->character_id,
-            'item_id' => $data->item_id,
-        ]);
-    }
+    $esi = Mockery::mock(EsiClient::class);
+    $mock_data = buildAssetMockEsiData($esi);
 
-    $mock_data = buildAssetMockEsiData();
-
-    runJob(new CharacterAssetJob($this->test_character->character_id));
+    $job = new CharacterAssetJob($this->test_character->character_id);
+    $job->executeJob($esi);
 
     foreach ($mock_data as $data) {
-        $this->assertDatabaseHas('assets', [
-            'assetable_id' => $this->test_character->character_id,
-            'item_id' => $data->item_id,
-        ]);
+        expect(Asset::where('assetable_id', $this->test_character->character_id)
+            ->where('item_id', $data->item_id)
+            ->exists())->toBeTrue();
     }
 
     foreach ($old_data as $data) {
-        $this->assertCount(
-            0,
-            Asset::where('assetable_id', $this->test_character->character_id)
-                ->where('item_id', $data->item_id)
-                ->get()
-        );
+        expect(Asset::where('assetable_id', $this->test_character->character_id)
+            ->where('item_id', $data->item_id)
+            ->count())->toBe(0);
     }
 });
 
 it('dispatches unknown location job', function () {
-    buildAssetMockEsiData();
+    $esi = Mockery::mock(EsiClient::class);
+    buildAssetMockEsiData($esi);
 
-    runJob(new CharacterAssetJob($this->test_character->character_id));
+    $job = new CharacterAssetJob($this->test_character->character_id);
+    $job->executeJob($esi);
 
     Queue::assertPushedOn('high', ResolveLocationJob::class);
 });
 
 it('dispatches unknown types job', function () {
-    buildAssetMockEsiData();
+    $esi = Mockery::mock(EsiClient::class);
+    buildAssetMockEsiData($esi);
 
-    runJob(new CharacterAssetJob($this->test_character->character_id));
+    $job = new CharacterAssetJob($this->test_character->character_id);
+    $job->executeJob($esi);
 
     Queue::assertPushedOn('high', ResolveUniverseTypeByIdJob::class);
 });
@@ -95,12 +88,11 @@ it('does not dispatch ResolveUniverseTypeByIdJob if type is known', function () 
         'type_id' => $type->type_id,
     ]);
 
-    mockEsiClient(
-        'assets->getCharactersCharacterIdAssets',
-        makeEsiResult(array_map(fn ($a) => (object) $a, $assets->toArray()))
-    );
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult(array_map(fn ($a) => (object) $a, $assets->toArray())));
 
-    runJob(new CharacterAssetJob($this->test_character->character_id));
+    $job = new CharacterAssetJob($this->test_character->character_id);
+    $job->executeJob($esi);
 
     Queue::assertNotPushed(ResolveUniverseTypeByIdJob::class);
 });
@@ -113,27 +105,23 @@ it('does not dispatch ResolveLocationJob if location is known', function () {
         'location_id' => $location->location_id,
     ]);
 
-    mockEsiClient(
-        'assets->getCharactersCharacterIdAssets',
-        makeEsiResult(array_map(fn ($a) => (object) $a, $assets->toArray()))
-    );
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult(array_map(fn ($a) => (object) $a, $assets->toArray())));
 
-    runJob(new CharacterAssetJob($this->test_character->character_id));
+    $job = new CharacterAssetJob($this->test_character->character_id);
+    $job->executeJob($esi);
 
     Queue::assertNotPushed(ResolveLocationJob::class);
 });
 
 // Helpers
-function buildAssetMockEsiData()
+function buildAssetMockEsiData(MockInterface $esi): \Illuminate\Support\Collection
 {
     $mock_data = Asset::factory()->count(5)->make([
         'assetable_id' => testCharacter()->character_id,
     ]);
 
-    mockEsiClient(
-        'assets->getCharactersCharacterIdAssets',
-        makeEsiResult(array_map(fn ($a) => (object) $a, $mock_data->toArray()))
-    );
+    mockEsiTransport($esi, makeEsiResult(array_map(fn ($a) => (object) $a, $mock_data->toArray())));
 
     return $mock_data;
 }

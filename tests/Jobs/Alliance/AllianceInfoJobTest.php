@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Queue;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfoJob;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 
@@ -15,14 +16,13 @@ test('if job is queued', function () {
 });
 
 test('retrieve test', function () {
-    $mock_data = AllianceInfo::factory()->make(['alliance_id' => $this->test_character->character_id]);
+    $mock_data = AllianceInfo::factory()->make(['alliance_id' => 12345]);
 
-    $dto = (object) array_merge(['isCachedLoad' => false], $mock_data->toArray());
-    mockEsiClient('alliance->getAlliancesAllianceId', $dto);
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult((object) $mock_data->toArray()));
 
-    runJob(new AllianceInfoJob($this->test_character->character_id));
+    $job = new AllianceInfoJob(12345);
+    $job->executeJob($esi);
 
-    $this->assertDatabaseHas('alliance_infos', [
-        'name' => $mock_data->name,
-    ]);
+    expect(AllianceInfo::where('name', $mock_data->name)->exists())->toBeTrue();
 });

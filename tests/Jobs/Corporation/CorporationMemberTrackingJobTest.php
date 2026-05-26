@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Queue;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 
@@ -24,36 +25,23 @@ test('if job is queued', function () {
 });
 
 test('retrieve test', function () {
-    $mock_data = buildCorporationMemberMockEsiData();
+    Queue::fake();
 
-    Bus::fake();
-
-    $this->assertDatabaseMissing('corporation_member_trackings', [
-        'corporation_id' => testCharacter()->corporation->corporation_id,
-    ]);
-
-    expect(testCharacter()->roles->hasRole('roles', 'Director'))->toBeTrue()
-        ->and(testCharacter()->refresh_token->hasScope('esi-corporations.track_members.v1'))->toBeTrue();
-
-    runJob(new CorporationMemberTrackingJob(testCharacter()->corporation->corporation_id));
-
-    $this->assertDatabaseHas('corporation_member_trackings', [
-        'corporation_id' => $this->test_character->corporation->corporation_id,
-    ]);
-});
-
-// Helpers
-function buildCorporationMemberMockEsiData()
-{
     $mock_data = CorporationMemberTracking::factory()->make([
         'character_id' => testCharacter()->character_id,
         'corporation_id' => testCharacter()->corporation->corporation_id,
     ]);
 
-    mockEsiClient(
-        'corporation->getCorporationsCorporationIdMembertracking',
-        makeEsiResult([(object) $mock_data->toArray()])
-    );
+    Bus::fake();
 
-    return $mock_data;
-}
+    expect(testCharacter()->roles->hasRole('roles', 'Director'))->toBeTrue()
+        ->and(testCharacter()->refresh_token->hasScope('esi-corporations.track_members.v1'))->toBeTrue();
+
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([(object) $mock_data->toArray()]));
+
+    $job = new CorporationMemberTrackingJob(testCharacter()->corporation->corporation_id);
+    $job->executeJob($esi);
+
+    expect(CorporationMemberTracking::where('corporation_id', $this->test_character->corporation->corporation_id)->exists())->toBeTrue();
+});
