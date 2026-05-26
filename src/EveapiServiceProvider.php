@@ -39,6 +39,7 @@ use Laravel\Horizon\Horizon;
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Commands\CheckJobsCommand;
 use Seatplus\Eveapi\Commands\ClearCache;
+use Seatplus\Eveapi\Commands\SdeImportCommand;
 use Seatplus\Eveapi\Events\RefreshTokenCreated;
 use Seatplus\Eveapi\Events\UniverseConstellationCreated;
 use Seatplus\Eveapi\Events\UniverseSystemCreated;
@@ -239,6 +240,7 @@ class EveapiServiceProvider extends ServiceProvider
         $this->commands([
             ClearCache::class,
             CheckJobsCommand::class,
+            SdeImportCommand::class,
         ]);
     }
 
