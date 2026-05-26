@@ -120,37 +120,6 @@ function mockEsiTransport(MockInterface $esi, mixed $result): void
     $esi->shouldReceive('invoke')->andReturn(makeEsiRawResponse($result));
 }
 
-function mockEsiClient(string $chain, mixed $result): EsiClient
-{
-    $parts = explode('->', $chain, 2);
-    $resourceGetter = $parts[0];
-    $endMethod = $parts[1] ?? null;
-
-    $esi = Mockery::mock(EsiClient::class);
-    mockEsiTransport($esi, $result);
-
-    if ($endMethod !== null) {
-        $esiReflection = new ReflectionClass(EsiClient::class);
-        $resourceClass = (string) $esiReflection->getMethod($resourceGetter)->getReturnType();
-
-        $resourceMock = Mockery::mock($resourceClass);
-        $resourceMock->shouldReceive($endMethod)->andReturn($result);
-        $esi->shouldReceive($resourceGetter)->andReturn($resourceMock);
-    } else {
-        $esi->shouldReceive($resourceGetter)->andReturn($result);
-    }
-
-    app()->instance(EsiClient::class, $esi);
-    mockTokenService();
-
-    return $esi;
-}
-
-function runJob(object $job): void
-{
-    app()->call([$job, 'handle']);
-}
-
 function testCharacter()
 {
     return CharacterInfo::first();
