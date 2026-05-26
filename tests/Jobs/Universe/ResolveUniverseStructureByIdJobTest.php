@@ -1,10 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Event;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Events\RefreshTokenCreated;
 use Seatplus\Eveapi\Events\UniverseStructureCreated;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseStructureByIdJob;
-use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Structure;
 
@@ -13,48 +13,40 @@ beforeEach(function () {
         UniverseStructureCreated::class,
         RefreshTokenCreated::class,
     ]);
-
-    $this->refresh_token = RefreshToken::factory()->scopes(['esi-universe.read_structures.v1'])->create();
 });
 
 it('creates structure', function () {
     $mock_data = Structure::factory()->make();
-    $dto = (object) array_merge(['isCachedLoad' => false], $mock_data->toArray());
-    mockEsiClient('universe->getUniverseStructuresStructureId', $dto);
 
-    $this->assertDatabaseMissing('universe_structures', [
-        'structure_id' => $mock_data->structure_id,
-    ]);
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult((object) $mock_data->only(['name', 'owner_id', 'solar_system_id', 'type_id'])));
 
-    runJob(new ResolveUniverseStructureByIdJob($this->refresh_token->character_id, $mock_data->structure_id));
+    $job = new ResolveUniverseStructureByIdJob(12345, $mock_data->structure_id);
+    $job->executeJob($esi);
 
-    $this->assertDatabaseHas('universe_structures', [
-        'structure_id' => $mock_data->structure_id,
-    ]);
+    expect(Structure::where('structure_id', $mock_data->structure_id)->exists())->toBeTrue();
 });
 
 it('creates location', function () {
     $mock_data = Structure::factory()->make();
-    $dto = (object) array_merge(['isCachedLoad' => false], $mock_data->toArray());
-    mockEsiClient('universe->getUniverseStructuresStructureId', $dto);
 
-    $this->assertDatabaseMissing('universe_locations', [
-        'location_id' => $mock_data->structure_id,
-    ]);
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult((object) $mock_data->only(['name', 'owner_id', 'solar_system_id', 'type_id'])));
 
-    runJob(new ResolveUniverseStructureByIdJob($this->refresh_token->character_id, $mock_data->structure_id));
+    $job = new ResolveUniverseStructureByIdJob(12345, $mock_data->structure_id);
+    $job->executeJob($esi);
 
-    $this->assertDatabaseHas('universe_locations', [
-        'location_id' => $mock_data->structure_id,
-    ]);
+    expect(Location::where('location_id', $mock_data->structure_id)->exists())->toBeTrue();
 });
 
 it('creates polymorphic relationship', function () {
     $mock_data = Structure::factory()->make();
-    $dto = (object) array_merge(['isCachedLoad' => false], $mock_data->toArray());
-    mockEsiClient('universe->getUniverseStructuresStructureId', $dto);
 
-    runJob(new ResolveUniverseStructureByIdJob($this->refresh_token->character_id, $mock_data->structure_id));
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult((object) $mock_data->only(['name', 'owner_id', 'solar_system_id', 'type_id'])));
+
+    $job = new ResolveUniverseStructureByIdJob(12345, $mock_data->structure_id);
+    $job->executeJob($esi);
 
     $location = Location::find($mock_data->structure_id);
 
@@ -75,10 +67,11 @@ it('returns correct tags array for universe structure job', function () {
 });
 
 it('does not upsert structure and location when response is cached', function () {
-    $dto = (object) ['isCachedLoad' => true];
-    mockEsiClient('universe->getUniverseStructuresStructureId', $dto);
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
-    runJob(new ResolveUniverseStructureByIdJob($this->refresh_token->character_id, 99999999));
+    $job = new ResolveUniverseStructureByIdJob(12345, 99999999);
+    $job->executeJob($esi);
 
     expect(Structure::count())->toBe(0)
         ->and(Location::count())->toBe(0);
