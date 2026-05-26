@@ -1,6 +1,9 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Queue;
+use Seatplus\Eveapi\Jobs\Seatplus\SdeImportJob;
 use Seatplus\Eveapi\Models\Universe\Category;
 use Seatplus\Eveapi\Models\Universe\Constellation;
 use Seatplus\Eveapi\Models\Universe\Group;
@@ -144,4 +147,119 @@ it('fails when download returns an HTTP error', function () {
 
     $this->artisan('seatplus:sde-import')
         ->assertExitCode(1);
+});
+
+it('fails when source is not a valid zip file', function () {
+    $tmpFile = tempnam(sys_get_temp_dir(), 'notazip_').'.zip';
+    file_put_contents($tmpFile, 'this is not a zip file');
+
+    try {
+        $this->artisan('seatplus:sde-import', ['--source' => $tmpFile])
+            ->assertExitCode(1);
+    } finally {
+        @unlink($tmpFile);
+    }
+});
+
+it('skips empty and non-json lines in jsonl without error', function () {
+    $zipPath = tempnam(sys_get_temp_dir(), 'sde_dirty_').'.zip';
+
+    $zip = new ZipArchive;
+    $zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+
+    // empty line + invalid JSON line + valid record
+    $content = "\n"
+        ."not valid json at all\n"
+        .json_encode(['_key' => 6, 'name' => ['en' => 'Ship'], 'published' => true])."\n";
+    $zip->addFromString('categories.jsonl', $content);
+
+    $zip->close();
+
+    try {
+        $this->artisan('seatplus:sde-import', ['--source' => $zipPath])
+            ->assertExitCode(0);
+    } finally {
+        @unlink($zipPath);
+    }
+
+    expect(Category::find(6))->not->toBeNull()
+        ->and(Category::find(6)->name)->toBe('Ship');
+});
+
+it('flushes in chunks when more than 500 records are imported', function () {
+    $zipPath = tempnam(sys_get_temp_dir(), 'sde_big_').'.zip';
+
+    $zip = new ZipArchive;
+    $zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+
+    // 501 records — crosses the CHUNK_SIZE=500 flush boundary
+    $lines = [];
+    for ($i = 1; $i <= 501; $i++) {
+        $lines[] = json_encode(['_key' => $i, 'name' => ['en' => "Category {$i}"], 'published' => true]);
+    }
+    $zip->addFromString('categories.jsonl', implode("\n", $lines));
+
+    $zip->close();
+
+    try {
+        $this->artisan('seatplus:sde-import', ['--source' => $zipPath])
+            ->assertExitCode(0);
+    } finally {
+        @unlink($zipPath);
+    }
+
+    expect(Category::count())->toBe(501);
+});
+
+it('removes nested subdirectories during cleanup', function () {
+    $zipPath = tempnam(sys_get_temp_dir(), 'sde_subdir_').'.zip';
+
+    $zip = new ZipArchive;
+    $zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+
+    $zip->addFromString('categories.jsonl',
+        json_encode(['_key' => 6, 'name' => ['en' => 'Ship'], 'published' => true])
+    );
+    // Add a file inside a subdirectory — forces removeDirectory() recursion
+    $zip->addFromString('subdir/extra.txt', 'ignored');
+
+    $zip->close();
+
+    try {
+        $this->artisan('seatplus:sde-import', ['--source' => $zipPath])
+            ->assertExitCode(0);
+    } finally {
+        @unlink($zipPath);
+    }
+
+    expect(Category::find(6))->not->toBeNull();
+});
+
+it('dispatches SdeImportJob on first install migration when categories table is empty', function () {
+    Queue::fake();
+
+    // Ensure table is empty
+    DB::table('universe_categories')->delete();
+
+    // Run the migration manually
+    (new (require __DIR__.'/../../../database/migrations/2026_05_26_150002_dispatch_sde_import_on_first_install.php'))->up();
+
+    Queue::assertPushed(SdeImportJob::class);
+});
+
+it('does not dispatch SdeImportJob on migration when categories already exist', function () {
+    Queue::fake();
+
+    // Seed one category so the table is not empty
+    DB::table('universe_categories')->insert([
+        'category_id' => 6,
+        'name' => 'Ship',
+        'published' => true,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    (new (require __DIR__.'/../../../database/migrations/2026_05_26_150002_dispatch_sde_import_on_first_install.php'))->up();
+
+    Queue::assertNotPushed(SdeImportJob::class);
 });

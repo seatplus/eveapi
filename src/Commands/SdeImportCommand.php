@@ -224,9 +224,9 @@ class SdeImportCommand extends Command
         $handle = fopen($file, 'r');
 
         if ($handle === false) {
-            $this->warn("  {$label}: cannot open file, skipping.");
+            $this->warn("  {$label}: cannot open file, skipping."); // @codeCoverageIgnore
 
-            return;
+            return; // @codeCoverageIgnore
         }
 
         $now = Carbon::now()->toDateTimeString();
@@ -287,7 +287,7 @@ class SdeImportCommand extends Command
         $entries = scandir($dir);
 
         if ($entries === false) {
-            return;
+            return; // @codeCoverageIgnore
         }
 
         foreach ($entries as $entry) {
