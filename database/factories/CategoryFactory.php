@@ -30,7 +30,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Universe\Category;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Universe\Category>
+ * @extends Factory<Category>
  */
 class CategoryFactory extends Factory
 {

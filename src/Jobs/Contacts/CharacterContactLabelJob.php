@@ -1,86 +1,41 @@
 <?php
 
-/*
- * MIT License
- *
- * Copyright (c) 2019, 2020, 2021 Felix Huber
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 namespace Seatplus\Eveapi\Jobs\Contacts;
 
-use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
+use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\EsiResult;
+use Seatplus\EsiSchema\Resources\Contacts\GetCharactersCharacterIdContactsLabels;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\Contacts\ProcessContactLabelsResponse;
 
-class CharacterContactLabelJob extends ContactBaseJob
+final class CharacterContactLabelJob extends ContactBaseJob
 {
-    public function __construct(
-        public int $character_id,
-    ) {
-        parent::__construct(
-            method: 'get',
-            endpoint: '/characters/{character_id}/contacts/labels/',
-            version: 'v1',
-        );
+    protected const string OPERATION_CLASS = GetCharactersCharacterIdContactsLabels::class;
 
-        $this->setRequiredScope('esi-characters.read_contacts.v1');
+    public function __construct(public int $character_id) {}
 
-        $this->setPathValues([
-            'character_id' => $this->character_id,
-        ]);
+    #[\Override]
+    public function getRefreshToken(): RefreshToken
+    {
+        return RefreshToken::findOrFail($this->character_id);
     }
 
-    /**
-     * Get the middleware the job should pass through.
-     */
     #[\Override]
-    public function middleware(): array
+    protected function fetchPage(EsiClient $esi, int $page): EsiResult
     {
-        return [
-            new HasRequiredScopeMiddleware,
-            ...parent::middleware(),
-        ];
+        return self::OPERATION_CLASS::execute($esi, $this->character_id);
     }
 
     #[\Override]
     public function tags(): array
     {
-        return [
-            'character',
-            'character_id: '.$this->character_id,
-            'contacts',
-            'labels',
-        ];
+        return ['character', "character_id:{$this->character_id}", 'contacts', 'labels'];
     }
 
-    /**
-     * Execute the job.
-     *
-     * @throws \Exception
-     */
     #[\Override]
-    public function executeJob(): void
+    public function executeJob(EsiClient $esi): void
     {
-        $processor = new ProcessContactLabelsResponse($this->character_id, CharacterInfo::class);
-
-        $this->handleProcessor($processor);
+        $this->handleProcessor(new ProcessContactLabelsResponse($this->character_id, CharacterInfo::class), $esi);
     }
 }

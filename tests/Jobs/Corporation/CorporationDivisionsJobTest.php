@@ -1,36 +1,18 @@
 <?php
 
-use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Queue;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationDivisionsJob;
+use Seatplus\Eveapi\Models\Character\CharacterRole;
 use Seatplus\Eveapi\Models\Corporation\CorporationDivision;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
-
-beforeEach(function () {
-    Event::fakeFor(function () {
-        updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-corporations.read_divisions.v1'])->save();
-        $this->test_character->roles()->update(['roles' => ['Director']]);
-        updateCharacterRoles(['Director']);
-    });
-});
+use Seatplus\Eveapi\Models\RefreshToken;
 
 it('runs the job', function () {
-    buildCorporationDivisionEsiResponseMockData();
+    Queue::fake();
 
-    expect(CorporationDivision::all())->toHaveCount(0);
-
-    // dd($this->test_character->refresh_token->scopes, 'esi-corporations.read_divisions.v1', $this->test_character->roles);
-
-    (new CorporationDivisionsJob(testCharacter()->corporation->corporation_id))->handle();
-
-    expect(CorporationDivision::all())->toHaveCount(14);
-
-    expect(CorporationDivision::first()->corporation instanceof CorporationInfo)->toBeTrue();
-});
-
-// Helpers
-function buildCorporationDivisionEsiResponseMockData(): void
-{
-    $mock_data = [
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult((object) [
         'hangar' => [
             (object) ['division' => 1, 'name' => 'Loot and Salavage'],
             (object) ['division' => 2, 'name' => 'Directors'],
@@ -49,7 +31,35 @@ function buildCorporationDivisionEsiResponseMockData(): void
             (object) ['division' => 6, 'name' => 'Wallet 6'],
             (object) ['division' => 7, 'name' => 'Wallet 7'],
         ],
-    ];
+    ]));
 
-    mockRetrieveEsiDataAction($mock_data);
-}
+    expect(CorporationDivision::all())->toHaveCount(0);
+
+    $job = new CorporationDivisionsJob(testCharacter()->corporation->corporation_id);
+    $job->executeJob($esi);
+
+    expect(CorporationDivision::all())->toHaveCount(14);
+
+    expect(CorporationDivision::first()->corporation instanceof CorporationInfo)->toBeTrue();
+});
+
+it('returns the corporation refresh token for a director', function () {
+    $scope = 'esi-corporations.read_divisions.v1';
+    $token = updateRefreshTokenScopes(testCharacter()->refresh_token, [$scope]);
+    $token->save();
+
+    CharacterRole::updateOrCreate(
+        ['character_id' => testCharacter()->character_id],
+        ['roles' => ['Director']],
+    );
+
+    $job = new CorporationDivisionsJob(testCharacter()->corporation_id);
+
+    expect($job->getRefreshToken())->toBeInstanceOf(RefreshToken::class);
+});
+
+it('throws when no eligible token is found for corporation', function () {
+    $job = new CorporationDivisionsJob(99999999);
+
+    expect(fn () => $job->getRefreshToken())->toThrow(Exception::class);
+});

@@ -1,38 +1,33 @@
 <?php
 
-use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
+use Illuminate\Support\Facades\Event;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Killmails\KillmailJob;
 use Seatplus\Eveapi\Models\Killmails\Killmail;
+use Seatplus\Eveapi\Models\Universe\System;
 
 it('returns early if cache is hit', function () {
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
-    $job = mock(KillmailJob::class)->makePartial();
-
-    $job->shouldReceive('retrieve')
-        ->andReturn(
-            mock(EsiResponse::class)
-                ->shouldReceive('isCachedLoad')
-                ->andReturn(true)
-                ->getMock()
-        );
-
-    $job->executeJob();
+    $job = new KillmailJob(12345, 'abc123');
+    $job->executeJob($esi);
 
     expect(Killmail::count())->toEqual(0);
 });
 
 it('does not further execute if killmail is complete', function () {
+    Illuminate\Support\Facades\Queue::fake();
 
-    \Illuminate\Support\Facades\Queue::fake();
-
-    $killmail = \Illuminate\Support\Facades\Event::fakeFor(fn () => Killmail::factory()->create([
+    $killmail = Event::fakeFor(fn () => Killmail::factory()->create([
         'complete' => true,
         'solar_system_id' => 12345,
     ]));
 
-    $data = [
+    $data = (object) [
+        'isCachedLoad' => false,
         'solar_system_id' => $killmail->solar_system_id,
-        'victim' => [
+        'victim' => (object) [
             'character_id' => $killmail->victim_character_id,
             'corporation_id' => $killmail->victim_corporation_id,
             'alliance_id' => $killmail->victim_alliance_id,
@@ -40,35 +35,35 @@ it('does not further execute if killmail is complete', function () {
             'faction_id' => $killmail->victim_faction_id,
             'damage_taken' => $killmail->damage_taken,
         ],
+        'attackers' => [],
+        'killmail_id' => $killmail->killmail_id,
+        'killmail_time' => now()->toIso8601String(),
     ];
 
-    $response = new EsiResponse(json_encode($data), [], 'now', 200);
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, $data);
 
-    $job = mock(KillmailJob::class)->makePartial();
-    $job->killmail_id = $killmail->killmail_id;
-    $job->killmail_hash = $killmail->killmail_hash;
-
-    $job->shouldReceive('retrieve')->andReturn($response);
-
-    $job->executeJob();
+    $job = new KillmailJob($killmail->killmail_id, $killmail->killmail_hash);
+    $job->executeJob($esi);
 
     Queue::assertNothingPushed();
-    expect(\Seatplus\Eveapi\Models\Universe\System::count())->toEqual(0);
+    expect(System::count())->toEqual(0);
 });
 
 it('adds to batch', function () {
     Queue::fake();
 
-    $killmail = \Illuminate\Support\Facades\Event::fakeFor(fn () => Killmail::factory()->make([
+    $killmail = Event::fakeFor(fn () => Killmail::factory()->make([
         'complete' => false,
         'ship_type_id' => 12345,
         'solar_system_id' => 12345,
         'damage_taken' => 999,
     ]));
 
-    $data = [
+    $data = (object) [
+        'isCachedLoad' => false,
         'solar_system_id' => $killmail->solar_system_id,
-        'victim' => [
+        'victim' => (object) [
             'character_id' => $killmail->victim_character_id,
             'corporation_id' => $killmail->victim_corporation_id,
             'alliance_id' => $killmail->victim_alliance_id,
@@ -78,19 +73,21 @@ it('adds to batch', function () {
             'items' => [],
         ],
         'attackers' => [],
+        'killmail_id' => 99999,
+        'killmail_time' => now()->toIso8601String(),
     ];
 
-    $response = new EsiResponse(json_encode($data), [], 'now', 200);
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, $data);
 
-    $job = mock(KillmailJob::class)->makePartial();
+    $job = mock(KillmailJob::class)->shouldAllowMockingProtectedMethods()->makePartial();
     $job->killmail_id = $killmail->killmail_id;
     $job->killmail_hash = $killmail->killmail_hash;
 
-    $job->shouldReceive('retrieve')->andReturn($response);
     $job->shouldReceive('batching')->twice()->andReturn(true);
     $job->shouldReceive('batch->add')->twice();
 
-    $job->executeJob();
+    $job->executeJob($esi);
 
     Queue::assertNothingPushed();
 });

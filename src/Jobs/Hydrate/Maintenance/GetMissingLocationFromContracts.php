@@ -56,8 +56,7 @@ class GetMissingLocationFromContracts extends HydrateMaintenanceBase
             ->inRandomOrder()
             ->get()
             // receive flat array of location ids
-            ->map(fn (Contract $contract) => collect([$contract->start_location_id, $contract->end_location_id]))
-            ->flatten()
+            ->flatMap(fn (Contract $contract) => [$contract->start_location_id, $contract->end_location_id])
             ->unique()
             ->filter()
             ->map(fn (int $location_id) => new ResolveLocationJob($location_id));

@@ -26,11 +26,13 @@
 
 namespace Seatplus\Eveapi\Models\Mail;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
+#[Unguarded]
 class MailRecipients extends Model
 {
     use HasFactory;
@@ -39,8 +41,6 @@ class MailRecipients extends Model
      * @var bool
      */
     public $incrementing = false;
-
-    protected $guarded = [];
 
     public function mail(): BelongsTo
     {

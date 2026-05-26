@@ -1,81 +1,32 @@
 <?php
 
-/*
- * MIT License
- *
- * Copyright (c) 2019, 2020, 2021 Felix Huber
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 namespace Seatplus\Eveapi\Jobs\Universe;
 
-use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Jobs\EsiBase;
+use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Resources\Universe\GetUniverseSystemsSystemId;
+use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Models\Universe\System;
-use Seatplus\Eveapi\Traits\HasPathValues;
 
-class ResolveUniverseSystemBySystemIdJob extends EsiBase implements HasPathValuesInterface
+final class ResolveUniverseSystemBySystemIdJob extends EsiJob
 {
-    use HasPathValues;
+    protected const string OPERATION_CLASS = GetUniverseSystemsSystemId::class;
 
-    public function __construct(
-        private int $system_id
-    ) {
-        parent::__construct(
-            method: 'get',
-            endpoint: '/universe/systems/{system_id}/',
-            version: 'v4',
-        );
-
-        $this->setPathValues([
-            'system_id' => $system_id,
-        ]);
-    }
-
-    /**
-     * Get the middleware the job should pass through.
-     */
-    #[\Override]
-    public function middleware(): array
-    {
-        return [
-            ...parent::middleware(),
-        ];
-    }
+    public function __construct(private readonly int $system_id) {}
 
     #[\Override]
     public function tags(): array
     {
-        return [
-            'system_resolve',
-            'system_id:'.$this->system_id,
-        ];
+        return ['resolve', 'universe', 'system', "system_id:{$this->system_id}"];
     }
 
-    /**
-     * Execute the job.
-     */
     #[\Override]
-    public function executeJob(): void
+    public function executeJob(EsiClient $esi): void
     {
-        $response = $this->retrieve();
+        $response = self::OPERATION_CLASS::execute($esi, $this->system_id);
+
+        if ($response->isCachedLoad) {
+            return;
+        }
 
         System::firstOrCreate(
             ['system_id' => $response->system_id],
@@ -83,8 +34,7 @@ class ResolveUniverseSystemBySystemIdJob extends EsiBase implements HasPathValue
                 'constellation_id' => $response->constellation_id,
                 'name' => $response->name,
                 'security_status' => $response->security_status,
-
-                'security_class' => data_get($response, 'security_class'),
+                'security_class' => $response->security_class,
             ]
         );
     }

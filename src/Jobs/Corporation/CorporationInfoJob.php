@@ -1,73 +1,29 @@
 <?php
 
-/*
- * MIT License
- *
- * Copyright (c) 2019, 2020, 2021 Felix Huber
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 namespace Seatplus\Eveapi\Jobs\Corporation;
 
-use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Jobs\EsiBase;
+use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Resources\Corporation\GetCorporationsCorporationId;
+use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
-use Seatplus\Eveapi\Traits\HasPathValues;
 
-class CorporationInfoJob extends EsiBase implements HasPathValuesInterface
+final class CorporationInfoJob extends EsiJob
 {
-    use HasPathValues;
+    protected const string OPERATION_CLASS = GetCorporationsCorporationId::class;
 
-    public function __construct(
-        public int $corporation_id
-    ) {
-        parent::__construct(
-            method: 'get',
-            endpoint: '/corporations/{corporation_id}/',
-            version: 'v5',
-        );
-
-        $this->setPathValues([
-            'corporation_id' => $this->corporation_id,
-        ]);
-    }
+    public function __construct(public int $corporation_id) {}
 
     #[\Override]
     public function tags(): array
     {
-        return [
-            'corporation',
-            'info',
-            'corporation_id:'.$this->corporation_id,
-        ];
+        return ['corporation', 'info', "corporation_id:{$this->corporation_id}"];
     }
 
-    /**
-     * Execute the job.
-     */
     #[\Override]
-    public function executeJob(): void
+    public function executeJob(EsiClient $esi): void
     {
-        $response = $this->retrieve();
-
-        if ($response->isCachedLoad()) {
+        $response = self::OPERATION_CLASS::execute($esi, $this->corporation_id);
+        if ($response->isCachedLoad) {
             return;
         }
 
@@ -78,15 +34,14 @@ class CorporationInfoJob extends EsiBase implements HasPathValuesInterface
             'ceo_id' => $response->ceo_id,
             'creator_id' => $response->creator_id,
             'tax_rate' => $response->tax_rate,
-            'alliance_id' => data_get($response, 'alliance_id'),
-            'date_founded' => property_exists($response, 'date_founded') ?
-                carbon($response->date_founded) : null,
-            'description' => data_get($response, 'description'),
-            'faction_id' => data_get($response, 'faction_id'),
-            'home_station_id' => data_get($response, 'home_station_id'),
-            'shares' => data_get($response, 'shares'),
-            'url' => data_get($response, 'url'),
-            'war_eligible' => data_get($response, 'war_eligible'),
+            'alliance_id' => $response->alliance_id,
+            'date_founded' => $response->date_founded !== null ? carbon($response->date_founded) : null,
+            'description' => $response->description,
+            'faction_id' => $response->faction_id,
+            'home_station_id' => $response->home_station_id,
+            'shares' => $response->shares,
+            'url' => $response->url,
+            'war_eligible' => $response->war_eligible,
         ])->save();
     }
 }

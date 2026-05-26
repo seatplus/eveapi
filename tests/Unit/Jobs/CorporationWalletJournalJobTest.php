@@ -1,6 +1,9 @@
 <?php
 
+use Mockery\MockInterface;
 use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletJournalJob;
+use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
+use Seatplus\Eveapi\Models\Wallet\Balance;
 
 beforeEach(function () {
     Queue::fake();
@@ -26,15 +29,15 @@ it('returns correct tags', function () {
 describe('handle batching', function () {
 
     beforeEach(function () {
-        \Seatplus\Eveapi\Models\Wallet\Balance::factory()->withDivision()->create([
+        Balance::factory()->withDivision()->create([
             'balanceable_id' => testCharacter()->corporation_id,
-            'balanceable_type' => \Seatplus\Eveapi\Models\Corporation\CorporationInfo::class,
+            'balanceable_type' => CorporationInfo::class,
         ]);
     });
 
     test('cancelled', function () {
 
-        $job = mock(CorporationWalletJournalJob::class, [testCharacter()->corporation_id], function (\Mockery\MockInterface $mock) {
+        $job = mock(CorporationWalletJournalJob::class, [testCharacter()->corporation_id], function (MockInterface $mock) {
             $mock->shouldReceive('batching')->andReturnTrue();
             $mock->shouldReceive('batch->cancelled')->once()->andReturnTrue();
         })->makePartial();
@@ -44,7 +47,7 @@ describe('handle batching', function () {
 
     test('adding to batch', function () {
 
-        $job = mock(CorporationWalletJournalJob::class, [testCharacter()->corporation_id], function (\Mockery\MockInterface $mock) {
+        $job = mock(CorporationWalletJournalJob::class, [testCharacter()->corporation_id], function (MockInterface $mock) {
             $mock->shouldReceive('batching')->andReturnTrue();
             $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
             $mock->shouldReceive('batch->add')->once();

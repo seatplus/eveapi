@@ -2,10 +2,9 @@
 
 namespace Seatplus\Eveapi\Jobs\Wallet;
 
-use Illuminate\Support\Arr;
-use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\EsiBase;
+use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\EsiResult;
+use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contracts\Contract;
@@ -15,91 +14,69 @@ use Seatplus\Eveapi\Models\Universe\Structure;
 use Seatplus\Eveapi\Models\Universe\System;
 use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Models\Wallet\WalletJournal;
-use Seatplus\Eveapi\Traits\HasPages;
-use Seatplus\Eveapi\Traits\HasPathValues;
-use Seatplus\Eveapi\Traits\HasQueryValues;
-use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-abstract class WalletJournalBase extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+abstract class WalletJournalBase extends EsiJob
 {
-    use HasPages;
-    use HasPathValues;
-    use HasQueryValues;
-    use HasRequiredScopes;
+    private array $journalEntries = [];
 
-    private array $journal_entries = [];
+    abstract protected function fetchPage(EsiClient $esi, int $page): EsiResult;
+
+    abstract protected function walletableId(): int;
+
+    abstract protected function walletableType(): string;
+
+    protected function division(): ?int
+    {
+        return null;
+    }
 
     #[\Override]
-    public function executeJob(): void
+    public function executeJob(EsiClient $esi): void
     {
-        // get path values
-        $path_values = $this->getPathValues();
-
-        // get wallet_transactionable_type
-        $wallet_journable_type = Arr::has($path_values, 'character_id') ? CharacterInfo::class : CorporationInfo::class;
-
-        $wallet_journable_id = match ($wallet_journable_type) {
-            CharacterInfo::class => $path_values['character_id'],
-            CorporationInfo::class => $path_values['corporation_id'],
-        };
-
-        $division_id = Arr::get($path_values, 'division', null);
-
-        while (true) {
-            $response = $this->retrieve($this->getPage());
-
-            if ($response->isCachedLoad()) {
+        $page = 1;
+        do {
+            $response = $this->fetchPage($esi, $page);
+            if ($response->isCachedLoad) {
                 return;
             }
 
-            $journal_entries = collect($response)
-                ->map(fn (object $entry) => [
-                    'id' => $entry->id,
-
-                    'wallet_journable_id' => $wallet_journable_id,
-                    'wallet_journable_type' => $wallet_journable_type,
-                    'division' => $division_id,
-
-                    // required props
-                    'date' => carbon($entry->date),
-                    'description' => $entry->description,
-                    'ref_type' => $entry->ref_type,
-                    // nullable props
-                    'amount' => optional($entry)->amount,
-                    'balance' => optional($entry)->balance,
-                    'contextable_id' => optional($entry)->context_id,
-                    'contextable_type' => $this->getContextableType(optional($entry)->context_id_type),
-                    'first_party_id' => optional($entry)->first_party_id,
-                    'second_party_id' => optional($entry)->second_party_id,
-                    'reason' => optional($entry)->reason,
-                    'tax' => optional($entry)->tax,
-                    'tax_receiver_id' => optional($entry)->tax_receiver_id,
-                ])->toArray();
-
-            $this->journal_entries = array_merge($this->journal_entries, $journal_entries);
-
-            // Lastly if more pages are present load next page
-            if ($this->getPage() >= $response->pages) {
-                break;
+            foreach ($response->data as $item) {
+                $this->journalEntries[] = [
+                    'id' => $item->id,
+                    'wallet_journable_id' => $this->walletableId(),
+                    'wallet_journable_type' => $this->walletableType(),
+                    'division' => $this->division(),
+                    'date' => carbon($item->date),
+                    'description' => $item->description,
+                    'ref_type' => $item->ref_type,
+                    'amount' => $item->amount,
+                    'balance' => $item->balance,
+                    'contextable_id' => $item->context_id,
+                    'contextable_type' => $this->getContextableType($item->context_id_type),
+                    'first_party_id' => $item->first_party_id,
+                    'second_party_id' => $item->second_party_id,
+                    'reason' => $item->reason,
+                    'tax' => $item->tax,
+                    'tax_receiver_id' => $item->tax_receiver_id,
+                ];
             }
 
-            $this->incrementPage();
+            $page++;
+        } while ($page <= $response->pages);
+
+        WalletJournal::upsert($this->journalEntries, ['id']);
+        if (app()->bound('queue.worker')) {
+            app('queue.worker')->shouldQuit = true;
         }
-
-        WalletJournal::upsert($this->journal_entries, ['id']);
-
-        // see https://divinglaravel.com/avoiding-memory-leaks-when-running-laravel-queue-workers
-        // This job is very memory consuming hence avoiding memory leaks, the worker should restart
-        app('queue.worker')->shouldQuit = true;
     }
 
-    private function getContextableType(?string $context_id_type): ?string
+    private function getContextableType(?string $contextIdType): ?string
     {
-        if (is_null($context_id_type)) {
+        if (is_null($contextIdType)) {
             return null;
         }
 
-        $context_type = [
+        return [
             'structure_id' => Structure::class,
             'station_id' => Station::class,
             'market_transaction_id' => 'market_transaction_id',
@@ -112,8 +89,6 @@ abstract class WalletJournalBase extends EsiBase implements HasPathValuesInterfa
             'planet_id' => 'planet_id',
             'system_id' => System::class,
             'type_id' => Type::class,
-        ];
-
-        return $context_type[$context_id_type];
+        ][$contextIdType];
     }
 }

@@ -4,17 +4,13 @@ namespace Seatplus\Eveapi\Jobs\Seatplus\Batch;
 
 use Illuminate\Bus\Batch;
 use Illuminate\Bus\Batchable;
-use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Middleware\RateLimitedWithRedis;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
-use Seatplus\Eveapi\Jobs\Assets\EnrichAssetTypeGroupCategoryJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterRoleJob;
@@ -26,6 +22,7 @@ use Seatplus\Eveapi\Jobs\Contacts\CharacterContactLabelJob;
 use Seatplus\Eveapi\Jobs\Contacts\CorporationContactJob;
 use Seatplus\Eveapi\Jobs\Contacts\CorporationContactLabelJob;
 use Seatplus\Eveapi\Jobs\Contracts\CharacterContractsJob;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\EnrichAssetTypeGroupCategoryJob;
 use Seatplus\Eveapi\Jobs\Mail\MailHeaderJob;
 use Seatplus\Eveapi\Jobs\Skills\SkillQueueJob;
 use Seatplus\Eveapi\Jobs\Skills\SkillsJob;
@@ -40,10 +37,7 @@ use Seatplus\Eveapi\Models\RefreshToken;
 class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
 {
     use Batchable;
-    use Dispatchable;
-    use InteractsWithQueue;
     use Queueable;
-    use SerializesModels;
 
     public RefreshToken $refresh_token;
 
@@ -90,7 +84,7 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
 
     private function execute(): Batch
     {
-        $character = $this->refresh_token?->character?->name ?? $this->character_id;
+        $character = $this->refresh_token?->character->name ?? $this->character_id;
         $batch_name = sprintf('%s (character) update batch', $character);
 
         return Bus::batch($this->getBatchJobs())

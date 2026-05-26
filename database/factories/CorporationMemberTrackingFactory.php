@@ -32,7 +32,7 @@ use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking>
+ * @extends Factory<CorporationMemberTracking>
  */
 class CorporationMemberTrackingFactory extends Factory
 {

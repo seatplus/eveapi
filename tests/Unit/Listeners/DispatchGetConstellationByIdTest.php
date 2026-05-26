@@ -1,5 +1,6 @@
 <?php
 
+use Mockery\MockInterface;
 use Seatplus\Eveapi\Events\UniverseSystemCreated;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseConstellationByConstellationIdJob;
 use Seatplus\Eveapi\Listeners\DispatchGetConstellationById;
@@ -25,7 +26,7 @@ it('dispatches job when constellation is null', function () {
 });
 
 it('does not dispatch job when constellation is not null', function () {
-    $event = mock(UniverseSystemCreated::class, function (\Mockery\MockInterface $mock) {
+    $event = mock(UniverseSystemCreated::class, function (MockInterface $mock) {
 
         $mock->system = System::factory()->make();
     })->makePartial();

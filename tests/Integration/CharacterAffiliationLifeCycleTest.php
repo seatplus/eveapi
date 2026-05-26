@@ -3,6 +3,7 @@
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfoJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
@@ -11,17 +12,14 @@ use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterAffiliation;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
-use Seatplus\Eveapi\Services\Facade\RetrieveEsiData;
 
 it('handles follow-up job', function (string $job_class, array $configuration = [], bool $pushed = true) {
     Queue::fake();
     Queue::assertNothingPushed();
 
-    // get character_id from config or create a new one
     $character_id = CharacterAffiliation::factory()->make()->character_id;
     $character_id = Arr::get($configuration, 'character_id', $character_id);
 
-    // If config contains has_character, we create a character and use its id
     $character = CharacterInfo::factory()->create([
         'character_id' => $character_id,
     ]);
@@ -36,14 +34,15 @@ it('handles follow-up job', function (string $job_class, array $configuration = 
         ...$attributes,
     ]);
 
-    mockRetrieveEsiDataAction([$character_affiliation->toArray()]);
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([(object) $character_affiliation->toArray()]));
 
     if ($job_class === CorporationInfoJob::class && $pushed) {
         $character_affiliation->corporation()->delete();
     }
 
-    // run the job
-    (new CharacterAffiliationJob($character_id))->handle();
+    $job = new CharacterAffiliationJob($character_id);
+    $job->executeJob($esi);
 
     if ($pushed) {
         Queue::assertPushedOn('high', $job_class);
@@ -66,44 +65,46 @@ it('handles follow-up job', function (string $job_class, array $configuration = 
     ],
 ]);
 
-it('applies binary search and chaches it if one id is invalid', function () {
+it('applies binary search and caches it if one id is invalid', function () {
     Queue::fake();
 
     CharacterAffiliation::query()->delete();
     $mock_data = CharacterAffiliation::factory()->make();
 
-    // prepare the ids with a length of 2, the first id must be the invalid one
     $ids = [123456789, $mock_data->character_id];
 
-    // Prepare the mock responses
-    $exception_mock = \Mockery::mock(\Exception::class);
-    $exception_mock->shouldReceive('getResponse->getReasonPhrase')->andReturn('Invalid character ID');
-    // first create the exception
-    $exception = new RequestFailedException($exception_mock, new EsiResponse(json_encode([]), [], 'now', 200));
+    $exceptionMock = Mockery::mock(Exception::class);
+    $exceptionMock->shouldReceive('getResponse->getReasonPhrase')->andReturn('Invalid character ID');
+    $exception = new RequestFailedException($exceptionMock, new EsiResponse(json_encode([]), [], 'now', 200));
 
-    $mock_data = CharacterAffiliation::factory()->make();
-    $response = new EsiResponse(json_encode([$mock_data]), [], 'now', 200);
+    $esi = Mockery::mock(EsiClient::class);
+    $esi->shouldReceive('withToken')->andReturnSelf();
+    $esi->shouldReceive('assertScope')->andReturnNull();
+    $esi->shouldReceive('invoke')
+        ->once()->ordered()->andThrow($exception);
+    $esi->shouldReceive('invoke')
+        ->once()->ordered()->andThrow($exception);
+    $esi->shouldReceive('invoke')
+        ->once()->ordered()->andReturn(makeEsiRawResponse(makeEsiResult([(object) $mock_data->toArray()])));
 
-    // Expectation for the 1st call
-    RetrieveEsiData::shouldReceive('execute')
-        ->once()
-        ->andThrow($exception)
+    $job = new CharacterAffiliationJob($ids);
+    $job->executeJob($esi);
 
-        // Expectation for the 2nd call
-        ->shouldReceive('execute')
-        ->once()
-        ->andThrow($exception)
-
-        // Expectation for the 3rd call
-        ->shouldReceive('execute')
-        ->once()
-        ->andReturn($response);
-
-    (new CharacterAffiliationJob($ids))->handle();
-
-    // Check that first id is cached as invalid
     expect(cache('invalid_character_ids'))->toBe([123456789])
         ->and(CharacterAffiliation::all())->toHaveCount(1)
         ->and(CharacterAffiliation::first())->character_id
         ->toBe($mock_data->character_id);
+});
+
+it('skips db write when character affiliation response is a cached load', function () {
+    CharacterAffiliation::query()->delete();
+    $mock_data = CharacterAffiliation::factory()->make();
+
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([(object) $mock_data->toArray()], isCachedLoad: true));
+
+    $job = new CharacterAffiliationJob($mock_data->character_id);
+    $job->executeJob($esi);
+
+    expect(CharacterAffiliation::count())->toBe(0);
 });

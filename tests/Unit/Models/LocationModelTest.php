@@ -1,5 +1,6 @@
 <?php
 
+use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\System;
@@ -17,7 +18,7 @@ it('has filter by region ids scope', function () {
     ]);
 
     // Act
-    $locations = Location::filterByRegionIds($system->region->region_id)->get();
+    $locations = Location::query()->filterByRegionIds($system->region->region_id)->get();
 
     // Assert
     expect($locations->count())->toBeGreaterThan(0);
@@ -36,7 +37,7 @@ it('has filter by system ids scope', function () {
     ]);
 
     // Act
-    $locations = Location::filterBySystemIds($system->system_id)->get();
+    $locations = Location::query()->filterBySystemIds($system->system_id)->get();
 
     // Assert
     expect($locations->count())->toBeGreaterThan(0);
@@ -54,7 +55,7 @@ it('has assets relationship', function () {
         'locatable_type' => Station::class,
     ]);
 
-    \Seatplus\Eveapi\Models\Assets\Asset::factory()->create([
+    Asset::factory()->create([
         'location_id' => $location->location_id,
     ]);
 

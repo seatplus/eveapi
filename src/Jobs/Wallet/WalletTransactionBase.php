@@ -2,139 +2,96 @@
 
 namespace Seatplus\Eveapi\Jobs\Wallet;
 
-use Illuminate\Support\Arr;
-use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Esi\HasQueryParametersInterface;
-use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\EsiBase;
+use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\EsiResult;
+use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
-use Seatplus\Eveapi\Models\Character\CharacterInfo;
-use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
-use Seatplus\Eveapi\Traits\HasPathValues;
-use Seatplus\Eveapi\Traits\HasQueryValues;
-use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-abstract class WalletTransactionBase extends EsiBase implements HasPathValuesInterface, HasQueryParametersInterface, HasRequiredScopeInterface
+abstract class WalletTransactionBase extends EsiJob
 {
-    use HasPathValues;
-    use HasQueryValues;
-    use HasRequiredScopes;
-
     protected int $from_id = PHP_INT_MAX;
 
     protected array $transactions = [];
 
-    #[\Override]
-    public function executeJob(): void
+    abstract protected function fetchTransactions(EsiClient $esi, ?int $fromId): EsiResult;
+
+    abstract protected function transactionableId(): int;
+
+    abstract protected function transactionableType(): string;
+
+    protected function division(): ?int
     {
-        // get path values
-        $path_values = $this->getPathValues();
+        return null;
+    }
 
-        // get wallet_transactionable_type
-        $wallet_transactionable_type = Arr::has($path_values, 'character_id') ? CharacterInfo::class : CorporationInfo::class;
-
-        $wallet_transactionable_id = match ($wallet_transactionable_type) {
-            CharacterInfo::class => $path_values['character_id'],
-            CorporationInfo::class => $path_values['corporation_id'],
-        };
-
-        $division_id = Arr::get($path_values, 'division', null);
-
-        $latest_transaction = WalletTransaction::where('wallet_transactionable_id', $wallet_transactionable_id)
-            ->latest()->first();
-
-        if ($latest_transaction) {
-            $this->from_id = $latest_transaction->transaction_id - 1;
+    #[\Override]
+    public function executeJob(EsiClient $esi): void
+    {
+        $latest = WalletTransaction::where('wallet_transactionable_id', $this->transactionableId())->latest()->first();
+        if ($latest) {
+            $this->from_id = $latest->transaction_id - 1;
         }
 
         while (true) {
-            $this->setQueryParameters([
-                'from_id' => $this->from_id,
-            ]);
+            $fromId = $this->from_id === PHP_INT_MAX ? null : $this->from_id;
+            $response = $this->fetchTransactions($esi, $fromId);
 
-            $response = $this->retrieve();
-
-            if ($response->isCachedLoad()) {
+            if ($response->isCachedLoad) {
                 return;
             }
-
-            // If no more transactions are present, break the loop.
-            if (collect($response)->isEmpty()) {
+            if (empty($response->data)) {
                 break;
             }
 
-            $transactions = collect($response)
-                ->map(fn (object $entry) => [
-                    'transaction_id' => $entry->transaction_id,
-
-                    'wallet_transactionable_id' => $wallet_transactionable_id,
-                    'wallet_transactionable_type' => $wallet_transactionable_type,
-                    'division' => $division_id,
-
-                    // required props
-                    'client_id' => $entry->client_id,
-                    'date' => carbon($entry->date),
-                    'is_buy' => $entry->is_buy,
-                    'is_personal' => $entry->is_personal,
-                    'journal_ref_id' => $entry->journal_ref_id,
-                    'location_id' => $entry->location_id,
-                    'quantity' => $entry->quantity,
-                    'type_id' => $entry->type_id,
-                    'unit_price' => $entry->unit_price,
-                ])->toArray();
-
-            // get the last transaction id
-            $last_transaction_id = Arr::last($transactions)['transaction_id'] - 1;
-
-            // if the last transaction id is equal to the from_id, break the loop
-            if ($last_transaction_id === $this->from_id) {
-                break;
+            $transactions = [];
+            foreach ($response->data as $item) {
+                $transactions[] = [
+                    'transaction_id' => $item->transaction_id,
+                    'wallet_transactionable_id' => $this->transactionableId(),
+                    'wallet_transactionable_type' => $this->transactionableType(),
+                    'division' => $this->division(),
+                    'client_id' => $item->client_id,
+                    'date' => carbon($item->date),
+                    'is_buy' => $item->is_buy,
+                    'is_personal' => $item->is_personal ?? false,
+                    'journal_ref_id' => $item->journal_ref_id,
+                    'location_id' => $item->location_id,
+                    'quantity' => $item->quantity,
+                    'type_id' => $item->type_id,
+                    'unit_price' => $item->unit_price,
+                ];
             }
 
-            // set the from_id to the last transaction id
-            $this->from_id = $last_transaction_id;
-
+            $lastTransactionId = end($transactions)['transaction_id'] - 1;
+            if ($lastTransactionId === $this->from_id) {
+                break;
+            }
+            $this->from_id = $lastTransactionId;
             $this->transactions = array_merge($this->transactions, $transactions);
         }
 
-        $this->persistTransactions();
-        $this->dispatchFollowUpJobs();
-
-        // see https://divinglaravel.com/avoiding-memory-leaks-when-running-laravel-queue-workers
-        // This job is very memory consuming hence avoiding memory leaks, the worker should restart
-        app('queue.worker')->shouldQuit = true;
-    }
-
-    private function persistTransactions(): void
-    {
         WalletTransaction::upsert($this->transactions, ['transaction_id']);
+        $this->dispatchFollowUpJobs();
+        if (app()->bound('queue.worker')) {
+            app('queue.worker')->shouldQuit = true;
+        }
     }
 
     private function dispatchFollowUpJobs(): void
-    {
-        $this->dispatchMissingTypeJobs();
-        $this->dispatchMissingLocationJobs();
-    }
-
-    private function dispatchMissingTypeJobs(): void
     {
         WalletTransaction::query()
             ->doesntHave('type')
             ->pluck('type_id')
             ->unique()
-            ->each(fn (int $type_id) => ResolveUniverseTypeByIdJob::dispatch($type_id)->onQueue('high'));
-    }
+            ->each(fn (int $typeId) => ResolveUniverseTypeByIdJob::dispatch($typeId)->onQueue('high'));
 
-    private function dispatchMissingLocationJobs(): void
-    {
-        $refresh_token = $this->getRefreshToken();
-
+        $refreshToken = $this->getRefreshToken();
         WalletTransaction::query()
             ->doesntHave('location')
             ->pluck('location_id')
             ->unique()
-            ->each(fn (int $location_id) => ResolveLocationJob::dispatch($location_id, $refresh_token)->onQueue('high'));
+            ->each(fn (int $locationId) => ResolveLocationJob::dispatch($locationId, $refreshToken)->onQueue('high'));
     }
 }

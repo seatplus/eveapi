@@ -1,18 +1,26 @@
 <?php
 
-use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Mail\MailBodyJob;
+use Seatplus\Eveapi\Models\Mail\Mail;
+use Seatplus\Eveapi\Models\RefreshToken;
 
 it('returns early if cache is hit', function () {
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
-    $response = mock(EsiResponse::class, function ($mock) {
-        $mock->shouldReceive('isCachedLoad')->andReturn(true);
-    });
+    $mail = Mail::factory()->create();
+    $job = new MailBodyJob(testCharacter()->character_id, $mail->id);
+    $job->executeJob($esi);
 
-    $job = mock(MailBodyJob::class)->makePartial();
-    $job->shouldReceive('retrieve')->andReturn($response);
+    expect(Mail::all())->toHaveCount(1)
+        ->and(Mail::first()->body)->toBeNull();
+});
 
-    $job->executeJob();
+it('returns the refresh token', function () {
+    $token = RefreshToken::factory()->create();
 
-    expect(\Seatplus\Eveapi\Models\Mail\Mail::all())->toHaveCount(0);
+    $job = new MailBodyJob($token->character_id, 99);
+
+    expect($job->getRefreshToken())->toBeInstanceOf(RefreshToken::class);
 });

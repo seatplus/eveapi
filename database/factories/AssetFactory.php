@@ -32,7 +32,7 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Universe\Type;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Assets\Asset>
+ * @extends Factory<Asset>
  */
 class AssetFactory extends Factory
 {
@@ -44,11 +44,11 @@ class AssetFactory extends Factory
         return [
             'assetable_id' => fake()->numberBetween(), // factory(CharacterInfo::class),
             'assetable_type' => CharacterInfo::class, // $this->faker->randomElement([CharacterInfo::class, CorporationInfo::class]),
-            'item_id' => fake()->unique()->randomNumber(),
+            'item_id' => fake()->unique()->numberBetween(1, 2_147_483_647),
             'is_blueprint_copy' => false,
             'is_singleton' => fake()->boolean,
             'location_flag' => fake()->randomElement($this->getLocationFlagArray()),
-            'location_id' => fake()->randomNumber(),
+            'location_id' => fake()->numberBetween(1, 2_147_483_647),
             'location_type' => fake()->randomElement(['station', 'solar_system', 'other']),
             'quantity' => fake()->randomDigit(),
             'type_id' => fake()->numberBetween(5, 10000),

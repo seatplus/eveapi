@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Models\Killmails;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -33,11 +34,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Seatplus\Eveapi\Models\Universe\System;
 use Seatplus\Eveapi\Models\Universe\Type;
 
+#[Unguarded]
 class Killmail extends Model
 {
     use HasFactory;
-
-    protected $guarded = [];
 
     /**
      * @var string

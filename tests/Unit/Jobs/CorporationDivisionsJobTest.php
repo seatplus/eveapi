@@ -1,34 +1,34 @@
 <?php
 
+use Seatplus\EsiClient\EsiClient;
+use Seatplus\Eveapi\Jobs\Corporation\CorporationDivisionsJob;
+use Seatplus\Eveapi\Jobs\Middleware\EsiProactiveRateLimitMiddleware;
 use Seatplus\Eveapi\Models\Corporation\CorporationDivision;
 
 it('has tags', function () {
-    $job = new \Seatplus\Eveapi\Jobs\Corporation\CorporationDivisionsJob(1);
+    $job = new CorporationDivisionsJob(1);
 
     expect($job->tags())->toEqual([
         'corporation',
-        'corporation_id: 1',
+        'corporation_id:1',
         'divisions',
     ]);
 });
 
 it('has middleware', function () {
-    $job = new \Seatplus\Eveapi\Jobs\Corporation\CorporationDivisionsJob(1);
+    $job = new CorporationDivisionsJob(1);
 
     expect($job->middleware())->toBeArray()
         ->and($job->middleware())->toHaveCount(2)
-        ->and($job->middleware()[0])->toBeInstanceOf(\Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware::class);
+        ->and($job->middleware()[0])->toBeInstanceOf(EsiProactiveRateLimitMiddleware::class);
 });
 
 it('returns early if response is cached', function () {
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
-    $response = mock(\Seatplus\EsiClient\DataTransferObjects\EsiResponse::class);
-    $response->shouldReceive('isCachedLoad')->andReturn(true);
-
-    $job = mock(\Seatplus\Eveapi\Jobs\Corporation\CorporationDivisionsJob::class)->makePartial();
-    $job->shouldReceive('retrieve')->andReturn($response);
-
-    $job->executeJob();
+    $job = new CorporationDivisionsJob(1);
+    $job->executeJob($esi);
 
     expect(CorporationDivision::all())->toHaveCount(0);
 });

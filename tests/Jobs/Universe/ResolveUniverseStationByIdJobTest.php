@@ -1,89 +1,73 @@
 <?php
 
 use Illuminate\Support\Facades\Event;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Events\UniverseStationCreated;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseStationByIdJob;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
 
 beforeEach(function () {
-    $this->refresh_token = $this->test_character->refresh_token;
-
     Event::fake([
         UniverseStationCreated::class,
     ]);
 });
 
-/**
- * @runTestsInSeparateProcesses
- */
 it('creates station', function () {
-    $mock_data = buildStationMockEsiData();
+    $mock_data = Station::factory()->make();
 
-    expect(Station::find($mock_data->station_id))->toBeNull();
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult((object) $mock_data->toArray()));
 
-    (new ResolveUniverseStationByIdJob($mock_data->station_id))->handle();
+    $job = new ResolveUniverseStationByIdJob($mock_data->station_id);
+    $job->executeJob($esi);
 
-    // Assert that structure is created
-    $this->assertDatabaseHas('universe_stations', [
-        'station_id' => $mock_data->station_id,
-    ]);
+    expect(Station::where('station_id', $mock_data->station_id)->exists())->toBeTrue();
 });
 
-/**
- * @runTestsInSeparateProcesses
- */
 it('creates location', function () {
-    $mock_data = buildStationMockEsiData();
+    $mock_data = Station::factory()->make();
 
-    // Assert that no structure is created
-    $this->assertDatabaseMissing('universe_locations', [
-        'location_id' => $mock_data->station_id,
-    ]);
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult((object) $mock_data->toArray()));
 
-    (new ResolveUniverseStationByIdJob($mock_data->station_id))->handle();
+    $job = new ResolveUniverseStationByIdJob($mock_data->station_id);
+    $job->executeJob($esi);
 
-    // Assert that structure is created
-    $this->assertDatabaseHas('universe_locations', [
-        'location_id' => $mock_data->station_id,
-    ]);
+    expect(Location::where('location_id', $mock_data->station_id)->exists())->toBeTrue();
 });
 
-/**
- * @runTestsInSeparateProcesses
- */
 it('creates polymorphic relationship', function () {
-    $mock_data = buildStationMockEsiData();
+    $mock_data = Station::factory()->make();
 
-    (new ResolveUniverseStationByIdJob($mock_data->station_id))->handle();
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult((object) $mock_data->toArray()));
+
+    $job = new ResolveUniverseStationByIdJob($mock_data->station_id);
+    $job->executeJob($esi);
 
     $location = Location::find($mock_data->station_id);
 
     expect($location->locatable)->toBeInstanceOf(Station::class);
 });
 
-/**
- * @runTestsInSeparateProcesses
- */
 it('does not create structure if location id is not in range', function () {
-    $mock_data = Station::factory()->make([
-        'station_id' => 1234,
-    ]);
+    $esi = Mockery::mock(EsiClient::class);
 
-    (new ResolveUniverseStationByIdJob($mock_data->station_id))->handle();
+    $job = new ResolveUniverseStationByIdJob(1234);
+    $job->executeJob($esi);
 
-    // Assert that no structure is created
-    $this->assertDatabaseMissing('universe_stations', [
-        'station_id' => $mock_data->station_id,
-    ]);
+    expect(Station::where('station_id', 1234)->exists())->toBeFalse();
 });
 
-// Helpers
-function buildStationMockEsiData()
-{
+it('skips db write when response is a cached load', function () {
     $mock_data = Station::factory()->make();
 
-    mockRetrieveEsiDataAction($mock_data->toArray());
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
-    return $mock_data;
-}
+    $job = new ResolveUniverseStationByIdJob($mock_data->station_id);
+    $job->executeJob($esi);
+
+    expect(Station::where('station_id', $mock_data->station_id)->exists())->toBeFalse();
+});

@@ -4,27 +4,32 @@ namespace Seatplus\Eveapi\Models;
 
 use Carbon\Carbon;
 use Illuminate\Bus\Batch;
+use Illuminate\Database\Eloquent\Attributes\Appends;
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property Carbon $started_at
+ * @property Carbon $finished_at
+ */
+#[Appends(['duration'])]
+#[Unguarded]
 class BatchStatistic extends Model
 {
     use HasFactory;
 
     protected $table = 'batch_statistics';
 
-    protected $guarded = [];
-
-    protected $appends = [
-        'duration',
-    ];
-
-    public function getDurationAttribute(): int
+    protected function duration(): Attribute
     {
-        /** @var Carbon $finished_at */
-        $finished_at = $this->finished_at;
+        return Attribute::make(get: function () {
+            /** @var Carbon $finished_at */
+            $finished_at = $this->finished_at;
 
-        return $finished_at->diffInSeconds($this->started_at);
+            return (int) $this->started_at->diffInSeconds($finished_at);
+        });
     }
 
     public static function createEntry(Batch $batch): self

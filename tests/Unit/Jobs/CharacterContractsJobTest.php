@@ -1,55 +1,75 @@
 <?php
 
-use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
+use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Responses\CharactersCharacterIdContractsGetItem;
 use Seatplus\Eveapi\Jobs\Contracts\CharacterContractsJob;
+use Seatplus\Eveapi\Models\Contracts\Contract;
+use Seatplus\Eveapi\Models\RefreshToken;
 
 test('returns early if cached', function () {
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
-    $response = mock(EsiResponse::class);
-    $response->shouldReceive('isCachedLoad')->once()->andReturn(true);
+    $job = new CharacterContractsJob(1);
+    $job->executeJob($esi);
 
-    $job = mock(CharacterContractsJob::class)->makePartial();
-    $job->shouldReceive('retrieve')->once()->andReturn($response);
-
-    $job->executeJob();
-
-    expect(true)->toBeTrue();
+    expect(Contract::count())->toBe(0);
 });
 
-it('increments page', function () {
-
+it('handles multiple pages and writes all contracts', function () {
     Queue::fake();
 
-    $contract = \Seatplus\Eveapi\Models\Contracts\Contract::factory()->count(2)->make();
+    $contract = fn (int $id) => CharactersCharacterIdContractsGetItem::from((object) [
+        'contract_id' => $id,
+        'acceptor_id' => 0,
+        'assignee_id' => 0,
+        'availability' => 'personal',
+        'date_expired' => now()->addDays(7)->toIso8601String(),
+        'date_issued' => now()->toIso8601String(),
+        'for_corporation' => false,
+        'issuer_corporation_id' => 1000001,
+        'issuer_id' => 123,
+        'status' => 'outstanding',
+        'type' => 'item_exchange',
+    ]);
 
-    $response1 = new EsiResponse(json_encode($contract->toArray()), ['X-Pages' => 2], 'now', 200);
-    $response2 = new EsiResponse('{}', ['X-Pages' => 2], 'now', 200);
+    $page1 = makeEsiRawResponse(makeEsiResult([$contract(1001)], pages: 2));
+    $page2 = makeEsiRawResponse(makeEsiResult([$contract(1002)], pages: 2));
 
-    $job = mock(CharacterContractsJob::class)->makePartial();
-    $job->character_id = 1;
-    $job->shouldReceive('retrieve')->twice()->andReturns($response1, $response2);
+    $esi = Mockery::mock(EsiClient::class);
+    $esi->shouldReceive('withToken')->andReturnSelf();
+    $esi->shouldReceive('assertScope')->andReturnNull();
+    $esi->shouldReceive('invoke')->andReturn($page1, $page2);
 
-    $job->executeJob();
+    $job = new CharacterContractsJob(testCharacter()->character_id);
+    $job->executeJob($esi);
 
-    expect($job->getPage())->toEqual(2);
+    expect(Contract::count())->toBe(2);
 });
 
 it('adds follow up jobs to batch if batching', function () {
 
-    Queue::fake();
+    $contract = Contract::factory()->count(2)->make();
 
-    $contract = \Seatplus\Eveapi\Models\Contracts\Contract::factory()->count(2)->make();
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult(
+        array_map(fn ($c) => (object) $c, $contract->toArray())
+    ));
 
-    $response = new EsiResponse(json_encode($contract->toArray()), [], 'now', 200);
-
-    $job = mock(CharacterContractsJob::class)->makePartial();
+    $job = mock(CharacterContractsJob::class)->shouldAllowMockingProtectedMethods()->makePartial();
     $job->character_id = 1;
-    $job->shouldReceive('retrieve')->andReturn($response);
-
     $job->shouldReceive('batching')->once()->andReturnTrue();
     $job->shouldReceive('batch->add')->once();
 
-    $job->executeJob();
+    $job->executeJob($esi);
 
     Queue::assertNothingPushed();
+});
+
+it('returns the refresh token', function () {
+    $token = RefreshToken::factory()->create();
+
+    $job = new CharacterContractsJob($token->character_id);
+
+    expect($job->getRefreshToken())->toBeInstanceOf(RefreshToken::class);
 });

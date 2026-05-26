@@ -1,9 +1,10 @@
 <?php
 
+use Seatplus\Eveapi\Models\Application;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
 it('has causer morph relationshio', function () {
-    $application = \Seatplus\Eveapi\Models\Application::factory()->create();
+    $application = Application::factory()->create();
 
     $log = $application->log_entries()->create([
         'causer_type' => CharacterInfo::class,
@@ -13,5 +14,5 @@ it('has causer morph relationshio', function () {
     ]);
 
     expect($log)->causer->toBeInstanceOf(CharacterInfo::class)
-        ->and($log->application)->toBeInstanceOf(\Seatplus\Eveapi\Models\Application::class);
+        ->and($log->application)->toBeInstanceOf(Application::class);
 });

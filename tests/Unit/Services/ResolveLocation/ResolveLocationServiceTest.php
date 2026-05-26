@@ -1,19 +1,22 @@
 <?php
 
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Queue;
+use Mockery\MockInterface;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Services\ResolveLocation\ResolveLocationService;
 use Seatplus\Eveapi\Services\ResolveLocation\Resolver\ResolverInterface;
 
 it('runs through resolvers', function () {
-    \Illuminate\Support\Facades\Event::fake();
-    \Illuminate\Support\Facades\Queue::fake();
+    Event::fake();
+    Queue::fake();
 
     // Arrange
     $location_id = 100; // use low number to avoid being a potential structure or station
 
     ResolveLocationService::make()->handle($location_id);
 
-    expect(\Seatplus\Eveapi\Models\Universe\Location::count())->toBe(0);
+    expect(Location::count())->toBe(0);
 });
 
 it('breaks the loop on successful resolution', function () {
@@ -25,7 +28,7 @@ it('breaks the loop on successful resolution', function () {
     $locationMock->shouldReceive('firstOrNew')->andReturn($locationMock);
 
     // Mock the ResolverInterface
-    $resolverMock = mock(ResolverInterface::class, function (\Mockery\MockInterface $mock) {
+    $resolverMock = mock(ResolverInterface::class, function (MockInterface $mock) {
         $mock->shouldReceive('handle')->once()->andReturn(true);
     });
 

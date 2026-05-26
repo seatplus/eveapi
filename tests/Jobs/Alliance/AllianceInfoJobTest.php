@@ -1,44 +1,28 @@
 <?php
 
 use Illuminate\Support\Facades\Queue;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Alliances\AllianceInfoJob;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 
 test('if job is queued', function () {
     Queue::fake();
 
-    // Assert that no jobs were pushed...
     Queue::assertNothingPushed();
 
     AllianceInfoJob::dispatch($this->test_character->character_id)->onQueue('default');
 
-    // Assert a job was pushed to a given queue...
     Queue::assertPushedOn('default', AllianceInfoJob::class);
 });
 
-/**
- * @runTestsInSeparateProcesses
- */
 test('retrieve test', function () {
-    $mock_data = buildAllianceInfoMockEsiData();
+    $mock_data = AllianceInfo::factory()->make(['alliance_id' => 12345]);
 
-    $job = new AllianceInfoJob($this->test_character->character_id);
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult((object) $mock_data->toArray()));
 
-    // Run InfoAction
-    $job->handle();
+    $job = new AllianceInfoJob(12345);
+    $job->executeJob($esi);
 
-    // Assert that alliance_info is created
-    $this->assertDatabaseHas('alliance_infos', [
-        'name' => $mock_data->name,
-    ]);
+    expect(AllianceInfo::where('name', $mock_data->name)->exists())->toBeTrue();
 });
-
-// Helpers
-function buildAllianceInfoMockEsiData()
-{
-    $mock_data = AllianceInfo::factory()->make();
-
-    mockRetrieveEsiDataAction($mock_data->toArray());
-
-    return $mock_data;
-}

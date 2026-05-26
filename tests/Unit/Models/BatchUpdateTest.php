@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\Carbon;
 use Seatplus\Eveapi\Models\BatchUpdate;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
@@ -42,8 +43,8 @@ it('has isPending attribute and scope', function ($batch) {
 
     expect($batch)
         ->is_pending->toBeFalse()
-        ->started_at->toBeInstanceOf(\Carbon\Carbon::class)
-        ->finished_at->toBeInstanceOf(\Carbon\Carbon::class);
+        ->started_at->toBeInstanceOf(Carbon::class)
+        ->finished_at->toBeInstanceOf(Carbon::class);
 
     // check the scope, should be 0
     $query_result = BatchUpdate::query()->pending()->get();

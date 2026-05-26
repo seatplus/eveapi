@@ -1,6 +1,5 @@
 includes:
     - vendor/larastan/larastan/extension.neon
-    - phpstan-baseline.neon
 
 parameters:
     databaseMigrationsPath:
@@ -14,7 +13,5 @@ parameters:
     tmpDir: build/phpstan
     checkOctaneCompatibility: true
     checkModelProperties: true
-    ignoreErrors:
-        - '#^Access to an undefined property Seatplus\\EsiClient\\DataTransferObjects\\EsiResponse\:\:\$[a-zA-Z0-9\\_]+\.$#'
-
-
+    configDirectories:
+        - config

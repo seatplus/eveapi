@@ -27,7 +27,7 @@
 namespace Seatplus\Eveapi\Services\Contacts;
 
 use Illuminate\Support\Collection;
-use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
+use Seatplus\EsiSchema\EsiResult;
 use Seatplus\Eveapi\Models\Contacts\Label;
 
 class ProcessContactLabelsResponse
@@ -37,15 +37,16 @@ class ProcessContactLabelsResponse
         private readonly string $labelable_type
     ) {}
 
-    public function execute(EsiResponse $response): Collection
+    public function execute(EsiResult $response): Collection
     {
-        return collect($response)->each(fn (object $contact_label) => Label::updateOrCreate([
-            'label_id' => $contact_label->label_id,
-            'labelable_id' => $this->labelable_id,
-            'labelable_type' => $this->labelable_type,
-        ], [
-            'label_name' => $contact_label->label_name,
-        ]))->pluck('label_id');
+        return collect($response->data)
+            ->each(fn (object $contact_label) => Label::updateOrCreate([
+                'label_id' => $contact_label->label_id,
+                'labelable_id' => $this->labelable_id,
+                'labelable_type' => $this->labelable_type,
+            ], [
+                'label_name' => $contact_label->label_name,
+            ]))->pluck('label_id');
     }
 
     public function remove_old_entries(array $known_ids): void

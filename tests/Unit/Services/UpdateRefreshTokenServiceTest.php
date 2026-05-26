@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Event;
+use Mockery\MockInterface;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
 use Seatplus\EsiClient\Services\UpdateRefreshTokenService as EsiClientUpdateToken;
 use Seatplus\Eveapi\Models\RefreshToken;
@@ -7,15 +9,15 @@ use Seatplus\Eveapi\Services\Esi\UpdateRefreshTokenService;
 
 beforeEach(function () {
     $this->service = UpdateRefreshTokenService::make();
-    \Illuminate\Support\Facades\Event::fake();
+    Event::fake();
 });
 
 it('updates refresh token successfully', function () {
 
-    $esiClientUpdateToken = mock(EsiClientUpdateToken::class, function (Mockery\MockInterface $mock) {
+    $esiClientUpdateToken = mock(EsiClientUpdateToken::class, function (MockInterface $mock) {
 
         $mock->shouldReceive('getRefreshTokenResponse')
-            ->with(\Mockery::type(EsiAuthentication::class))
+            ->with(Mockery::type(EsiAuthentication::class))
             ->andReturn([
                 'access_token' => 'new_access_token',
                 'expires_in' => 3600,

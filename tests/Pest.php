@@ -13,12 +13,20 @@
 
 /** @link https://pestphp.com/docs/underlying-test-case */
 
+use DG\BypassFinals;
 use Faker\Factory;
 use Firebase\JWT\JWT;
-use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
-use Seatplus\Eveapi\Services\Facade\RetrieveEsiData;
+use Mockery\MockInterface;
+use Seatplus\EsiSchema\Contracts\EsiRawResponse;
+use Seatplus\EsiSchema\EsiResult;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Services\Esi\GetUpToDateRefreshTokenService;
+use Seatplus\Eveapi\Tests\TestCase;
 
-uses(\Seatplus\Eveapi\Tests\TestCase::class)->in('Unit', 'Integration', 'Jobs');
+BypassFinals::enable();
+
+uses(TestCase::class)->in('Unit', 'Integration', 'Jobs');
 // uses(\Illuminate\Foundation\Testing\LazilyRefreshDatabase::class)->in('Unit', 'Integration', 'Jobs');
 
 /*
@@ -50,28 +58,73 @@ function faker()
     return Factory::create();
 }
 
-function mockRetrieveEsiDataAction(array $body)
+function makeEsiResult(mixed $data, bool $isCachedLoad = false, int $pages = 1): EsiResult
 {
-    $data = json_encode($body);
-
-    $response = new EsiResponse($data, [], 'now', 200);
-
-    RetrieveEsiData::shouldReceive('execute')
-        ->once()
-        ->andReturn($response);
+    return new EsiResult(data: $data, pages: $pages, isCachedLoad: $isCachedLoad);
 }
 
-function noRetrieveEsiDataAction()
+function mockTokenService(): void
 {
-    RetrieveEsiData::shouldReceive('execute')->never();
+    $mock = Mockery::mock(GetUpToDateRefreshTokenService::class, function (MockInterface $mock) {
+        $mock->shouldReceive('get')
+            ->andReturnUsing(fn (RefreshToken $token) => $token);
+    });
+    app()->instance(GetUpToDateRefreshTokenService::class, $mock);
+}
+
+function makeEsiRawResponse(mixed $result): EsiRawResponse
+{
+    if ($result instanceof EsiResult) {
+        return new EsiRawResponse(
+            data: $result->data,
+            isCachedLoad: $result->isCachedLoad,
+            pages: $result->pages,
+            rateLimitRemaining: $result->rateLimitRemaining,
+        );
+    }
+
+    $isCachedLoad = false;
+    $pages = 1;
+    $rateLimitRemaining = null;
+    $data = $result;
+
+    if (is_object($result)) {
+        $isCachedLoad = $result->isCachedLoad ?? false;
+        $pages = $result->pages ?? 1;
+        $rateLimitRemaining = $result->rateLimitRemaining ?? null;
+        $data = (object) collect(get_object_vars($result))
+            ->except(['isCachedLoad', 'pages', 'rateLimitRemaining'])
+            ->all();
+    }
+
+    return new EsiRawResponse(
+        data: $data,
+        isCachedLoad: $isCachedLoad,
+        pages: $pages,
+        rateLimitRemaining: $rateLimitRemaining,
+    );
+}
+
+function mockEsiTransport(MockInterface $esi, mixed $result): void
+{
+    $esi->shouldReceive('withToken')->andReturnSelf();
+    $esi->shouldReceive('assertScope')->andReturnNull();
+
+    if ($result instanceof Throwable) {
+        $esi->shouldReceive('invoke')->andThrow($result);
+
+        return;
+    }
+
+    $esi->shouldReceive('invoke')->andReturn(makeEsiRawResponse($result));
 }
 
 function testCharacter()
 {
-    return \Seatplus\Eveapi\Models\Character\CharacterInfo::first();
+    return CharacterInfo::first();
 }
 
-function updateRefreshTokenScopes(Seatplus\Eveapi\Models\RefreshToken $refreshToken, array $scopes): Seatplus\Eveapi\Models\RefreshToken
+function updateRefreshTokenScopes(RefreshToken $refreshToken, array $scopes): RefreshToken
 {
     $jwt = $refreshToken->getRawOriginal('token');
     $jwt_payload_base64_encoded = explode('.', (string) $jwt)[1];

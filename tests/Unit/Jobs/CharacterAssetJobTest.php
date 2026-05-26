@@ -1,33 +1,44 @@
 <?php
 
+use Illuminate\Support\Facades\Queue;
+use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Responses\CharactersCharacterIdAssetsGetItem;
+use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
+use Seatplus\Eveapi\Models\Assets\Asset;
+
 it('checks if the response is cached', function () {
-    $job = mock(\Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob::class, function ($mock) {
-        $response = mock(\Seatplus\EsiClient\DataTransferObjects\EsiResponse::class, function ($mock) {
-            $mock->shouldReceive('isCachedLoad')->andReturn(true);
-        });
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
-        $mock->shouldReceive('retrieve')->andReturn($response);
-    })->makePartial();
+    $job = new CharacterAssetJob(12345);
+    $job->executeJob($esi);
 
-    $job->executeJob();
-
-    expect(\Seatplus\Eveapi\Models\Assets\Asset::count())->toBe(0);
+    expect(Asset::count())->toBe(0);
 });
 
-it('increments page', function () {
+it('handles multiple pages and upserts all assets', function () {
     Queue::fake();
 
-    $asset = \Seatplus\Eveapi\Models\Assets\Asset::factory()->count(2)->make();
+    $asset = fn (int $itemId) => CharactersCharacterIdAssetsGetItem::from((object) [
+        'item_id' => $itemId,
+        'is_singleton' => false,
+        'location_flag' => 'Hangar',
+        'location_id' => 60000001,
+        'location_type' => 'station',
+        'quantity' => 1,
+        'type_id' => 34,
+    ]);
 
-    $response1 = new \Seatplus\EsiClient\DataTransferObjects\EsiResponse(json_encode($asset->toArray()), ['X-Pages' => 2], 'now', 200);
-    $response2 = new \Seatplus\EsiClient\DataTransferObjects\EsiResponse('{}', ['X-Pages' => 2], 'now', 200);
+    $page1 = makeEsiRawResponse(makeEsiResult([$asset(1001)], pages: 2));
+    $page2 = makeEsiRawResponse(makeEsiResult([$asset(1002)], pages: 2));
 
-    $job = mock(\Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob::class)->makePartial();
-    $job->__construct(123);
-    $job->shouldReceive('retrieve')->twice()->andReturns($response1, $response2);
+    $esi = Mockery::mock(EsiClient::class);
+    $esi->shouldReceive('withToken')->andReturnSelf();
+    $esi->shouldReceive('assertScope')->andReturnNull();
+    $esi->shouldReceive('invoke')->andReturn($page1, $page2);
 
-    $job->executeJob();
+    $job = new CharacterAssetJob(testCharacter()->character_id);
+    $job->executeJob($esi);
 
-    expect($job->getPage())->toEqual(2);
-
+    expect(Asset::count())->toBe(2);
 });

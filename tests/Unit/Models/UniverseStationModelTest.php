@@ -1,5 +1,6 @@
 <?php
 
+use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\System;
 
@@ -15,7 +16,7 @@ it('has location relation', function () {
     $station = Station::factory()->create([
         'system_id' => $system->system_id,
     ]);
-    \Seatplus\Eveapi\Models\Universe\Location::factory()->create([
+    Location::factory()->create([
         'locatable_id' => $station->station_id,
         'locatable_type' => Station::class,
     ]);
@@ -24,5 +25,5 @@ it('has location relation', function () {
     $location = $station->location;
 
     // Assert
-    expect($location)->toBeInstanceOf(\Seatplus\Eveapi\Models\Universe\Location::class);
+    expect($location)->toBeInstanceOf(Location::class);
 });

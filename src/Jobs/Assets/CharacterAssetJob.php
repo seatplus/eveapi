@@ -1,207 +1,108 @@
 <?php
 
-/*
- * MIT License
- *
- * Copyright (c) 2019, 2020, 2021 Felix Huber
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 namespace Seatplus\Eveapi\Jobs\Assets;
 
 use Illuminate\Support\Collection;
-use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\EsiBase;
-use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
+use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Resources\Assets\GetCharactersCharacterIdAssets;
+use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
-use Seatplus\Eveapi\Traits\HasPages;
-use Seatplus\Eveapi\Traits\HasPathValues;
-use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CharacterAssetJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+final class CharacterAssetJob extends EsiJob
 {
-    use HasPages;
-    use HasPathValues;
-    use HasRequiredScopes;
+    protected const string OPERATION_CLASS = GetCharactersCharacterIdAssets::class;
 
-    private Collection $assets;
+    private readonly Collection $assets;
 
-    public function __construct(
-        public int $character_id
-    ) {
-        parent::__construct(
-            method: 'get',
-            endpoint: '/characters/{character_id}/assets/',
-            version: 'v5',
-        );
-
-        $this->setRequiredScope('esi-assets.read_assets.v1');
-
-        $this->setPathValues([
-            'character_id' => $character_id,
-        ]);
-
+    public function __construct(public int $character_id)
+    {
         $this->assets = collect();
     }
 
-    /**
-     * Get the middleware the job should pass through.
-     */
     #[\Override]
-    public function middleware(): array
+    public function getRefreshToken(): RefreshToken
     {
-        return [
-            new HasRequiredScopeMiddleware,
-            ...parent::middleware(),
-        ];
+        return RefreshToken::findOrFail($this->character_id);
     }
 
     #[\Override]
     public function tags(): array
     {
-        return [
-            'character',
-            'character_id: '.$this->character_id,
-            'assets',
-        ];
+        return ['character', "character_id:{$this->character_id}", 'assets'];
     }
 
-    /**
-     * Execute the job.
-     */
     #[\Override]
-    public function executeJob(): void
+    public function executeJob(EsiClient $esi): void
     {
-        while (true) {
-            $response = $this->retrieve($this->getPage());
-
-            if ($response->isCachedLoad()) {
+        $page = 1;
+        do {
+            $response = self::OPERATION_CLASS::execute($esi, $this->character_id, $page);
+            if ($response->isCachedLoad) {
                 return;
             }
 
-            // First update the
-            collect($response)
-                ->each(
-                    fn (object $asset) => $this->assets->push([
-                        'item_id' => $asset->item_id,
-                        'assetable_id' => $this->character_id,
-                        'assetable_type' => CharacterInfo::class,
-                        'is_blueprint_copy' => optional($asset)->is_blueprint_copy ?? false,
-                        'is_singleton' => $asset->is_singleton,
-                        'location_flag' => $asset->location_flag,
-                        'location_id' => $asset->location_id,
-                        'location_type' => $asset->location_type,
-                        'quantity' => $asset->quantity,
-                        'type_id' => $asset->type_id,
-                    ])
-                );
-
-            // Lastly if more pages are present load next page
-            if ($this->getPage() >= $response->pages) {
-                break;
+            foreach ($response->data as $asset) {
+                $this->assets->push([
+                    'item_id' => $asset->item_id,
+                    'assetable_id' => $this->character_id,
+                    'assetable_type' => CharacterInfo::class,
+                    'is_blueprint_copy' => $asset->is_blueprint_copy ?? false,
+                    'is_singleton' => $asset->is_singleton,
+                    'location_flag' => $asset->location_flag,
+                    'location_id' => $asset->location_id,
+                    'location_type' => $asset->location_type,
+                    'quantity' => $asset->quantity,
+                    'type_id' => $asset->type_id,
+                ]);
             }
+            $page++;
+        } while ($page <= $response->pages);
 
-            $this->incrementPage();
-        }
+        Asset::upsert($this->assets->toArray(), ['item_id'], [
+            'assetable_id', 'assetable_type', 'is_blueprint_copy', 'is_singleton',
+            'location_flag', 'location_id', 'location_type', 'quantity', 'type_id',
+        ]);
 
-        $this->persist();
-
-        // Cleanup old items
-        $this->cleanup();
-
-        // Dispatch follow-up jobs
-        $this->dispatchFollowUpJobs();
-
-        // see https://divinglaravel.com/avoiding-memory-leaks-when-running-laravel-queue-workers
-        // This job is very memory consuming hence avoiding memory leaks, the worker should restart
-        app('queue.worker')->shouldQuit = true;
-    }
-
-    private function cleanup(): void
-    {
         Asset::query()
             ->where('assetable_id', $this->character_id)
             ->whereNotIn('item_id', $this->assets->pluck('item_id')->toArray())
             ->delete();
-    }
 
-    private function persist(): void
-    {
-        Asset::upsert(
-            $this->assets->toArray(),
-            ['item_id'],
-            ['assetable_id', 'assetable_type', 'is_blueprint_copy', 'is_singleton', 'location_flag', 'location_id', 'location_type', 'quantity', 'type_id']
-        );
-    }
-
-    private function dispatchFollowUpJobs(): void
-    {
-        // Resolve unknown locations
         $this->resolveUnknownLocations();
-
-        // Resolve unknown types
         $this->resolveUnknownTypes();
+
+        if (app()->bound('queue.worker')) {
+            app('queue.worker')->shouldQuit = true;
+        }
     }
 
     private function resolveUnknownLocations(): void
     {
-        $unknown_location_ids = Asset::query()
+        $unknownLocationIds = Asset::query()
             ->where('assetable_id', $this->character_id)
             ->doesntHave('location')
             ->pluck('location_id')
             ->unique();
 
-        // if there are no unknown locations, we can skip this step
-        if ($unknown_location_ids->isEmpty()) {
+        if ($unknownLocationIds->isEmpty()) {
             return;
         }
 
-        $refresh_token = RefreshToken::find($this->character_id);
-
-        $unknown_location_ids->each(
-            fn (int $location_id) => ResolveLocationJob::dispatch($location_id, $refresh_token)
-                ->onQueue('high')
-        );
+        $refreshToken = RefreshToken::find($this->character_id);
+        $unknownLocationIds->each(fn (int $locationId) => ResolveLocationJob::dispatch($locationId, $refreshToken)->onQueue('high'));
     }
 
     private function resolveUnknownTypes(): void
     {
-        $unknown_type_ids = Asset::query()
+        Asset::query()
             ->where('assetable_id', $this->character_id)
             ->doesntHave('type')
             ->pluck('type_id')
-            ->unique();
-
-        // if there are no unknown types, we can skip this step
-        if ($unknown_type_ids->isEmpty()) {
-            return;
-        }
-
-        $unknown_type_ids->each(
-            fn (int $type_id) => ResolveUniverseTypeByIdJob::dispatch($type_id)
-                ->onQueue('high')
-        );
+            ->unique()
+            ->each(fn (int $typeId) => ResolveUniverseTypeByIdJob::dispatch($typeId)->onQueue('high'));
     }
 }

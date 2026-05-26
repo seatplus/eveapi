@@ -31,7 +31,7 @@ use Seatplus\Eveapi\Models\Universe\Constellation;
 use Seatplus\Eveapi\Models\Universe\Region;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Universe\Constellation>
+ * @extends Factory<Constellation>
  */
 class ConstellationFactory extends Factory
 {

@@ -30,7 +30,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Universe\Region;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Universe\Region>
+ * @extends Factory<Region>
  */
 class RegionFactory extends Factory
 {

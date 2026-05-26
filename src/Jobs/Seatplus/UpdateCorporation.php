@@ -27,12 +27,9 @@
 namespace Seatplus\Eveapi\Jobs\Seatplus;
 
 use Illuminate\Bus\Batch;
-use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Middleware\RateLimitedWithRedis;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationDivisionsJob;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
@@ -45,10 +42,7 @@ use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 
 class UpdateCorporation implements ShouldQueue
 {
-    use Dispatchable;
-    use InteractsWithQueue;
     use Queueable;
-    use SerializesModels;
 
     private FindCorporationRefreshToken $findCorporationRefreshToken;
 

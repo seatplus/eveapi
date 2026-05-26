@@ -26,16 +26,16 @@
 
 namespace Seatplus\Eveapi\Models\Universe;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+#[Unguarded]
 class Group extends Model
 {
     use HasFactory;
-
-    protected $guarded = [];
 
     /**
      * @var string
@@ -61,6 +61,7 @@ class Group extends Model
         return $this->hasMany(Type::class, 'group_id', 'group_id');
     }
 
+    /** @return HasOne<Category, $this> */
     public function category(): HasOne
     {
         return $this->hasOne(Category::class, 'category_id', 'category_id');

@@ -30,7 +30,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Settings\GlobalSettings;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Settings\GlobalSettings>
+ * @extends Factory<GlobalSettings>
  */
 class GlobalSettingsFactory extends Factory
 {

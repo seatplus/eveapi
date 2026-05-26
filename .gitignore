@@ -2,9 +2,13 @@
 /vendor/
 /.idea/
 /build/
+/composer.lock
 
 .php_cs
 .php_cs.cache
 .phpunit.result.cache
 .php-cs-fixer.cache
-composer.lock
+.phpunit.cache/
+
+# macOS metadata
+.DS_Store

@@ -31,7 +31,7 @@ use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Corporation\CorporationInfo>
+ * @extends Factory<CorporationInfo>
  */
 class CorporationInfoFactory extends Factory
 {

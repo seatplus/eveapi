@@ -90,7 +90,7 @@ class ClearCache extends Command
     {
         $this->info('Clearing the Artisan Cache');
         Artisan::call('cache:clear');
-        cache()->store('file')->flush(); // @phpstan-ignore-line
+        cache()->store('file')->flush();
     }
 
     private function truncateBatch(): void

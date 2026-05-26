@@ -1,11 +1,11 @@
 <?php
 
-use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Universe\Type;
 
 it('executes job and upserts type', function () {
-    $data = [
+    $data = (object) [
         'type_id' => 12345,
         'group_id' => 1,
         'name' => 'Test Type',
@@ -22,13 +22,22 @@ it('executes job and upserts type', function () {
         'volume' => 900,
     ];
 
-    $response = new EsiResponse(json_encode($data), [], 'now', 200);
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, $data);
 
-    $job = mock(ResolveUniverseTypeByIdJob::class)->makePartial();
-    $job->shouldReceive('retrieve')->andReturn($response);
-
-    $job->executeJob();
+    $job = new ResolveUniverseTypeByIdJob(12345);
+    $job->executeJob($esi);
 
     expect(Type::count())->toEqual(1)
         ->and(Type::first()->type_id)->toEqual(12345);
+});
+
+it('skips db write when response is a cached load', function () {
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
+
+    $job = new ResolveUniverseTypeByIdJob(12345);
+    $job->executeJob($esi);
+
+    expect(Type::count())->toBe(0);
 });

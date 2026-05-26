@@ -1,101 +1,48 @@
 <?php
 
-/*
- * MIT License
- *
- * Copyright (c) 2019, 2020, 2021 Felix Huber
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 namespace Seatplus\Eveapi\Jobs\Skills;
 
-use Seatplus\EsiClient\Exceptions\RequestFailedException;
-use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\EsiBase;
-use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
+use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Resources\Skills\GetCharactersCharacterIdSkills;
+use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
+use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Skills\Skill;
-use Seatplus\Eveapi\Traits\HasPathValues;
-use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class SkillsJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+final class SkillsJob extends EsiJob
 {
-    use HasPathValues;
-    use HasRequiredScopes;
+    protected const string OPERATION_CLASS = GetCharactersCharacterIdSkills::class;
 
-    public function __construct(
-        public int $character_id
-    ) {
-        parent::__construct(
-            method: 'get',
-            endpoint: '/characters/{character_id}/skills/',
-            version: 'v4',
-        );
+    public function __construct(private readonly int $character_id) {}
 
-        $this->setPathValues([
-            'character_id' => $character_id,
-        ]);
-
-        $this->setRequiredScope('esi-skills.read_skills.v1');
+    #[\Override]
+    public function getRefreshToken(): RefreshToken
+    {
+        return RefreshToken::findOrFail($this->character_id);
     }
 
     #[\Override]
     public function tags(): array
     {
-        return [
-            'skills',
-            sprintf('character_id:%s', $this->character_id),
-        ];
+        return ['character', "character_id:{$this->character_id}", 'skills'];
     }
 
     #[\Override]
-    public function middleware(): array
+    public function executeJob(EsiClient $esi): void
     {
-        return [
-            new HasRequiredScopeMiddleware,
-            ...parent::middleware(),
-        ];
-    }
-
-    /**
-     * @throws RequestFailedException
-     */
-    #[\Override]
-    public function executeJob(): void
-    {
-        $response = $this->retrieve();
-
-        if ($response->isCachedLoad()) {
+        $response = self::OPERATION_CLASS::execute($esi, $this->character_id);
+        if ($response->isCachedLoad) {
             return;
         }
 
-        $skills = collect(data_get($response, 'skills'))
-            ->map(fn (object $skill) => [
-                'character_id' => $this->character_id,
-                'skill_id' => data_get($skill, 'skill_id'),
-                'active_skill_level' => data_get($skill, 'active_skill_level'),
-                'skillpoints_in_skill' => data_get($skill, 'skillpoints_in_skill'),
-                'trained_skill_level' => data_get($skill, 'trained_skill_level'),
-            ]);
+        $skills = collect($response->skills)->map(fn (object $skill) => [
+            'character_id' => $this->character_id,
+            'skill_id' => $skill->skill_id,
+            'active_skill_level' => $skill->active_skill_level,
+            'skillpoints_in_skill' => $skill->skillpoints_in_skill,
+            'trained_skill_level' => $skill->trained_skill_level,
+        ]);
 
         Skill::upsert(
             $skills->toArray(),
@@ -103,21 +50,15 @@ class SkillsJob extends EsiBase implements HasPathValuesInterface, HasRequiredSc
             ['skillpoints_in_skill', 'trained_skill_level', 'active_skill_level']
         );
 
-        CharacterInfo::where('character_id', $this->character_id)
-            ->update([
-                'total_sp' => data_get($response, 'total_sp'),
-                'unallocated_sp' => data_get($response, 'unallocated_sp'),
-            ]);
+        CharacterInfo::where('character_id', $this->character_id)->update([
+            'total_sp' => $response->total_sp,
+            'unallocated_sp' => $response->unallocated_sp,
+        ]);
 
-        $this->dispatchMissingSkillTypeJobs();
-    }
-
-    private function dispatchMissingSkillTypeJobs(): void
-    {
         Skill::query()
             ->where('character_id', $this->character_id)
             ->doesntHave('type')
             ->pluck('skill_id')
-            ->each(fn (int $skill_id) => ResolveUniverseTypeByIdJob::dispatch($skill_id)->onQueue('high'));
+            ->each(fn (int $skillId) => ResolveUniverseTypeByIdJob::dispatch($skillId)->onQueue('high'));
     }
 }

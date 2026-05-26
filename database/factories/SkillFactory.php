@@ -32,7 +32,7 @@ use Seatplus\Eveapi\Models\Skills\Skill;
 use Seatplus\Eveapi\Models\Universe\Type;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Skills\Skill>
+ * @extends Factory<Skill>
  */
 class SkillFactory extends Factory
 {

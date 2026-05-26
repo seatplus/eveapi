@@ -1,11 +1,13 @@
 <?php
 
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 use Seatplus\Eveapi\Services\ResolveLocation\Finders\ThroughCorporationMemberTrackingFinder;
 
 it('finds Director Token', function () {
 
-    \Illuminate\Support\Facades\Event::fake();
+    Event::fake();
 
     // arrange
     $scope = 'esi-corporations.track_members.v1';
@@ -26,7 +28,7 @@ it('finds Director Token', function () {
     expect($refresh_token->hasScope($scope))->toBeTrue()
         ->and($refresh_token->character->roles->hasRole('roles', $role))->toBeTrue();
 
-    $tracking = \Illuminate\Database\Eloquent\Collection::make();
+    $tracking = Collection::make();
 
     // act
     $finder = new ThroughCorporationMemberTrackingFinder;

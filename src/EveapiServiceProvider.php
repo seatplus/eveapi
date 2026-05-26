@@ -36,6 +36,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Horizon\Horizon;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Commands\CheckJobsCommand;
 use Seatplus\Eveapi\Commands\ClearCache;
 use Seatplus\Eveapi\Events\RefreshTokenCreated;
@@ -56,6 +57,7 @@ use Seatplus\Eveapi\Observers\CharacterInfoObserver;
 use Seatplus\Eveapi\Observers\GroupObserver;
 use Seatplus\Eveapi\Observers\TypeObserver;
 use Seatplus\Eveapi\Services\Character\RefreshCharacterAffiliationsService;
+use Seatplus\Eveapi\Services\Esi\RecordingEsiClient;
 
 class EveapiServiceProvider extends ServiceProvider
 {
@@ -101,6 +103,12 @@ class EveapiServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/eveapi.updateJobs.php', 'seatplus.updateJobs');
 
         $this->mergeConfigFrom(__DIR__.'/../config/eveapi.jobs.php', 'eveapi.jobs');
+
+        // RecordingEsiClient extends EsiClient and overrides invoke() to record
+        // X-Ratelimit-Remaining after every ESI call, activating EsiProactiveRateLimitMiddleware.
+        // EsiJob::handle() is type-hinted as EsiClient; this binding transparently injects
+        // RecordingEsiClient without touching any of the leaf job implementations.
+        $this->app->bind(EsiClient::class, RecordingEsiClient::class);
     }
 
     /**

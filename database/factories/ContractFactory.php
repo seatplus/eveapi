@@ -32,7 +32,7 @@ use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Universe\Location;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Contracts\Contract>
+ * @extends Factory<Contract>
  */
 class ContractFactory extends Factory
 {

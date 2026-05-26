@@ -26,21 +26,16 @@
 
 namespace Seatplus\Eveapi\Models\Universe;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
+#[Unguarded]
 class Type extends Model
 {
     use HasFactory;
-
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array<string>|bool
-     */
-    protected $guarded = [];
 
     /**
      * @var string
@@ -58,6 +53,7 @@ class Type extends Model
 
     protected $with = ['group', 'category'];
 
+    /** @return HasOne<Group, $this> */
     public function group(): HasOne
     {
         return $this->hasOne(Group::class, 'group_id', 'group_id');

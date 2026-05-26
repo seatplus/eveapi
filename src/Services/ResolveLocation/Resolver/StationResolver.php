@@ -34,9 +34,9 @@ use Seatplus\Eveapi\Models\Universe\Structure;
 
 class StationResolver implements ResolverInterface
 {
-    const MIN_STATION_ID = 60_000_000;
+    const int MIN_STATION_ID = 60_000_000;
 
-    const MAX_STATION_ID = 64_000_000;
+    const int MAX_STATION_ID = 64_000_000;
 
     /**
      * @throws Exception

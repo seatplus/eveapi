@@ -31,7 +31,7 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Mail\Mail;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Mail\Mail>
+ * @extends Factory<Mail>
  */
 class MailFactory extends Factory
 {

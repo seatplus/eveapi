@@ -1,53 +1,41 @@
 <?php
 
 use Illuminate\Support\Facades\Queue;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Character\CharacterRoleJob;
 use Seatplus\Eveapi\Models\Character\CharacterRole;
+use Seatplus\Eveapi\Models\RefreshToken;
 
-beforeEach(function () {
-    Queue::fake();
-
-    $refresh_token = updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-characters.read_corporation_roles.v1']);
-    $refresh_token->save();
-});
-
-/**
- * @runTestsInSeparateProcesses
- */
 test('if job is queued', function () {
     Queue::fake();
 
-    // Assert that no jobs were pushed...
     Queue::assertNothingPushed();
 
     CharacterRoleJob::dispatch($this->test_character->character_id)->onQueue('default');
 
-    // Assert a job was pushed to a given queue...
     Queue::assertPushedOn('default', CharacterRoleJob::class);
 });
 
 test('retrieve test', function () {
-
-    Queue::fake();
-    $mock_data = buildCharacterRoleMockEsiData();
-
-    (new CharacterRoleJob($this->test_character->character_id))->handle();
-
-    // Assert that test character is now created
-    $this->assertDatabaseHas('character_roles', [
-        'character_id' => $mock_data->character_id,
-    ]);
-});
-
-// Helpers
-function buildCharacterRoleMockEsiData()
-{
     $mock_data = CharacterRole::factory()->make([
         'roles' => ['Personnel_Manager'],
         'character_id' => testCharacter()->character_id,
     ]);
 
-    mockRetrieveEsiDataAction($mock_data->toArray());
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult((object) $mock_data->toArray()));
 
-    return $mock_data;
-}
+    $job = new CharacterRoleJob(testCharacter()->character_id);
+    $job->executeJob($esi);
+
+    expect(CharacterRole::where('character_id', $mock_data->character_id)->exists())->toBeTrue();
+});
+
+it('returns the refresh token', function () {
+    $token = RefreshToken::factory()->create();
+
+    $job = new CharacterRoleJob($token->character_id);
+
+    expect($job->getRefreshToken())->toBeInstanceOf(RefreshToken::class)
+        ->and($job->getRefreshToken()->character_id)->toBe($token->character_id);
+});

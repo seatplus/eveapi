@@ -1,78 +1,70 @@
 <?php
 
-use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
-use Seatplus\Eveapi\Jobs\Wallet\WalletJournalBase;
+use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Responses\CharactersCharacterIdWalletJournalGetItem;
+use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletJournalJob;
+use Seatplus\Eveapi\Models\Wallet\WalletJournal;
 
 it('does not execute job if response is cached', function () {
-    $job = mock(WalletJournalBase::class, function (\Mockery\MockInterface $mock) {
-        $mock->shouldReceive('getPathValues')->once()->andReturn([
-            'character_id' => 12345,
-        ]);
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
-        $response = mock(EsiResponse::class, function (\Mockery\MockInterface $mock) {
-            $mock->shouldReceive('isCachedLoad')->once()->andReturnTrue();
-        });
-
-        $mock->shouldReceive('retrieve')->once()->andReturn($response);
-
-    })->makePartial();
-
-    $job->executeJob();
+    $job = new CharacterWalletJournalJob(testCharacter()->character_id);
+    $job->executeJob($esi);
 
     $this->assertDatabaseMissing('wallet_journals', [
-        'wallet_journable_id' => 12345,
+        'wallet_journable_id' => testCharacter()->character_id,
     ]);
 });
 
 it('handles multiple pages correctly', function () {
+    $entry = fn (int $id) => CharactersCharacterIdWalletJournalGetItem::from((object) [
+        'id' => $id,
+        'date' => now()->toIso8601String(),
+        'description' => 'test',
+        'ref_type' => 'test',
+        'amount' => 100.0,
+        'balance' => 200.0,
+        'context_id' => 11111,
+        'context_id_type' => 'character_id',
+    ]);
 
-    $job = mock(WalletJournalBase::class, function (\Mockery\MockInterface $mock) {
-        $mock->shouldReceive('getPathValues')->once()->andReturn([
-            'character_id' => 12345,
-        ]);
+    $page1 = makeEsiRawResponse(makeEsiResult([$entry(111)], pages: 2));
+    $page2 = makeEsiRawResponse(makeEsiResult([$entry(222)], pages: 2));
 
-        $response = mock(EsiResponse::class, function (\Mockery\MockInterface $mock) {
-            $mock->shouldReceive('isCachedLoad')->andReturnFalse();
-            $mock->pages = 2;
-            $mock->shouldReceive('getIterator')->andReturn(new ArrayIterator([]));
-        });
+    $esi = Mockery::mock(EsiClient::class);
+    $esi->shouldReceive('withToken')->andReturnSelf();
+    $esi->shouldReceive('assertScope')->andReturnNull();
+    $esi->shouldReceive('invoke')->andReturn($page1, $page2);
 
-        $mock->shouldReceive('retrieve')->twice()->andReturn($response);
+    $job = new CharacterWalletJournalJob(testCharacter()->character_id);
+    $job->executeJob($esi);
 
-        $mock->shouldReceive('getPage')->andReturn(1, 1, 2, 2);
-        $mock->shouldReceive('incrementPage')->once();
-
-    })->makePartial();
-
-    $job->executeJob();
+    expect(WalletJournal::count())->toBe(2);
 });
 
 it('handles contextable type', function ($context_id_type) {
-    $job = mock(WalletJournalBase::class, function (\Mockery\MockInterface $mock) use ($context_id_type) {
-        $mock->shouldReceive('getPathValues')->once()->andReturn([
-            'corporation_id' => 12345,
-        ]);
+    $data = [CharactersCharacterIdWalletJournalGetItem::from((object) [
+        'id' => 12345,
+        'date' => now()->toIso8601String(),
+        'description' => 'test',
+        'ref_type' => 'test',
+        'amount' => 100.0,
+        'balance' => 200.0,
+        'context_id' => 12345,
+        'context_id_type' => $context_id_type,
+    ])];
 
-        $response = mock(EsiResponse::class, function (\Mockery\MockInterface $mock) use ($context_id_type) {
-            $mock->shouldReceive('isCachedLoad')->andReturnFalse();
-            $mock->pages = 1;
-            $mock->shouldReceive('getIterator')->andReturn(new ArrayIterator([
-                (object) [
-                    'context_id_type' => $context_id_type,
-                    'id' => 12345,
-                    'date' => now(),
-                    'description' => 'test',
-                    'ref_type' => 'test',
-                ],
-            ]));
-        });
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult($data));
 
-        $mock->shouldReceive('retrieve')->once()->andReturn($response);
+    $job = new CharacterWalletJournalJob(testCharacter()->character_id);
+    $job->executeJob($esi);
 
-    })->makePartial();
-
-    $job->executeJob();
-
+    $this->assertDatabaseHas('wallet_journals', [
+        'id' => 12345,
+        'wallet_journable_id' => testCharacter()->character_id,
+    ]);
 })->with([
     'structure_id',
     'station_id',
@@ -86,5 +78,4 @@ it('handles contextable type', function ($context_id_type) {
     'planet_id',
     'system_id',
     'type_id',
-    null,
 ]);

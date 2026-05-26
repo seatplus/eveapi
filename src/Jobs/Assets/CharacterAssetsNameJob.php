@@ -1,150 +1,87 @@
 <?php
 
-/*
- * MIT License
- *
- * Copyright (c) 2019, 2020, 2021 Felix Huber
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 namespace Seatplus\Eveapi\Jobs\Assets;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
-use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Esi\HasRequestBodyInterface;
-use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\EsiBase;
-use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
+use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Resources\Assets\PostCharactersCharacterIdAssetsNames;
+use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
-use Seatplus\Eveapi\Traits\HasPathValues;
-use Seatplus\Eveapi\Traits\HasRequestBody;
-use Seatplus\Eveapi\Traits\HasRequiredScopes;
+use Seatplus\Eveapi\Models\RefreshToken;
 
-class CharacterAssetsNameJob extends EsiBase implements HasPathValuesInterface, HasRequestBodyInterface, HasRequiredScopeInterface
+final class CharacterAssetsNameJob extends EsiJob
 {
-    use HasPathValues;
-    use HasRequestBody;
-    use HasRequiredScopes;
+    protected const string OPERATION_CLASS = PostCharactersCharacterIdAssetsNames::class;
 
-    const CELESTIAL_CATEGORY = 2;
+    const int CELESTIAL_CATEGORY = 2;
 
-    const SHIP_CATEGORY = 6;
+    const int SHIP_CATEGORY = 6;
 
-    const DEPLOYABLE_CATEGORY = 22;
+    const int DEPLOYABLE_CATEGORY = 22;
 
-    const STARBASE_CATEGORY = 23;
+    const int STARBASE_CATEGORY = 23;
 
-    const ORBITALS_CATEGORY = 46;
+    const int ORBITALS_CATEGORY = 46;
 
-    const STRUCTURE_CATEGORY = 65;
+    const int STRUCTURE_CATEGORY = 65;
 
-    private Collection $asset_names;
+    private Collection $assetNames;
 
-    public function __construct(
-        public int $character_id,
-    ) {
-        parent::__construct(
-            method: 'post',
-            endpoint: '/characters/{character_id}/assets/names/',
-            version: 'v1',
-        );
-
-        $this->setRequiredScope('esi-assets.read_assets.v1');
-
-        $this->setPathValues([
-            'character_id' => $character_id,
-        ]);
-
-        $this->asset_names = collect();
+    public function __construct(public int $character_id)
+    {
+        $this->assetNames = collect();
     }
 
-    /**
-     * Get the middleware the job should pass through.
-     */
     #[\Override]
-    public function middleware(): array
+    public function getRefreshToken(): RefreshToken
     {
-        return [
-            new HasRequiredScopeMiddleware,
-            ...parent::middleware(),
-        ];
+        return RefreshToken::findOrFail($this->character_id);
     }
 
     #[\Override]
     public function tags(): array
     {
-        return [
-            'character',
-            'character_id: '.$this->character_id,
-            'assets',
-            'name',
-        ];
+        return ['character', "character_id:{$this->character_id}", 'assets', 'name'];
     }
 
-    /**
-     * Execute the job.
-     */
     #[\Override]
-    public function executeJob(): void
+    public function executeJob(EsiClient $esi): void
     {
         if ($this->batching() && $this->batch()->cancelled()) {
-            // Determine if the batch has been cancelled...
-
             return;
         }
 
         Asset::query()
             ->with('type.group')
-            ->whereHas('type.group', function (Builder $query) {
-                // Only Celestials, Ships, Deployable, Starbases, Orbitals and Structures might be named
-                $query->whereIn('category_id', [
-                    self::CELESTIAL_CATEGORY, self::SHIP_CATEGORY, self::DEPLOYABLE_CATEGORY,
-                    self::STARBASE_CATEGORY, self::ORBITALS_CATEGORY, self::STRUCTURE_CATEGORY,
-                ]);
-            })
+            ->whereHas('type.group', fn (Builder $query) => $query->whereIn('category_id', [
+                self::CELESTIAL_CATEGORY, self::SHIP_CATEGORY, self::DEPLOYABLE_CATEGORY,
+                self::STARBASE_CATEGORY, self::ORBITALS_CATEGORY, self::STRUCTURE_CATEGORY,
+            ]))
             ->where('assetable_id', $this->character_id)
-            ->select('item_id')
             ->where('is_singleton', true)
             ->pluck('item_id')
-            ->chunk(1000)->each(function (Collection $item_ids) {
-                $clean_item_ids = $item_ids->flatten()->toArray();
+            ->chunk(1000)
+            ->each(function (Collection $itemIds) use ($esi) {
+                $response = static::OPERATION_CLASS::execute(
+                    $esi,
+                    $itemIds->values()->toArray(),
+                    $this->character_id
+                );
 
-                $this->setRequestBody($clean_item_ids);
+                if ($response->isCachedLoad) {
+                    return;
+                }
 
-                $response = $this->retrieve();
-
-                // merge response into asset_names collection
-                $this->asset_names = $this->asset_names->merge(collect($response));
+                $this->assetNames = $this->assetNames->merge(collect($response->data));
             });
 
-        // Update all assets in one go
-        $this->asset_names
-            // filter out "None" names
-            ->filter(fn (object $asset_name) => $asset_name->name !== 'None')
-            // update asset names
-            ->each(
-                fn (object $asset_name) => Asset::query()
-                    ->where('assetable_id', $this->character_id)
-                    ->where('item_id', $asset_name->item_id)
-                    ->update(['name' => $asset_name->name])
+        $this->assetNames
+            ->filter(fn (object $item) => $item->name !== 'None')
+            ->each(fn (object $item) => Asset::query()
+                ->where('assetable_id', $this->character_id)
+                ->where('item_id', $item->item_id)
+                ->update(['name' => $item->name])
             );
     }
 }

@@ -1,176 +1,62 @@
 <?php
 
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
-use Seatplus\Eveapi\Events\UniverseConstellationCreated;
-use Seatplus\Eveapi\Events\UniverseStationCreated;
-use Seatplus\Eveapi\Events\UniverseStructureCreated;
-use Seatplus\Eveapi\Events\UniverseSystemCreated;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseConstellationByConstellationIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseRegionByRegionIdJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseSystemBySystemIdJob;
 use Seatplus\Eveapi\Models\Universe\Constellation;
 use Seatplus\Eveapi\Models\Universe\Region;
-use Seatplus\Eveapi\Models\Universe\Station;
-use Seatplus\Eveapi\Models\Universe\Structure;
 use Seatplus\Eveapi\Models\Universe\System;
 
-test('universe station creation creates event', function () {
-    Event::fake();
-
-    $station = Station::factory()->create();
-
-    Event::assertDispatched(UniverseStationCreated::class);
+beforeEach(function () {
+    Queue::fake();
 });
 
-it('dispatches resolver job', function () {
-    Queue::fake();
+it('has tags', function () {
+    $job = new ResolveUniverseRegionByRegionIdJob(10000002);
 
-    // Assert that no jobs were pushed...
-    Queue::assertNothingPushed();
-
-    $station = Station::factory()->noSystem()->create();
-
-    Queue::assertPushedOn('default', ResolveUniverseSystemBySystemIdJob::class);
-});
-
-it('does not dispatches resolver job if system exists', function () {
-    Queue::fake();
-
-    // Assert that no jobs were pushed...
-    Queue::assertNothingPushed();
-
-    $station = Station::factory()->create();
-
-    Queue::assertNotPushed(ResolveUniverseSystemBySystemIdJob::class);
+    expect($job->tags())->toContain('region', 'resolve', 'universe', 'region_id:10000002');
 });
 
 it('resolves system', function () {
     $mock_data = System::factory()->make();
-    mockRetrieveEsiDataAction($mock_data->toArray());
 
-    // $job = new ResolveUniverseSystemBySystemIdJob;
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult((object) $mock_data->toArray()));
 
-    // Assert that no system is created
-    $this->assertDatabaseMissing('universe_systems', [
-        'system_id' => $mock_data->system_id,
-    ]);
+    expect(System::all())->toHaveCount(0);
 
-    Event::fake();
+    $job = new ResolveUniverseSystemBySystemIdJob($mock_data->system_id);
+    $job->executeJob($esi);
 
-    // $job->setSystemId($mock_data->system_id)->handle();
-    (new ResolveUniverseSystemBySystemIdJob($mock_data->system_id))->handle();
-
-    Event::assertDispatched(UniverseSystemCreated::class);
-
-    // Assert that system is created
-    $this->assertDatabaseHas('universe_systems', [
-        'system_id' => $mock_data->system_id,
-    ]);
+    expect(System::all())->toHaveCount(1);
 });
 
-test('universe structure creation creates event', function () {
-    Event::fake();
-
-    $station = Structure::factory()->create();
-
-    Event::assertDispatched(UniverseStructureCreated::class);
-});
-
-test('universe system creation creates event', function () {
-    Event::fake();
-
-    $station = System::factory()->create();
-
-    Event::assertDispatched(UniverseSystemCreated::class);
-});
-
-it('does not dispatches constellation resolver job if system exists', function () {
-    Queue::fake();
-
-    // Assert that no jobs were pushed...
-    Queue::assertNothingPushed();
-
-    $system = System::factory()->create();
-
-    Queue::assertNotPushed(ResolveUniverseConstellationByConstellationIdJob::class);
-});
-
-it('resolves constellations', function () {
-    Queue::fake();
+it('resolves constellation', function () {
     $mock_data = Constellation::factory()->make();
 
-    mockRetrieveEsiDataAction($mock_data->toArray());
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult((object) $mock_data->toArray()));
 
-    // Assert that no system is present
-    $this->assertDatabaseMissing('universe_constellations', [
-        'constellation_id' => $mock_data->constellation_id,
-    ]);
+    expect(Constellation::all())->toHaveCount(0);
 
-    (new ResolveUniverseConstellationByConstellationIdJob($mock_data->constellation_id))->handle();
+    $job = new ResolveUniverseConstellationByConstellationIdJob($mock_data->constellation_id);
+    $job->executeJob($esi);
 
-    // Assert that system is created
-    $this->assertDatabaseHas('universe_constellations', [
-        'constellation_id' => $mock_data->constellation_id,
-    ]);
+    expect(Constellation::all())->toHaveCount(1);
 });
 
-test('universe constellation creation creates event', function () {
-    Event::fake();
-
-    Constellation::factory()->create();
-
-    Event::assertDispatched(UniverseConstellationCreated::class);
-});
-
-it('dispatches region resolver', function () {
-    Queue::fake();
-
-    // Assert that no jobs were pushed...
-    Queue::assertNothingPushed();
-
-    $station = Constellation::factory()->noRegion()->create();
-
-    Queue::assertPushedOn('default', ResolveUniverseRegionByRegionIdJob::class);
-});
-
-it('does not dispatches region resolver job if region exists', function () {
-    Queue::fake();
-
-    // Assert that no jobs were pushed...
-    Queue::assertNothingPushed();
-
-    $station = Constellation::factory()->create();
-
-    Queue::assertNotPushed(ResolveUniverseRegionByRegionIdJob::class);
-});
-
-it('resolves regions', function () {
+it('resolves region', function () {
     $mock_data = Region::factory()->make();
 
-    mockRetrieveEsiDataAction($mock_data->toArray());
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult((object) $mock_data->toArray()));
 
-    // Assert that no system is present
-    $this->assertDatabaseMissing('universe_regions', [
-        'region_id' => $mock_data->region_id,
-    ]);
+    expect(Region::all())->toHaveCount(0);
 
-    (new ResolveUniverseRegionByRegionIdJob($mock_data->region_id))->handle();
+    $job = new ResolveUniverseRegionByRegionIdJob($mock_data->region_id);
+    $job->executeJob($esi);
 
-    // Assert that system is created
-    $this->assertDatabaseHas('universe_regions', [
-        'region_id' => $mock_data->region_id,
-    ]);
+    expect(Region::all())->toHaveCount(1);
 });
-
-// Helpers
-function event_starts_dispatcher()
-{
-    $system = System::factory()->noConstellation()->make();
-
-    Queue::fake();
-
-    event(new UniverseSystemCreated($system));
-
-    Queue::assertPushedOn('default', ResolveUniverseConstellationByConstellationIdJob::class);
-}

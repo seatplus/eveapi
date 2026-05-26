@@ -2,63 +2,57 @@
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Contracts\CharacterContractsJob;
 use Seatplus\Eveapi\Models\Contracts\Contract;
 
 beforeEach(function () {
     Queue::fake();
-
-    $refresh_token = updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-contracts.read_character_contracts.v1']);
-    $refresh_token->save();
 });
 
 test('job is being dispatched', function () {
-    Queue::fake();
-
-    // Assert that no jobs were pushed...
     Queue::assertNothingPushed();
 
     CharacterContractsJob::dispatch(testCharacter()->character_id)->onQueue('default');
 
-    // Assert a job was pushed to a given queue...
     Queue::assertPushedOn('default', CharacterContractsJob::class);
 });
 
 it('runs with empty response', function () {
-    mockRetrieveEsiDataAction([]);
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([]));
 
     $job = new CharacterContractsJob(testCharacter()->character_id);
+    $job->executeJob($esi);
 
-    $job->handle();
+    expect(Contract::count())->toBe(0);
 });
 
 it('creates contract job', function () {
-    $mock_data = buildContractJobMockEsiData();
+    $mock_data = Contract::factory()->count(5)->make();
 
-    $job = new CharacterContractsJob(testCharacter()->character_id);
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult(array_map(fn ($c) => (object) $c, $mock_data->toArray())));
 
-    expect($this->test_character->refresh()->contracts)->toHaveCount(0);
-
-    Event::fakeFor(fn () => $job->handle());
+    Event::fakeFor(function () use ($esi) {
+        $job = new CharacterContractsJob(testCharacter()->character_id);
+        $job->executeJob($esi);
+    });
 
     expect(Contract::all())->toHaveCount(5);
     expect($this->test_character->refresh()->contracts)->toHaveCount(5);
 });
 
 it('creates contract job other way', function () {
-    $mock_data = buildContractJobMockEsiData();
+    $mock_data = Contract::factory()->count(5)->make();
 
-    Event::fakeFor(fn () => (new CharacterContractsJob(testCharacter()->character_id))->handle());
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult(array_map(fn ($c) => (object) $c, $mock_data->toArray())));
+
+    Event::fakeFor(function () use ($esi) {
+        $job = new CharacterContractsJob(testCharacter()->character_id);
+        $job->executeJob($esi);
+    });
 
     expect(Contract::all())->toHaveCount(5);
 });
-
-// Helpers
-function buildContractJobMockEsiData(int $count = 5)
-{
-    $mock_data = Contract::factory()->count($count)->make();
-
-    mockRetrieveEsiDataAction($mock_data->toArray());
-
-    return $mock_data;
-}

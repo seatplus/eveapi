@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi\Models\Corporation;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -44,11 +45,10 @@ use Seatplus\Eveapi\Models\Wallet\Balance;
 use Seatplus\Eveapi\Models\Wallet\WalletJournal;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 
+#[Unguarded]
 class CorporationInfo extends Model
 {
     use HasFactory;
-
-    protected $guarded = [];
 
     /**
      * @var string

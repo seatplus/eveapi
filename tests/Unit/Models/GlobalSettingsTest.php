@@ -1,5 +1,7 @@
 <?php
 
+use Seatplus\Eveapi\Exceptions\SettingException;
+
 test('set global setting', function () {
     $test_value = 'settingTest';
     setting(['test', $test_value]);
@@ -30,4 +32,17 @@ test('get global setting', function () {
     $this->assertDatabaseHas('global_settings', [
         'name' => 'test',
     ]);
+});
+
+test('setting throws SettingException when fewer than 2 keys given', function () {
+    expect(fn () => setting(['only_one']))->toThrow(SettingException::class);
+});
+
+test('setting returns array directly when multiple values stored', function () {
+    $values = ['alpha', 'beta'];
+    setting(['multi', $values]);
+
+    $result = setting('multi');
+
+    expect($result)->toEqual($values);
 });

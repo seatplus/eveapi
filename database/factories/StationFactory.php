@@ -31,7 +31,7 @@ use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\System;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Universe\Station>
+ * @extends Factory<Station>
  */
 class StationFactory extends Factory
 {

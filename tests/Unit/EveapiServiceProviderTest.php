@@ -1,41 +1,52 @@
 <?php
 
+use Illuminate\Bus\Dispatcher;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Contracts\Queue\Job;
+use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Http\Request;
+use Illuminate\Queue\CallQueuedHandler;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\RateLimitedWithRedis;
+use Illuminate\Support\Facades\DB;
+use Laravel\Horizon\Horizon;
+use Seatplus\Auth\Models\User;
+use Seatplus\Eveapi\EveapiServiceProvider;
 
 it('tests horizon auth with user', function () {
 
-    $serviceProvider = new \Seatplus\Eveapi\EveapiServiceProvider(app());
+    $serviceProvider = new EveapiServiceProvider(app());
     $serviceProvider->configureHorizon();
 
-    $requestWithUser = new \Illuminate\Http\Request;
+    $requestWithUser = new Request;
     $requestWithUser->setUserResolver(function () {
-        $user = mock(\Seatplus\Auth\Models\User::class, function ($mock) {
+        $user = mock(User::class, function ($mock) {
             $mock->shouldReceive('can')->with('queue_manager')->andReturn(true);
         });
 
         return $user;
     });
 
-    expect(\Laravel\Horizon\Horizon::check($requestWithUser))->toBeTrue();
+    expect(Horizon::check($requestWithUser))->toBeTrue();
 });
 
 it('tests horizon auth without user', function () {
 
-    $serviceProvider = new \Seatplus\Eveapi\EveapiServiceProvider(app());
+    $serviceProvider = new EveapiServiceProvider(app());
     $serviceProvider->configureHorizon();
 
-    $requestWithoutUser = new \Illuminate\Http\Request;
+    $requestWithoutUser = new Request;
 
-    expect(\Laravel\Horizon\Horizon::check($requestWithoutUser))->toBeFalse();
+    expect(Horizon::check($requestWithoutUser))->toBeFalse();
 });
 
 it('returns null when exception is caught', function () {
 
     // arrange
 
-    \Illuminate\Support\Facades\DB::shouldReceive('connection')->andThrow(new Exception('Database connection error'));
+    DB::shouldReceive('connection')->andThrow(new Exception('Database connection error'));
 
-    $serviceProvider = new \Seatplus\Eveapi\EveapiServiceProvider(app());
+    $serviceProvider = new EveapiServiceProvider(app());
     $serviceProvider->boot();
 
     // assert
@@ -69,9 +80,9 @@ it('has limits for character_batch if queue is not high', function () {
 function assertJobRanSuccessfully($testJob)
 {
     $testJob::$handled = false;
-    $instance = new \Illuminate\Queue\CallQueuedHandler(new \Illuminate\Bus\Dispatcher(app()), app());
+    $instance = new CallQueuedHandler(new Dispatcher(app()), app());
 
-    $job = mock(\Illuminate\Contracts\Queue\Job::class, function ($mock) {
+    $job = mock(Job::class, function ($mock) {
         $mock->shouldReceive('hasFailed')->once()->andReturn(false);
         $mock->shouldReceive('isReleased')->andReturn(false);
         $mock->shouldReceive('isDeletedOrReleased')->once()->andReturn(false);
@@ -88,9 +99,9 @@ function assertJobRanSuccessfully($testJob)
 function assertJobWasReleased($testJob)
 {
     $testJob::$handled = false;
-    $instance = new \Illuminate\Queue\CallQueuedHandler(new \Illuminate\Bus\Dispatcher(app()), app());
+    $instance = new CallQueuedHandler(new Dispatcher(app()), app());
 
-    $job = mock(\Illuminate\Contracts\Queue\Job::class, function ($mock) {
+    $job = mock(Job::class, function ($mock) {
         $mock->shouldReceive('hasFailed')->once()->andReturn(false);
         $mock->shouldReceive('release');
         $mock->shouldReceive('isReleased')->andReturn(true);
@@ -106,7 +117,7 @@ function assertJobWasReleased($testJob)
 
 class RateLimitedTestJob
 {
-    use \Illuminate\Foundation\Queue\Queueable, \Illuminate\Queue\InteractsWithQueue;
+    use InteractsWithQueue, Queueable;
 
     public static $handled = false;
 
@@ -119,6 +130,6 @@ class RateLimitedTestJob
 
     public function middleware()
     {
-        return [new \Illuminate\Queue\Middleware\RateLimitedWithRedis('character_batch')];
+        return [new RateLimitedWithRedis('character_batch')];
     }
 }

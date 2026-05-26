@@ -1,137 +1,76 @@
 <?php
 
-/*
- * MIT License
- *
- * Copyright (c) 2019, 2020, 2021 Felix Huber
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 namespace Seatplus\Eveapi\Jobs\Contracts;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
-use Seatplus\Eveapi\Esi\HasPathValuesInterface;
-use Seatplus\Eveapi\Esi\HasRequiredScopeInterface;
-use Seatplus\Eveapi\Jobs\EsiBase;
-use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
+use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Resources\Contracts\GetCharactersCharacterIdContracts;
+use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\RefreshToken;
-use Seatplus\Eveapi\Traits\HasPages;
-use Seatplus\Eveapi\Traits\HasPathValues;
-use Seatplus\Eveapi\Traits\HasRequiredScopes;
 
-class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, HasRequiredScopeInterface
+final class CharacterContractsJob extends EsiJob
 {
-    use HasPages;
-    use HasPathValues;
-    use HasRequiredScopes;
+    protected const string OPERATION_CLASS = GetCharactersCharacterIdContracts::class;
 
-    public function __construct(
-        public int $character_id,
-    ) {
-        parent::__construct(
-            method: 'get',
-            endpoint: '/characters/{character_id}/contracts/',
-            version: 'v1',
-        );
-
-        $this->setPathValues([
-            'character_id' => $this->character_id,
-        ]);
-
-        $this->setRequiredScope(head(config('eveapi.scopes.character.contracts')));
-    }
+    public function __construct(public int $character_id) {}
 
     #[\Override]
-    public function middleware(): array
+    public function getRefreshToken(): RefreshToken
     {
-        return [
-            new HasRequiredScopeMiddleware,
-            ...parent::middleware(),
-        ];
+        return RefreshToken::findOrFail($this->character_id);
     }
 
     #[\Override]
     public function tags(): array
     {
-        return [
-            'character',
-            'character_id: '.$this->character_id,
-            'contracts',
-        ];
+        return ['character', "character_id:{$this->character_id}", 'contracts'];
     }
 
     #[\Override]
-    public function executeJob(): void
+    public function executeJob(EsiClient $esi): void
     {
         $contracts = collect();
-
-        while (true) {
-            $response = $this->retrieve($this->getPage());
-
-            if ($response->isCachedLoad()) {
+        $page = 1;
+        do {
+            $response = self::OPERATION_CLASS::execute($esi, $this->character_id, $page);
+            if ($response->isCachedLoad) {
                 return;
             }
 
-            collect($response)->each(fn (object $contract) => $contracts->push([
-                // primary
-                'contract_id' => $contract->contract_id,
-                // other columns
-                'acceptor_id' => $contract->acceptor_id,
-                'assignee_id' => $contract->assignee_id,
-                'availability' => $contract->availability,
-                'date_expired' => carbon($contract->date_expired),
-                'date_issued' => carbon($contract->date_issued),
-                'for_corporation' => $contract->for_corporation,
-                'issuer_corporation_id' => $contract->issuer_corporation_id,
-                'issuer_id' => $contract->issuer_id,
-                'status' => $contract->status,
-                'type' => $contract->type,
-
-                // optionals
-                'buyout' => optional($contract)->buyout,
-                'collateral' => optional($contract)->collateral,
-                'date_accepted' => optional($contract)->date_accepted ? carbon(optional($contract)->date_accepted) : null,
-                'date_completed' => optional($contract)->date_completed ? carbon(optional($contract)->date_completed) : null,
-                'days_to_complete' => optional($contract)->days_to_complete,
-                'price' => optional($contract)->price,
-                'reward' => optional($contract)->reward,
-                'end_location_id' => optional($contract)->end_location_id,
-                'start_location_id' => optional($contract)->start_location_id,
-                'title' => optional($contract)->title,
-                'volume' => optional($contract)->volume,
-            ]));
-
-            // Lastly if more pages are present load next page
-            if ($this->getPage() >= $response->pages) {
-                break;
+            foreach ($response->data as $item) {
+                $contracts->push([
+                    'contract_id' => $item->contract_id,
+                    'acceptor_id' => $item->acceptor_id,
+                    'assignee_id' => $item->assignee_id,
+                    'availability' => $item->availability,
+                    'date_expired' => carbon($item->date_expired),
+                    'date_issued' => carbon($item->date_issued),
+                    'for_corporation' => $item->for_corporation,
+                    'issuer_corporation_id' => $item->issuer_corporation_id,
+                    'issuer_id' => $item->issuer_id,
+                    'status' => $item->status,
+                    'type' => $item->type,
+                    'buyout' => $item->buyout ?? null,
+                    'collateral' => $item->collateral ?? null,
+                    'date_accepted' => isset($item->date_accepted) ? carbon($item->date_accepted) : null,
+                    'date_completed' => isset($item->date_completed) ? carbon($item->date_completed) : null,
+                    'days_to_complete' => $item->days_to_complete ?? null,
+                    'price' => $item->price ?? null,
+                    'reward' => $item->reward ?? null,
+                    'end_location_id' => $item->end_location_id ?? null,
+                    'start_location_id' => $item->start_location_id ?? null,
+                    'title' => $item->title ?? null,
+                    'volume' => $item->volume ?? null,
+                ]);
             }
-
-            $this->incrementPage();
-        }
+            $page++;
+        } while ($page <= $response->pages);
 
         $this->persist($contracts);
-
         $this->dispatchFollowUpJobs($contracts);
     }
 
@@ -140,36 +79,15 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
         Contract::upsert(
             $contracts->toArray(),
             ['contract_id'],
-            // TODO check which columns are actually can be updated
             [
-                'acceptor_id',
-                'assignee_id',
-                'availability',
-                'date_expired',
-                'date_issued',
-                'for_corporation',
-                'issuer_corporation_id',
-                'issuer_id',
-                'status',
-                'type',
-                // optionals
-                'buyout',
-                'collateral',
-                'date_accepted',
-                'date_completed',
-                'days_to_complete',
-                'price',
-                'reward',
-                'end_location_id',
-                'start_location_id',
-                'title',
-                'volume',
+                'acceptor_id', 'assignee_id', 'availability', 'date_expired', 'date_issued',
+                'for_corporation', 'issuer_corporation_id', 'issuer_id', 'status', 'type',
+                'buyout', 'collateral', 'date_accepted', 'date_completed', 'days_to_complete',
+                'price', 'reward', 'end_location_id', 'start_location_id', 'title', 'volume',
             ]
         );
 
-        // Next sync the contracts to the character
         $character = CharacterInfo::find($this->character_id);
-
         $contract_ids = $contracts->pluck('contract_id')->toArray();
 
         if ($character) {
@@ -213,9 +131,7 @@ class CharacterContractsJob extends EsiBase implements HasPathValuesInterface, H
 
         return Contract::query()
             ->whereIn('contract_id', $contract_ids)
-            // where has start_location_id or end_location_id
             ->where(fn (Builder $query) => $query->whereNotNull('start_location_id')->orWhereNotNull('end_location_id'))
-            // where doesn't have start_location or end_location
             ->where(fn (Builder $query) => $query->doesntHave('start_location')->orDoesntHave('end_location'))
             ->select('start_location_id', 'end_location_id')
             ->get()

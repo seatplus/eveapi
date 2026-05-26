@@ -26,6 +26,8 @@
 
 namespace Seatplus\Eveapi\Models\Character;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -52,11 +54,10 @@ use Seatplus\Eveapi\Models\Wallet\Balance;
 use Seatplus\Eveapi\Models\Wallet\WalletJournal;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 
+#[Unguarded]
 class CharacterInfo extends Model
 {
     use HasFactory;
-
-    protected $guarded = [];
 
     public $incrementing = false;
 
@@ -65,6 +66,7 @@ class CharacterInfo extends Model
      */
     protected $primaryKey = 'character_id';
 
+    /** @return HasOne<RefreshToken, $this> */
     public function refresh_token(): HasOne
     {
         return $this->hasOne(RefreshToken::class, 'character_id', 'character_id');
@@ -94,11 +96,13 @@ class CharacterInfo extends Model
         );
     }
 
+    /** @return HasOne<CharacterRole, $this> */
     public function roles(): HasOne
     {
         return $this->hasOne(CharacterRole::class, 'character_id', 'character_id')->withDefault();
     }
 
+    /** @return HasOne<CharacterAffiliation, $this> */
     public function character_affiliation(): HasOne
     {
         return $this->hasOne(CharacterAffiliation::class, 'character_id', 'character_id');
@@ -109,14 +113,16 @@ class CharacterInfo extends Model
         return $this->morphOne(Application::class, 'applicationable')->whereStatus('open');
     }
 
-    public function getCorporationIdAttribute(): ?int
+    /** @return Attribute<int|null, never> */
+    protected function corporationId(): Attribute
     {
-        return $this->character_affiliation?->corporation_id;
+        return Attribute::make(get: fn () => $this->character_affiliation?->corporation_id);
     }
 
-    public function getAllianceIdAttribute(): ?int
+    /** @return Attribute<int|null, never> */
+    protected function allianceId(): Attribute
     {
-        return $this->character_affiliation?->alliance_id;
+        return Attribute::make(get: fn () => $this->character_affiliation?->alliance_id);
     }
 
     public function assets(): MorphMany

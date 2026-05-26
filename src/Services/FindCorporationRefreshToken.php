@@ -40,9 +40,7 @@ class FindCorporationRefreshToken
             ->whereHas('corporation', fn (Builder $query) => $query->where('corporation_infos.corporation_id', $corporation_id))
             ->get()
             ->shuffle()
-            ->first(function (RefreshToken $token) use ($scopes, $roles) {
-                return $this->tokenHasScopes($token, $scopes) && $this->tokenHasRoles($token, $roles);
-            });
+            ->first(fn (RefreshToken $token) => $this->tokenHasScopes($token, $scopes) && $this->tokenHasRoles($token, $roles));
     }
 
     private function tokenHasScopes(RefreshToken $token, array $scopes): bool

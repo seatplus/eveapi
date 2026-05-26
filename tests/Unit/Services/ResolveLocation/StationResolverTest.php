@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
+use Mockery\MockInterface;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\Structure;
@@ -155,7 +156,7 @@ describe('is potential station', function () {
         {
             protected function dispatchStationResolutionJob(Location $location): void
             {
-                throw new \Exception('test');
+                throw new Exception('test');
             }
         };
 
@@ -166,12 +167,12 @@ describe('is potential station', function () {
 
         // Assert
         expect($result)->toBeTrue();
-    })->throws(\Exception::class);
+    })->throws(Exception::class);
 
 });
 
 it('returns false if location is not a potential station', function () {
-    $location = mock(Location::class, function (\Mockery\MockInterface $mock) {
+    $location = mock(Location::class, function (MockInterface $mock) {
         $mock->shouldReceive('getAttribute')
             ->with('location_id')
             ->andReturn(59_000_000);

@@ -1,26 +1,26 @@
 <?php
 
+use Seatplus\EsiClient\EsiClient;
+use Seatplus\Eveapi\Jobs\Alliances\AllianceInfoJob;
+use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
+
 it('returns early if batch is cancelled', function () {
-    $job = mock(\Seatplus\Eveapi\Jobs\Alliances\AllianceInfoJob::class, function ($mock) {
+    $esi = Mockery::mock(EsiClient::class);
+
+    $job = mock(AllianceInfoJob::class, function ($mock) {
         $mock->shouldReceive('batching')->andReturn(true);
         $mock->shouldReceive('batch->cancelled')->once()->andReturn(true);
-    })->makePartial();
+    })->shouldAllowMockingProtectedMethods()->makePartial();
 
-    $job->executeJob();
-
-    expect(true)->toBeTrue();
+    $job->executeJob($esi);
 });
 
 it('checks if the response is cached', function () {
-    $job = mock(\Seatplus\Eveapi\Jobs\Alliances\AllianceInfoJob::class, function ($mock) {
-        $response = mock(\Seatplus\EsiClient\DataTransferObjects\EsiResponse::class, function ($mock) {
-            $mock->shouldReceive('isCachedLoad')->once()->andReturn(true);
-        });
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
-        $mock->shouldReceive('retrieve')->andReturn($response);
-    })->makePartial();
+    $job = new AllianceInfoJob(12345);
+    $job->executeJob($esi);
 
-    $job->executeJob();
-
-    expect(true)->toBeTrue();
+    expect(AllianceInfo::where('alliance_id', 12345)->count())->toBe(0);
 });

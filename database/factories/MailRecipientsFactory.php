@@ -32,7 +32,7 @@ use Seatplus\Eveapi\Models\Mail\Mail;
 use Seatplus\Eveapi\Models\Mail\MailRecipients;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Mail\MailRecipients>
+ * @extends Factory<MailRecipients>
  */
 class MailRecipientsFactory extends Factory
 {

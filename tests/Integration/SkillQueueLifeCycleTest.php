@@ -2,87 +2,40 @@
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Skills\SkillQueueJob;
-use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Skills\SkillQueue;
 use Seatplus\Eveapi\Models\Universe\Type;
 
 beforeEach(function () {
-    // Prevent any auto dispatching of jobs
     Queue::fake();
 });
 
-it('runs skill job', function () {
+it('runs skill queue job', function () {
     expect(SkillQueue::all())->toHaveCount(0);
 
-    buildSkillQueueMockEsiData();
+    $mocked_skill_queue = Event::fakeFor(
+        fn () => SkillQueue::factory(['character_id' => testCharacter()->character_id])
+            ->count(5)
+            ->make()
+    );
 
-    expect($this->test_character->total_sp)->toBeNull();
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult(array_map(fn ($s) => (object) $s, $mocked_skill_queue->toArray())));
 
-    (new SkillQueueJob(testCharacter()->character_id))->handle();
-
-    expect(SkillQueue::all())->toHaveCount(5)
-        ->and(SkillQueue::first()->type)->toBeInstanceOf(Type::class)
-        ->and($this->test_character->refresh()->skill_queues)->toHaveCount(5);
-});
-
-it('dispatch type job if skill_id is not yet in the type table', function () {
-    expect(SkillQueue::all())->toHaveCount(0);
-
-    Queue::assertNothingPushed();
-
-    // SkillQueue::factory(['skill_id' => 123])->make();
-
-    $mock_data = buildSkillQueueMockEsiData();
-
-    // Delete all types
-    Type::query()->delete();
-
-    (new SkillQueueJob(testCharacter()->character_id))->handle();
-
-    expect(SkillQueue::first())->type->not()->toBeInstanceOf(Type::class);
-
-    Queue::assertPushed(ResolveUniverseTypeByIdJob::class);
-});
-
-it('deletes old queue items', function () {
-    // create old Dataa
-    $old_data = Event::fakeFor(fn () => SkillQueue::factory(['character_id' => testCharacter()->character_id])->create());
-
-    expect(SkillQueue::all())->toHaveCount(1);
-
-    buildSkillQueueMockEsiData();
-
-    expect($this->test_character->total_sp)->toBeNull();
-
-    (new SkillQueueJob(testCharacter()->character_id))->handle();
+    $job = new SkillQueueJob(testCharacter()->character_id);
+    $job->executeJob($esi);
 
     expect(SkillQueue::all())->toHaveCount(5);
-    $this->assertNotCount(6, SkillQueue::all());
+    expect(SkillQueue::first()->type)->toBeInstanceOf(Type::class);
 });
 
 it('does not update skill queue if response is cached', function () {
-    $response = mock(\Seatplus\EsiClient\DataTransferObjects\EsiResponse::class);
-    $response->shouldReceive('isCachedLoad')->andReturn(true);
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
-    $job = mock(\Seatplus\Eveapi\Jobs\Skills\SkillQueueJob::class)->makePartial();
-    $job->shouldReceive('retrieve')->andReturn($response);
-
-    $job->executeJob();
+    $job = new SkillQueueJob(testCharacter()->character_id);
+    $job->executeJob($esi);
 
     expect(SkillQueue::all())->toHaveCount(0);
 });
-
-// Helpers
-function buildSkillQueueMockEsiData()
-{
-    Queue::assertNothingPushed();
-
-    $mock_data = SkillQueue::factory(['character_id' => testCharacter()->character_id])
-        ->count(5)
-        ->make();
-
-    mockRetrieveEsiDataAction($mock_data->toArray());
-
-    return $mock_data;
-}

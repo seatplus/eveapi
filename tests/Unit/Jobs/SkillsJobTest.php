@@ -1,10 +1,22 @@
 <?php
 
+use Seatplus\Eveapi\Jobs\Skills\SkillsJob;
+use Seatplus\Eveapi\Models\RefreshToken;
+
 it('has tags', function () {
-    $job = new \Seatplus\Eveapi\Jobs\Skills\SkillsJob(1);
+    $job = new SkillsJob(1);
 
     expect($job->tags())->toBe([
-        'skills',
+        'character',
         'character_id:1',
+        'skills',
     ]);
+});
+
+it('returns the refresh token', function () {
+    $token = RefreshToken::factory()->create();
+
+    $job = new SkillsJob($token->character_id);
+
+    expect($job->getRefreshToken())->toBeInstanceOf(RefreshToken::class);
 });

@@ -3,7 +3,7 @@
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
-use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
@@ -13,10 +13,8 @@ use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Type;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
-use Seatplus\Eveapi\Services\Facade\RetrieveEsiData;
 
 beforeEach(function () {
-    // Prevent any auto dispatching of jobs
     Queue::fake();
 });
 
@@ -33,9 +31,7 @@ test('run wallet transaction action', function (bool $is_corporation = false) {
 
     runWalletTransactionJobWithMockData($mock_data->toArray());
 
-    // assertWalletTransaction($mock_data, $this->test_character->character_id);
     foreach ($mock_data as $data) {
-        // Assert that character asset created
         $this->assertDatabaseHas('wallet_transactions', [
             'wallet_transactionable_id' => $wallet_transactionable_id,
             'transaction_id' => $data->transaction_id,
@@ -75,28 +71,30 @@ test('it dispatches follow up jobs', function (string $job_class, array $configu
     ],
 ]);
 
-function runWalletTransactionJobWithMockData(array $mock_data)
+function runWalletTransactionJobWithMockData(array $mock_data): void
 {
-    updateRefreshTokenScopes(testCharacter()->refresh_token, ['esi-wallet.read_character_wallet.v1'])->save();
-
     $division_id = Arr::get($mock_data, '0.division', null);
-    // If division is set, we are dealing with a corporation wallet transaction
     $is_corporation = ! is_null($division_id);
+
+    $wallet_transactionable_id = Arr::get($mock_data, '0.wallet_transactionable_id');
+    $items = array_map(fn ($t) => (object) (is_array($t) ? $t : $t->toArray()), $mock_data);
+
+    $esi = Mockery::mock(EsiClient::class);
+    $esi->shouldReceive('withToken')->andReturnSelf();
+    $esi->shouldReceive('assertScope')->andReturnNull();
+    $esi->shouldReceive('invoke')
+        ->andReturn(makeEsiRawResponse(makeEsiResult($items)), makeEsiRawResponse(makeEsiResult([])));
 
     if ($is_corporation) {
         updateRefreshTokenScopes(testCharacter()->refresh_token, ['esi-wallet.read_corporation_wallets.v1'])->save();
         updateCharacterRoles(['Director']);
+
+        $job = new CorporationWalletTransactionByDivisionJob($wallet_transactionable_id, $division_id);
+        $job->executeJob($esi);
+
+        return;
     }
 
-    $response = new EsiResponse(json_encode($mock_data), [], 'now', 200);
-    $response2 = new EsiResponse(json_encode([]), [], 'now', 200);
-
-    RetrieveEsiData::shouldReceive('execute')->andReturns($response, $response2);
-
-    $wallet_transactionable_id = Arr::get($mock_data, '0.wallet_transactionable_id');
-
-    match ($is_corporation) {
-        true => (new CorporationWalletTransactionByDivisionJob($wallet_transactionable_id, $division_id))->handle(),
-        false => (new CharacterWalletTransactionJob($wallet_transactionable_id))->handle(),
-    };
+    $job = new CharacterWalletTransactionJob($wallet_transactionable_id);
+    $job->executeJob($esi);
 }

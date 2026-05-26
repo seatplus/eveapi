@@ -1,5 +1,7 @@
 <?php
 
+use Monolog\Logger;
+
 /*
  * MIT License
  *
@@ -37,7 +39,7 @@ return [
         'sso_host' => env('EVE_SSO_HOST', 'login.eveonline.com'),
         'sso_port' => env('EVE_SSO_PORT', 443),
         // Loging
-        'logger_level' => \Monolog\Logger::INFO, // valid entries are RFC 5424 levels ('debug', 'info', 'warn', 'error')
+        'logger_level' => Logger::INFO, // valid entries are RFC 5424 levels ('debug', 'info', 'warn', 'error')
         'logfile_location' => storage_path('logs'),
     ],
 

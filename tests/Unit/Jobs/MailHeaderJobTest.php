@@ -1,7 +1,12 @@
 <?php
 
+use Seatplus\EsiClient\EsiClient;
+use Seatplus\Eveapi\Jobs\Mail\MailHeaderJob;
+use Seatplus\Eveapi\Models\Mail\Mail;
+use Seatplus\Eveapi\Models\RefreshToken;
+
 it('has tags', function () {
-    $job = new \Seatplus\Eveapi\Jobs\Mail\MailHeaderJob(1);
+    $job = new MailHeaderJob(1);
 
     expect($job->tags())->toHaveCount(3)
         ->and($job->tags())->toContain('mail')
@@ -10,13 +15,19 @@ it('has tags', function () {
 });
 
 it('returns early if response is cached', function () {
-    $response = mock(\Seatplus\EsiClient\DataTransferObjects\EsiResponse::class);
-    $response->shouldReceive('isCachedLoad')->andReturn(true);
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
-    $job = mock(\Seatplus\Eveapi\Jobs\Mail\MailHeaderJob::class)->makePartial();
-    $job->shouldReceive('retrieve')->andReturn($response);
+    $job = new MailHeaderJob(1);
+    $job->executeJob($esi);
 
-    $job->executeJob();
+    expect(Mail::all())->toHaveCount(0);
+});
 
-    expect(\Seatplus\Eveapi\Models\Mail\Mail::all())->toHaveCount(0);
+it('returns the refresh token', function () {
+    $token = RefreshToken::factory()->create();
+
+    $job = new MailHeaderJob($token->character_id);
+
+    expect($job->getRefreshToken())->toBeInstanceOf(RefreshToken::class);
 });

@@ -26,6 +26,8 @@
 
 namespace Seatplus\Eveapi\Models\Universe;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -34,11 +36,10 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\LocationWatchListInterface;
 
+#[Unguarded]
 class Location extends Model implements LocationWatchListInterface
 {
     use HasFactory;
-
-    protected $guarded = [];
 
     /**
      * @var string
@@ -65,7 +66,8 @@ class Location extends Model implements LocationWatchListInterface
     }
 
     #[\Override]
-    public function scopeFilterByRegionIds(Builder $query, int|array $regions): Builder
+    #[Scope]
+    public function filterByRegionIds(Builder $query, int|array $regions): Builder
     {
         $region_ids = is_array($regions) ? $regions : [$regions];
 
@@ -75,7 +77,8 @@ class Location extends Model implements LocationWatchListInterface
     }
 
     #[\Override]
-    public function scopeFilterBySystemIds(Builder $query, int|array $systems): Builder
+    #[Scope]
+    public function filterBySystemIds(Builder $query, int|array $systems): Builder
     {
         $system_ids = is_array($systems) ? $systems : [$systems];
 

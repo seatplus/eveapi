@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Queue;
+use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Character\CharacterInfoJob;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
@@ -15,12 +16,10 @@ beforeEach(function () {
 });
 
 it('handles missing jobs after corporation member job', function (string $job_class, array $configuration, bool $should_be_queued = true) {
-    // update refresh token to be valid
     updateRefreshTokenScopes(testCharacter()->refresh_token, ['esi-corporations.track_members.v1'])->save();
 
     expect(testCharacter()->refresh_token->scopes)->toContain('esi-corporations.track_members.v1');
 
-    // add required roles to character
     updateCharacterRoles(['Director']);
 
     expect(testCharacter())->roles->roles->toContain('Director');
@@ -31,9 +30,11 @@ it('handles missing jobs after corporation member job', function (string $job_cl
         ...$configuration,
     ]);
 
-    mockRetrieveEsiDataAction([$tracking->toArray()]);
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([(object) $tracking->toArray()]));
 
-    (new CorporationMemberTrackingJob($tracking->corporation_id))->handle();
+    $job = new CorporationMemberTrackingJob($tracking->corporation_id);
+    $job->executeJob($esi);
 
     match ($should_be_queued) {
         true => Queue::assertPushedOn('high', $job_class),

@@ -1,33 +1,45 @@
 <?php
 
+use Seatplus\EsiClient\EsiClient;
+use Seatplus\Eveapi\Jobs\Contacts\CorporationContactLabelJob;
+use Seatplus\Eveapi\Models\Contacts\Label;
+
 it('returns early if cached', function () {
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
-    $response = mock(\Seatplus\EsiClient\DataTransferObjects\EsiResponse::class);
-    $response->shouldReceive('isCachedLoad')->once()->andReturn(true);
+    $job = new CorporationContactLabelJob(corporation_id: 123, character_id: 456);
+    $job->executeJob($esi);
 
-    $job = mock(\Seatplus\Eveapi\Jobs\Contacts\CorporationContactLabelJob::class)->makePartial();
-    $job->shouldReceive('retrieve')->once()->andReturn($response);
-    $job->corporation_id = 123;
-
-    $job->executeJob();
-
-    expect(true)->toBeTrue();
+    expect(Label::count())->toBe(0);
 });
 
-it('increments page', function () {
+it('writes labels to database on normal execution', function () {
+    $label = (object) ['label_id' => 1001, 'label_name' => 'Test Label'];
 
-    Queue::fake();
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([$label]));
 
-    $contact_label = \Seatplus\Eveapi\Models\Contacts\Label::factory()->count(2)->make();
+    $job = new CorporationContactLabelJob(corporation_id: 123, character_id: 456);
+    $job->executeJob($esi);
 
-    $response1 = new \Seatplus\EsiClient\DataTransferObjects\EsiResponse(json_encode($contact_label->toArray()), ['X-Pages' => 2], 'now', 200);
-    $response2 = new \Seatplus\EsiClient\DataTransferObjects\EsiResponse('{}', ['X-Pages' => 2], 'now', 200);
+    expect(Label::count())->toBe(1);
+});
 
-    $job = mock(\Seatplus\Eveapi\Jobs\Contacts\CorporationContactLabelJob::class)->makePartial();
-    $job->__construct(123, 456);
-    $job->shouldReceive('retrieve')->twice()->andReturns($response1, $response2);
+it('handles multiple pages and writes all labels', function () {
+    $label1 = (object) ['label_id' => 1001, 'label_name' => 'Page One Label'];
+    $label2 = (object) ['label_id' => 1002, 'label_name' => 'Page Two Label'];
 
-    $job->executeJob();
+    $page1 = makeEsiRawResponse(makeEsiResult([$label1], pages: 2));
+    $page2 = makeEsiRawResponse(makeEsiResult([$label2], pages: 2));
 
-    expect($job->getPage())->toEqual(2);
+    $esi = Mockery::mock(EsiClient::class);
+    $esi->shouldReceive('withToken')->andReturnSelf();
+    $esi->shouldReceive('assertScope')->andReturnNull();
+    $esi->shouldReceive('invoke')->andReturn($page1, $page2);
+
+    $job = new CorporationContactLabelJob(corporation_id: 123, character_id: 456);
+    $job->executeJob($esi);
+
+    expect(Label::count())->toBe(2);
 });

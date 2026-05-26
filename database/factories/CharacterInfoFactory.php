@@ -34,7 +34,7 @@ use Seatplus\Eveapi\Models\Character\CharacterRole;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Character\CharacterInfo>
+ * @extends Factory<CharacterInfo>
  */
 class CharacterInfoFactory extends Factory
 {

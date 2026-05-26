@@ -1,10 +1,11 @@
 <?php
 
+use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Models\LocationRefreshToken;
 use Seatplus\Eveapi\Models\Universe\Location;
 
 beforeEach(function () {
-    \Illuminate\Support\Facades\Event::fake();
+    Event::fake();
 });
 
 it('belongs to a location', function () {

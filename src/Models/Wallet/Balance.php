@@ -26,15 +26,15 @@
 
 namespace Seatplus\Eveapi\Models\Wallet;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
+#[Unguarded]
 class Balance extends Model
 {
     use HasFactory;
-
-    protected $guarded = false;
 
     public function balanceable(): MorphTo
     {

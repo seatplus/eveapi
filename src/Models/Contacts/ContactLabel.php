@@ -26,6 +26,8 @@
 
 namespace Seatplus\Eveapi\Models\Contacts;
 
+use Illuminate\Database\Eloquent\Attributes\Appends;
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -33,29 +35,30 @@ use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
+/** @property string|null $label_name */
+#[Appends(['label_name'])]
+#[Unguarded]
 class ContactLabel extends Model
 {
-    protected $guarded = false;
-
     protected $with = ['contact.contactable.labels'];
 
-    protected $appends = ['label_name'];
-
+    /** @return BelongsTo<Contact, $this> */
     public function contact(): BelongsTo
     {
         return $this->belongsTo(Contact::class, 'contact_id');
     }
 
-    public function labelName(): Attribute
+    protected function labelName(): Attribute
     {
         return new Attribute(function () {
 
             /** @var CharacterInfo|CorporationInfo|AllianceInfo $contactable */
             $contactable = $this->contact->contactable;
 
-            return $contactable->labels
-                ->firstWhere('label_id', $this->label_id)
-                ?->label_name;
+            /** @var Label|null $labelRecord */
+            $labelRecord = $contactable->labels->firstWhere('label_id', $this->label_id);
+
+            return $labelRecord?->label_name;
         });
 
     }

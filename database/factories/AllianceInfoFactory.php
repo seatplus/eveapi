@@ -30,7 +30,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Alliance\AllianceInfo>
+ * @extends Factory<AllianceInfo>
  */
 class AllianceInfoFactory extends Factory
 {

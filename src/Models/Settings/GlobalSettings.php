@@ -26,14 +26,14 @@
 
 namespace Seatplus\Eveapi\Models\Settings;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+#[Fillable(['name', 'value'])]
 class GlobalSettings extends Model
 {
     use HasFactory;
-
-    protected $fillable = ['name', 'value'];
 
     #[\Override]
     protected function casts(): array

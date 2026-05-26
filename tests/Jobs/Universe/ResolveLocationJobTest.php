@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Universe\ResolveLocationJob;
+use Seatplus\Eveapi\Models\Universe\Location;
 
 beforeEach(function () {
     Queue::fake();
@@ -23,7 +24,7 @@ it('runs ResolveLocationService', function () {
 
     // Assert
     // assert that mock was called
-    expect(\Seatplus\Eveapi\Models\Universe\Location::all())
+    expect(Location::all())
         ->toHaveCount(0);
 });
 

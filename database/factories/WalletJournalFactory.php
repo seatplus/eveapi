@@ -31,7 +31,7 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Wallet\WalletJournal;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Wallet\WalletJournal>
+ * @extends Factory<WalletJournal>
  */
 class WalletJournalFactory extends Factory
 {

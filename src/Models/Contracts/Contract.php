@@ -26,6 +26,8 @@
 
 namespace Seatplus\Eveapi\Models\Contracts;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -40,11 +42,10 @@ use Seatplus\Eveapi\Models\LocationWatchListInterface;
 use Seatplus\Eveapi\Models\TypeWatchListInterface;
 use Seatplus\Eveapi\Models\Universe\Location;
 
+#[Unguarded]
 class Contract extends Model implements LocationWatchListInterface, TypeWatchListInterface
 {
     use HasFactory;
-
-    protected $guarded = [];
 
     /**
      * @var string
@@ -89,6 +90,7 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
         return $this->hasOne(Location::class, 'location_id', 'end_location_id');
     }
 
+    /** @return BelongsTo<CharacterInfo, $this> */
     public function assignee_character(): BelongsTo
     {
         return $this->belongsTo(CharacterInfo::class, 'assignee_id', 'character_id');
@@ -99,6 +101,7 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
         return $this->belongsTo(CorporationInfo::class, 'assignee_id', 'corporation_id');
     }
 
+    /** @return BelongsTo<CharacterInfo, $this> */
     public function issuer_character(): BelongsTo
     {
         return $this->belongsTo(CharacterInfo::class, 'issuer_id', 'character_id');
@@ -115,7 +118,8 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
     }
 
     #[\Override]
-    public function scopeFilterByRegionIds(Builder $query, int|array $regions): Builder
+    #[Scope]
+    public function filterByRegionIds(Builder $query, int|array $regions): Builder
     {
         $region_ids = is_array($regions) ? $regions : [$regions];
 
@@ -125,7 +129,8 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
     }
 
     #[\Override]
-    public function scopeFilterBySystemIds(Builder $query, int|array $systems): Builder
+    #[Scope]
+    public function filterBySystemIds(Builder $query, int|array $systems): Builder
     {
         $system_ids = is_array($systems) ? $systems : [$systems];
 
@@ -135,7 +140,8 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
     }
 
     #[\Override]
-    public function scopeFilterByTypeIds(Builder $query, int|array $types): Builder
+    #[Scope]
+    public function filterByTypeIds(Builder $query, int|array $types): Builder
     {
         $type_ids = is_array($types) ? $types : [$types];
 
@@ -143,7 +149,8 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
     }
 
     #[\Override]
-    public function scopeFilterByGroupIds(Builder $query, int|array $groups): Builder
+    #[Scope]
+    public function filterByGroupIds(Builder $query, int|array $groups): Builder
     {
         $group_ids = is_array($groups) ? $groups : [$groups];
 
@@ -151,7 +158,8 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
     }
 
     #[\Override]
-    public function scopeFilterByCategoryIds(Builder $query, int|array $category): Builder
+    #[Scope]
+    public function filterByCategoryIds(Builder $query, int|array $category): Builder
     {
         $category_ids = is_array($category) ? $category : [$category];
 

@@ -1,80 +1,63 @@
 <?php
 
-/*
- * MIT License
- *
- * Copyright (c) 2019, 2020, 2021 Felix Huber
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 namespace Seatplus\Eveapi\Jobs\Wallet;
 
-use Seatplus\Eveapi\Esi\HasCorporationRoleInterface;
-use Seatplus\Eveapi\Jobs\Middleware\HasRequiredScopeMiddleware;
-use Seatplus\Eveapi\Traits\HasCorporationRole;
+use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\EsiResult;
+use Seatplus\EsiSchema\Resources\Wallet\GetCorporationsCorporationIdWalletsDivisionJournal;
+use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
+use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 
-class CorporationWalletJournalByDivisionJob extends WalletJournalBase implements HasCorporationRoleInterface
+final class CorporationWalletJournalByDivisionJob extends WalletJournalBase
 {
-    use HasCorporationRole;
+    protected const string OPERATION_CLASS = GetCorporationsCorporationIdWalletsDivisionJournal::class;
 
     public function __construct(
         public int $corporation_id,
-        private int $division
-    ) {
-        parent::__construct(
-            method: 'get',
-            endpoint: '/corporations/{corporation_id}/wallets/{division}/journal/',
-            version: 'v4',
+        private readonly int $division
+    ) {}
+
+    #[\Override]
+    public function getRefreshToken(): RefreshToken
+    {
+        $token = (new FindCorporationRefreshToken)(
+            $this->corporation_id,
+            head(config('eveapi.scopes.corporation.wallet')),
+            ['Accountant', 'Junior_Accountant']
         );
+        throw_unless($token, new \Exception("No eligible refresh token for corporation {$this->corporation_id}"));
 
-        $this->setRequiredScope(head(config('eveapi.scopes.corporation.wallet')));
-
-        $this->setPathValues([
-            'corporation_id' => $this->corporation_id,
-            'division' => $this->division,
-        ]);
-
-        $this->setCorporationRoles(['Accountant', 'Junior_Accountant']);
+        return $token;
     }
 
-    /**
-     * Get the middleware the job should pass through.
-     */
     #[\Override]
-    public function middleware(): array
+    protected function fetchPage(EsiClient $esi, int $page): EsiResult
     {
-        return [
-            new HasRequiredScopeMiddleware,
-            ...parent::middleware(),
-        ];
+        return self::OPERATION_CLASS::execute($esi, $this->corporation_id, $this->division, $page);
+    }
+
+    #[\Override]
+    protected function walletableId(): int
+    {
+        return $this->corporation_id;
+    }
+
+    #[\Override]
+    protected function walletableType(): string
+    {
+        return CorporationInfo::class;
+    }
+
+    #[\Override]
+    protected function division(): int
+    {
+        return $this->division;
     }
 
     #[\Override]
     public function tags(): array
     {
-        return [
-            'corporation',
-            'corporation_id: '.$this->corporation_id,
-            'wallet',
-            'journal',
-            'division: '.$this->division,
-        ];
+        return ['corporation', "corporation_id:{$this->corporation_id}", 'wallet', 'journal', "division:{$this->division}"];
     }
 }

@@ -1,35 +1,32 @@
 <?php
 
-it('has tags', function () {
+use Seatplus\EsiClient\EsiClient;
+use Seatplus\Eveapi\Jobs\Contracts\CharacterContractItemsJob;
+use Seatplus\Eveapi\Models\Contracts\ContractItem;
 
-    $job = mock(\Seatplus\Eveapi\Jobs\Contracts\ContractItemsJob::class)->makePartial();
-    $job->contract_id = 1;
+it('has tags', function () {
+    $job = new CharacterContractItemsJob(character_id: 1, contract_id: 42);
 
     expect($job->tags())->toBeArray();
 });
 
 it('stops executing when batch is cancelled', function () {
+    $esi = Mockery::mock(EsiClient::class);
 
-    $job = mock(\Seatplus\Eveapi\Jobs\Contracts\ContractItemsJob::class)->makePartial();
+    $job = mock(CharacterContractItemsJob::class)->shouldAllowMockingProtectedMethods()->makePartial();
     $job->contract_id = 1;
-
     $job->shouldReceive('batching')->once()->andReturn(true);
     $job->shouldReceive('batch->cancelled')->once()->andReturn(true);
 
-    $job->executeJob();
-
-    expect(true)->toBeTrue();
+    $job->executeJob($esi);
 });
 
 it('does stop executing if response is cached', function () {
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
-    $response = mock(\Seatplus\EsiClient\DataTransferObjects\EsiResponse::class);
-    $response->shouldReceive('isCachedLoad')->andReturn(true);
+    $job = new CharacterContractItemsJob(character_id: 1, contract_id: 1);
+    $job->executeJob($esi);
 
-    $job = mock(\Seatplus\Eveapi\Jobs\Contracts\ContractItemsJob::class)->makePartial();
-    $job->shouldReceive('retrieve')->andReturn($response);
-
-    $job->executeJob();
-
-    expect(true)->toBeTrue();
+    expect(ContractItem::count())->toBe(0);
 });

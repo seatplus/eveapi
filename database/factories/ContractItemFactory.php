@@ -31,7 +31,7 @@ use Seatplus\Eveapi\Models\Contracts\ContractItem;
 use Seatplus\Eveapi\Models\Universe\Type;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Seatplus\Eveapi\Models\Contracts\ContractItem>
+ * @extends Factory<ContractItem>
  */
 class ContractItemFactory extends Factory
 {

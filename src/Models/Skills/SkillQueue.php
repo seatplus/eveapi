@@ -26,16 +26,16 @@
 
 namespace Seatplus\Eveapi\Models\Skills;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Seatplus\Eveapi\Models\Universe\Type;
 
+#[Unguarded]
 class SkillQueue extends Model
 {
     use HasFactory;
-
-    protected $guarded = [];
 
     public function type(): BelongsTo
     {
