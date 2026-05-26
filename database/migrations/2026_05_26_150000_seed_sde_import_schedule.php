@@ -12,10 +12,7 @@ return new class extends Migration
             ['job' => SdeImportJob::class],
             ['expression' => '0 0 * * 0'],
         );
-    }
 
-    public function down(): void
-    {
-        Schedules::query()->where('job', SdeImportJob::class)->delete();
+        SdeImportJob::dispatch();
     }
 };

@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Seatplus\SdeImportJob;
@@ -235,31 +234,10 @@ it('removes nested subdirectories during cleanup', function () {
     expect(Category::find(6))->not->toBeNull();
 });
 
-it('dispatches SdeImportJob on first install migration when categories table is empty', function () {
+it('seeds the SDE import schedule and dispatches SdeImportJob on migration', function () {
     Queue::fake();
 
-    // Ensure table is empty
-    DB::table('universe_categories')->delete();
-
-    // Run the migration manually
-    (new (require __DIR__.'/../../../database/migrations/2026_05_26_150002_dispatch_sde_import_on_first_install.php'))->up();
+    (new (require __DIR__.'/../../../database/migrations/2026_05_26_150000_seed_sde_import_schedule.php'))->up();
 
     Queue::assertPushed(SdeImportJob::class);
-});
-
-it('does not dispatch SdeImportJob on migration when categories already exist', function () {
-    Queue::fake();
-
-    // Seed one category so the table is not empty
-    DB::table('universe_categories')->insert([
-        'category_id' => 6,
-        'name' => 'Ship',
-        'published' => true,
-        'created_at' => now(),
-        'updated_at' => now(),
-    ]);
-
-    (new (require __DIR__.'/../../../database/migrations/2026_05_26_150002_dispatch_sde_import_on_first_install.php'))->up();
-
-    Queue::assertNotPushed(SdeImportJob::class);
 });
