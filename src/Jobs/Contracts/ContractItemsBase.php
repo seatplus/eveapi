@@ -31,13 +31,8 @@ abstract class ContractItemsBase extends EsiJob implements ShouldBeUnique
         }
 
         $contractItems = collect($response->data)->map(fn (object $item) => [
-            'record_id' => $item->record_id,
+            ...(array) $item,
             'contract_id' => $this->contract_id,
-            'is_included' => $item->is_included,
-            'is_singleton' => $item->is_singleton,
-            'quantity' => $item->quantity,
-            'type_id' => $item->type_id,
-            'raw_quantity' => $item->raw_quantity ?? null,
         ]);
 
         ContractItem::upsert($contractItems->toArray(), ['record_id']);
