@@ -13,11 +13,4 @@ return new class extends Migration
             ->where('job', UpdateCharacter::class)
             ->update(['expression' => '*/30 * * * *']);
     }
-
-    public function down(): void
-    {
-        Schedules::query()
-            ->where('job', UpdateCharacter::class)
-            ->update(['expression' => '* * * * *']);
-    }
 };

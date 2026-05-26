@@ -12,11 +12,4 @@ return new class extends Migration
             $table->string('queue')->default('default')->after('batch_id');
         });
     }
-
-    public function down(): void
-    {
-        Schema::table('batch_updates', function (Blueprint $table) {
-            $table->dropColumn('queue');
-        });
-    }
 };
