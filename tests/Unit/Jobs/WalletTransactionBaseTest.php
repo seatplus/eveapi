@@ -1,6 +1,7 @@
 <?php
 
 use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Responses\CharactersCharacterIdWalletTransactionsGetItem;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 
@@ -45,7 +46,7 @@ it('breaks when transaction_id is equal to the from_id', function () {
         'transaction_id' => 100,
     ]);
 
-    $transactionData = [(object) [
+    $transactionData = [CharactersCharacterIdWalletTransactionsGetItem::from((object) [
         'transaction_id' => 100,
         'client_id' => 12345,
         'date' => '2021-01-01T00:00:00Z',
@@ -56,7 +57,7 @@ it('breaks when transaction_id is equal to the from_id', function () {
         'quantity' => 1,
         'type_id' => 12345,
         'unit_price' => 12345,
-    ]];
+    ])];
 
     $esi = Mockery::mock(EsiClient::class);
     mockEsiTransport($esi, makeEsiResult($transactionData));

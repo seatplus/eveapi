@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Responses\CorporationsCorporationIdWalletsDivisionJournalGetItem;
 use Seatplus\Eveapi\Jobs\Wallet\CorporationBalanceJob;
 use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletJournalByDivisionJob;
 use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletJournalJob;
@@ -80,21 +81,9 @@ it('creates wallet journal entries', function () {
     ]);
 
     $esi = Mockery::mock(EsiClient::class);
-    mockEsiTransport($esi, makeEsiResult($mock_data->map(fn ($j) => (object) [
-        'id' => $j->id,
-        'date' => $j->date,
-        'description' => $j->description,
-        'ref_type' => $j->ref_type,
-        'amount' => $j->amount,
-        'balance' => $j->balance,
-        'context_id' => null,
-        'context_id_type' => null,
-        'first_party_id' => $j->first_party_id,
-        'second_party_id' => $j->second_party_id,
-        'reason' => $j->reason,
-        'tax' => null,
-        'tax_receiver_id' => null,
-    ])->toArray()));
+    mockEsiTransport($esi, makeEsiResult($mock_data->map(fn (WalletJournal $j) => CorporationsCorporationIdWalletsDivisionJournalGetItem::from(
+        (object) $j->toArray()
+    ))->toArray()));
 
     $job = new CorporationWalletJournalByDivisionJob(testCharacter()->corporation->corporation_id, $mock_data->first()->division);
     $job->executeJob($esi);

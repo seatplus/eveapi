@@ -1,6 +1,7 @@
 <?php
 
 use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Responses\CharactersCharacterIdContractsGetItem;
 use Seatplus\Eveapi\Jobs\Contracts\CharacterContractsJob;
 use Seatplus\Eveapi\Models\Contracts\Contract;
 use Seatplus\Eveapi\Models\RefreshToken;
@@ -18,7 +19,7 @@ test('returns early if cached', function () {
 it('handles multiple pages and writes all contracts', function () {
     Queue::fake();
 
-    $contract = fn (int $id) => (object) [
+    $contract = fn (int $id) => CharactersCharacterIdContractsGetItem::from((object) [
         'contract_id' => $id,
         'acceptor_id' => 0,
         'assignee_id' => 0,
@@ -30,7 +31,7 @@ it('handles multiple pages and writes all contracts', function () {
         'issuer_id' => 123,
         'status' => 'outstanding',
         'type' => 'item_exchange',
-    ];
+    ]);
 
     $page1 = makeEsiRawResponse(makeEsiResult([$contract(1001)], pages: 2));
     $page2 = makeEsiRawResponse(makeEsiResult([$contract(1002)], pages: 2));

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Queue;
 use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Responses\CharactersCharacterIdAssetsGetItem;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
 
@@ -18,7 +19,7 @@ it('checks if the response is cached', function () {
 it('handles multiple pages and upserts all assets', function () {
     Queue::fake();
 
-    $asset = fn (int $itemId) => (object) [
+    $asset = fn (int $itemId) => CharactersCharacterIdAssetsGetItem::from((object) [
         'item_id' => $itemId,
         'is_singleton' => false,
         'location_flag' => 'Hangar',
@@ -26,7 +27,7 @@ it('handles multiple pages and upserts all assets', function () {
         'location_type' => 'station',
         'quantity' => 1,
         'type_id' => 34,
-    ];
+    ]);
 
     $page1 = makeEsiRawResponse(makeEsiResult([$asset(1001)], pages: 2));
     $page2 = makeEsiRawResponse(makeEsiResult([$asset(1002)], pages: 2));
