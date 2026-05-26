@@ -1,6 +1,7 @@
 <?php
 
 use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Responses\CorporationsCorporationIdWalletsDivisionJournalGetItem;
 use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletJournalByDivisionJob;
 use Seatplus\Eveapi\Models\Character\CharacterRole;
 use Seatplus\Eveapi\Models\RefreshToken;
@@ -17,21 +18,16 @@ it('returns early if cached', function () {
 });
 
 it('handles multiple pages and writes all journal entries', function () {
-    $entry = fn (int $id) => (object) [
-        'context_id_type' => 'character_id',
-        'context_id' => 11111,
+    $entry = fn (int $id) => CorporationsCorporationIdWalletsDivisionJournalGetItem::from((object) [
         'id' => $id,
-        'date' => now(),
+        'date' => now()->toIso8601String(),
         'description' => 'test',
         'ref_type' => 'player_trading',
         'amount' => 100.0,
         'balance' => 200.0,
-        'first_party_id' => null,
-        'second_party_id' => null,
-        'reason' => null,
-        'tax' => null,
-        'tax_receiver_id' => null,
-    ];
+        'context_id' => 11111,
+        'context_id_type' => 'character_id',
+    ]);
 
     $page1 = makeEsiRawResponse(makeEsiResult([$entry(111)], pages: 2));
     $page2 = makeEsiRawResponse(makeEsiResult([$entry(222)], pages: 2));

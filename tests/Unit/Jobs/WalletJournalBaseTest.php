@@ -1,6 +1,7 @@
 <?php
 
 use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiSchema\Responses\CharactersCharacterIdWalletJournalGetItem;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletJournalJob;
 use Seatplus\Eveapi\Models\Wallet\WalletJournal;
 
@@ -17,21 +18,16 @@ it('does not execute job if response is cached', function () {
 });
 
 it('handles multiple pages correctly', function () {
-    $entry = fn (int $id) => (object) [
-        'context_id_type' => 'character_id',
-        'context_id' => 11111,
+    $entry = fn (int $id) => CharactersCharacterIdWalletJournalGetItem::from((object) [
         'id' => $id,
-        'date' => now(),
+        'date' => now()->toIso8601String(),
         'description' => 'test',
         'ref_type' => 'test',
         'amount' => 100.0,
         'balance' => 200.0,
-        'first_party_id' => null,
-        'second_party_id' => null,
-        'reason' => null,
-        'tax' => null,
-        'tax_receiver_id' => null,
-    ];
+        'context_id' => 11111,
+        'context_id_type' => 'character_id',
+    ]);
 
     $page1 = makeEsiRawResponse(makeEsiResult([$entry(111)], pages: 2));
     $page2 = makeEsiRawResponse(makeEsiResult([$entry(222)], pages: 2));
@@ -48,21 +44,16 @@ it('handles multiple pages correctly', function () {
 });
 
 it('handles contextable type', function ($context_id_type) {
-    $data = [(object) [
-        'context_id_type' => $context_id_type,
-        'context_id' => 12345,
+    $data = [CharactersCharacterIdWalletJournalGetItem::from((object) [
         'id' => 12345,
-        'date' => now(),
+        'date' => now()->toIso8601String(),
         'description' => 'test',
         'ref_type' => 'test',
         'amount' => 100.0,
         'balance' => 200.0,
-        'first_party_id' => null,
-        'second_party_id' => null,
-        'reason' => null,
-        'tax' => null,
-        'tax_receiver_id' => null,
-    ]];
+        'context_id' => 12345,
+        'context_id_type' => $context_id_type,
+    ])];
 
     $esi = Mockery::mock(EsiClient::class);
     mockEsiTransport($esi, makeEsiResult($data));
