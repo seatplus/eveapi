@@ -32,3 +32,5 @@ jobs:
 
       - name: Type Coverage Checks
         run: composer test:type-coverage
+        env:
+          FORK_MEM_PER_PROC: 107374182400
