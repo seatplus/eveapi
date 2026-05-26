@@ -2,6 +2,7 @@
 
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterBalanceJob;
+use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Wallet\Balance;
 
 it('returns correct tags array for character balance job', function () {
@@ -25,4 +26,12 @@ it('does not upsert balances when response is cached', function () {
     $job->executeJob($esi);
 
     expect(Balance::count())->toBe(0);
+});
+
+it('returns the refresh token', function () {
+    $token = RefreshToken::factory()->create();
+
+    $job = new CharacterBalanceJob($token->character_id);
+
+    expect($job->getRefreshToken())->toBeInstanceOf(RefreshToken::class);
 });

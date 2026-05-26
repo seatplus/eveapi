@@ -3,6 +3,7 @@
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Contracts\CharacterContractsJob;
 use Seatplus\Eveapi\Models\Contracts\Contract;
+use Seatplus\Eveapi\Models\RefreshToken;
 
 test('returns early if cached', function () {
     $esi = Mockery::mock(EsiClient::class);
@@ -62,4 +63,12 @@ it('adds follow up jobs to batch if batching', function () {
     $job->executeJob($esi);
 
     Queue::assertNothingPushed();
+});
+
+it('returns the refresh token', function () {
+    $token = RefreshToken::factory()->create();
+
+    $job = new CharacterContractsJob($token->character_id);
+
+    expect($job->getRefreshToken())->toBeInstanceOf(RefreshToken::class);
 });

@@ -2,6 +2,8 @@
 
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Wallet\CorporationWalletJournalByDivisionJob;
+use Seatplus\Eveapi\Models\Character\CharacterRole;
+use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Models\Wallet\WalletJournal;
 
 it('returns early if cached', function () {
@@ -43,4 +45,24 @@ it('handles multiple pages and writes all journal entries', function () {
     $job->executeJob($esi);
 
     expect(WalletJournal::count())->toBe(2);
+});
+
+it('returns the corporation refresh token for an accountant', function () {
+    $scope = head(config('eveapi.scopes.corporation.wallet'));
+    updateRefreshTokenScopes(testCharacter()->refresh_token, [$scope])->save();
+
+    CharacterRole::updateOrCreate(
+        ['character_id' => testCharacter()->character_id],
+        ['roles' => ['Accountant']],
+    );
+
+    $job = new CorporationWalletJournalByDivisionJob(testCharacter()->corporation_id, 3);
+
+    expect($job->getRefreshToken())->toBeInstanceOf(RefreshToken::class);
+});
+
+it('throws when no eligible token is found for corporation wallet journal', function () {
+    $job = new CorporationWalletJournalByDivisionJob(99999999, 3);
+
+    expect(fn () => $job->getRefreshToken())->toThrow(Exception::class);
 });
