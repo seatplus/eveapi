@@ -26,6 +26,7 @@
 
 namespace Seatplus\Eveapi;
 
+use Composer\InstalledVersions;
 use Exception;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Console\Scheduling\Schedule;
@@ -37,6 +38,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Horizon\Horizon;
 use Seatplus\EsiClient\EsiClient;
+use Seatplus\EsiClient\EsiConfiguration;
 use Seatplus\Eveapi\Commands\CheckJobsCommand;
 use Seatplus\Eveapi\Commands\ClearCache;
 use Seatplus\Eveapi\Commands\SdeImportCommand;
@@ -64,6 +66,8 @@ class EveapiServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
+        $version = InstalledVersions::getPrettyVersion('seatplus/eveapi') ?? 'dev';
+        EsiConfiguration::getInstance()->http_user_agent .= " seatplus/eveapi/{$version} +https://github.com/seatplus/eveapi";
 
         Model::preventLazyLoading(! app()->isProduction());
 
