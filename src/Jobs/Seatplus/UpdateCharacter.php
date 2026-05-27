@@ -26,7 +26,6 @@
 
 namespace Seatplus\Eveapi\Jobs\Seatplus;
 
-use Cron\CronExpression;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -34,14 +33,11 @@ use Seatplus\Eveapi\Jobs\Seatplus\Batch\CharacterBatchJob;
 use Seatplus\Eveapi\Models\BatchUpdate;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
-use Seatplus\Eveapi\Models\Schedules;
 
 class UpdateCharacter implements ShouldQueue
 {
     use Batchable;
     use Queueable;
-
-    private int $interval_in_minutes;
 
     public function __construct(
         public ?RefreshToken $refresh_token = null
@@ -52,7 +48,7 @@ class UpdateCharacter implements ShouldQueue
         // if refresh_token is set, we only want to update this character
         $this->refresh_token
             ? $this->updateSingleCharacter()
-            // otherwise we want to update the next increment of characters
+            // otherwise bootstrap/catchup: dispatch chars that need scheduling
             : $this->updateNextIncrementOfCharacters();
     }
 
@@ -63,47 +59,31 @@ class UpdateCharacter implements ShouldQueue
 
     private function updateNextIncrementOfCharacters(): void
     {
-        // get count of all RefreshToklens
-        $refresh_token_count = RefreshToken::count();
-        // get number of RefreshTokens that are needed to be completed per minute to complete all RefreshTokens in 1 hour
-        $refresh_tokens_per_minute = $refresh_token_count / $this->getIntervalInMinutes();
+        $stale_threshold = now()->subMinutes(CharacterBatchJob::REFRESH_DELAY_MINUTES * 2);
 
-        // round refresh_tokens_per_minute to nearest larger integer
-        $refresh_tokens_per_minute = (int) ceil($refresh_tokens_per_minute);
-
-        // get subquery of all characters that are in pending batch updates (finished_at is null)
-        $pending_batch_updates = BatchUpdate::query()
-            ->select('batchable_id')
-            ->whereNull('finished_at')
-            ->where('batchable_type', CharacterInfo::class);
-
-        // get random RefreshTokens that are not in pending batch updates subquery
-        $refresh_tokens = RefreshToken::query()
-            ->whereNotIn('character_id', $pending_batch_updates)
-            ->inRandomOrder()
-            ->limit($refresh_tokens_per_minute)
+        // Characters that never had a BatchUpdate record
+        $never_updated = RefreshToken::query()
+            ->whereNotIn('character_id', BatchUpdate::query()
+                ->select('batchable_id')
+                ->where('batchable_type', CharacterInfo::class)
+            )
             ->get();
 
-        // dispatch jobs for each RefreshToken
-        $refresh_tokens
-            ->each(fn (RefreshToken $token) => CharacterBatchJob::dispatch($token->character_id)->onQueue('default'));
-    }
+        // Characters whose last batch finished before the stale threshold (not currently running)
+        $stale_updated = RefreshToken::query()
+            ->whereIn('character_id', BatchUpdate::query()
+                ->select('batchable_id')
+                ->where('batchable_type', CharacterInfo::class)
+                ->whereNotNull('finished_at')
+                ->where('finished_at', '<', $stale_threshold)
+            )
+            ->get();
 
-    private function getIntervalInMinutes(): int
-    {
-        if (! isset($this->interval_in_minutes)) {
-            $expression = Schedules::firstWhere('job', UpdateCharacter::class)?->expression;
+        $tokens = $never_updated->merge($stale_updated)->unique('character_id');
 
-            $this->interval_in_minutes = $expression ? $this->calculateInterval($expression) : 60;
-        }
-
-        return $this->interval_in_minutes;
-    }
-
-    private function calculateInterval(string $expression): int
-    {
-        $cron = new CronExpression($expression);
-
-        return (int) carbon($cron->getPreviousRunDate())->diffInMinutes($cron->getNextRunDate(null));
+        $tokens->each(function (RefreshToken $token, int $index) {
+            CharacterBatchJob::dispatch($token->character_id, 'default', reschedule: true)
+                ->delay(now()->addSeconds($index * 2));
+        });
     }
 }
