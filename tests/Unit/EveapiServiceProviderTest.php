@@ -11,7 +11,21 @@ use Illuminate\Queue\Middleware\RateLimitedWithRedis;
 use Illuminate\Support\Facades\DB;
 use Laravel\Horizon\Horizon;
 use Seatplus\Auth\Models\User;
+use Seatplus\EsiClient\EsiConfiguration;
 use Seatplus\Eveapi\EveapiServiceProvider;
+
+it('sets EVE-compliant user agent on boot', function () {
+    EsiConfiguration::resetInstance();
+
+    $serviceProvider = new EveapiServiceProvider(app());
+    $serviceProvider->boot();
+
+    $userAgent = EsiConfiguration::getInstance()->http_user_agent;
+
+    expect($userAgent)
+        ->toContain('seatplus/eveapi/')
+        ->toContain('+https://github.com/seatplus/eveapi');
+});
 
 it('tests horizon auth with user', function () {
 
