@@ -1,18 +1,197 @@
-# Eveapi
+# seatplus/eveapi
 
-[![Latest Stable Version](https://poser.pugx.org/seatplus/eveapi/v/stable)](https://packagist.org/packages/seatplus/eveapi)
-[![Tests](https://github.com/seatplus/eveapi/actions/workflows/tests.yml/badge.svg)](https://github.com/seatplus/eveapi/actions/workflows/tests.yml)
-[![Formats](https://github.com/seatplus/eveapi/actions/workflows/formats.yml/badge.svg)](https://github.com/seatplus/eveapi/actions/workflows/formats.yml)
-[![Maintainability](https://api.codeclimate.com/v1/badges/9c06342438c0fb4a4cdc/maintainability)](https://codeclimate.com/github/seatplus/eveapi/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/9c06342438c0fb4a4cdc/test_coverage)](https://codeclimate.com/github/seatplus/eveapi/test_coverage)
-[![Total Downloads](https://poser.pugx.org/seatplus/eveapi/downloads)](https://packagist.org/packages/seatplus/eveapi)
-[![License](https://poser.pugx.org/seatplus/eveapi/license)](https://packagist.org/packages/seatplus/eveapi)
-[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/seatplus/eveapi/Laravel?label=Tests)](https://github.com/seatplus/eveapi/actions?query=workflow%3Alaravel+branch%3Adevelop)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/seatplus/eveapi.svg?style=flat-square)](https://packagist.org/packages/seatplus/eveapi)
+[![Tests](https://github.com/seatplus/eveapi/actions/workflows/tests.yml/badge.svg?branch=4.x)](https://github.com/seatplus/eveapi/actions/workflows/tests.yml)
+[![Formats & Static Analysis](https://github.com/seatplus/eveapi/actions/workflows/formats.yml/badge.svg?branch=4.x)](https://github.com/seatplus/eveapi/actions/workflows/formats.yml)
+[![Total Downloads](https://img.shields.io/packagist/dt/seatplus/eveapi.svg?style=flat-square)](https://packagist.org/packages/seatplus/eveapi)
+[![License](https://img.shields.io/packagist/l/seatplus/eveapi.svg?style=flat-square)](https://packagist.org/packages/seatplus/eveapi)
+[![PHP](https://img.shields.io/packagist/dependency-v/seatplus/eveapi/php.svg?style=flat-square)](https://packagist.org/packages/seatplus/eveapi)
 
-## Feaures
-Provide ability to:
-* take advantage of job middlewares
-* `auth:api` guarded endpoints to enable usage as api-only as well as web 
-* high test coverage (original seat has almost none tests)
-* no SDE requirement
+The EVE Online data-fetching layer for the seatplus platform. Provides queued ESI jobs, Eloquent models for EVE entities, Laravel Horizon integration, SDE import, and reactive character scheduling.
+
+---
+
+## Architecture
+
+`eveapi` is the second tier of the four-package seatplus monorepo. It has a strict one-way dependency hierarchy:
+
+```
+esi-client   (standalone Guzzle HTTP client, RFC 7234 caching)
+     ↓
+eveapi       ← YOU ARE HERE
+     ↓
+auth         (EVE OAuth, role system, SSO compliance)
+     ↓
+web          (Vue 3 + Inertia.js frontend — optional)
+```
+
+Lower packages never import from higher packages.
+
+### ESI Data Flow
+
+```
+Queued ESI Job (EsiBase subclass)
+       │
+       ▼ retrieve()
+RetrieveFromEsiBase
+       │ EsiRequestContainer
+       ▼
+RetrieveEsiData facade  ──▶  esi-client (Guzzle + RFC 7234 cache)
+       │ EsiResponse
+       ▼
+executeJob() — DB upsert inside a transaction
+```
+
+---
+
+## Requirements
+
+| Dependency | Version |
+|-----------|---------|
+| PHP | ^8.3 |
+| Laravel | ^11.0 |
+| PostgreSQL | 17+ (tests), any for production |
+| Redis | 7+ (required for Horizon and rate-limit tracking) |
+| seatplus/esi-client | ^4.1 |
+
+---
+
+## Installation
+
+```bash
+composer require seatplus/eveapi
+```
+
+Publish and run the migrations:
+
+```bash
+php artisan migrate
+```
+
+---
+
+## Features
+
+### ESI Queue Jobs
+
+All ESI jobs extend `EsiBase` (`ShouldQueue` + `ShouldBeUnique`, 3 tries, exponential backoff via Redis throttle). Each job implements capability interfaces only as needed:
+
+| Interface | Purpose |
+|-----------|---------|
+| `HasPathValuesInterface` | URL path substitutions (e.g. `{character_id}`) |
+| `HasRequiredScopeInterface` | Authenticated (character-scoped) endpoints |
+| `HasQueryParametersInterface` | Query string parameters |
+| `HasRequestBodyInterface` | POST body |
+
+**Example job:**
+
+```php
+class CharacterInfoJob extends EsiBase implements HasPathValuesInterface
+{
+    use HasPathValues;
+
+    public function __construct(public int $character_id)
+    {
+        parent::__construct('get', '/characters/{character_id}/', 'v5');
+        $this->setPathValues(['character_id' => $character_id]);
+    }
+
+    public function tags(): array
+    {
+        return ['character', 'info', "character_id:{$this->character_id}"];
+    }
+
+    public function executeJob(): void
+    {
+        $response = $this->retrieve();
+
+        if ($response->isCachedLoad()) {
+            return;
+        }
+
+        CharacterInfo::updateOrCreate(
+            ['character_id' => $this->character_id],
+            $response->getArrayCopy(),
+        );
+    }
+}
+```
+
+### Eloquent Models for EVE Data
+
+| Entity | Models |
+|--------|--------|
+| Character | `CharacterInfo`, `CharacterAffiliation`, `CharacterRole`, `CorporationHistory` |
+| Corporation | `CorporationInfo`, `CorporationMemberTracking`, `CorporationDivision` |
+| Alliance | `AllianceInfo` |
+| Assets | `Asset` |
+| Mail | `Mail`, `MailRecipients` |
+| Skills | `Skill`, `SkillQueue` |
+| Other | `RefreshToken`, `SsoScopes`, `Schedules`, `BatchUpdate`, `BatchStatistic` |
+
+### Reactive Character Scheduling
+
+`CharacterBatchJob` self-reschedules character data refreshes based on ESI `Cache-Control` / `Expires` headers. When a character's refresh window opens, the job re-queues itself automatically — no cron polling required.
+
+### ESI Rate-Limit Tracking
+
+Per-`(group, characterId)` bucket tracking prevents hitting ESI error limits. Jobs back off transparently when a bucket is close to the limit.
+
+### SDE Import
+
+Imports the EVE Static Data Export (universe types, groups, categories, regions, constellations, and solar systems) directly from CCP's FTP:
+
+```bash
+php artisan seatplus:sde-import
+
+# Or from a local zip (skips download):
+php artisan seatplus:sde-import --source=/path/to/sde.zip
+```
+
+The SDE import is also scheduled to run automatically every week.
+
+### EVE-Compliant User-Agent
+
+On boot, `EveapiServiceProvider` sets the EVE-compliant `User-Agent` header (sourced from `seatplus/esi-client`'s `EsiConfiguration`) on all outbound Guzzle requests.
+
+---
+
+## Artisan Commands
+
+| Command | Description |
+|---------|-------------|
+| `seatplus:sde-import` | Download and import the EVE SDE |
+| `seatplus:check:endpoints` | Verify configured ESI endpoints are reachable |
+| `seatplus:cache:clear [--force]` | Clear the ESI HTTP response cache |
+
+---
+
+## Testing
+
+Tests require a running PostgreSQL instance (`seatplus`/`secret` @ `127.0.0.1:5432`) and Redis (`127.0.0.1:6379`).
+
+```bash
+cd packages/eveapi
+
+composer run test              # Full suite: lint + types + type-coverage + unit tests
+composer run test:unit         # Pest unit tests only
+composer run test:lint         # Pint formatting check
+composer run lint              # Auto-fix formatting
+composer run test:types        # PHPStan / Larastan static analysis
+composer run test:type-coverage # 100% type coverage (enforced)
+```
+
+---
+
+## Changelog
+
+Please see [CHANGELOG](CHANGELOG.md) for recent changes.
+
+## Security Vulnerabilities
+
+Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
+
+## License
+
+MIT. Please see [LICENSE](LICENSE.md) for details.
 
