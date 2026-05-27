@@ -39,6 +39,8 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
     use Batchable;
     use Queueable;
 
+    const int REFRESH_DELAY_MINUTES = 5;
+
     public RefreshToken $refresh_token;
 
     private array $batch_jobs;
@@ -46,7 +48,8 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
     public function __construct(
         public int $character_id,
         public $queue = 'default', // @pest-ignore-type
-        array $batch_jobs = []
+        array $batch_jobs = [],
+        public bool $reschedule = false,
     ) {
         $this->refresh_token = RefreshToken::find($this->character_id);
         $this->batch_jobs = $batch_jobs ?: $this->createBatchJobs();
@@ -86,12 +89,20 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
     {
         $character = $this->refresh_token?->character->name ?? $this->character_id;
         $batch_name = sprintf('%s (character) update batch', $character);
+        $character_id = $this->character_id;
+        $queue = $this->queue;
+        $reschedule = $this->reschedule;
 
         return Bus::batch($this->getBatchJobs())
-            ->finally(function (Batch $batch) {
+            ->finally(function (Batch $batch) use ($character_id, $queue, $reschedule) {
                 // @codeCoverageIgnoreStart
                 BatchUpdate::where('batch_id', $batch->id)->update(['finished_at' => now()]);
                 BatchStatistic::where('batch_id', $batch->id)->update(['finished_at' => now()]);
+
+                if ($reschedule) {
+                    CharacterBatchJob::dispatch($character_id, $queue, reschedule: true)
+                        ->delay(now()->addMinutes(self::REFRESH_DELAY_MINUTES));
+                }
                 // @codeCoverageIgnoreEnd
             })
             ->name($batch_name)
@@ -293,18 +304,16 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
 
     private function shouldDiscardUpdate(mixed $batch_update): bool
     {
-        // Discard update if still pending
-        return ($batch_update->is_pending && now()->isSameHour($batch_update->started_at)) ||
-            // Discard update if finished in last hour
-            ($batch_update->finished_at && now()->isSameHour($batch_update->finished_at));
+        return $batch_update->is_pending;
     }
 
     public function resetBatchUpdate(BatchUpdate $batch_update): void
     {
-        // reset batch_id, finished_at and started_at
+        // reset batch_id, finished_at, started_at and queue
         $batch_update->finished_at = null;
         $batch_update->batch_id = null;
         $batch_update->started_at = now();
+        $batch_update->queue = $this->queue;
     }
 
     public function updateBatchId(Batch $batch, mixed $batch_update): void

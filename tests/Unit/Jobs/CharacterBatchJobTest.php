@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
 use Seatplus\Eveapi\Jobs\Contacts\AllianceContactJob;
 use Seatplus\Eveapi\Jobs\Seatplus\Batch\CharacterBatchJob;
@@ -21,6 +22,25 @@ it('discards update if still pending', function () {
     expect(BatchStatistic::all())->toHaveCount(0);
 });
 
+it('does not discard update if finished long ago', function () {
+    // Finished longer than REFRESH_DELAY_MINUTES ago — should NOT be discarded
+    BatchUpdate::create([
+        'batchable_id' => testCharacter()->character_id,
+        'batchable_type' => CharacterInfo::class,
+        'started_at' => now()->subHour(),
+        'finished_at' => now()->subHour(),
+    ]);
+
+    $job = new CharacterBatchJob(testCharacter()->character_id, batch_jobs: [fn () => 'test']);
+
+    Bus::fake();
+
+    $job->handle();
+
+    // Job was not discarded — a batch was dispatched
+    Bus::assertBatched(fn ($batch) => true);
+});
+
 it('finally creates BatchStatistices', function () {
 
     // Arrange
@@ -34,7 +54,7 @@ it('finally creates BatchStatistices', function () {
 
     $job = new CharacterBatchJob(testCharacter()->character_id, batch_jobs: [fn () => 'test']);
 
-    Illuminate\Support\Facades\Bus::fake();
+    Bus::fake();
 
     // Act
     $job->handle();
@@ -51,6 +71,21 @@ it('finally creates BatchStatistices', function () {
 
     expect(BatchStatistic::all())->toHaveCount(1)
         ->and(BatchUpdate::all())->toHaveCount(1);
+});
+
+it('stores queue on batch update', function () {
+    BatchUpdate::create([
+        'batchable_id' => testCharacter()->character_id,
+        'batchable_type' => CharacterInfo::class,
+        'started_at' => now()->subDays(2),
+        'finished_at' => now()->subDays(1),
+    ]);
+
+    Bus::fake();
+
+    (new CharacterBatchJob(testCharacter()->character_id, 'high', batch_jobs: [fn () => 'test']))->handle();
+
+    expect(BatchUpdate::first())->queue->toBe('high');
 });
 
 it('does not add AllianceContactsJob if no alliance_id is present', function () {
@@ -92,4 +127,8 @@ it('has middleware', function () {
     $job = new CharacterBatchJob(testCharacter()->character_id);
 
     expect($job->middleware())->toBeArray();
+});
+
+it('has REFRESH_DELAY_MINUTES constant', function () {
+    expect(CharacterBatchJob::REFRESH_DELAY_MINUTES)->toBe(5);
 });
