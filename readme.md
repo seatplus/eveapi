@@ -30,17 +30,21 @@ Lower packages never import from higher packages.
 ### ESI Data Flow
 
 ```
-Queued ESI Job (EsiBase subclass)
+Queued ESI Job (EsiJob subclass)
        │
-       ▼ retrieve()
-RetrieveFromEsiBase
-       │ EsiRequestContainer
+       ▼ handle() — injected by container
+EsiJob — refreshes token, sets rate-limit context
+       │ EsiClient (RecordingEsiClient in production)
        ▼
-RetrieveEsiData facade  ──▶  esi-client (Guzzle + RFC 7234 cache)
-       │ EsiResponse
+OPERATION_CLASS::execute($esi, ...) — esi-schema static call
+       │ EsiResult (typed DTO, isCachedLoad flag)
        ▼
-executeJob() — DB upsert inside a transaction
+executeJob() — DB upsert inside a DB::transaction
 ```
+
+Recording happens transparently: `RecordingEsiClient` wraps every `invoke()` call and stores `X-Ratelimit-Remaining` + `X-ESI-Error-Limit-Remain` in Redis for the proactive rate-limit guard.
+
+For full architecture decisions see [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ---
 
@@ -49,10 +53,11 @@ executeJob() — DB upsert inside a transaction
 | Dependency | Version |
 |-----------|---------|
 | PHP | ^8.3 |
-| Laravel | ^11.0 |
+| Laravel | ^13.0 |
 | PostgreSQL | 17+ (tests), any for production |
 | Redis | 7+ (required for Horizon and rate-limit tracking) |
 | seatplus/esi-client | ^4.1 |
+| seatplus/esi-schema | ^1.3 (transitive) |
 
 ---
 
@@ -74,47 +79,57 @@ php artisan migrate
 
 ### ESI Queue Jobs
 
-All ESI jobs extend `EsiBase` (`ShouldQueue` + `ShouldBeUnique`, 3 tries, exponential backoff via Redis throttle). Each job implements capability interfaces only as needed:
+All ESI leaf jobs extend `EsiJob` (`ShouldQueue` + `ShouldBeUnique`, 10 tries, exponential backoff). Each job declares the esi-schema resource class it calls via `OPERATION_CLASS`, and implements `tags()` and `executeJob()`. For authenticated endpoints, override `getRefreshToken()`.
 
-| Interface | Purpose |
-|-----------|---------|
-| `HasPathValuesInterface` | URL path substitutions (e.g. `{character_id}`) |
-| `HasRequiredScopeInterface` | Authenticated (character-scoped) endpoints |
-| `HasQueryParametersInterface` | Query string parameters |
-| `HasRequestBodyInterface` | POST body |
-
-**Example job:**
+**Public endpoint example:**
 
 ```php
-class CharacterInfoJob extends EsiBase implements HasPathValuesInterface
+final class CharacterInfoJob extends EsiJob
 {
-    use HasPathValues;
+    protected const string OPERATION_CLASS = GetCharactersCharacterId::class;
 
-    public function __construct(public int $character_id)
-    {
-        parent::__construct('get', '/characters/{character_id}/', 'v5');
-        $this->setPathValues(['character_id' => $character_id]);
-    }
+    public function __construct(public int $character_id) {}
 
     public function tags(): array
     {
         return ['character', 'info', "character_id:{$this->character_id}"];
     }
 
-    public function executeJob(): void
+    public function executeJob(EsiClient $esi): void
     {
-        $response = $this->retrieve();
+        $response = self::OPERATION_CLASS::execute($esi, $this->character_id);
 
-        if ($response->isCachedLoad()) {
+        if ($response->isCachedLoad) {
             return;
         }
 
         CharacterInfo::updateOrCreate(
             ['character_id' => $this->character_id],
-            $response->getArrayCopy(),
+            ['name' => $response->name, ...],
         );
     }
 }
+```
+
+**Authenticated endpoint** — additionally override `getRefreshToken()`:
+
+```php
+public function getRefreshToken(): RefreshToken
+{
+    return RefreshToken::findOrFail($this->character_id);
+}
+```
+
+**Paginated endpoint** — loop manually using `$response->pages`:
+
+```php
+$page = 1;
+do {
+    $response = self::OPERATION_CLASS::execute($esi, $this->character_id, $page);
+    if ($response->isCachedLoad) { return; }
+    // ... collect $response->data ...
+    $page++;
+} while ($page <= $response->pages);
 ```
 
 ### Eloquent Models for EVE Data
