@@ -49,7 +49,7 @@ executeJob() — DB upsert inside a transaction
 | Dependency | Version |
 |-----------|---------|
 | PHP | ^8.3 |
-| Laravel | ^11.0 |
+| Laravel | ^13.0 |
 | PostgreSQL | 17+ (tests), any for production |
 | Redis | 7+ (required for Horizon and rate-limit tracking) |
 | seatplus/esi-client | ^4.1 |
