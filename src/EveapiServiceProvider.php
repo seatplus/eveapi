@@ -66,7 +66,7 @@ class EveapiServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $version = InstalledVersions::getPrettyVersion('seatplus/eveapi') ?? 'dev';
-        EsiConfiguration::getInstance()->http_user_agent = "seatplus/eveapi/{$version} +https://github.com/seatplus/eveapi";
+        EsiConfiguration::getInstance()->http_user_agent .= " seatplus/eveapi/{$version} +https://github.com/seatplus/eveapi";
 
         Model::preventLazyLoading(! app()->isProduction());
 
