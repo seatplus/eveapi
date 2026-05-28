@@ -12,7 +12,7 @@ use Seatplus\Eveapi\Models\RefreshToken;
 class GetUpToDateRefreshTokenService
 {
     public function __construct(
-        private readonly UpdateRefreshTokenService $updateRefreshTokenService,
+        private readonly UpdateRefreshTokenService $updateRefreshTokenService = new UpdateRefreshTokenService,
     ) {}
 
     /**
