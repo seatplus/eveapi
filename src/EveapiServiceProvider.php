@@ -32,6 +32,7 @@ use Composer\InstalledVersions;
 use Exception;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -119,7 +120,7 @@ class EveapiServiceProvider extends ServiceProvider
         // RecordingEsiClient without touching any of the leaf job implementations.
         $this->app->bind(EsiClient::class, RecordingEsiClient::class);
 
-        $this->app->bind(GetUpToDateRefreshTokenService::class, fn ($app) => new GetUpToDateRefreshTokenService($app->make(UpdateRefreshTokenService::class))
+        $this->app->bind(GetUpToDateRefreshTokenService::class, fn (Application $app) => new GetUpToDateRefreshTokenService($app->make(UpdateRefreshTokenService::class))
         );
     }
 
