@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Seatplus\Eveapi\Jobs\Corporation;
 
 use Seatplus\EsiClient\EsiClient;

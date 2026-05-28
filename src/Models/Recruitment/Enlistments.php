@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * MIT License
  *
@@ -27,12 +29,14 @@
 namespace Seatplus\Eveapi\Models\Recruitment;
 
 use Illuminate\Database\Eloquent\Attributes\Unguarded;
+use Illuminate\Database\Eloquent\Attributes\WithoutIncrementing;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
-#[Unguarded]
+#[Unguarded] #[WithoutIncrementing]
+
 class Enlistments extends Model
 {
     /**
@@ -41,8 +45,6 @@ class Enlistments extends Model
      * @var string
      */
     protected $primaryKey = 'corporation_id';
-
-    public $incrementing = false;
 
     public function corporation(): BelongsTo
     {

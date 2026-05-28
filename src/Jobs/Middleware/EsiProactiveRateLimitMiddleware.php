@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Seatplus\Eveapi\Jobs\Middleware;
 
 use Illuminate\Support\Facades\Redis;

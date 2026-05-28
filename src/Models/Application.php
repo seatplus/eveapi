@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * MIT License
  *
@@ -28,6 +30,7 @@ namespace Seatplus\Eveapi\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\Unguarded;
+use Illuminate\Database\Eloquent\Attributes\WithoutIncrementing;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -42,14 +45,13 @@ use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\Recruitment\ApplicationLogs;
 use Seatplus\Eveapi\Models\Recruitment\Enlistments;
 
-#[Unguarded]
+#[Unguarded] #[WithoutIncrementing]
+
 class Application extends Model
 {
     use HasFactory;
 
     protected $keyType = 'string';
-
-    public $incrementing = false;
 
     #[\Override]
     protected static function booted(): void

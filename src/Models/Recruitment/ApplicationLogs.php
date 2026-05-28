@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Seatplus\Eveapi\Models\Recruitment;
 
 use Illuminate\Database\Eloquent\Attributes\Unguarded;

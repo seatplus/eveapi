@@ -20,7 +20,7 @@ it('retrieves up to date refresh token successfully', function () {
         'expires_on' => now()->addMinutes(5),
     ]);
 
-    $result = (new GetUpToDateRefreshTokenService)->get($refreshToken);
+    $result = (new GetUpToDateRefreshTokenService(new UpdateRefreshTokenService))->get($refreshToken);
 
     expect($result)->toBe($refreshToken);
 });
@@ -60,7 +60,7 @@ it('throws request failed exception', function () {
             ->andThrow(new RequestFailedException(new Exception('failed'), new EsiResponse(json_encode([]), [], 'now', 200)));
     });
 
-    $service = new GetUpToDateRefreshTokenService;
+    $service = new GetUpToDateRefreshTokenService(new UpdateRefreshTokenService);
 
     expect(fn () => $service->get($refreshToken))->toThrow(RequestFailedException::class);
 });

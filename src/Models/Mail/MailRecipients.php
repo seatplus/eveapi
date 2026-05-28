@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * MIT License
  *
@@ -27,20 +29,17 @@
 namespace Seatplus\Eveapi\Models\Mail;
 
 use Illuminate\Database\Eloquent\Attributes\Unguarded;
+use Illuminate\Database\Eloquent\Attributes\WithoutIncrementing;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-#[Unguarded]
+#[Unguarded] #[WithoutIncrementing]
+
 class MailRecipients extends Model
 {
     use HasFactory;
-
-    /**
-     * @var bool
-     */
-    public $incrementing = false;
 
     public function mail(): BelongsTo
     {

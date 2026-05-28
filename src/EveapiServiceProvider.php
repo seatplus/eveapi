@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * MIT License
  *
@@ -60,7 +62,9 @@ use Seatplus\Eveapi\Observers\CharacterInfoObserver;
 use Seatplus\Eveapi\Observers\GroupObserver;
 use Seatplus\Eveapi\Observers\TypeObserver;
 use Seatplus\Eveapi\Services\Character\RefreshCharacterAffiliationsService;
+use Seatplus\Eveapi\Services\Esi\GetUpToDateRefreshTokenService;
 use Seatplus\Eveapi\Services\Esi\RecordingEsiClient;
+use Seatplus\Eveapi\Services\Esi\UpdateRefreshTokenService;
 
 class EveapiServiceProvider extends ServiceProvider
 {
@@ -114,6 +118,9 @@ class EveapiServiceProvider extends ServiceProvider
         // EsiJob::handle() is type-hinted as EsiClient; this binding transparently injects
         // RecordingEsiClient without touching any of the leaf job implementations.
         $this->app->bind(EsiClient::class, RecordingEsiClient::class);
+
+        $this->app->bind(GetUpToDateRefreshTokenService::class, fn ($app) => new GetUpToDateRefreshTokenService($app->make(UpdateRefreshTokenService::class))
+        );
     }
 
     /**

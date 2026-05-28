@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * MIT License
  *
@@ -27,12 +29,14 @@
 namespace Seatplus\Eveapi\Models\Universe;
 
 use Illuminate\Database\Eloquent\Attributes\Unguarded;
+use Illuminate\Database\Eloquent\Attributes\WithoutIncrementing;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
-#[Unguarded]
+#[Unguarded] #[WithoutIncrementing]
+
 class Type extends Model
 {
     use HasFactory;
@@ -41,8 +45,6 @@ class Type extends Model
      * @var string
      */
     protected $primaryKey = 'type_id';
-
-    public $incrementing = false;
 
     /**
      * The table associated with the model.

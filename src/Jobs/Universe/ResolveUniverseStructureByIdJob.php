@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Seatplus\Eveapi\Jobs\Universe;
 
 use Illuminate\Queue\Attributes\MaxExceptions;

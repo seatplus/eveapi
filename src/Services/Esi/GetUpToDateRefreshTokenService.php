@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Seatplus\Eveapi\Services\Esi;
 
 use Illuminate\Support\Facades\Cache;
@@ -10,10 +12,8 @@ use Seatplus\Eveapi\Models\RefreshToken;
 class GetUpToDateRefreshTokenService
 {
     public function __construct(
-        private ?UpdateRefreshTokenService $updateRefreshTokenService = null
-    ) {
-        $this->updateRefreshTokenService ??= new UpdateRefreshTokenService;
-    }
+        private readonly UpdateRefreshTokenService $updateRefreshTokenService,
+    ) {}
 
     /**
      * @throws InvalidRefreshTokenException
