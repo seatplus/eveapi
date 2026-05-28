@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * MIT License
  *
@@ -27,6 +29,7 @@
 namespace Seatplus\Eveapi\Models\Killmails;
 
 use Illuminate\Database\Eloquent\Attributes\Unguarded;
+use Illuminate\Database\Eloquent\Attributes\WithoutIncrementing;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -34,7 +37,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Seatplus\Eveapi\Models\Universe\System;
 use Seatplus\Eveapi\Models\Universe\Type;
 
-#[Unguarded]
+#[Unguarded] #[WithoutIncrementing]
+
 class Killmail extends Model
 {
     use HasFactory;
@@ -43,8 +47,6 @@ class Killmail extends Model
      * @var string
      */
     protected $primaryKey = 'killmail_id';
-
-    public $incrementing = false;
 
     public function ship(): HasOne
     {

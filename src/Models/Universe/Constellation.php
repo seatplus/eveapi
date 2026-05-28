@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * MIT License
  *
@@ -27,12 +29,14 @@
 namespace Seatplus\Eveapi\Models\Universe;
 
 use Illuminate\Database\Eloquent\Attributes\Unguarded;
+use Illuminate\Database\Eloquent\Attributes\WithoutIncrementing;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Seatplus\Eveapi\Events\UniverseConstellationCreated;
 
-#[Unguarded]
+#[Unguarded] #[WithoutIncrementing]
+
 class Constellation extends Model
 {
     use HasFactory;
@@ -47,7 +51,6 @@ class Constellation extends Model
      *
      * @var bool
      */
-    public $incrementing = false;
 
     /**
      * The table associated with the model.

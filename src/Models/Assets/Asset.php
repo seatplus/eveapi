@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * MIT License
  *
@@ -28,6 +30,7 @@ namespace Seatplus\Eveapi\Models\Assets;
 
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\Unguarded;
+use Illuminate\Database\Eloquent\Attributes\WithoutIncrementing;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -39,7 +42,8 @@ use Seatplus\Eveapi\Models\TypeWatchListInterface;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Type;
 
-#[Unguarded]
+#[Unguarded] #[WithoutIncrementing]
+
 class Asset extends Model implements TypeWatchListInterface
 {
     use HasFactory;
@@ -52,13 +56,6 @@ class Asset extends Model implements TypeWatchListInterface
      * @var string
      */
     protected $primaryKey = 'item_id';
-
-    /**
-     * Indicates if the model's ID is auto-incrementing.
-     *
-     * @var bool
-     */
-    public $incrementing = false;
 
     public function assetable(): MorphTo
     {

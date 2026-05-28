@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * MIT License
  *
@@ -27,6 +29,7 @@
 namespace Seatplus\Eveapi\Models\Universe;
 
 use Illuminate\Database\Eloquent\Attributes\Unguarded;
+use Illuminate\Database\Eloquent\Attributes\WithoutIncrementing;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -34,7 +37,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Seatplus\Eveapi\Events\UniverseSystemCreated;
 
-#[Unguarded]
+#[Unguarded] #[WithoutIncrementing]
+
 class System extends Model
 {
     use HasFactory;
@@ -48,8 +52,6 @@ class System extends Model
      * @var string
      */
     protected $primaryKey = 'system_id';
-
-    public $incrementing = false;
 
     /**
      * The table associated with the model.

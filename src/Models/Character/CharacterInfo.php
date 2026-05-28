@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * MIT License
  *
@@ -27,6 +29,7 @@
 namespace Seatplus\Eveapi\Models\Character;
 
 use Illuminate\Database\Eloquent\Attributes\Unguarded;
+use Illuminate\Database\Eloquent\Attributes\WithoutIncrementing;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -54,12 +57,11 @@ use Seatplus\Eveapi\Models\Wallet\Balance;
 use Seatplus\Eveapi\Models\Wallet\WalletJournal;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 
-#[Unguarded]
+#[Unguarded] #[WithoutIncrementing]
+
 class CharacterInfo extends Model
 {
     use HasFactory;
-
-    public $incrementing = false;
 
     /**
      * @var string

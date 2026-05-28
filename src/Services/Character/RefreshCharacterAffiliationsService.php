@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Seatplus\Eveapi\Services\Character;
 
 use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;

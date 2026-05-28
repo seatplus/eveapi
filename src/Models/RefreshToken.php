@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * MIT License
  *
@@ -29,6 +31,7 @@ namespace Seatplus\Eveapi\Models;
 use Carbon\Carbon;
 use Firebase\JWT\JWT;
 use Illuminate\Database\Eloquent\Attributes\Unguarded;
+use Illuminate\Database\Eloquent\Attributes\WithoutIncrementing;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -44,7 +47,8 @@ use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 /**
  * @property Carbon $expires_on
  */
-#[Unguarded]
+#[Unguarded] #[WithoutIncrementing]
+
 class RefreshToken extends Model
 {
     use HasFactory;
@@ -54,13 +58,6 @@ class RefreshToken extends Model
      * @var string
      */
     protected $primaryKey = 'character_id';
-
-    /**
-     * Indicates if the IDs are auto-incrementing.
-     *
-     * @var bool
-     */
-    public $incrementing = false;
 
     protected $dispatchesEvents = [
         'created' => RefreshTokenCreated::class,

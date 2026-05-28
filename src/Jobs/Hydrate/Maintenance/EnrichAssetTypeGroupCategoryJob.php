@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Seatplus\Eveapi\Jobs\Hydrate\Maintenance;
 
 use Illuminate\Database\Eloquent\Collection;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * MIT License
  *
@@ -27,6 +29,7 @@
 namespace Seatplus\Eveapi\Models\Character;
 
 use Illuminate\Database\Eloquent\Attributes\Unguarded;
+use Illuminate\Database\Eloquent\Attributes\WithoutIncrementing;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -34,7 +37,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 
-#[Unguarded]
+#[Unguarded] #[WithoutIncrementing]
+
 class CharacterAffiliation extends Model
 {
     use HasFactory;
@@ -43,8 +47,6 @@ class CharacterAffiliation extends Model
      * @var string
      */
     protected $primaryKey = 'character_id';
-
-    public $incrementing = false;
 
     /**
      * The table associated with the model.
