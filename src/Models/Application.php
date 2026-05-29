@@ -94,7 +94,7 @@ class Application extends Model
         return $query->whereIn('corporation_id', $corporation_ids)
             ->with([
                 'applicationable' => fn (MorphTo $morph_to) => $morph_to->morphWith([
-                    User::class => ['characters.refresh_token', 'main_character', 'characters.application.corporation.ssoScopes', 'characters.application.corporation.alliance.ssoScopes'], // @phpstan-ignore-line
+                    User::class => ['characters.refresh_token', 'mainCharacter', 'characters.application.corporation.ssoScopes', 'characters.application.corporation.alliance.ssoScopes'], // @phpstan-ignore-line
                     CharacterInfo::class => ['refresh_token', 'application.corporation.ssoScopes', 'application.corporation.alliance.ssoScopes'],
                 ]),
             ]);
