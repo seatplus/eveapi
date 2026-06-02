@@ -51,6 +51,7 @@ class Enlistments extends Model
         return $this->belongsTo(CorporationInfo::class, 'corporation_id', 'corporation_id');
     }
 
+    /** @return Attribute<int, never> */
     protected function stepsCount(): Attribute
     {
         return Attribute::make(get: fn () => count($this->steps));

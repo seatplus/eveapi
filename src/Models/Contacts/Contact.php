@@ -60,6 +60,7 @@ class Contact extends Model
         return $query->whereIn('contactable_id', $contactable_ids);
     }
 
+    /** @return Attribute<?CharacterAffiliation, never> */
     protected function affiliation(): Attribute
     {
         return Attribute::make(get: function () {

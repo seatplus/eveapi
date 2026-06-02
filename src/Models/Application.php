@@ -81,6 +81,7 @@ class Application extends Model
         return $this->hasMany(ApplicationLogs::class);
     }
 
+    /** @return Attribute<int, never> */
     protected function decisionCount(): Attribute
     {
         return Attribute::make(get: fn () => $this->log_entries()->where('type', 'decision')->count());
