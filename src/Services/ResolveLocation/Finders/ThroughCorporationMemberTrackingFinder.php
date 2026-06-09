@@ -14,41 +14,41 @@ use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 class ThroughCorporationMemberTrackingFinder implements FinderInterface
 {
     #[\Override]
-    public function handle(int $location_id, Collection $tracking): ?RefreshToken
+    public function handle(int $locationId, Collection $tracking): ?RefreshToken
     {
 
-        $corporation_member_tracking_query = CorporationMemberTracking::query()
-            ->where('location_id', $location_id);
+        $corporationMemberTrackingQuery = CorporationMemberTracking::query()
+            ->where('location_id', $locationId);
 
-        $refresh_token = app(Pipeline::class)
-            ->send($corporation_member_tracking_query)
+        $refreshToken = app(Pipeline::class)
+            ->send($corporationMemberTrackingQuery)
             ->through([
                 $this->findMemberTokenWithStructureScope($tracking),
                 $this->findDirectorToken(),
             ])
             ->thenReturn();
 
-        return $refresh_token;
+        return $refreshToken;
     }
 
     private function findMemberTokenWithStructureScope(Collection $tracking): \Closure
     {
-        $character_ids_to_ignore = $tracking->pluck('character_id');
+        $characterIdsToIgnore = $tracking->pluck('character_id');
 
-        return function (Builder $query, \Closure $next) use ($character_ids_to_ignore) {
-            $refresh_token = $query
-                ->whereNotIn('character_id', $character_ids_to_ignore)
-                ->whereHas('character.refresh_token')
+        return function (Builder $query, \Closure $next) use ($characterIdsToIgnore) {
+            $refreshToken = $query
+                ->whereNotIn('character_id', $characterIdsToIgnore)
+                ->whereHas('character.refreshToken')
                 ->inRandomOrder()
                 ->get()
-                ->map(fn (CorporationMemberTracking $member_tracking) => $member_tracking->character->refresh_token)
+                ->map(fn (CorporationMemberTracking $memberTracking) => $memberTracking->character->refreshToken)
                 ->unique()
                 // filter refresh token that has scope esi-universe.read_structures.v1
-                ->filter(fn (RefreshToken $refresh_token) => $refresh_token->hasScope('esi-universe.read_structures.v1'))
+                ->filter(fn (RefreshToken $refreshToken) => $refreshToken->hasScope('esi-universe.read_structures.v1'))
                 ->first();
 
-            if (! is_null($refresh_token)) {
-                return $refresh_token;
+            if (! is_null($refreshToken)) {
+                return $refreshToken;
             }
 
             return $next($query);
@@ -58,20 +58,20 @@ class ThroughCorporationMemberTrackingFinder implements FinderInterface
     private function findDirectorToken(): \Closure
     {
         return function (Builder $query) {
-            $refresh_token = $query
+            $refreshToken = $query
                 ->inRandomOrder()
                 ->pluck('corporation_id')
                 ->unique()
-                ->map(function (int $corporation_id) {
+                ->map(function (int $corporationId) {
 
                     $service = new FindCorporationRefreshToken;
 
-                    return $service($corporation_id, 'esi-corporations.track_members.v1', 'Director');
+                    return $service($corporationId, 'esi-corporations.track_members.v1', 'Director');
                 })
                 ->filter()
                 ->first();
 
-            return $refresh_token;
+            return $refreshToken;
         };
     }
 }

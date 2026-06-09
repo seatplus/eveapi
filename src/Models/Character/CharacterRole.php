@@ -43,7 +43,7 @@ class CharacterRole extends Model
      */
     protected $primaryKey = 'character_id';
 
-    protected array $roles_array = [
+    protected array $rolesArray = [
         'Account_Take_1', 'Account_Take_2', 'Account_Take_3', 'Account_Take_4', 'Account_Take_5', 'Account_Take_6',
         'Account_Take_7', 'Accountant', 'Auditor', 'Communications_Officer', 'Config_Equipment', 'Config_Starbase_Equipment',
         'Container_Take_1', 'Container_Take_2', 'Container_Take_3', 'Container_Take_4', 'Container_Take_5', 'Container_Take_6',
@@ -61,7 +61,7 @@ class CharacterRole extends Model
 
     public function hasRole(string $scope, string $role): bool
     {
-        if (! in_array($role, $this->roles_array) || is_null($this->$scope)) {
+        if (! in_array($role, $this->rolesArray) || is_null($this->$scope)) {
             return false;
         }
 

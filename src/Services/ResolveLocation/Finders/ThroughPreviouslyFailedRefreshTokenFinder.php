@@ -11,7 +11,7 @@ use Seatplus\Eveapi\Models\RefreshToken;
 class ThroughPreviouslyFailedRefreshTokenFinder implements FinderInterface
 {
     #[\Override]
-    public function handle(int $location_id, Collection $tracings): ?RefreshToken
+    public function handle(int $locationId, Collection $tracings): ?RefreshToken
     {
 
         $record = $tracings
@@ -20,7 +20,7 @@ class ThroughPreviouslyFailedRefreshTokenFinder implements FinderInterface
 
         // check if record is LocationRefreshToken
         if ($record instanceof LocationRefreshToken) {
-            return $record->refresh_token;
+            return $record->refreshToken;
         }
 
         return null;

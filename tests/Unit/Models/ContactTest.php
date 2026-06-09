@@ -12,9 +12,9 @@ use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 beforeEach(function () {
     $alliance = AllianceInfo::factory()->create();
 
-    $test_corporation = $this->test_character->corporation;
-    $test_corporation->alliance_id = $alliance->alliance_id;
-    $test_corporation->save();
+    $testCorporation = $this->test_character->corporation;
+    $testCorporation->alliance_id = $alliance->alliance_id;
+    $testCorporation->save();
 
     $this->test_character = $this->test_character->refresh();
 });
@@ -72,9 +72,9 @@ test('contact has label', function () {
 
     expect($contact->labels)->toHaveCount(0);
 
-    $contact_label = new ContactLabel(['contact_id' => $contact->id, 'label_id' => 1]);
+    $contactLabel = new ContactLabel(['contact_id' => $contact->id, 'label_id' => 1]);
 
-    $contact_label->save();
+    $contactLabel->save();
 
     $label = Label::factory()->create([
         'labelable_id' => $this->test_character->character_id,
@@ -85,13 +85,13 @@ test('contact has label', function () {
     $this->assertNotNull(ContactLabel::first()->label_name);
 });
 
-it('has has affiliation relationship', function (string $contact_type) {
+it('has has affiliation relationship', function (string $contactType) {
     $affiliation = CharacterAffiliation::factory()->create([
         'alliance_id' => faker()->numberBetween(99000000, 100000000),
         'faction_id' => faker()->numberBetween(500000, 1000000),
     ]);
 
-    $contact_id = match ($contact_type) {
+    $contactId = match ($contactType) {
         'character' => $affiliation->character_id,
         'corporation' => $affiliation->corporation_id,
         'alliance' => $affiliation->alliance_id,
@@ -99,8 +99,8 @@ it('has has affiliation relationship', function (string $contact_type) {
     };
 
     Contact::factory()->create([
-        'contact_id' => $contact_id,
-        'contact_type' => $contact_type,
+        'contact_id' => $contactId,
+        'contact_type' => $contactType,
         'standing' => 10.0,
         'contactable_id' => $this->test_character->character_id,
         'contactable_type' => CharacterInfo::class,

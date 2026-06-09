@@ -13,23 +13,23 @@ final class CharacterInfoJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetCharactersCharacterId::class;
 
-    public function __construct(public int $character_id) {}
+    public function __construct(public int $characterId) {}
 
     #[\Override]
     public function tags(): array
     {
-        return ['character', 'info', "character_id:{$this->character_id}"];
+        return ['character', 'info', "character_id:{$this->characterId}"];
     }
 
     #[\Override]
     public function executeJob(EsiClient $esi): void
     {
-        $response = self::OPERATION_CLASS::execute($esi, $this->character_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->characterId);
         if ($response->isCachedLoad) {
             return;
         }
 
-        CharacterInfo::updateOrCreate(['character_id' => $this->character_id], [
+        CharacterInfo::updateOrCreate(['character_id' => $this->characterId], [
             'name' => $response->name,
             'description' => $response->description,
             'birthday' => $response->birthday,

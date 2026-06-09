@@ -14,28 +14,28 @@ final class MailBodyJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetCharactersCharacterIdMailMailId::class;
 
-    public function __construct(public int $character_id, public int $mail_id) {}
+    public function __construct(public int $characterId, public int $mailId) {}
 
     #[\Override]
     public function getRefreshToken(): RefreshToken
     {
-        return RefreshToken::findOrFail($this->character_id);
+        return RefreshToken::findOrFail($this->characterId);
     }
 
     #[\Override]
     public function tags(): array
     {
-        return ['mail', 'body', "character_id:{$this->character_id}", "mail_id:{$this->mail_id}"];
+        return ['mail', 'body', "character_id:{$this->characterId}", "mail_id:{$this->mailId}"];
     }
 
     #[\Override]
     public function executeJob(EsiClient $esi): void
     {
-        $response = self::OPERATION_CLASS::execute($esi, $this->character_id, $this->mail_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->characterId, $this->mailId);
         if ($response->isCachedLoad) {
             return;
         }
 
-        Mail::where('id', $this->mail_id)->update(['body' => $response->body]);
+        Mail::where('id', $this->mailId)->update(['body' => $response->body]);
     }
 }

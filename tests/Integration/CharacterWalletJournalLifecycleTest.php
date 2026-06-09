@@ -11,19 +11,19 @@ beforeEach(function () {
 });
 
 test('run wallet journal job', function () {
-    $mock_data = WalletJournal::factory()->count(5)->make();
+    $mockData = WalletJournal::factory()->count(5)->make();
 
-    $esi_data = $mock_data->map(fn (WalletJournal $j) => CharactersCharacterIdWalletJournalGetItem::from(
+    $esiData = $mockData->map(fn (WalletJournal $j) => CharactersCharacterIdWalletJournalGetItem::from(
         (object) $j->toArray()
     ))->toArray();
 
     $esi = Mockery::mock(EsiClient::class);
-    mockEsiTransport($esi, makeEsiResult($esi_data));
+    mockEsiTransport($esi, makeEsiResult($esiData));
 
     $job = new CharacterWalletJournalJob(testCharacter()->character_id);
     $job->executeJob($esi);
 
-    foreach ($mock_data as $data) {
+    foreach ($mockData as $data) {
         $this->assertDatabaseHas('wallet_journals', [
             'wallet_journable_id' => $this->test_character->character_id,
             'id' => $data->id,

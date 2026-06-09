@@ -6,13 +6,13 @@ use Seatplus\Eveapi\Services\ResolveLocation\Finders\ThroughPreviouslyFailedRefr
 
 it('returns null when no valid record is found', function () {
     $finder = new ThroughPreviouslyFailedRefreshTokenFinder;
-    $location_id = 1;
+    $locationId = 1;
     $tracings = new Collection([
         createLocationRefreshToken(6),
         createLocationRefreshToken(7),
     ]);
 
-    $result = $finder->handle($location_id, $tracings);
+    $result = $finder->handle($locationId, $tracings);
 
     expect($result)->toBeNull();
 });

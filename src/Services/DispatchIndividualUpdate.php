@@ -36,21 +36,21 @@ class DispatchIndividualUpdate
     use DispatchesJobs;
 
     public function __construct(
-        private RefreshToken $refresh_token
+        private RefreshToken $refreshToken
     ) {}
 
-    public function execute(string $job_name): mixed
+    public function execute(string $jobName): mixed
     {
-        $job_class = config('eveapi.jobs')[$job_name];
+        $jobClass = config('eveapi.jobs')[$jobName];
 
-        $id = $this->refresh_token->character_id;
+        $id = $this->refreshToken->character_id;
 
         // check if job_name starts with corporation
-        if (str_starts_with($job_name, 'corporation')) {
-            $id = $this->refresh_token->character->corporation_id;
+        if (str_starts_with($jobName, 'corporation')) {
+            $id = $this->refreshToken->character->corporation_id;
         }
 
-        $job = (new $job_class($id))->onQueue('high');
+        $job = (new $jobClass($id))->onQueue('high');
 
         return $this->dispatch($job);
     }

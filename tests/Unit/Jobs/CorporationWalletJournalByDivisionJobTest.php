@@ -11,7 +11,7 @@ it('returns early if cached', function () {
     $esi = Mockery::mock(EsiClient::class);
     mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
-    $job = new CorporationWalletJournalByDivisionJob(corporation_id: 456, division: 1);
+    $job = new CorporationWalletJournalByDivisionJob(corporationId: 456, division: 1);
     $job->executeJob($esi);
 
     expect(WalletJournal::count())->toBe(0);
@@ -37,7 +37,7 @@ it('handles multiple pages and writes all journal entries', function () {
     $esi->shouldReceive('assertScope')->andReturnNull();
     $esi->shouldReceive('invoke')->andReturn($page1, $page2);
 
-    $job = new CorporationWalletJournalByDivisionJob(corporation_id: 456, division: 1);
+    $job = new CorporationWalletJournalByDivisionJob(corporationId: 456, division: 1);
     $job->executeJob($esi);
 
     expect(WalletJournal::count())->toBe(2);
@@ -45,7 +45,7 @@ it('handles multiple pages and writes all journal entries', function () {
 
 it('returns the corporation refresh token for an accountant', function () {
     $scope = head(config('eveapi.scopes.corporation.wallet'));
-    updateRefreshTokenScopes(testCharacter()->refresh_token, [$scope])->save();
+    updateRefreshTokenScopes(testCharacter()->refreshToken, [$scope])->save();
 
     CharacterRole::updateOrCreate(
         ['character_id' => testCharacter()->character_id],

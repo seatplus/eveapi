@@ -20,7 +20,7 @@ final class CharacterAssetJob extends EsiJob
 
     private readonly Collection $assets;
 
-    public function __construct(public int $character_id)
+    public function __construct(public int $characterId)
     {
         $this->assets = collect();
     }
@@ -28,13 +28,13 @@ final class CharacterAssetJob extends EsiJob
     #[\Override]
     public function getRefreshToken(): RefreshToken
     {
-        return RefreshToken::findOrFail($this->character_id);
+        return RefreshToken::findOrFail($this->characterId);
     }
 
     #[\Override]
     public function tags(): array
     {
-        return ['character', "character_id:{$this->character_id}", 'assets'];
+        return ['character', "character_id:{$this->characterId}", 'assets'];
     }
 
     #[\Override]
@@ -42,7 +42,7 @@ final class CharacterAssetJob extends EsiJob
     {
         $page = 1;
         do {
-            $response = self::OPERATION_CLASS::execute($esi, $this->character_id, $page);
+            $response = self::OPERATION_CLASS::execute($esi, $this->characterId, $page);
             if ($response->isCachedLoad) {
                 return;
             }
@@ -50,7 +50,7 @@ final class CharacterAssetJob extends EsiJob
             foreach ($response->data as $asset) {
                 $this->assets->push([
                     'item_id' => $asset->item_id,
-                    'assetable_id' => $this->character_id,
+                    'assetable_id' => $this->characterId,
                     'assetable_type' => CharacterInfo::class,
                     'is_blueprint_copy' => $asset->is_blueprint_copy ?? false,
                     'is_singleton' => $asset->is_singleton,
@@ -70,7 +70,7 @@ final class CharacterAssetJob extends EsiJob
         ]);
 
         Asset::query()
-            ->where('assetable_id', $this->character_id)
+            ->where('assetable_id', $this->characterId)
             ->whereNotIn('item_id', $this->assets->pluck('item_id')->toArray())
             ->delete();
 
@@ -85,7 +85,7 @@ final class CharacterAssetJob extends EsiJob
     private function resolveUnknownLocations(): void
     {
         $unknownLocationIds = Asset::query()
-            ->where('assetable_id', $this->character_id)
+            ->where('assetable_id', $this->characterId)
             ->doesntHave('location')
             ->pluck('location_id')
             ->unique();
@@ -94,14 +94,14 @@ final class CharacterAssetJob extends EsiJob
             return;
         }
 
-        $refreshToken = RefreshToken::find($this->character_id);
+        $refreshToken = RefreshToken::find($this->characterId);
         $unknownLocationIds->each(fn (int $locationId) => ResolveLocationJob::dispatch($locationId, $refreshToken)->onQueue('high'));
     }
 
     private function resolveUnknownTypes(): void
     {
         Asset::query()
-            ->where('assetable_id', $this->character_id)
+            ->where('assetable_id', $this->characterId)
             ->doesntHave('type')
             ->pluck('type_id')
             ->unique()

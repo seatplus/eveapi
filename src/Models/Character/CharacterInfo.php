@@ -69,7 +69,7 @@ class CharacterInfo extends Model
     protected $primaryKey = 'character_id';
 
     /** @return HasOne<RefreshToken, $this> */
-    public function refresh_token(): HasOne
+    public function refreshToken(): HasOne
     {
         return $this->hasOne(RefreshToken::class, 'character_id', 'character_id');
     }
@@ -105,7 +105,7 @@ class CharacterInfo extends Model
     }
 
     /** @return HasOne<CharacterAffiliation, $this> */
-    public function character_affiliation(): HasOne
+    public function characterAffiliation(): HasOne
     {
         return $this->hasOne(CharacterAffiliation::class, 'character_id', 'character_id');
     }
@@ -118,13 +118,13 @@ class CharacterInfo extends Model
     /** @return Attribute<int|null, never> */
     protected function corporationId(): Attribute
     {
-        return Attribute::make(get: fn () => $this->character_affiliation?->corporation_id);
+        return Attribute::make(get: fn () => $this->characterAffiliation?->corporation_id);
     }
 
     /** @return Attribute<int|null, never> */
     protected function allianceId(): Attribute
     {
-        return Attribute::make(get: fn () => $this->character_affiliation?->alliance_id);
+        return Attribute::make(get: fn () => $this->characterAffiliation?->alliance_id);
     }
 
     public function assets(): MorphMany
@@ -142,12 +142,12 @@ class CharacterInfo extends Model
         return $this->morphMany(Label::class, 'labelable');
     }
 
-    public function wallet_journals(): MorphMany
+    public function walletJournals(): MorphMany
     {
         return $this->morphMany(WalletJournal::class, 'wallet_journable');
     }
 
-    public function wallet_transactions(): MorphMany
+    public function walletTransactions(): MorphMany
     {
         return $this->morphMany(WalletTransaction::class, 'wallet_transactionable');
     }
@@ -163,7 +163,7 @@ class CharacterInfo extends Model
         );
     }
 
-    public function corporation_history(): HasMany
+    public function corporationHistory(): HasMany
     {
         return $this->hasMany(CorporationHistory::class, 'character_id');
     }
@@ -173,7 +173,7 @@ class CharacterInfo extends Model
         return $this->hasMany(Skill::class, 'character_id');
     }
 
-    public function skill_queues(): HasMany
+    public function skillQueues(): HasMany
     {
         return $this->hasMany(SkillQueue::class, 'character_id');
     }
@@ -195,7 +195,7 @@ class CharacterInfo extends Model
         return $this->morphOne(Balance::class, 'balanceable');
     }
 
-    public function batch_update(): MorphOne
+    public function batchUpdate(): MorphOne
     {
         return $this->morphOne(BatchUpdate::class, 'batchable');
     }

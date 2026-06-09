@@ -12,10 +12,10 @@ beforeEach(function () {
 });
 
 test('run character contact label', function () {
-    $mock_data = Label::factory()->count(5)->make();
+    $mockData = Label::factory()->count(5)->make();
 
     $esi = Mockery::mock(EsiClient::class);
-    mockEsiTransport($esi, makeEsiResult(array_map(fn ($l) => (object) $l, $mock_data->toArray())));
+    mockEsiTransport($esi, makeEsiResult(array_map(fn ($l) => (object) $l, $mockData->toArray())));
 
     expect(Label::all())->toHaveCount(0);
 
@@ -26,10 +26,10 @@ test('run character contact label', function () {
 });
 
 test('run corporation contact label', function () {
-    $mock_data = Label::factory()->count(5)->make();
+    $mockData = Label::factory()->count(5)->make();
 
     $esi = Mockery::mock(EsiClient::class);
-    mockEsiTransport($esi, makeEsiResult(array_map(fn ($l) => (object) $l, $mock_data->toArray())));
+    mockEsiTransport($esi, makeEsiResult(array_map(fn ($l) => (object) $l, $mockData->toArray())));
 
     expect(Label::all())->toHaveCount(0);
 
@@ -40,10 +40,10 @@ test('run corporation contact label', function () {
 });
 
 test('run alliance contact label', function () {
-    $mock_data = Label::factory()->count(5)->make();
+    $mockData = Label::factory()->count(5)->make();
 
     $esi = Mockery::mock(EsiClient::class);
-    mockEsiTransport($esi, makeEsiResult(array_map(fn ($l) => (object) $l, $mock_data->toArray())));
+    mockEsiTransport($esi, makeEsiResult(array_map(fn ($l) => (object) $l, $mockData->toArray())));
 
     expect(Label::all())->toHaveCount(0);
 

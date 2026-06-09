@@ -21,7 +21,7 @@ it('dispatches job when constellation is null', function () {
 
     Queue::assertPushedOn('default',
         ResolveUniverseConstellationByConstellationIdJob::class,
-        fn ($job) => $job->constellation_id === $system->constellation_id
+        fn ($job) => $job->constellationId === $system->constellation_id
     );
 });
 

@@ -35,29 +35,29 @@ use Seatplus\Eveapi\Models\Contacts\Label;
 class ProcessContactLabelsResponse
 {
     public function __construct(
-        private readonly int $labelable_id,
-        private readonly string $labelable_type
+        private readonly int $labelableId,
+        private readonly string $labelableType
     ) {}
 
     public function execute(EsiResult $response): Collection
     {
         return collect($response->data)
-            ->each(fn (object $contact_label) => Label::updateOrCreate([
-                'label_id' => $contact_label->label_id,
-                'labelable_id' => $this->labelable_id,
-                'labelable_type' => $this->labelable_type,
+            ->each(fn (object $contactLabel) => Label::updateOrCreate([
+                'label_id' => $contactLabel->label_id,
+                'labelable_id' => $this->labelableId,
+                'labelable_type' => $this->labelableType,
             ], [
-                'label_name' => $contact_label->label_name,
+                'label_name' => $contactLabel->label_name,
             ]))->pluck('label_id');
     }
 
-    public function remove_old_entries(array $known_ids): void
+    public function remove_old_entries(array $knownIds): void
     {
         // Cleanup
         Label::query()
-            ->where('labelable_id', $this->labelable_id)
-            ->where('labelable_type', $this->labelable_type)
-            ->whereNotIn('label_id', $known_ids)
+            ->where('labelable_id', $this->labelableId)
+            ->where('labelable_type', $this->labelableType)
+            ->whereNotIn('label_id', $knownIds)
             ->delete();
     }
 }

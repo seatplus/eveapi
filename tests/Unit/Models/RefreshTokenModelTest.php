@@ -6,23 +6,23 @@ use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 it('has character relationship', function () {
-    expect($this->test_character->refresh_token->character)->toBeInstanceOf(CharacterInfo::class);
+    expect($this->test_character->refreshToken->character)->toBeInstanceOf(CharacterInfo::class);
 });
 
 it('has corporation relationship', function () {
-    expect($this->test_character->refresh_token->corporation)->toBeInstanceOf(CorporationInfo::class);
+    expect($this->test_character->refreshToken->corporation)->toBeInstanceOf(CorporationInfo::class);
 });
 
 it('only returns token if it is not already considered expired', function () {
-    $refresh_token = RefreshToken::factory()->make();
+    $refreshToken = RefreshToken::factory()->make();
 
-    expect($refresh_token)
+    expect($refreshToken)
         ->expires_on->timestamp->toBeGreaterThan(Illuminate\Support\Carbon::now()->timestamp)
         ->token->toBeString();
 
-    $refresh_token->expires_on = Carbon::now()->subMinutes(2);
+    $refreshToken->expires_on = Carbon::now()->subMinutes(2);
 
-    expect($refresh_token)
+    expect($refreshToken)
         ->expires_on->timestamp->toBeLessThan(Illuminate\Support\Carbon::now()->timestamp)
         ->token->toBeNull();
 });

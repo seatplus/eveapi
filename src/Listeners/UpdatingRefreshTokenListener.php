@@ -35,30 +35,30 @@ use Seatplus\Eveapi\Jobs\Seatplus\UpdateCorporation;
 
 class UpdatingRefreshTokenListener
 {
-    public function handle(UpdatingRefreshTokenEvent $refresh_token_event): void
+    public function handle(UpdatingRefreshTokenEvent $refreshTokenEvent): void
     {
-        $refresh_token = $refresh_token_event->refresh_token;
-        $original_scopes = $refresh_token->getOriginal('scopes');
-        $new_scopes = $this->getScopes($refresh_token->token);
+        $refreshToken = $refreshTokenEvent->refreshToken;
+        $originalScopes = $refreshToken->getOriginal('scopes');
+        $newScopes = $this->getScopes($refreshToken->token);
 
-        if (array_diff($new_scopes, $original_scopes)) {
-            UpdateCharacter::dispatch($refresh_token)->onQueue('high');
+        if (array_diff($newScopes, $originalScopes)) {
+            UpdateCharacter::dispatch($refreshToken)->onQueue('high');
 
-            $corporation_id = data_get($refresh_token, 'character.corporation.corporation_id');
+            $corporationId = data_get($refreshToken, 'character.corporation.corporation_id');
 
-            if ($corporation_id) {
-                UpdateCorporation::dispatch($corporation_id)->onQueue('high');
+            if ($corporationId) {
+                UpdateCorporation::dispatch($corporationId)->onQueue('high');
             }
         }
     }
 
     private function getScopes(string $jwt): array
     {
-        $jwt_payload_base64_encoded = explode('.', $jwt)[1];
+        $jwtPayloadBase64Encoded = explode('.', $jwt)[1];
 
-        $jwt_payload = JWT::urlsafeB64Decode($jwt_payload_base64_encoded);
+        $jwtPayload = JWT::urlsafeB64Decode($jwtPayloadBase64Encoded);
 
-        $scopes = data_get(json_decode($jwt_payload), 'scp', []);
+        $scopes = data_get(json_decode($jwtPayload), 'scp', []);
 
         return is_array($scopes) ? $scopes : [$scopes];
     }

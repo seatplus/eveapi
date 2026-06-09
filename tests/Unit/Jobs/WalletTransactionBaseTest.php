@@ -8,20 +8,20 @@ use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 beforeEach(fn () => Queue::fake());
 
 it('sets from_id to latest transaction id minus one when latest transaction exists', function () {
-    $character_id = testCharacter()->character_id;
+    $characterId = testCharacter()->character_id;
 
     WalletTransaction::factory()->create([
-        'wallet_transactionable_id' => $character_id,
+        'wallet_transactionable_id' => $characterId,
         'transaction_id' => 100,
     ]);
 
     $esi = Mockery::mock(EsiClient::class);
     mockEsiTransport($esi, makeEsiResult([]));
 
-    $job = new CharacterWalletTransactionJob($character_id);
+    $job = new CharacterWalletTransactionJob($characterId);
     $job->executeJob($esi);
 
-    $property = (new ReflectionClass($job))->getProperty('from_id');
+    $property = (new ReflectionClass($job))->getProperty('fromId');
 
     expect($property->getValue($job))->toBe(99);
 });
@@ -33,16 +33,16 @@ it('keeps from_id as PHP_INT_MAX when no latest transaction exists', function ()
     $job = new CharacterWalletTransactionJob(testCharacter()->character_id);
     $job->executeJob($esi);
 
-    $property = (new ReflectionClass($job))->getProperty('from_id');
+    $property = (new ReflectionClass($job))->getProperty('fromId');
 
     expect($property->getValue($job))->toBe(PHP_INT_MAX);
 });
 
 it('breaks when transaction_id is equal to the from_id', function () {
-    $character_id = testCharacter()->character_id;
+    $characterId = testCharacter()->character_id;
 
     WalletTransaction::factory()->create([
-        'wallet_transactionable_id' => $character_id,
+        'wallet_transactionable_id' => $characterId,
         'transaction_id' => 100,
     ]);
 
@@ -62,10 +62,10 @@ it('breaks when transaction_id is equal to the from_id', function () {
     $esi = Mockery::mock(EsiClient::class);
     mockEsiTransport($esi, makeEsiResult($transactionData));
 
-    $job = new CharacterWalletTransactionJob($character_id);
+    $job = new CharacterWalletTransactionJob($characterId);
     $job->executeJob($esi);
 
-    $property = (new ReflectionClass($job))->getProperty('from_id');
+    $property = (new ReflectionClass($job))->getProperty('fromId');
 
     expect($property->getValue($job))->not()->toBe(100);
 });

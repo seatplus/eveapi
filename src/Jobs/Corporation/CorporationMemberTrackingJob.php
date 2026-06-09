@@ -18,13 +18,13 @@ final class CorporationMemberTrackingJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetCorporationsCorporationIdMembertracking::class;
 
-    public function __construct(public int $corporation_id) {}
+    public function __construct(public int $corporationId) {}
 
     #[\Override]
     public function getRefreshToken(): RefreshToken
     {
-        $token = (new FindCorporationRefreshToken)($this->corporation_id, 'esi-corporations.track_members.v1', 'Director');
-        throw_unless($token, new \Exception("No eligible refresh token found for corporation {$this->corporation_id}"));
+        $token = (new FindCorporationRefreshToken)($this->corporationId, 'esi-corporations.track_members.v1', 'Director');
+        throw_unless($token, new \Exception("No eligible refresh token found for corporation {$this->corporationId}"));
 
         return $token;
     }
@@ -32,19 +32,19 @@ final class CorporationMemberTrackingJob extends EsiJob
     #[\Override]
     public function tags(): array
     {
-        return ['corporation', "corporation_id:{$this->corporation_id}", 'member', 'tracking'];
+        return ['corporation', "corporation_id:{$this->corporationId}", 'member', 'tracking'];
     }
 
     #[\Override]
     public function executeJob(EsiClient $esi): void
     {
-        $response = self::OPERATION_CLASS::execute($esi, $this->corporation_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->corporationId);
         if ($response->isCachedLoad) {
             return;
         }
 
         $members = collect($response->data)->map(fn (object $member) => [
-            'corporation_id' => $this->corporation_id,
+            'corporation_id' => $this->corporationId,
             'character_id' => $member->character_id,
             'start_date' => isset($member->start_date) ? carbon($member->start_date) : null,
             'base_id' => $member->base_id ?? null,
@@ -56,10 +56,10 @@ final class CorporationMemberTrackingJob extends EsiJob
 
         CorporationMemberTracking::upsert($members->toArray(), ['corporation_id', 'character_id']);
 
-        CorporationMemberTracking::where('corporation_id', $this->corporation_id)
+        CorporationMemberTracking::where('corporation_id', $this->corporationId)
             ->whereNotIn('character_id', $members->pluck('character_id')->all())
             ->get()
-            ->each(fn (CorporationMemberTracking $ex_member) => $ex_member->delete());
+            ->each(fn (CorporationMemberTracking $exMember) => $exMember->delete());
 
         $this->getMemberCharacterInfo();
         $this->getLocations();
@@ -70,7 +70,7 @@ final class CorporationMemberTrackingJob extends EsiJob
     {
         $refreshToken = $this->getRefreshToken();
         CorporationMemberTracking::query()
-            ->where('corporation_id', $this->corporation_id)
+            ->where('corporation_id', $this->corporationId)
             ->doesntHave('location')
             ->pluck('location_id')
             ->unique()
@@ -80,7 +80,7 @@ final class CorporationMemberTrackingJob extends EsiJob
     private function getMemberCharacterInfo(): void
     {
         CorporationMemberTracking::query()
-            ->where('corporation_id', $this->corporation_id)
+            ->where('corporation_id', $this->corporationId)
             ->doesntHave('character')
             ->pluck('character_id')
             ->unique()
@@ -90,7 +90,7 @@ final class CorporationMemberTrackingJob extends EsiJob
     private function getShipTypes(): void
     {
         CorporationMemberTracking::query()
-            ->where('corporation_id', $this->corporation_id)
+            ->where('corporation_id', $this->corporationId)
             ->doesntHave('ship')
             ->pluck('ship_type_id')
             ->unique()

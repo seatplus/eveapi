@@ -15,29 +15,29 @@ final class CharacterContactLabelJob extends ContactBaseJob
 {
     protected const string OPERATION_CLASS = GetCharactersCharacterIdContactsLabels::class;
 
-    public function __construct(public int $character_id) {}
+    public function __construct(public int $characterId) {}
 
     #[\Override]
     public function getRefreshToken(): RefreshToken
     {
-        return RefreshToken::findOrFail($this->character_id);
+        return RefreshToken::findOrFail($this->characterId);
     }
 
     #[\Override]
     protected function fetchPage(EsiClient $esi, int $page): EsiResult
     {
-        return self::OPERATION_CLASS::execute($esi, $this->character_id);
+        return self::OPERATION_CLASS::execute($esi, $this->characterId);
     }
 
     #[\Override]
     public function tags(): array
     {
-        return ['character', "character_id:{$this->character_id}", 'contacts', 'labels'];
+        return ['character', "character_id:{$this->characterId}", 'contacts', 'labels'];
     }
 
     #[\Override]
     public function executeJob(EsiClient $esi): void
     {
-        $this->handleProcessor(new ProcessContactLabelsResponse($this->character_id, CharacterInfo::class), $esi);
+        $this->handleProcessor(new ProcessContactLabelsResponse($this->characterId, CharacterInfo::class), $esi);
     }
 }

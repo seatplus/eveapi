@@ -36,18 +36,18 @@ use Seatplus\Eveapi\Models\Universe\System;
 
 class DispatchGetSystemJobSubscriber
 {
-    private int $system_id;
+    private int $systemId;
 
     public function handleUniverseStationCreated(UniverseStationCreated $event): void
     {
-        $this->system_id = $event->station->system_id;
+        $this->systemId = $event->station->system_id;
 
         $this->handleSystemId();
     }
 
     public function handleUniverseStructureCreated(UniverseStructureCreated $event): void
     {
-        $this->system_id = $event->structure->solar_system_id;
+        $this->systemId = $event->structure->solar_system_id;
 
         $this->handleSystemId();
     }
@@ -67,11 +67,11 @@ class DispatchGetSystemJobSubscriber
 
     private function handleSystemId(): void
     {
-        if (System::find($this->system_id)) {
+        if (System::find($this->systemId)) {
             return;
         }
 
-        $job = new ResolveUniverseSystemBySystemIdJob($this->system_id);
+        $job = new ResolveUniverseSystemBySystemIdJob($this->systemId);
 
         dispatch($job)->onQueue('default');
     }

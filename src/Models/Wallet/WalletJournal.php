@@ -38,9 +38,9 @@ class WalletJournal extends Model
 {
     use HasFactory;
 
-    public function wallet_journable(): MorphTo
+    public function walletJournable(): MorphTo
     {
-        return $this->morphTo();
+        return $this->morphTo('wallet_journable');
     }
 
     /**

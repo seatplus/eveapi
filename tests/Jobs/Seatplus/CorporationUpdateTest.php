@@ -12,24 +12,24 @@ use Seatplus\Eveapi\Models\BatchStatistic;
 test('it dispatches jobs if token with role, scope and permission is present', function (
     string $role,
     string $scope,
-    array $job_classes,
-    ?int $corporation_id
+    array $jobClasses,
+    ?int $corporationId
 ) {
     Bus::fake();
 
-    updateRefreshTokenScopes($this->test_character->refresh_token, [$scope])->save();
+    updateRefreshTokenScopes($this->test_character->refreshToken, [$scope])->save();
     $this->test_character->roles()->update(['roles' => ['Director']]);
 
-    (new UpdateCorporation($corporation_id))->handle();
+    (new UpdateCorporation($corporationId))->handle();
 
     // loop through classes and check if jobs that are instance of class are in batch
-    foreach ($job_classes as $job_class) {
+    foreach ($jobClasses as $jobClass) {
         // if class is of type array
-        if (is_array($job_class)) {
-            Bus::assertBatched(function (PendingBatch $batch) use ($job_class) {
+        if (is_array($jobClass)) {
+            Bus::assertBatched(function (PendingBatch $batch) use ($jobClass) {
                 // get array inside the jobs array
                 $jobs = $batch->jobs->first(fn ($job) => is_array($job));
-                $classes = $job_class;
+                $classes = $jobClass;
 
                 // expect lenght of jobs to be equal to classes
                 if (count($jobs) !== count($classes)) {
@@ -37,8 +37,8 @@ test('it dispatches jobs if token with role, scope and permission is present', f
                 }
 
                 // loop through classes and check if jobs that are instance of class are in batch
-                foreach ($classes as $job_class) {
-                    if (! collect($jobs)->first(fn ($job) => $job instanceof $job_class)) {
+                foreach ($classes as $jobClass) {
+                    if (! collect($jobs)->first(fn ($job) => $job instanceof $jobClass)) {
                         return false;
                     }
                 }
@@ -46,7 +46,7 @@ test('it dispatches jobs if token with role, scope and permission is present', f
                 return true;
             });
         } else {
-            Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof $job_class));
+            Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof $jobClass));
         }
     }
 })->with([

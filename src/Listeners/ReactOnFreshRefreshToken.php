@@ -33,10 +33,10 @@ use Seatplus\Eveapi\Jobs\Seatplus\UpdateCharacter;
 
 class ReactOnFreshRefreshToken
 {
-    public function handle(RefreshTokenCreated $refresh_token_event): void
+    public function handle(RefreshTokenCreated $refreshTokenEvent): void
     {
-        $refresh_token = $refresh_token_event->refresh_token;
+        $refreshToken = $refreshTokenEvent->refreshToken;
 
-        UpdateCharacter::dispatch($refresh_token)->onQueue('high');
+        UpdateCharacter::dispatch($refreshToken)->onQueue('high');
     }
 }

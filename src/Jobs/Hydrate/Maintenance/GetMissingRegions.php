@@ -42,9 +42,9 @@ class GetMissingRegions extends HydrateMaintenanceBase
             return;
         }
 
-        $unknown_region_ids = Constellation::whereDoesntHave('region')->pluck('region_id')->unique()->values();
+        $unknownRegionIds = Constellation::whereDoesntHave('region')->pluck('region_id')->unique()->values();
 
-        $jobs = $unknown_region_ids->map(fn (int $id) => new ResolveUniverseRegionByRegionIdJob($id));
+        $jobs = $unknownRegionIds->map(fn (int $id) => new ResolveUniverseRegionByRegionIdJob($id));
 
         $this->batch()->add(
             $jobs->toArray()

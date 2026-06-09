@@ -32,7 +32,7 @@ use Seatplus\Eveapi\Models\RefreshToken;
 it('creates BatchUpdate entries', function () {
     Bus::fake();
 
-    expect(testCharacter())->refresh_token->not()->toBeNull();
+    expect(testCharacter())->refreshToken->not()->toBeNull();
 
     (new CharacterBatchJob(testCharacter()->character_id))->handle();
 
@@ -45,12 +45,12 @@ it('creates BatchUpdate entries', function () {
         ->started_at->toBeInstanceOf(Carbon::class);
 });
 
-it('contains public jobs in batch', function ($public_job) {
+it('contains public jobs in batch', function ($publicJob) {
     Bus::fake();
 
     (new CharacterBatchJob(testCharacter()->character_id))->handle();
 
-    Bus::assertBatched(fn ($batch) => isInstanceOfClassInArray($batch->jobs, $public_job));
+    Bus::assertBatched(fn ($batch) => isInstanceOfClassInArray($batch->jobs, $publicJob));
 })->with([
     CharacterInfoJob::class,
     CharacterAffiliationJob::class,
@@ -59,7 +59,7 @@ it('contains public jobs in batch', function ($public_job) {
 
 it('contains jobs if refresh_token has scope', function (string $scope, array $classes) {
     Queue::fake();
-    updateRefreshTokenScopes($this->test_character->refresh_token, [$scope])->save();
+    updateRefreshTokenScopes($this->test_character->refreshToken, [$scope])->save();
 
     Bus::fake();
 

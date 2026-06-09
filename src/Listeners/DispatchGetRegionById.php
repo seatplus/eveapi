@@ -33,12 +33,12 @@ use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseRegionByRegionIdJob;
 
 class DispatchGetRegionById
 {
-    public function handle(UniverseConstellationCreated $universe_constellation_created): void
+    public function handle(UniverseConstellationCreated $universeConstellationCreated): void
     {
-        if ($universe_constellation_created->constellation->region) {
+        if ($universeConstellationCreated->constellation->region) {
             return;
         }
 
-        ResolveUniverseRegionByRegionIdJob::dispatch($universe_constellation_created->constellation->region_id)->onQueue('default');
+        ResolveUniverseRegionByRegionIdJob::dispatch($universeConstellationCreated->constellation->region_id)->onQueue('default');
     }
 }

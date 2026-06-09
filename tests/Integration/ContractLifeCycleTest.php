@@ -14,8 +14,8 @@ test('job dispatches nothing by default upon creation with factory', function ()
         'issuer_id' => testCharacter()->character_id,
     ]);
 
-    expect($contract->start_location)->not()->toBeNull()
-        ->and($contract->end_location)->not()->toBeNull()
+    expect($contract->startLocation)->not()->toBeNull()
+        ->and($contract->endLocation)->not()->toBeNull()
         ->and($contract->issuer)->not()->toBeNull();
 
     $esi = Mockery::mock(EsiClient::class);
@@ -42,8 +42,8 @@ test('job dispatches location job with unknown location id', function () {
     $job = new CharacterContractsJob(testCharacter()->character_id);
     $job->executeJob($esi);
 
-    expect($contract->start_location)->toBeNull()
-        ->and($contract->end_location)->not()->toBeNull()
+    expect($contract->startLocation)->toBeNull()
+        ->and($contract->endLocation)->not()->toBeNull()
         ->and($contract->issuer)->not()->toBeNull();
 
     Queue::assertPushedOn('high', ResolveLocationJob::class);

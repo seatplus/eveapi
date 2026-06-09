@@ -12,15 +12,15 @@ it('runs through resolvers', function () {
     Queue::fake();
 
     // Arrange
-    $location_id = 100; // use low number to avoid being a potential structure or station
+    $locationId = 100; // use low number to avoid being a potential structure or station
 
-    ResolveLocationService::make()->handle($location_id);
+    ResolveLocationService::make()->handle($locationId);
 
     expect(Location::count())->toBe(0);
 });
 
 it('breaks the loop on successful resolution', function () {
-    $location_id = 12345;
+    $locationId = 12345;
 
     // Mock the Location model
     $locationMock = mock(Location::class)->makePartial();
@@ -33,9 +33,9 @@ it('breaks the loop on successful resolution', function () {
     });
 
     // Create the service with the mocked dependencies
-    $service = Mockery::mock(ResolveLocationService::class, [testCharacter()->refresh_token, [$resolverMock]])
+    $service = Mockery::mock(ResolveLocationService::class, [testCharacter()->refreshToken, [$resolverMock]])
         ->makePartial();
 
     // Call the handle method
-    $service->handle($location_id);
+    $service->handle($locationId);
 });

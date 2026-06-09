@@ -20,28 +20,28 @@ final class KillmailJob extends EsiJob
     protected const string OPERATION_CLASS = GetKillmailsKillmailIdKillmailHash::class;
 
     public function __construct(
-        public int $killmail_id,
-        public string $killmail_hash
+        public int $killmailId,
+        public string $killmailHash
     ) {}
 
     #[\Override]
     public function tags(): array
     {
-        return ['killmails', "killmail_id:{$this->killmail_id}"];
+        return ['killmails', "killmail_id:{$this->killmailId}"];
     }
 
     #[\Override]
     public function executeJob(EsiClient $esi): void
     {
-        $response = self::OPERATION_CLASS::execute($esi, $this->killmail_hash, $this->killmail_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->killmailHash, $this->killmailId);
         if ($response->isCachedLoad) {
             return;
         }
 
         $victim = (object) $response->victim;
 
-        $killmail = Killmail::firstOrCreate(['killmail_id' => $this->killmail_id], [
-            'killmail_hash' => $this->killmail_hash,
+        $killmail = Killmail::firstOrCreate(['killmail_id' => $this->killmailId], [
+            'killmail_hash' => $this->killmailHash,
             'solar_system_id' => $response->solar_system_id,
             'victim_character_id' => $victim->character_id ?? null,
             'victim_corporation_id' => $victim->corporation_id ?? null,
@@ -68,12 +68,12 @@ final class KillmailJob extends EsiJob
         $this->createKillmailAttackers($response->attackers);
     }
 
-    private function createKillmailItems(array $items, ?int $location_id = null): void
+    private function createKillmailItems(array $items, ?int $locationId = null): void
     {
-        collect($items)->each(function (mixed $item) use ($location_id) {
+        collect($items)->each(function (mixed $item) use ($locationId) {
             $item = (object) $item;
-            $killmail_item = KillmailItem::create([
-                'location_id' => $location_id ?? $this->killmail_id,
+            $killmailItem = KillmailItem::create([
+                'location_id' => $locationId ?? $this->killmailId,
                 'location_flag' => GetLocationFlagNameService::make()->get(data_get($item, 'flag')),
                 'quantity' => data_get($item, 'quantity_dropped') ?? data_get($item, 'quantity_destroyed'),
                 'type_id' => data_get($item, 'item_type_id'),
@@ -84,7 +84,7 @@ final class KillmailJob extends EsiJob
 
             $contents = data_get($item, 'items');
             if ($contents) {
-                $this->createKillmailItems($contents, $killmail_item->id);
+                $this->createKillmailItems($contents, $killmailItem->id);
             }
         });
 
@@ -98,7 +98,7 @@ final class KillmailJob extends EsiJob
     private function createKillmailAttackers(array $attackers): void
     {
         collect($attackers)->map(fn (mixed $a) => (object) $a)->each(fn (object $attacker) => KillmailAttacker::create([
-            'killmail_id' => $this->killmail_id,
+            'killmail_id' => $this->killmailId,
             'character_id' => $attacker->character_id ?? null,
             'corporation_id' => $attacker->corporation_id ?? null,
             'alliance_id' => $attacker->alliance_id ?? null,

@@ -9,5 +9,5 @@ use Seatplus\Eveapi\Models\RefreshToken;
 
 interface FinderInterface
 {
-    public function handle(int $location_id, Collection $tracings): ?RefreshToken;
+    public function handle(int $locationId, Collection $tracings): ?RefreshToken;
 }

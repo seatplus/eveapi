@@ -43,18 +43,18 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
 
     const int REFRESH_DELAY_MINUTES = 5;
 
-    public RefreshToken $refresh_token;
+    public RefreshToken $refreshToken;
 
-    private array $batch_jobs;
+    private array $batchJobs;
 
     public function __construct(
-        public int $character_id,
+        public int $characterId,
         public $queue = 'default', // @pest-ignore-type
-        array $batch_jobs = [],
+        array $batchJobs = [],
         public bool $reschedule = false,
     ) {
-        $this->refresh_token = RefreshToken::find($this->character_id);
-        $this->batch_jobs = $batch_jobs ?: $this->createBatchJobs();
+        $this->refreshToken = RefreshToken::find($this->characterId);
+        $this->batchJobs = $batchJobs ?: $this->createBatchJobs();
     }
 
     public function middleware(): array
@@ -66,48 +66,48 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
 
     public function uniqueId(): string
     {
-        return $this->character_id.':'.$this->queue;
+        return $this->characterId.':'.$this->queue;
     }
 
     public function handle(): void
     {
         // 1. Get BatchUpdate Entry
-        $batch_update = $this->getBatchUpdate();
+        $batchUpdate = $this->getBatchUpdate();
 
-        if ($this->shouldDiscardUpdate($batch_update)) {
+        if ($this->shouldDiscardUpdate($batchUpdate)) {
             return;
         }
-        $this->resetBatchUpdate($batch_update);
+        $this->resetBatchUpdate($batchUpdate);
 
         // 3. Dispatch and Return Job
         $batch = $this->execute();
 
         BatchStatistic::createEntry($batch);
 
-        $this->updateBatchId($batch, $batch_update);
+        $this->updateBatchId($batch, $batchUpdate);
     }
 
     private function execute(): Batch
     {
-        $character = $this->refresh_token?->character->name ?? $this->character_id;
-        $batch_name = sprintf('%s (character) update batch', $character);
-        $character_id = $this->character_id;
+        $character = $this->refreshToken?->character->name ?? $this->characterId;
+        $batchName = sprintf('%s (character) update batch', $character);
+        $characterId = $this->characterId;
         $queue = $this->queue;
         $reschedule = $this->reschedule;
 
         return Bus::batch($this->getBatchJobs())
-            ->finally(function (Batch $batch) use ($character_id, $queue, $reschedule) {
+            ->finally(function (Batch $batch) use ($characterId, $queue, $reschedule) {
                 // @codeCoverageIgnoreStart
                 BatchUpdate::where('batch_id', $batch->id)->update(['finished_at' => now()]);
                 BatchStatistic::where('batch_id', $batch->id)->update(['finished_at' => now()]);
 
                 if ($reschedule) {
-                    CharacterBatchJob::dispatch($character_id, $queue, reschedule: true)
+                    CharacterBatchJob::dispatch($characterId, $queue, reschedule: true)
                         ->delay(now()->addMinutes(self::REFRESH_DELAY_MINUTES));
                 }
                 // @codeCoverageIgnoreEnd
             })
-            ->name($batch_name)
+            ->name($batchName)
             ->onQueue($this->queue)
             ->allowFailures()
             ->dispatch();
@@ -119,10 +119,10 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
             // Add Private Endpoints
             [
                 // Chain character info and affiliation
-                new CharacterInfoJob($this->character_id),
-                new CharacterAffiliationJob($this->character_id),
+                new CharacterInfoJob($this->characterId),
+                new CharacterAffiliationJob($this->characterId),
             ],
-            new CorporationHistoryJob($this->character_id),
+            new CorporationHistoryJob($this->characterId),
             ...$this->addAssetsJobs(),
             ...$this->addCharacterRolesJobs(),
             ...$this->addContactsJobs(),
@@ -137,15 +137,15 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
     private function addAssetsJobs(): array
     {
         // Return empty array if required scopes are not present
-        if (! $this->refresh_token->hasScope('esi-assets.read_assets.v1')) {
+        if (! $this->refreshToken->hasScope('esi-assets.read_assets.v1')) {
             return [];
         }
 
         return [
             // add chain of jobs to get assets
             [
-                new CharacterAssetJob($this->character_id),
-                new CharacterAssetsNameJob($this->character_id),
+                new CharacterAssetJob($this->characterId),
+                new CharacterAssetsNameJob($this->characterId),
                 new EnrichAssetTypeGroupCategoryJob,
             ],
         ];
@@ -154,12 +154,12 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
     private function addCharacterRolesJobs(): array
     {
         // Return empty array if required scopes are not present
-        if (! $this->refresh_token->hasScope('esi-characters.read_corporation_roles.v1')) {
+        if (! $this->refreshToken->hasScope('esi-characters.read_corporation_roles.v1')) {
             return [];
         }
 
         return [
-            new CharacterRoleJob($this->character_id),
+            new CharacterRoleJob($this->characterId),
         ];
     }
 
@@ -176,14 +176,14 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
     private function addCharacterContactsJobs(): array
     {
         // Return empty array if required scopes are not present
-        if (! $this->refresh_token->hasScope('esi-characters.read_contacts.v1')) {
+        if (! $this->refreshToken->hasScope('esi-characters.read_contacts.v1')) {
             return [];
         }
 
         return [
             [
-                new CharacterContactJob($this->character_id),
-                new CharacterContactLabelJob($this->character_id),
+                new CharacterContactJob($this->characterId),
+                new CharacterContactLabelJob($this->characterId),
             ],
         ];
     }
@@ -191,17 +191,17 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
     private function addCorporationContactsJobs(): array
     {
         // Return empty array if required scopes are not present
-        if (! $this->refresh_token->hasScope('esi-corporations.read_contacts.v1')) {
+        if (! $this->refreshToken->hasScope('esi-corporations.read_contacts.v1')) {
             return [];
         }
 
         // Get corporation_id from character
-        $corporation_id = $this->refresh_token->character?->corporation_id;
+        $corporationId = $this->refreshToken->character?->corporation_id;
 
         return [
             [
-                new CorporationContactJob($corporation_id, $this->character_id),
-                new CorporationContactLabelJob($corporation_id, $this->character_id),
+                new CorporationContactJob($corporationId, $this->characterId),
+                new CorporationContactLabelJob($corporationId, $this->characterId),
             ],
         ];
     }
@@ -209,22 +209,22 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
     private function addAllianceContactsJobs(): array
     {
         // Return empty array if required scopes are not present
-        if (! $this->refresh_token->hasScope('esi-alliances.read_contacts.v1')) {
+        if (! $this->refreshToken->hasScope('esi-alliances.read_contacts.v1')) {
             return [];
         }
 
         // Get alliance_id from character
-        $alliance_id = $this->refresh_token->character?->alliance_id;
+        $allianceId = $this->refreshToken->character?->alliance_id;
 
         // Return empty array if character has no alliance
-        if (! $alliance_id) {
+        if (! $allianceId) {
             return [];
         }
 
         return [
             [
-                new AllianceContactJob($alliance_id, $this->character_id),
-                new AllianceContactLabelJob($alliance_id, $this->character_id),
+                new AllianceContactJob($allianceId, $this->characterId),
+                new AllianceContactLabelJob($allianceId, $this->characterId),
             ],
         ];
     }
@@ -232,95 +232,95 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
     private function addWalletJobs(): array
     {
         // Return empty array if required scopes are not present
-        if (! $this->refresh_token->hasScope('esi-wallet.read_character_wallet.v1')) {
+        if (! $this->refreshToken->hasScope('esi-wallet.read_character_wallet.v1')) {
             return [];
         }
 
         return [
-            new CharacterWalletJournalJob($this->character_id),
-            new CharacterWalletTransactionJob($this->character_id),
-            new CharacterBalanceJob($this->character_id),
+            new CharacterWalletJournalJob($this->characterId),
+            new CharacterWalletTransactionJob($this->characterId),
+            new CharacterBalanceJob($this->characterId),
         ];
     }
 
     private function addContractJobs(): array
     {
         // Return empty array if required scopes are not present
-        if (! $this->refresh_token->hasScope('esi-contracts.read_character_contracts.v1')) {
+        if (! $this->refreshToken->hasScope('esi-contracts.read_character_contracts.v1')) {
             return [];
         }
 
         return [
-            new CharacterContractsJob($this->character_id),
+            new CharacterContractsJob($this->characterId),
         ];
     }
 
     private function addSkillsJobs(): array
     {
         // Return empty array if required scopes are not present
-        if (! $this->refresh_token->hasScope('esi-skills.read_skills.v1')) {
+        if (! $this->refreshToken->hasScope('esi-skills.read_skills.v1')) {
             return [];
         }
 
         return [
-            new SkillsJob($this->character_id),
+            new SkillsJob($this->characterId),
         ];
     }
 
     private function addSkillQueueJobs(): array
     {
         // Return empty array if required scopes are not present
-        if (! $this->refresh_token->hasScope('esi-skills.read_skillqueue.v1')) {
+        if (! $this->refreshToken->hasScope('esi-skills.read_skillqueue.v1')) {
             return [];
         }
 
         return [
-            new SkillQueueJob($this->character_id),
+            new SkillQueueJob($this->characterId),
         ];
     }
 
     private function addMailsJobs(): array
     {
         // Return empty array if required scopes are not present
-        if (! $this->refresh_token->hasScope('esi-mail.read_mail.v1')) {
+        if (! $this->refreshToken->hasScope('esi-mail.read_mail.v1')) {
             return [];
         }
 
         return [
-            new MailHeaderJob($this->character_id),
+            new MailHeaderJob($this->characterId),
         ];
     }
 
     public function getBatchJobs(): array
     {
-        return $this->batch_jobs;
+        return $this->batchJobs;
     }
 
     public function getBatchUpdate(): BatchUpdate
     {
         return BatchUpdate::firstOrCreate([
-            'batchable_id' => $this->character_id,
+            'batchable_id' => $this->characterId,
             'batchable_type' => CharacterInfo::class,
         ]);
     }
 
-    private function shouldDiscardUpdate(mixed $batch_update): bool
+    private function shouldDiscardUpdate(mixed $batchUpdate): bool
     {
-        return $batch_update->is_pending;
+        return $batchUpdate->is_pending;
     }
 
-    public function resetBatchUpdate(BatchUpdate $batch_update): void
+    public function resetBatchUpdate(BatchUpdate $batchUpdate): void
     {
         // reset batch_id, finished_at, started_at and queue
-        $batch_update->finished_at = null;
-        $batch_update->batch_id = null;
-        $batch_update->started_at = now();
-        $batch_update->queue = $this->queue;
+        $batchUpdate->finished_at = null;
+        $batchUpdate->batch_id = null;
+        $batchUpdate->started_at = now();
+        $batchUpdate->queue = $this->queue;
     }
 
-    public function updateBatchId(Batch $batch, mixed $batch_update): void
+    public function updateBatchId(Batch $batch, mixed $batchUpdate): void
     {
-        $batch_update->batch_id = $batch->id;
-        $batch_update->save();
+        $batchUpdate->batch_id = $batch->id;
+        $batchUpdate->save();
     }
 }

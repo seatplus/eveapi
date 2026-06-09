@@ -8,19 +8,19 @@ it('checks if the response is cached', function () {
     $esi = Mockery::mock(EsiClient::class);
     mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
-    $job = new CorporationHistoryJob($character_id = 1);
+    $job = new CorporationHistoryJob($characterId = 1);
     $job->executeJob($esi);
 
     expect(CorporationHistory::count())->toBe(0);
 });
 
 it('has tags', function () {
-    $job = new CorporationHistoryJob($character_id = 1);
+    $job = new CorporationHistoryJob($characterId = 1);
 
     expect($job->tags())->toBe([
         'character',
         'info',
-        'character_id:'.$character_id,
+        'character_id:'.$characterId,
         'corporationhistory',
     ]);
 });

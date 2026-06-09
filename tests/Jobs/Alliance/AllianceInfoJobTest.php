@@ -16,13 +16,13 @@ test('if job is queued', function () {
 });
 
 test('retrieve test', function () {
-    $mock_data = AllianceInfo::factory()->make(['alliance_id' => 12345]);
+    $mockData = AllianceInfo::factory()->make(['alliance_id' => 12345]);
 
     $esi = Mockery::mock(EsiClient::class);
-    mockEsiTransport($esi, makeEsiResult((object) $mock_data->toArray()));
+    mockEsiTransport($esi, makeEsiResult((object) $mockData->toArray()));
 
     $job = new AllianceInfoJob(12345);
     $job->executeJob($esi);
 
-    expect(AllianceInfo::where('name', $mock_data->name)->exists())->toBeTrue();
+    expect(AllianceInfo::where('name', $mockData->name)->exists())->toBeTrue();
 });

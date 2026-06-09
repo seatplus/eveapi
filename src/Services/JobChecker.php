@@ -24,13 +24,13 @@ class JobChecker
 
     private function checkMiddleware(EsiJob $job): array
     {
-        $used_middlewares = collect($job->middleware());
+        $usedMiddlewares = collect($job->middleware());
 
-        if (! $used_middlewares->first(fn (object $m) => $m instanceof ThrottlesExceptionsWithRedis)) {
+        if (! $usedMiddlewares->first(fn (object $m) => $m instanceof ThrottlesExceptionsWithRedis)) {
             return $this->assertionResult('error', 'ThrottlesExceptionsWithRedis middleware is not used');
         }
 
-        if (! $used_middlewares->first(fn (object $m) => $m instanceof EsiProactiveRateLimitMiddleware)) {
+        if (! $usedMiddlewares->first(fn (object $m) => $m instanceof EsiProactiveRateLimitMiddleware)) {
             return $this->assertionResult('error', 'EsiProactiveRateLimitMiddleware is not used');
         }
 

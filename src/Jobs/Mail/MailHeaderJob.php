@@ -19,12 +19,12 @@ final class MailHeaderJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetCharactersCharacterIdMail::class;
 
-    public function __construct(public int $character_id) {}
+    public function __construct(public int $characterId) {}
 
     #[\Override]
     public function getRefreshToken(): RefreshToken
     {
-        return RefreshToken::findOrFail($this->character_id);
+        return RefreshToken::findOrFail($this->characterId);
     }
 
     #[\Override]
@@ -33,14 +33,14 @@ final class MailHeaderJob extends EsiJob
         return [
             'mail',
             'header',
-            "character_id:{$this->character_id}",
+            "character_id:{$this->characterId}",
         ];
     }
 
     #[\Override]
     public function executeJob(EsiClient $esi): void
     {
-        $response = self::OPERATION_CLASS::execute($esi, $this->character_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->characterId);
         if ($response->isCachedLoad) {
             return;
         }
@@ -71,26 +71,26 @@ final class MailHeaderJob extends EsiJob
         }
     }
 
-    private function getReceivableType(string $recipient_type): string
+    private function getReceivableType(string $recipientType): string
     {
-        return match ($recipient_type) {
+        return match ($recipientType) {
             'alliance' => AllianceInfo::class,
             'character' => CharacterInfo::class,
             'corporation' => CorporationInfo::class,
             'mailing_list' => 'mailing_list',
-            default => throw new \Exception("Unknown recipient type {$recipient_type}"),
+            default => throw new \Exception("Unknown recipient type {$recipientType}"),
         };
     }
 
     public function handleRecipients(Collection $mails): void
     {
-        $existing_recipients = MailRecipients::query()
+        $existingRecipients = MailRecipients::query()
             ->whereIn('mail_id', $mails->pluck('id'))
             ->get('mail_id')
             ->toArray();
 
         $recipients = $mails
-            ->filter(fn (array $mail) => ! in_array(data_get($mail, 'id'), $existing_recipients))
+            ->filter(fn (array $mail) => ! in_array(data_get($mail, 'id'), $existingRecipients))
             ->map(fn (array $mail) => collect(data_get($mail, 'recipients'))
                 ->map(fn (object $recipient) => [
                     'mail_id' => data_get($mail, 'id'),
@@ -99,7 +99,7 @@ final class MailHeaderJob extends EsiJob
                 ])
                 ->push([
                     'mail_id' => data_get($mail, 'id'),
-                    'receivable_id' => $this->character_id,
+                    'receivable_id' => $this->characterId,
                     'receivable_type' => CharacterInfo::class,
                 ])
                 ->unique()
@@ -118,8 +118,8 @@ final class MailHeaderJob extends EsiJob
             ->select('id')
             ->get()
             ->each(fn (Mail $mail) => $this->batching()
-                ? $this->batch()->add([new MailBodyJob($this->character_id, $mail->id)])
-                : MailBodyJob::dispatch($this->character_id, $mail->id)->onQueue($this->queue)
+                ? $this->batch()->add([new MailBodyJob($this->characterId, $mail->id)])
+                : MailBodyJob::dispatch($this->characterId, $mail->id)->onQueue($this->queue)
             );
     }
 }

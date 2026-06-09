@@ -14,14 +14,14 @@ beforeEach(function () {
 it('runs skill queue job', function () {
     expect(SkillQueue::all())->toHaveCount(0);
 
-    $mocked_skill_queue = Event::fakeFor(
+    $mockedSkillQueue = Event::fakeFor(
         fn () => SkillQueue::factory(['character_id' => testCharacter()->character_id])
             ->count(5)
             ->make()
     );
 
     $esi = Mockery::mock(EsiClient::class);
-    mockEsiTransport($esi, makeEsiResult(array_map(fn ($s) => (object) $s, $mocked_skill_queue->toArray())));
+    mockEsiTransport($esi, makeEsiResult(array_map(fn ($s) => (object) $s, $mockedSkillQueue->toArray())));
 
     $job = new SkillQueueJob(testCharacter()->character_id);
     $job->executeJob($esi);

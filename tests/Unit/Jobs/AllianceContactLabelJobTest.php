@@ -8,7 +8,7 @@ it('returns early if cached', function () {
     $esi = Mockery::mock(EsiClient::class);
     mockEsiTransport($esi, makeEsiResult([], isCachedLoad: true));
 
-    $job = new AllianceContactLabelJob(alliance_id: 99, character_id: 123);
+    $job = new AllianceContactLabelJob(allianceId: 99, characterId: 123);
     $job->executeJob($esi);
 
     expect(Label::count())->toBe(0);
@@ -20,7 +20,7 @@ it('writes labels to database on normal execution', function () {
     $esi = Mockery::mock(EsiClient::class);
     mockEsiTransport($esi, makeEsiResult([$label]));
 
-    $job = new AllianceContactLabelJob(alliance_id: 99, character_id: 123);
+    $job = new AllianceContactLabelJob(allianceId: 99, characterId: 123);
     $job->executeJob($esi);
 
     expect(Label::count())->toBe(1);
@@ -38,7 +38,7 @@ it('handles multiple pages and writes all labels', function () {
     $esi->shouldReceive('assertScope')->andReturnNull();
     $esi->shouldReceive('invoke')->andReturn($page1, $page2);
 
-    $job = new AllianceContactLabelJob(alliance_id: 99, character_id: 123);
+    $job = new AllianceContactLabelJob(allianceId: 99, characterId: 123);
     $job->executeJob($esi);
 
     expect(Label::count())->toBe(2);

@@ -9,13 +9,13 @@ use Seatplus\Eveapi\Models\BatchUpdate;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
 it('discards update if still pending', function () {
-    $batch_update = new BatchUpdate;
+    $batchUpdate = new BatchUpdate;
 
-    $batch_update->is_pending = true;
-    $batch_update->started_at = now();
+    $batchUpdate->is_pending = true;
+    $batchUpdate->started_at = now();
 
     $job = mock(CharacterBatchJob::class)->makePartial();
-    $job->shouldReceive('getBatchUpdate')->andReturn($batch_update);
+    $job->shouldReceive('getBatchUpdate')->andReturn($batchUpdate);
 
     $job->handle();
 
@@ -31,7 +31,7 @@ it('does not discard update if finished long ago', function () {
         'finished_at' => now()->subHour(),
     ]);
 
-    $job = new CharacterBatchJob(testCharacter()->character_id, batch_jobs: [fn () => 'test']);
+    $job = new CharacterBatchJob(testCharacter()->character_id, batchJobs: [fn () => 'test']);
 
     Bus::fake();
 
@@ -52,7 +52,7 @@ it('finally creates BatchStatistices', function () {
         'finished_at' => now()->subDays(1),
     ]);
 
-    $job = new CharacterBatchJob(testCharacter()->character_id, batch_jobs: [fn () => 'test']);
+    $job = new CharacterBatchJob(testCharacter()->character_id, batchJobs: [fn () => 'test']);
 
     Bus::fake();
 
@@ -83,7 +83,7 @@ it('stores queue on batch update', function () {
 
     Bus::fake();
 
-    (new CharacterBatchJob(testCharacter()->character_id, 'high', batch_jobs: [fn () => 'test']))->handle();
+    (new CharacterBatchJob(testCharacter()->character_id, 'high', batchJobs: [fn () => 'test']))->handle();
 
     expect(BatchUpdate::first())->queue->toBe('high');
 });
@@ -93,33 +93,33 @@ it('does not add AllianceContactsJob if no alliance_id is present', function () 
     // Arrange
 
     // make sure refresh token has esi-alliances.read_contacts.v1 scope
-    $refresh_token = updateRefreshTokenScopes(testCharacter()->refresh_token, ['esi-alliances.read_contacts.v1']);
-    Event::fakeFor(fn () => $refresh_token->save());
+    $refreshToken = updateRefreshTokenScopes(testCharacter()->refreshToken, ['esi-alliances.read_contacts.v1']);
+    Event::fakeFor(fn () => $refreshToken->save());
 
     // delete alliance_id from character info
-    $character_affiliation = testCharacter()->character_affiliation;
-    $character_affiliation->alliance_id = null;
+    $characterAffiliation = testCharacter()->characterAffiliation;
+    $characterAffiliation->alliance_id = null;
 
-    Event::fakeFor(fn () => $character_affiliation->save());
+    Event::fakeFor(fn () => $characterAffiliation->save());
 
     // Act
-    $job = new CharacterBatchJob($character_affiliation->character_id);
+    $job = new CharacterBatchJob($characterAffiliation->character_id);
 
     // Assert
 
-    expect($character_affiliation->refresh()->alliance_id)->toBeNull();
+    expect($characterAffiliation->refresh()->alliance_id)->toBeNull();
 
     $reflection = new ReflectionClass($job);
     // get the protected property batch_jobs
-    $property = $reflection->getProperty('batch_jobs');
+    $property = $reflection->getProperty('batchJobs');
 
-    $batch_jobs = $property->getValue($job);
+    $batchJobs = $property->getValue($job);
 
     // flatten the array with nested arrays
-    $batch_jobs = Arr::flatten($batch_jobs);
+    $batchJobs = Arr::flatten($batchJobs);
 
-    foreach ($batch_jobs as $batch_job) {
-        expect($batch_job)->not->toBeInstanceOf(AllianceContactJob::class);
+    foreach ($batchJobs as $batchJob) {
+        expect($batchJob)->not->toBeInstanceOf(AllianceContactJob::class);
     }
 });
 

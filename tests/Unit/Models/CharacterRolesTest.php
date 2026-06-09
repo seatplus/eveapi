@@ -8,41 +8,41 @@ test('character has character roles relation test', function () {
 });
 
 test('character role has character relation test', function () {
-    $character_role = $this->test_character->roles;
+    $characterRole = $this->test_character->roles;
 
-    expect($character_role->character)->toBeInstanceOf(CharacterInfo::class);
+    expect($characterRole->character)->toBeInstanceOf(CharacterInfo::class);
 });
 
 test('has role test', function () {
-    $character_role = CharacterRole::factory()->make([
+    $characterRole = CharacterRole::factory()->make([
         'roles' => ['Contract_Manager'],
     ]);
 
-    expect($character_role->hasRole('roles', 'Contract_Manager'))->toBeTrue();
+    expect($characterRole->hasRole('roles', 'Contract_Manager'))->toBeTrue();
 });
 
 test('has director role test', function () {
-    $character_role = CharacterRole::factory()->make([
+    $characterRole = CharacterRole::factory()->make([
         'roles' => ['Contract_Manager', 'Director'],
     ]);
 
-    expect($character_role->hasRole('roles', 'Hangar_Query_3'))->toBeTrue();
+    expect($characterRole->hasRole('roles', 'Hangar_Query_3'))->toBeTrue();
 });
 
 test('has no role in scope', function () {
-    $character_role = CharacterRole::factory()->make([
+    $characterRole = CharacterRole::factory()->make([
         'roles' => ['Contract_Manager', 'Director'],
         'roles_at_hq' => ['Hangar_Query_3'],
     ]);
 
-    expect($character_role->hasRole('roles_at_hq', 'Contract_Manager'))->toBeFalse();
+    expect($characterRole->hasRole('roles_at_hq', 'Contract_Manager'))->toBeFalse();
 });
 
 it('returns false if scope is null', function () {
-    $character_role = CharacterRole::factory()->make([
+    $characterRole = CharacterRole::factory()->make([
         'roles' => ['Contract_Manager', 'Director'],
         'roles_at_hq' => null,
     ]);
 
-    expect($character_role->hasRole('roles_at_hq', 'Contract_Manager'))->toBeFalse();
+    expect($characterRole->hasRole('roles_at_hq', 'Contract_Manager'))->toBeFalse();
 });

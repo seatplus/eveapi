@@ -102,10 +102,10 @@ describe('is potential station', function () {
     it('creates location', function () {
 
         // Arrange
-        $location_id = 60_005_617;
+        $locationId = 60_005_617;
 
         $location = Location::firstOrNew([
-            'location_id' => $location_id,
+            'location_id' => $locationId,
         ]);
 
         Log::shouldReceive('info')
@@ -123,10 +123,10 @@ describe('is potential station', function () {
     it('logs successfully resolved station', function () {
 
         // Arrange
-        $location_id = 60_005_617;
+        $locationId = 60_005_617;
 
         $location = Location::firstOrNew([
-            'location_id' => $location_id,
+            'location_id' => $locationId,
         ]);
 
         Log::shouldReceive('info')->once();
@@ -143,16 +143,16 @@ describe('is potential station', function () {
     it('throws error if resolving station fails', function () {
 
         // Arrange
-        $location_id = 60_005_617;
+        $locationId = 60_005_617;
 
         expect(Location::count())->toBe(0)
             ->and(Structure::count())->toBe(0);
 
         $location = Location::firstOrNew([
-            'location_id' => $location_id,
+            'location_id' => $locationId,
         ]);
 
-        $test_class = new class extends StationResolver
+        $testClass = new class extends StationResolver
         {
             protected function dispatchStationResolutionJob(Location $location): void
             {
@@ -163,7 +163,7 @@ describe('is potential station', function () {
         Log::shouldReceive('error')->once(); // once for the error
 
         // Act
-        $result = $test_class->handle($location);
+        $result = $testClass->handle($location);
 
         // Assert
         expect($result)->toBeTrue();

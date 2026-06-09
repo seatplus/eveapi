@@ -10,10 +10,10 @@ beforeEach(function () {
 });
 
 test('run wallet balance job', function () {
-    $mock_data = Balance::factory()->make();
+    $mockData = Balance::factory()->make();
 
     $esi = Mockery::mock(EsiClient::class);
-    mockEsiTransport($esi, makeEsiResult($mock_data->balance));
+    mockEsiTransport($esi, makeEsiResult($mockData->balance));
 
     expect(Balance::all())->toHaveCount(0);
 

@@ -76,7 +76,7 @@ class Application extends Model
         return $this->morphTo();
     }
 
-    public function log_entries(): HasMany
+    public function logEntries(): HasMany
     {
         return $this->hasMany(ApplicationLogs::class);
     }
@@ -84,19 +84,19 @@ class Application extends Model
     /** @return Attribute<int, never> */
     protected function decisionCount(): Attribute
     {
-        return Attribute::make(get: fn () => $this->log_entries()->where('type', 'decision')->count());
+        return Attribute::make(get: fn () => $this->logEntries()->where('type', 'decision')->count());
     }
 
     #[Scope]
     protected function ofCorporation(Builder $query, int|array $corporation): Builder
     {
-        $corporation_ids = is_int($corporation) ? [$corporation] : $corporation;
+        $corporationIds = is_int($corporation) ? [$corporation] : $corporation;
 
-        return $query->whereIn('corporation_id', $corporation_ids)
+        return $query->whereIn('corporation_id', $corporationIds)
             ->with([
-                'applicationable' => fn (MorphTo $morph_to) => $morph_to->morphWith([
-                    User::class => ['characters.refresh_token', 'mainCharacter', 'characters.application.corporation.ssoScopes', 'characters.application.corporation.alliance.ssoScopes'], // @phpstan-ignore-line
-                    CharacterInfo::class => ['refresh_token', 'application.corporation.ssoScopes', 'application.corporation.alliance.ssoScopes'],
+                'applicationable' => fn (MorphTo $morphTo) => $morphTo->morphWith([
+                    User::class => ['characters.refreshToken', 'mainCharacter', 'characters.application.corporation.ssoScopes', 'characters.application.corporation.alliance.ssoScopes'], // @phpstan-ignore-line
+                    CharacterInfo::class => ['refreshToken', 'application.corporation.ssoScopes', 'application.corporation.alliance.ssoScopes'],
                 ]),
             ]);
     }

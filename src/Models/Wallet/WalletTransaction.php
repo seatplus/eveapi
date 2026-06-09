@@ -43,9 +43,9 @@ class WalletTransaction extends Model
 
     protected $primaryKey = 'transaction_id';
 
-    public function wallet_transactionable(): MorphTo
+    public function walletTransactionable(): MorphTo
     {
-        return $this->morphTo();
+        return $this->morphTo('wallet_transactionable');
     }
 
     public function type(): HasOne

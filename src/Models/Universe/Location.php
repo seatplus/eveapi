@@ -71,10 +71,10 @@ class Location extends Model implements LocationWatchListInterface
     #[Scope]
     public function filterByRegionIds(Builder $query, int|array $regions): Builder
     {
-        $region_ids = is_array($regions) ? $regions : [$regions];
+        $regionIds = is_array($regions) ? $regions : [$regions];
 
-        return $query->whereHas('locatable.system.constellation', function (Builder $query) use ($region_ids) {
-            $query->whereIn('region_id', $region_ids);
+        return $query->whereHas('locatable.system.constellation', function (Builder $query) use ($regionIds) {
+            $query->whereIn('region_id', $regionIds);
         });
     }
 
@@ -82,10 +82,10 @@ class Location extends Model implements LocationWatchListInterface
     #[Scope]
     public function filterBySystemIds(Builder $query, int|array $systems): Builder
     {
-        $system_ids = is_array($systems) ? $systems : [$systems];
+        $systemIds = is_array($systems) ? $systems : [$systems];
 
-        return $query->whereHas('locatable.system', function (Builder $query) use ($system_ids) {
-            $query->whereIn('system_id', $system_ids);
+        return $query->whereHas('locatable.system', function (Builder $query) use ($systemIds) {
+            $query->whereIn('system_id', $systemIds);
         });
     }
 }

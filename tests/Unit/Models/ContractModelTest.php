@@ -11,11 +11,11 @@ use Seatplus\Eveapi\Models\Universe\Station;
 use Seatplus\Eveapi\Models\Universe\System;
 use Seatplus\Eveapi\Models\Universe\Type;
 
-it('has inRegionScope', function (string $location_id) {
+it('has inRegionScope', function (string $locationId) {
     expect(Contract::all())->toHaveCount(0);
 
-    $test_contract = Contract::factory()->create([
-        $location_id => Location::factory()->create([
+    $testContract = Contract::factory()->create([
+        $locationId => Location::factory()->create([
             'locatable_type' => Station::class,
             'locatable_id' => Station::factory()->create([
                 'system_id' => System::factory()->create([
@@ -27,23 +27,23 @@ it('has inRegionScope', function (string $location_id) {
         ]),
     ]);
 
-    $region_id = match ($location_id) {
-        'start_location_id' => $test_contract->start_location->locatable->system->region->region_id,
-        'end_location_id' => $test_contract->end_location->locatable->system->region->region_id
+    $regionId = match ($locationId) {
+        'start_location_id' => $testContract->startLocation->locatable->system->region->region_id,
+        'end_location_id' => $testContract->endLocation->locatable->system->region->region_id
     };
 
-    expect(Contract::query()->filterByRegionIds($region_id)->get())->toHaveCount(1)
-        ->and(Contract::query()->filterByRegionIds($region_id + 1)->get())->toHaveCount(0);
+    expect(Contract::query()->filterByRegionIds($regionId)->get())->toHaveCount(1)
+        ->and(Contract::query()->filterByRegionIds($regionId + 1)->get())->toHaveCount(0);
 })->with([
     'start_location_id',
     'end_location_id',
 ]);
 
-it('has inSystemScope', function (string $location_id) {
+it('has inSystemScope', function (string $locationId) {
     expect(Contract::all())->toHaveCount(0);
 
-    $test_contract = Contract::factory()->create([
-        $location_id => Location::factory()->create([
+    $testContract = Contract::factory()->create([
+        $locationId => Location::factory()->create([
             'locatable_type' => Station::class,
             'locatable_id' => Station::factory()->create([
                 'system_id' => System::factory(),
@@ -51,13 +51,13 @@ it('has inSystemScope', function (string $location_id) {
         ]),
     ]);
 
-    $system_id = match ($location_id) {
-        'start_location_id' => $test_contract->start_location->locatable->system->system_id,
-        'end_location_id' => $test_contract->end_location->locatable->system->system_id
+    $systemId = match ($locationId) {
+        'start_location_id' => $testContract->startLocation->locatable->system->system_id,
+        'end_location_id' => $testContract->endLocation->locatable->system->system_id
     };
 
-    expect(Contract::query()->filterBySystemIds($system_id)->get())->toHaveCount(1)
-        ->and(Contract::query()->filterBySystemIds($system_id + 1)->get())->toHaveCount(0);
+    expect(Contract::query()->filterBySystemIds($systemId)->get())->toHaveCount(1)
+        ->and(Contract::query()->filterBySystemIds($systemId + 1)->get())->toHaveCount(0);
 })->with([
     'start_location_id',
     'end_location_id',
@@ -112,9 +112,9 @@ it('has ofCategories scope', function () {
 
 });
 
-it('has assignee', function (int $assignee_id) {
+it('has assignee', function (int $assigneeId) {
     $contract = Contract::factory()->create([
-        'assignee_id' => $assignee_id,
+        'assignee_id' => $assigneeId,
     ]);
 
     expect($contract->assignee)->not()->toBeNull();

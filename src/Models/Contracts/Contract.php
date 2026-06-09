@@ -61,7 +61,7 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
      */
     public function issuer(): Attribute
     {
-        return new Attribute(fn () => $this->for_corporation ? $this->issuer_corporation : $this->issuer_character);
+        return new Attribute(fn () => $this->for_corporation ? $this->issuerCorporation : $this->issuerCharacter);
     }
 
     /**
@@ -69,7 +69,7 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
      */
     public function assignee(): Attribute
     {
-        return new Attribute(get: fn () => $this->assignee_character ?? $this->assignee_corporation);
+        return new Attribute(get: fn () => $this->assigneeCharacter ?? $this->assigneeCorporation);
     }
 
     public function items(): HasMany
@@ -77,34 +77,34 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
         return $this->hasMany(ContractItem::class, 'contract_id', 'contract_id');
     }
 
-    public function start_location(): HasOne
+    public function startLocation(): HasOne
     {
         return $this->hasOne(Location::class, 'location_id', 'start_location_id');
     }
 
-    public function end_location(): HasOne
+    public function endLocation(): HasOne
     {
         return $this->hasOne(Location::class, 'location_id', 'end_location_id');
     }
 
     /** @return BelongsTo<CharacterInfo, $this> */
-    public function assignee_character(): BelongsTo
+    public function assigneeCharacter(): BelongsTo
     {
         return $this->belongsTo(CharacterInfo::class, 'assignee_id', 'character_id');
     }
 
-    public function assignee_corporation(): BelongsTo
+    public function assigneeCorporation(): BelongsTo
     {
         return $this->belongsTo(CorporationInfo::class, 'assignee_id', 'corporation_id');
     }
 
     /** @return BelongsTo<CharacterInfo, $this> */
-    public function issuer_character(): BelongsTo
+    public function issuerCharacter(): BelongsTo
     {
         return $this->belongsTo(CharacterInfo::class, 'issuer_id', 'character_id');
     }
 
-    public function issuer_corporation(): BelongsTo
+    public function issuerCorporation(): BelongsTo
     {
         return $this->belongsTo(CorporationInfo::class, 'issuer_corporation_id', 'corporation_id');
     }
@@ -118,48 +118,48 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
     #[Scope]
     public function filterByRegionIds(Builder $query, int|array $regions): Builder
     {
-        $region_ids = is_array($regions) ? $regions : [$regions];
+        $regionIds = is_array($regions) ? $regions : [$regions];
 
         return $query // TODO merge tables like assets for improved db performance
-            ->whereHas('start_location.locatable.system.region', fn (Builder $query) => $query->whereIn('universe_regions.region_id', $region_ids))
-            ->orWhereHas('end_location.locatable.system.region', fn (Builder $query) => $query->whereIn('universe_regions.region_id', $region_ids));
+            ->whereHas('startLocation.locatable.system.region', fn (Builder $query) => $query->whereIn('universe_regions.region_id', $regionIds))
+            ->orWhereHas('endLocation.locatable.system.region', fn (Builder $query) => $query->whereIn('universe_regions.region_id', $regionIds));
     }
 
     #[\Override]
     #[Scope]
     public function filterBySystemIds(Builder $query, int|array $systems): Builder
     {
-        $system_ids = is_array($systems) ? $systems : [$systems];
+        $systemIds = is_array($systems) ? $systems : [$systems];
 
         return $query
-            ->whereHas('start_location.locatable.system', fn (Builder $query) => $query->whereIn('system_id', $system_ids))
-            ->orWhereHas('end_location.locatable.system', fn (Builder $query) => $query->whereIn('system_id', $system_ids));
+            ->whereHas('startLocation.locatable.system', fn (Builder $query) => $query->whereIn('system_id', $systemIds))
+            ->orWhereHas('endLocation.locatable.system', fn (Builder $query) => $query->whereIn('system_id', $systemIds));
     }
 
     #[\Override]
     #[Scope]
     public function filterByTypeIds(Builder $query, int|array $types): Builder
     {
-        $type_ids = is_array($types) ? $types : [$types];
+        $typeIds = is_array($types) ? $types : [$types];
 
-        return $query->whereHas('items', fn (Builder $query) => $query->whereIn('type_id', $type_ids));
+        return $query->whereHas('items', fn (Builder $query) => $query->whereIn('type_id', $typeIds));
     }
 
     #[\Override]
     #[Scope]
     public function filterByGroupIds(Builder $query, int|array $groups): Builder
     {
-        $group_ids = is_array($groups) ? $groups : [$groups];
+        $groupIds = is_array($groups) ? $groups : [$groups];
 
-        return $query->whereHas('items.type', fn (Builder $query) => $query->whereIn('group_id', $group_ids));
+        return $query->whereHas('items.type', fn (Builder $query) => $query->whereIn('group_id', $groupIds));
     }
 
     #[\Override]
     #[Scope]
     public function filterByCategoryIds(Builder $query, int|array $category): Builder
     {
-        $category_ids = is_array($category) ? $category : [$category];
+        $categoryIds = is_array($category) ? $category : [$category];
 
-        return $query->whereHas('items.type.group', fn (Builder $query) => $query->whereIn('category_id', $category_ids));
+        return $query->whereHas('items.type.group', fn (Builder $query) => $query->whereIn('category_id', $categoryIds));
     }
 }

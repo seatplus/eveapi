@@ -25,8 +25,8 @@ beforeEach(function () {
     Queue::fake();
     Event::fake();
 
-    $refresh_token = updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-universe.read_structures.v1']);
-    $refresh_token->save();
+    $refreshToken = updateRefreshTokenScopes($this->test_character->refreshToken, ['esi-universe.read_structures.v1']);
+    $refreshToken->save();
 
     CharacterRole::query()
         ->updateOrCreate([
@@ -164,7 +164,7 @@ function executeFindStructureRefreshTokenTest(FinderInterface $instance)
 }
 
 it('allows shortcut findValidToken method', function () {
-    $instance = new StructureRefreshTokenFinder(testCharacter()->refresh_token);
+    $instance = new StructureRefreshTokenFinder(testCharacter()->refreshToken);
 
     $result = $instance->findValidToken(test()->location_id);
 
@@ -173,12 +173,12 @@ it('allows shortcut findValidToken method', function () {
 });
 
 it('increments and resets attempts', function () {
-    $refresh_token = test()->test_character->refresh_token;
-    $location_id = test()->location_id;
+    $refreshToken = test()->test_character->refreshToken;
+    $locationId = test()->location_id;
 
-    $instance = new StructureRefreshTokenFinder($refresh_token);
+    $instance = new StructureRefreshTokenFinder($refreshToken);
 
-    $instance->findValidToken($location_id);
+    $instance->findValidToken($locationId);
 
     $instance->markAsFailed();
 
@@ -189,7 +189,7 @@ it('increments and resets attempts', function () {
 
     $instance->markAsResolved();
 
-    $location_refresh_token = LocationRefreshToken::query()
+    $locationRefreshToken = LocationRefreshToken::query()
         ->where('location_id', test()->location_id)
         ->where('character_id', test()->test_character->character_id)
         ->first();
@@ -214,12 +214,12 @@ it('goes through all finder classes', function () {
     $instance = new StructureRefreshTokenFinder;
 
     // make sure the ThrougRandomRefreshTokenFinder did not result positively
-    $random_token = (new ThroughRandomRefreshTokenFinder)->handle(test()->location_id, LocationRefreshToken::all());
+    $randomToken = (new ThroughRandomRefreshTokenFinder)->handle(test()->location_id, LocationRefreshToken::all());
 
     // Act
     $result = $instance->findValidToken(test()->location_id);
 
     // Assert
-    expect($random_token)->toBeNull()
+    expect($randomToken)->toBeNull()
         ->and($result)->toBeInstanceOf(RefreshToken::class);
 });

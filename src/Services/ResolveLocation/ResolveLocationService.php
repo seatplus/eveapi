@@ -14,34 +14,34 @@ use Seatplus\Eveapi\Services\ResolveLocation\Resolver\StructureResolver;
 class ResolveLocationService
 {
     public function __construct(
-        private readonly ?RefreshToken $refresh_token = null,
+        private readonly ?RefreshToken $refreshToken = null,
         private array $resolvers = []
     ) {
         $this->resolvers = $resolvers ?: [
             new StationResolver,
-            new StructureResolver($this->refresh_token),
+            new StructureResolver($this->refreshToken),
         ];
     }
 
-    public static function make(?RefreshToken $refresh_token = null): self
+    public static function make(?RefreshToken $refreshToken = null): self
     {
-        return new self($refresh_token);
+        return new self($refreshToken);
     }
 
     /**
      * @throws Exception
      */
-    public function handle(int $location_id): void
+    public function handle(int $locationId): void
     {
         $location = Location::with('locatable')->firstOrNew([
-            'location_id' => $location_id,
+            'location_id' => $locationId,
         ]);
 
         foreach ($this->resolvers as $resolver) {
             if ($resolver instanceof ResolverInterface) {
-                $is_resolved = $resolver->handle($location);
+                $isResolved = $resolver->handle($location);
 
-                if ($is_resolved) {
+                if ($isResolved) {
                     break;
                 }
             }

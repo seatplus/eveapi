@@ -55,9 +55,9 @@ class Contact extends Model
     }
 
     #[Scope]
-    protected function entityFilter(Builder $query, array $contactable_ids): Builder
+    protected function entityFilter(Builder $query, array $contactableIds): Builder
     {
-        return $query->whereIn('contactable_id', $contactable_ids);
+        return $query->whereIn('contactable_id', $contactableIds);
     }
 
     /** @return Attribute<?CharacterAffiliation, never> */
@@ -65,17 +65,17 @@ class Contact extends Model
     {
         return Attribute::make(get: function () {
             $this->loadMissing([
-                'character_affiliation',
-                'corporation_affiliation',
-                'alliance_affiliation',
-                'faction_affiliation',
+                'characterAffiliation',
+                'corporationAffiliation',
+                'allianceAffiliation',
+                'factionAffiliation',
             ]);
 
             return collect([
-                $this->character_affiliation,
-                $this->corporation_affiliation,
-                $this->alliance_affiliation,
-                $this->faction_affiliation,
+                $this->characterAffiliation,
+                $this->corporationAffiliation,
+                $this->allianceAffiliation,
+                $this->factionAffiliation,
             ])
                 ->filter()
                 ->first();
@@ -83,25 +83,25 @@ class Contact extends Model
     }
 
     /** @return HasOne<CharacterAffiliation, $this> */
-    public function character_affiliation(): HasOne
+    public function characterAffiliation(): HasOne
     {
         return $this->hasOne(CharacterAffiliation::class, 'character_id', 'contact_id');
     }
 
     /** @return HasOne<CharacterAffiliation, $this> */
-    public function corporation_affiliation(): HasOne
+    public function corporationAffiliation(): HasOne
     {
         return $this->hasOne(CharacterAffiliation::class, 'corporation_id', 'contact_id');
     }
 
     /** @return HasOne<CharacterAffiliation, $this> */
-    public function alliance_affiliation(): HasOne
+    public function allianceAffiliation(): HasOne
     {
         return $this->hasOne(CharacterAffiliation::class, 'alliance_id', 'contact_id');
     }
 
     /** @return HasOne<CharacterAffiliation, $this> */
-    public function faction_affiliation(): HasOne
+    public function factionAffiliation(): HasOne
     {
         return $this->hasOne(CharacterAffiliation::class, 'faction_id', 'contact_id');
     }

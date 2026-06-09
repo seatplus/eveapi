@@ -45,11 +45,11 @@ class CharacterInfoFactory extends Factory
     {
         return $this->afterCreating(function (CharacterInfo $character_info) {
             $character_info
-                ->character_affiliation()
+                ->characterAffiliation()
                 ->save(CharacterAffiliation::factory()->withAlliance()->create());
 
             Event::fakeFor(function () use ($character_info) {
-                $character_info->refresh_token()->save(RefreshToken::factory()->create());
+                $character_info->refreshToken()->save(RefreshToken::factory()->create());
             });
 
             $character_info->roles()->save(CharacterRole::factory()->create());

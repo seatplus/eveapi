@@ -13,12 +13,12 @@ final class AllianceInfoJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetAlliancesAllianceId::class;
 
-    public function __construct(public int $alliance_id) {}
+    public function __construct(public int $allianceId) {}
 
     #[\Override]
     public function tags(): array
     {
-        return ['alliance', "alliance_id:{$this->alliance_id}", 'info'];
+        return ['alliance', "alliance_id:{$this->allianceId}", 'info'];
     }
 
     #[\Override]
@@ -28,12 +28,12 @@ final class AllianceInfoJob extends EsiJob
             return;
         }
 
-        $response = self::OPERATION_CLASS::execute($esi, $this->alliance_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->allianceId);
         if ($response->isCachedLoad) {
             return;
         }
 
-        AllianceInfo::firstOrNew(['alliance_id' => $this->alliance_id])->fill([
+        AllianceInfo::firstOrNew(['alliance_id' => $this->allianceId])->fill([
             'creator_corporation_id' => $response->creator_corporation_id,
             'creator_id' => $response->creator_id,
             'date_founded' => carbon($response->date_founded),

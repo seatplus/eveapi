@@ -14,24 +14,24 @@ final class CharacterWalletJournalJob extends WalletJournalBase
 {
     protected const string OPERATION_CLASS = GetCharactersCharacterIdWalletJournal::class;
 
-    public function __construct(public int $character_id) {}
+    public function __construct(public int $characterId) {}
 
     #[\Override]
     public function getRefreshToken(): RefreshToken
     {
-        return RefreshToken::findOrFail($this->character_id);
+        return RefreshToken::findOrFail($this->characterId);
     }
 
     #[\Override]
     protected function fetchPage(EsiClient $esi, int $page): EsiResult
     {
-        return self::OPERATION_CLASS::execute($esi, $this->character_id, $page);
+        return self::OPERATION_CLASS::execute($esi, $this->characterId, $page);
     }
 
     #[\Override]
     protected function walletableId(): int
     {
-        return $this->character_id;
+        return $this->characterId;
     }
 
     #[\Override]
@@ -43,6 +43,6 @@ final class CharacterWalletJournalJob extends WalletJournalBase
     #[\Override]
     public function tags(): array
     {
-        return ['character', "character_id:{$this->character_id}", 'wallet', 'journal'];
+        return ['character', "character_id:{$this->characterId}", 'wallet', 'journal'];
     }
 }

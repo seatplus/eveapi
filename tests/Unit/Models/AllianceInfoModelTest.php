@@ -7,15 +7,15 @@ use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\SsoScopes;
 
 it('has morphable sso scope', function () {
-    $alliance_info = AllianceInfo::factory()->create();
+    $allianceInfo = AllianceInfo::factory()->create();
 
-    $alliance_info->ssoScopes()->save(SsoScopes::factory()->make());
+    $allianceInfo->ssoScopes()->save(SsoScopes::factory()->make());
 
-    expect($alliance_info->refresh()->ssoScopes)->toBeInstanceOf(SsoScopes::class);
+    expect($allianceInfo->refresh()->ssoScopes)->toBeInstanceOf(SsoScopes::class);
 });
 
 it('has character affiliation', function () {
-    $affiliation = $this->test_character->character_affiliation;
+    $affiliation = $this->test_character->characterAffiliation;
 
     if (! $affiliation->alliance_id) {
         $alliance = AllianceInfo::factory()->create();
@@ -34,12 +34,12 @@ it('has character affiliation', function () {
 });
 
 it('has corporations relation', function () {
-    $character_affiliation = $this->test_character->character_affiliation;
-    $character_affiliation->alliance_id = AllianceInfo::factory()->create()->alliance_id;
-    $character_affiliation->save();
+    $characterAffiliation = $this->test_character->characterAffiliation;
+    $characterAffiliation->alliance_id = AllianceInfo::factory()->create()->alliance_id;
+    $characterAffiliation->save();
 
     $corporation = $this->test_character->corporation;
-    $corporation->alliance_id = $character_affiliation->alliance_id;
+    $corporation->alliance_id = $characterAffiliation->alliance_id;
     $corporation->save();
 
     expect($this->test_character->alliance->corporations->first())->toBeInstanceOf(CorporationInfo::class);

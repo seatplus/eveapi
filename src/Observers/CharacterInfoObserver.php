@@ -41,9 +41,9 @@ class CharacterInfoObserver
      *
      * @throws InvalidContainerDataException
      */
-    public function created(CharacterInfo $character_info): void
+    public function created(CharacterInfo $characterInfo): void
     {
-        CharacterAffiliationJob::dispatch($character_info->character_id)->onQueue('high');
+        CharacterAffiliationJob::dispatch($characterInfo->character_id)->onQueue('high');
     }
 
     /**
@@ -53,8 +53,8 @@ class CharacterInfoObserver
      *
      * @throws InvalidContainerDataException
      */
-    public function updating(CharacterInfo $character_info): void
+    public function updating(CharacterInfo $characterInfo): void
     {
-        CharacterAffiliationJob::dispatch($character_info->character_id)->onQueue('high');
+        CharacterAffiliationJob::dispatch($characterInfo->character_id)->onQueue('high');
     }
 }

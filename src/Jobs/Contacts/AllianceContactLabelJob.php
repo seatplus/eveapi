@@ -16,31 +16,31 @@ final class AllianceContactLabelJob extends ContactBaseJob
     protected const string OPERATION_CLASS = GetAlliancesAllianceIdContactsLabels::class;
 
     public function __construct(
-        public int $alliance_id,
-        public int $character_id,
+        public int $allianceId,
+        public int $characterId,
     ) {}
 
     #[\Override]
     public function getRefreshToken(): RefreshToken
     {
-        return RefreshToken::findOrFail($this->character_id);
+        return RefreshToken::findOrFail($this->characterId);
     }
 
     #[\Override]
     protected function fetchPage(EsiClient $esi, int $page): EsiResult
     {
-        return self::OPERATION_CLASS::execute($esi, $this->alliance_id);
+        return self::OPERATION_CLASS::execute($esi, $this->allianceId);
     }
 
     #[\Override]
     public function tags(): array
     {
-        return ['alliance', "alliance_id:{$this->alliance_id}", 'contacts', 'labels'];
+        return ['alliance', "alliance_id:{$this->allianceId}", 'contacts', 'labels'];
     }
 
     #[\Override]
     public function executeJob(EsiClient $esi): void
     {
-        $this->handleProcessor(new ProcessContactLabelsResponse($this->alliance_id, AllianceInfo::class), $esi);
+        $this->handleProcessor(new ProcessContactLabelsResponse($this->allianceId, AllianceInfo::class), $esi);
     }
 }

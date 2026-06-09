@@ -45,7 +45,7 @@ it('runs the job', function () {
 
 it('returns the corporation refresh token for a director', function () {
     $scope = 'esi-corporations.read_divisions.v1';
-    $token = updateRefreshTokenScopes(testCharacter()->refresh_token, [$scope]);
+    $token = updateRefreshTokenScopes(testCharacter()->refreshToken, [$scope]);
     $token->save();
 
     CharacterRole::updateOrCreate(

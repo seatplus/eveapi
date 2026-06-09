@@ -14,25 +14,25 @@ final class CharacterContractItemsJob extends ContractItemsBase
     protected const string OPERATION_CLASS = GetCharactersCharacterIdContractsContractIdItems::class;
 
     public function __construct(
-        public int $character_id,
-        public int $contract_id,
+        public int $characterId,
+        public int $contractId,
     ) {}
 
     #[\Override]
     public function getRefreshToken(): RefreshToken
     {
-        return RefreshToken::findOrFail($this->character_id);
+        return RefreshToken::findOrFail($this->characterId);
     }
 
     #[\Override]
     protected function fetchItems(EsiClient $esi): EsiResult
     {
-        return self::OPERATION_CLASS::execute($esi, $this->character_id, $this->contract_id);
+        return self::OPERATION_CLASS::execute($esi, $this->characterId, $this->contractId);
     }
 
     #[\Override]
     public function tags(): array
     {
-        return ['character', 'contract', 'items', "character_id:{$this->character_id}", "contract_id:{$this->contract_id}"];
+        return ['character', 'contract', 'items', "character_id:{$this->characterId}", "contract_id:{$this->contractId}"];
     }
 }

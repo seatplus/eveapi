@@ -16,7 +16,7 @@ abstract class ContactBaseJob extends EsiJob
 
     protected function handleProcessor(ProcessContactLabelsResponse|ProcessContactResponse $processor, EsiClient $esi): void
     {
-        $known_ids = collect();
+        $knownIds = collect();
         $page = 1;
 
         do {
@@ -25,11 +25,11 @@ abstract class ContactBaseJob extends EsiJob
                 return;
             }
 
-            $processed_ids = $processor->execute($response);
-            $known_ids->push($processed_ids);
+            $processedIds = $processor->execute($response);
+            $knownIds->push($processedIds);
             $page++;
         } while ($page <= $response->pages);
 
-        $processor->remove_old_entries($known_ids->flatten()->unique()->toArray());
+        $processor->remove_old_entries($knownIds->flatten()->unique()->toArray());
     }
 }

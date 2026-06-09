@@ -26,12 +26,12 @@ test('if job is queued', function () {
 
 test('retrieve test', function () {
     $esi = Mockery::mock(EsiClient::class);
-    $mock_data = buildAssetMockEsiData($esi);
+    $mockData = buildAssetMockEsiData($esi);
 
     $job = new CharacterAssetJob($this->test_character->character_id);
     $job->executeJob($esi);
 
-    foreach ($mock_data as $data) {
+    foreach ($mockData as $data) {
         expect(Asset::where('assetable_id', $this->test_character->character_id)
             ->where('item_id', $data->item_id)
             ->exists())->toBeTrue();
@@ -39,23 +39,23 @@ test('retrieve test', function () {
 });
 
 it('cleans up assets', function () {
-    $old_data = Asset::factory()->count(5)->create([
+    $oldData = Asset::factory()->count(5)->create([
         'assetable_id' => $this->test_character->character_id,
     ]);
 
     $esi = Mockery::mock(EsiClient::class);
-    $mock_data = buildAssetMockEsiData($esi);
+    $mockData = buildAssetMockEsiData($esi);
 
     $job = new CharacterAssetJob($this->test_character->character_id);
     $job->executeJob($esi);
 
-    foreach ($mock_data as $data) {
+    foreach ($mockData as $data) {
         expect(Asset::where('assetable_id', $this->test_character->character_id)
             ->where('item_id', $data->item_id)
             ->exists())->toBeTrue();
     }
 
-    foreach ($old_data as $data) {
+    foreach ($oldData as $data) {
         expect(Asset::where('assetable_id', $this->test_character->character_id)
             ->where('item_id', $data->item_id)
             ->count())->toBe(0);
@@ -119,13 +119,13 @@ it('does not dispatch ResolveLocationJob if location is known', function () {
 // Helpers
 function buildAssetMockEsiData(MockInterface $esi): Collection
 {
-    $mock_data = Asset::factory()->count(5)->make([
+    $mockData = Asset::factory()->count(5)->make([
         'assetable_id' => testCharacter()->character_id,
     ]);
 
-    mockEsiTransport($esi, makeEsiResult(array_map(fn ($a) => (object) $a, $mock_data->toArray())));
+    mockEsiTransport($esi, makeEsiResult(array_map(fn ($a) => (object) $a, $mockData->toArray())));
 
-    return $mock_data;
+    return $mockData;
 }
 
 it('returns the refresh token', function () {

@@ -12,22 +12,22 @@ use Seatplus\Eveapi\Models\RefreshToken;
 class ThroughCharacterAssetsFinder implements FinderInterface
 {
     #[\Override]
-    public function handle(int $location_id, Collection $tracings): ?RefreshToken
+    public function handle(int $locationId, Collection $tracings): ?RefreshToken
     {
 
-        $character_ids_to_ignore = $tracings->pluck('character_id');
+        $characterIdsToIgnore = $tracings->pluck('character_id');
 
         return Asset::query()
-            ->whereHas('assetable.refresh_token')
-            ->where('location_id', $location_id)
-            ->whereNotIn('assetable_id', $character_ids_to_ignore)
+            ->whereHas('assetable.refreshToken')
+            ->where('location_id', $locationId)
+            ->whereNotIn('assetable_id', $characterIdsToIgnore)
             ->where('assetable_type', CharacterInfo::class)
             ->inRandomOrder()
             ->get()
-            ->map(fn (Asset $asset) => data_get($asset, 'assetable.refresh_token'))
+            ->map(fn (Asset $asset) => data_get($asset, 'assetable.refreshToken'))
             ->unique()
             // filter refresh token that has scope esi-universe.read_structures.v1
-            ->filter(fn (RefreshToken $refresh_token) => $refresh_token->hasScope('esi-universe.read_structures.v1'))
+            ->filter(fn (RefreshToken $refreshToken) => $refreshToken->hasScope('esi-universe.read_structures.v1'))
             ->first();
 
     }

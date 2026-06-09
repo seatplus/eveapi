@@ -20,14 +20,14 @@ final class ResolveUniverseStructureByIdJob extends EsiJob
     protected const string OPERATION_CLASS = GetUniverseStructuresStructureId::class;
 
     public function __construct(
-        public int $character_id,
-        public int $location_id
+        public int $characterId,
+        public int $locationId
     ) {}
 
     #[\Override]
     public function tags(): array
     {
-        return ['resolve', 'universe', 'structure', "location_id:{$this->location_id}"];
+        return ['resolve', 'universe', 'structure', "location_id:{$this->locationId}"];
     }
 
     #[\Override]
@@ -44,26 +44,26 @@ final class ResolveUniverseStructureByIdJob extends EsiJob
     #[\Override]
     public function getRefreshToken(): RefreshToken
     {
-        return RefreshToken::findOrFail($this->character_id);
+        return RefreshToken::findOrFail($this->characterId);
     }
 
     #[\Override]
     public function executeJob(EsiClient $esi): void
     {
-        $response = self::OPERATION_CLASS::execute($esi, $this->location_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->locationId);
         if ($response->isCachedLoad) {
             return;
         }
 
-        Structure::updateOrCreate(['structure_id' => $this->location_id], [
+        Structure::updateOrCreate(['structure_id' => $this->locationId], [
             'name' => $response->name,
             'owner_id' => $response->owner_id,
             'solar_system_id' => $response->solar_system_id,
             'type_id' => $response->type_id ?? null,
         ])->touch();
 
-        Location::updateOrCreate(['location_id' => $this->location_id], [
-            'locatable_id' => $this->location_id,
+        Location::updateOrCreate(['location_id' => $this->locationId], [
+            'locatable_id' => $this->locationId,
             'locatable_type' => Structure::class,
         ]);
     }

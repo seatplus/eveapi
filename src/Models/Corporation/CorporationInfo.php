@@ -104,12 +104,12 @@ class CorporationInfo extends Model
         return $this->morphMany(Balance::class, 'balanceable');
     }
 
-    public function wallet_journals(): MorphMany
+    public function walletJournals(): MorphMany
     {
         return $this->morphMany(WalletJournal::class, 'wallet_journable');
     }
 
-    public function wallet_transactions(): MorphMany
+    public function walletTransactions(): MorphMany
     {
         return $this->morphMany(WalletTransaction::class, 'wallet_transactionable');
     }

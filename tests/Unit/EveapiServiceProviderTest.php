@@ -73,22 +73,22 @@ it('has no limits for character_batch if queue is high', function () {
 
     // arrange
 
-    $test_class = new RateLimitedTestJob(testCharacter()->refresh_token);
-    $test_class->queue = 'high';
+    $testClass = new RateLimitedTestJob(testCharacter()->refreshToken);
+    $testClass->queue = 'high';
 
-    assertJobRanSuccessfully($test_class);
-    assertJobRanSuccessfully($test_class);
+    assertJobRanSuccessfully($testClass);
+    assertJobRanSuccessfully($testClass);
 });
 
 it('has limits for character_batch if queue is not high', function () {
 
     // arrange
 
-    $test_class = new RateLimitedTestJob(testCharacter()->refresh_token);
-    $test_class->queue = 'default';
+    $testClass = new RateLimitedTestJob(testCharacter()->refreshToken);
+    $testClass->queue = 'default';
 
-    assertJobRanSuccessfully($test_class);
-    assertJobWasReleased($test_class);
+    assertJobRanSuccessfully($testClass);
+    assertJobWasReleased($testClass);
 });
 
 function assertJobRanSuccessfully($testJob)
@@ -135,7 +135,7 @@ class RateLimitedTestJob
 
     public static $handled = false;
 
-    public function __construct(public $refresh_token) {}
+    public function __construct(public $refreshToken) {}
 
     public function handle()
     {

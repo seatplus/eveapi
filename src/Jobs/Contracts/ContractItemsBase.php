@@ -13,7 +13,7 @@ use Seatplus\Eveapi\Models\Contracts\ContractItem;
 
 abstract class ContractItemsBase extends EsiJob implements ShouldBeUnique
 {
-    public int $contract_id;
+    public int $contractId;
 
     abstract protected function fetchItems(EsiClient $esi): EsiResult;
 
@@ -34,7 +34,7 @@ abstract class ContractItemsBase extends EsiJob implements ShouldBeUnique
 
         $contractItems = collect($response->data)->map(fn (object $item) => [
             'record_id' => $item->record_id,
-            'contract_id' => $this->contract_id,
+            'contract_id' => $this->contractId,
             'is_included' => $item->is_included,
             'is_singleton' => $item->is_singleton,
             'quantity' => $item->quantity,

@@ -83,13 +83,13 @@ test('character contact label job', function () {
 test('ContactJob using ContactBaseJob and finds refresh_token', function (string $flavour) {
     Queue::fake();
 
-    $required_scopes = [
+    $requiredScopes = [
         'esi-characters.read_contacts.v1',
         'esi-corporations.read_contacts.v1',
         'esi-alliances.read_contacts.v1',
     ];
 
-    updateRefreshTokenScopes($this->test_character->refresh_token, $required_scopes)->save();
+    updateRefreshTokenScopes($this->test_character->refreshToken, $requiredScopes)->save();
 
     $job = match ($flavour) {
         'character' => new CharacterContactJob($this->test_character->character_id),

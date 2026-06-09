@@ -13,7 +13,7 @@ use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 
 abstract class WalletTransactionBase extends EsiJob
 {
-    protected int $from_id = PHP_INT_MAX;
+    protected int $fromId = PHP_INT_MAX;
 
     protected array $transactions = [];
 
@@ -33,11 +33,11 @@ abstract class WalletTransactionBase extends EsiJob
     {
         $latest = WalletTransaction::where('wallet_transactionable_id', $this->transactionableId())->latest()->first();
         if ($latest) {
-            $this->from_id = $latest->transaction_id - 1;
+            $this->fromId = $latest->transaction_id - 1;
         }
 
         while (true) {
-            $fromId = $this->from_id === PHP_INT_MAX ? null : $this->from_id;
+            $fromId = $this->fromId === PHP_INT_MAX ? null : $this->fromId;
             $response = $this->fetchTransactions($esi, $fromId);
 
             if ($response->isCachedLoad) {
@@ -67,10 +67,10 @@ abstract class WalletTransactionBase extends EsiJob
             }
 
             $lastTransactionId = end($transactions)['transaction_id'] - 1;
-            if ($lastTransactionId === $this->from_id) {
+            if ($lastTransactionId === $this->fromId) {
                 break;
             }
-            $this->from_id = $lastTransactionId;
+            $this->fromId = $lastTransactionId;
             $this->transactions = array_merge($this->transactions, $transactions);
         }
 

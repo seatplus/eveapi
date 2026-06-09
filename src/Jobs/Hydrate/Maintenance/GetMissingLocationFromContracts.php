@@ -48,11 +48,11 @@ class GetMissingLocationFromContracts extends HydrateMaintenanceBase
         $jobs = Contract::query()
             ->where(function (Builder $query) {
                 $query->whereNotNull('start_location_id')
-                    ->whereDoesntHave('start_location', fn (Builder $query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]));
+                    ->whereDoesntHave('startLocation', fn (Builder $query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]));
             })
             ->orWhere(function (Builder $query) {
                 $query->whereNotNull('end_location_id')
-                    ->whereDoesntHave('end_location', fn (Builder $query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]));
+                    ->whereDoesntHave('endLocation', fn (Builder $query) => $query->whereHasMorph('locatable', [Structure::class, Station::class]));
             })
             ->select('start_location_id', 'end_location_id')
             ->inRandomOrder()
@@ -61,7 +61,7 @@ class GetMissingLocationFromContracts extends HydrateMaintenanceBase
             ->flatMap(fn (Contract $contract) => [$contract->start_location_id, $contract->end_location_id])
             ->unique()
             ->filter()
-            ->map(fn (int $location_id) => new ResolveLocationJob($location_id));
+            ->map(fn (int $locationId) => new ResolveLocationJob($locationId));
 
         $this->batch()->add($jobs->toArray());
     }

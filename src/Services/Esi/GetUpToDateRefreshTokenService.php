@@ -18,13 +18,13 @@ class GetUpToDateRefreshTokenService
     /**
      * @throws InvalidRefreshTokenException
      */
-    public function get(RefreshToken $refresh_token): RefreshToken
+    public function get(RefreshToken $refreshToken): RefreshToken
     {
-        $character_id = $refresh_token->character_id;
+        $characterId = $refreshToken->character_id;
 
-        return Cache::lock("get up to date refresh_token of character_id: {$character_id}", 10)
-            ->block(30, function () use ($refresh_token) {
-                $token = $refresh_token->refresh();
+        return Cache::lock("get up to date refresh_token of character_id: {$characterId}", 10)
+            ->block(30, function () use ($refreshToken) {
+                $token = $refreshToken->refresh();
 
                 if (carbon($token->expires_on)->gt(now()->addMinute())) {
                     return $token;
@@ -35,7 +35,7 @@ class GetUpToDateRefreshTokenService
                 } catch (RequestFailedException $e) {
                     if ($e->getCode() === 400 || $e->getCode() === 401) {
                         throw new InvalidRefreshTokenException(
-                            "Refresh token for character {$refresh_token->character_id} is invalid: {$e->getMessage()}",
+                            "Refresh token for character {$refreshToken->character_id} is invalid: {$e->getMessage()}",
                             $e->getCode(),
                             $e,
                         );

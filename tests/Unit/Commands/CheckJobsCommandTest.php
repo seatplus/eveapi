@@ -3,16 +3,16 @@
 use Seatplus\Eveapi\Commands\CheckJobsCommand;
 use Seatplus\Eveapi\Services\JobChecker;
 
-it('writes error, warning and success header', function (array $job_checker_result, bool $expectSuccess) {
+it('writes error, warning and success header', function (array $jobCheckerResult, bool $expectSuccess) {
 
-    $job_checker = mock(JobChecker::class, function ($mock) use ($job_checker_result) {
+    $jobChecker = mock(JobChecker::class, function ($mock) use ($jobCheckerResult) {
         $mock->shouldReceive('checkJob')
             ->andReturn(collect([
-                $job_checker_result,
+                $jobCheckerResult,
             ]));
     });
 
-    $this->app->instance(JobChecker::class, $job_checker);
+    $this->app->instance(JobChecker::class, $jobChecker);
 
     $artisan = $this->artisan(CheckJobsCommand::class);
 
@@ -39,7 +39,7 @@ it('writes error, warning and success header', function (array $job_checker_resu
 
 it('throws exception if status is unknown', function () {
 
-    $job_checker = mock(JobChecker::class, function ($mock) {
+    $jobChecker = mock(JobChecker::class, function ($mock) {
         $mock->shouldReceive('checkJob')
             ->andReturn(collect([
                 [
@@ -49,7 +49,7 @@ it('throws exception if status is unknown', function () {
             ]));
     });
 
-    $this->app->instance(JobChecker::class, $job_checker);
+    $this->app->instance(JobChecker::class, $jobChecker);
 
     $this->artisan(CheckJobsCommand::class);
 

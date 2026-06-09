@@ -16,28 +16,28 @@ final class ResolveUniverseStationByIdJob extends EsiJob
 
     public const array STATION_IDS_RANGE = [60000000, 64000000];
 
-    public function __construct(public int $location_id) {}
+    public function __construct(public int $locationId) {}
 
     #[\Override]
     public function tags(): array
     {
-        return ['resolve', 'universe', 'station', "location_id:{$this->location_id}"];
+        return ['resolve', 'universe', 'station', "location_id:{$this->locationId}"];
     }
 
     #[\Override]
     public function executeJob(EsiClient $esi): void
     {
-        if ($this->location_id < head(self::STATION_IDS_RANGE) || $this->location_id > last(self::STATION_IDS_RANGE)) {
+        if ($this->locationId < head(self::STATION_IDS_RANGE) || $this->locationId > last(self::STATION_IDS_RANGE)) {
             return;
         }
 
-        $response = self::OPERATION_CLASS::execute($esi, $this->location_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->locationId);
 
         if ($response->isCachedLoad) {
             return;
         }
 
-        Station::updateOrCreate(['station_id' => $this->location_id], [
+        Station::updateOrCreate(['station_id' => $this->locationId], [
             'type_id' => $response->type_id,
             'name' => $response->name,
             'owner_id' => $response->owner ?? null,
@@ -49,8 +49,8 @@ final class ResolveUniverseStationByIdJob extends EsiJob
             'office_rental_cost' => $response->office_rental_cost,
         ])->touch();
 
-        Location::updateOrCreate(['location_id' => $this->location_id], [
-            'locatable_id' => $this->location_id,
+        Location::updateOrCreate(['location_id' => $this->locationId], [
+            'locatable_id' => $this->locationId,
             'locatable_type' => Station::class,
         ]);
     }

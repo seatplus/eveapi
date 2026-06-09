@@ -34,14 +34,14 @@ it('updates refresh token if expiry is near', function () {
 
     $updateRefreshTokenService = mock(UpdateRefreshTokenService::class, function (MockInterface $mock) use ($refreshToken) {
 
-        $new_token = RefreshToken::factory()->make([
+        $newToken = RefreshToken::factory()->make([
             'character_id' => $refreshToken->character_id,
             'expires_on' => now()->addMinutes(5),
         ]);
 
         $mock->shouldReceive('update')
             ->with($refreshToken)
-            ->andReturn($new_token);
+            ->andReturn($newToken);
     });
 
     $service = new GetUpToDateRefreshTokenService($updateRefreshTokenService);

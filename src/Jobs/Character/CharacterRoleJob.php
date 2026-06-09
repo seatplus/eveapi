@@ -14,29 +14,29 @@ final class CharacterRoleJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetCharactersCharacterIdRoles::class;
 
-    public function __construct(public int $character_id) {}
+    public function __construct(public int $characterId) {}
 
     #[\Override]
     public function getRefreshToken(): RefreshToken
     {
-        return RefreshToken::findOrFail($this->character_id);
+        return RefreshToken::findOrFail($this->characterId);
     }
 
     #[\Override]
     public function tags(): array
     {
-        return ['character', "character_id:{$this->character_id}", 'roles'];
+        return ['character', "character_id:{$this->characterId}", 'roles'];
     }
 
     #[\Override]
     public function executeJob(EsiClient $esi): void
     {
-        $response = self::OPERATION_CLASS::execute($esi, $this->character_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->characterId);
         if ($response->isCachedLoad) {
             return;
         }
 
-        CharacterRole::updateOrCreate(['character_id' => $this->character_id], [
+        CharacterRole::updateOrCreate(['character_id' => $this->characterId], [
             'roles' => $response->roles,
             'roles_at_base' => $response->roles_at_base,
             'roles_at_hq' => $response->roles_at_hq,

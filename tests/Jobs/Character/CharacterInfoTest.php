@@ -11,21 +11,21 @@ it('dispatches job on default queue by character_id', function () {
 
     Queue::assertNothingPushed();
 
-    CharacterInfoJob::dispatch(character_id: 123)->onQueue('default');
+    CharacterInfoJob::dispatch(characterId: 123)->onQueue('default');
 
     Queue::assertPushedOn('default', CharacterInfoJob::class);
 });
 
 test('retrieve test', function () {
-    $mock_data = CharacterInfo::factory()->make();
+    $mockData = CharacterInfo::factory()->make();
 
     Bus::fake();
 
     $esi = Mockery::mock(EsiClient::class);
-    mockEsiTransport($esi, makeEsiResult((object) $mock_data->toArray()));
+    mockEsiTransport($esi, makeEsiResult((object) $mockData->toArray()));
 
-    $job = new CharacterInfoJob($mock_data['character_id']);
+    $job = new CharacterInfoJob($mockData['character_id']);
     $job->executeJob($esi);
 
-    expect(CharacterInfo::where('name', $mock_data['name'])->exists())->toBeTrue();
+    expect(CharacterInfo::where('name', $mockData['name'])->exists())->toBeTrue();
 });
