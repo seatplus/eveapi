@@ -42,7 +42,7 @@ class CorporationWalletJournalJob implements ShouldBeUnique, ShouldQueue
     use Queueable;
 
     public function __construct(
-        private int $corporation_id
+        private int $corporationId
     ) {}
 
     /**
@@ -57,7 +57,7 @@ class CorporationWalletJournalJob implements ShouldBeUnique, ShouldQueue
     {
         return sprintf(
             'Corporation wallet journal dispatcher for corporation_id %s ',
-            $this->corporation_id
+            $this->corporationId
         );
     }
 
@@ -65,7 +65,7 @@ class CorporationWalletJournalJob implements ShouldBeUnique, ShouldQueue
     {
         return [
             'corporation',
-            'corporation_id: '.$this->corporation_id,
+            'corporation_id: '.$this->corporationId,
             'wallet',
             'journals',
         ];
@@ -82,7 +82,7 @@ class CorporationWalletJournalJob implements ShouldBeUnique, ShouldQueue
             ->whereHasMorph(
                 'balanceable',
                 CorporationInfo::class,
-                fn (Builder $query) => $query->where('corporation_id', $this->corporation_id)
+                fn (Builder $query) => $query->where('corporation_id', $this->corporationId)
             )
             ->get()
             ->each(
@@ -103,12 +103,12 @@ class CorporationWalletJournalJob implements ShouldBeUnique, ShouldQueue
         }
 
         $this->batch()->add([
-            new CorporationWalletJournalByDivisionJob($this->corporation_id, $division),
+            new CorporationWalletJournalByDivisionJob($this->corporationId, $division),
         ]);
     }
 
     private function handleNonBatching(int $division): void
     {
-        CorporationWalletJournalByDivisionJob::dispatch($this->corporation_id, $division)->onQueue($this->queue);
+        CorporationWalletJournalByDivisionJob::dispatch($this->corporationId, $division)->onQueue($this->queue);
     }
 }

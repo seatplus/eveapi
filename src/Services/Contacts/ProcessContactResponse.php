@@ -35,16 +35,16 @@ use Seatplus\Eveapi\Services\Jobs\CacheCharacterAffiliationIdsService;
 
 class ProcessContactResponse
 {
-    public function __construct(private readonly int $contactable_id, private readonly string $contactable_type) {}
+    public function __construct(private readonly int $contactableId, private readonly string $contactableType) {}
 
     public function execute(EsiResult $response): Collection
     {
         return collect($response->data)
             ->each(function (object $contact) {
-                $contact_model = Contact::updateOrCreate([
+                $contactModel = Contact::updateOrCreate([
                     'contact_id' => $contact->contact_id,
-                    'contactable_id' => $this->contactable_id,
-                    'contactable_type' => $this->contactable_type,
+                    'contactable_id' => $this->contactableId,
+                    'contactable_type' => $this->contactableType,
                 ], [
                     'contact_type' => $contact->contact_type,
                     'standing' => $contact->standing,
@@ -52,14 +52,14 @@ class ProcessContactResponse
                     'is_watched' => $contact->is_watched ?? null,
                 ]);
 
-                $contact_model->labels()->whereNotIn('label_id', $contact->label_ids ?? [])->delete();
+                $contactModel->labels()->whereNotIn('label_id', $contact->label_ids ?? [])->delete();
 
                 if (isset($contact->label_ids)) {
-                    $already_existing_label_ids = $contact_model->labels()->pluck('label_id');
+                    $alreadyExistingLabelIds = $contactModel->labels()->pluck('label_id');
 
-                    $labels_to_save = collect($contact->label_ids)->diff($already_existing_label_ids);
+                    $labelsToSave = collect($contact->label_ids)->diff($alreadyExistingLabelIds);
 
-                    $contact_model->labels()->createMany($labels_to_save->map(fn (int $label_id) => ['label_id' => $label_id]));
+                    $contactModel->labels()->createMany($labelsToSave->map(fn (int $labelId) => ['label_id' => $labelId]));
                 }
             })->pipe(function (Collection $response) {
                 CacheCharacterAffiliationIdsService::make()
@@ -69,12 +69,12 @@ class ProcessContactResponse
             })->pluck('contact_id');
     }
 
-    public function remove_old_entries(array $known_ids): void
+    public function remove_old_entries(array $knownIds): void
     {
         // Cleanup
-        Contact::where('contactable_id', $this->contactable_id)
-            ->where('contactable_type', $this->contactable_type)
-            ->whereNotIn('contact_id', $known_ids)
+        Contact::where('contactable_id', $this->contactableId)
+            ->where('contactable_type', $this->contactableType)
+            ->whereNotIn('contact_id', $knownIds)
             ->delete();
     }
 }

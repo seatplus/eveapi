@@ -13,18 +13,18 @@ final class ResolveUniverseConstellationByConstellationIdJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetUniverseConstellationsConstellationId::class;
 
-    public function __construct(public int $constellation_id) {}
+    public function __construct(public int $constellationId) {}
 
     #[\Override]
     public function tags(): array
     {
-        return ['resolve', 'universe', 'constellation', "constellation_id:{$this->constellation_id}"];
+        return ['resolve', 'universe', 'constellation', "constellation_id:{$this->constellationId}"];
     }
 
     #[\Override]
     public function executeJob(EsiClient $esi): void
     {
-        $response = self::OPERATION_CLASS::execute($esi, $this->constellation_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->constellationId);
 
         if ($response->isCachedLoad) {
             return;

@@ -13,18 +13,18 @@ final class ResolveUniverseCategoryByIdJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetUniverseCategoriesCategoryId::class;
 
-    public function __construct(private readonly int $category_id) {}
+    public function __construct(private readonly int $categoryId) {}
 
     #[\Override]
     public function tags(): array
     {
-        return ['resolve', 'universe', 'category', "category_id:{$this->category_id}"];
+        return ['resolve', 'universe', 'category', "category_id:{$this->categoryId}"];
     }
 
     #[\Override]
     public function executeJob(EsiClient $esi): void
     {
-        $response = self::OPERATION_CLASS::execute($esi, $this->category_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->categoryId);
 
         if ($response->isCachedLoad) {
             return;

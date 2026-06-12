@@ -57,7 +57,7 @@ it('adds follow up jobs to batch if batching', function () {
     ));
 
     $job = mock(CharacterContractsJob::class)->shouldAllowMockingProtectedMethods()->makePartial();
-    $job->character_id = 1;
+    $job->characterId = 1;
     $job->shouldReceive('batching')->once()->andReturnTrue();
     $job->shouldReceive('batch->add')->once();
 

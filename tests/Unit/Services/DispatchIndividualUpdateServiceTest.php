@@ -4,16 +4,16 @@ use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Services\DispatchIndividualUpdate;
 
 it('dispatches job', function (string $job) {
-    $refresh_token = $this->test_character->refresh_token;
+    $refreshToken = $this->test_character->refreshToken;
     // $job = 'character.assets';
 
     Queue::fake();
 
-    (new DispatchIndividualUpdate($refresh_token))->execute($job);
+    (new DispatchIndividualUpdate($refreshToken))->execute($job);
 
-    $job_class = config('eveapi.jobs')[$job];
+    $jobClass = config('eveapi.jobs')[$job];
 
-    Queue::assertPushedOn('high', $job_class);
+    Queue::assertPushedOn('high', $jobClass);
 })->with([
     'character.assets',
     'corporation.member_tracking',

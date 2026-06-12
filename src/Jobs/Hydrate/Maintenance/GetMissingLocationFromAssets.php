@@ -53,7 +53,7 @@ class GetMissingLocationFromAssets extends HydrateMaintenanceBase
             ->pluck('location_id')
             ->unique()
             ->filter()
-            ->map(fn (int $location_id) => new ResolveLocationJob($location_id));
+            ->map(fn (int $locationId) => new ResolveLocationJob($locationId));
 
         $this->batch()->add($jobs->toArray());
 

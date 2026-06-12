@@ -59,29 +59,29 @@ class ResolveLocationJob implements ShouldBeUnique, ShouldQueue
     }
 
     public function __construct(
-        public int $location_id,
-        public ?RefreshToken $refresh_token = null
+        public int $locationId,
+        public ?RefreshToken $refreshToken = null
     ) {}
 
     public function tags(): array
     {
-        if ($this->refresh_token) {
+        if ($this->refreshToken) {
             return [
                 'location_resolve',
-                'location_id:'.$this->location_id,
-                'via character: '.$this->refresh_token->character_id,
+                'location_id:'.$this->locationId,
+                'via character: '.$this->refreshToken->character_id,
             ];
         }
 
         return [
             'location_resolve',
-            'location_id:'.$this->location_id,
+            'location_id:'.$this->locationId,
         ];
     }
 
     public function handle(): void
     {
 
-        ResolveLocationService::make($this->refresh_token)->handle($this->location_id);
+        ResolveLocationService::make($this->refreshToken)->handle($this->locationId);
     }
 }

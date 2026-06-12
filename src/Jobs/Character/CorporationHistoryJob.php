@@ -13,25 +13,25 @@ final class CorporationHistoryJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetCharactersCharacterIdCorporationhistory::class;
 
-    public function __construct(public int $character_id) {}
+    public function __construct(public int $characterId) {}
 
     #[\Override]
     public function tags(): array
     {
-        return ['character', 'info', "character_id:{$this->character_id}", 'corporationhistory'];
+        return ['character', 'info', "character_id:{$this->characterId}", 'corporationhistory'];
     }
 
     #[\Override]
     public function executeJob(EsiClient $esi): void
     {
-        $response = self::OPERATION_CLASS::execute($esi, $this->character_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->characterId);
         if ($response->isCachedLoad) {
             return;
         }
 
         $results = collect($response->data)->map(fn (object $record) => [
             'record_id' => $record->record_id,
-            'character_id' => $this->character_id,
+            'character_id' => $this->characterId,
             'corporation_id' => $record->corporation_id,
             'is_deleted' => $record->is_deleted ?? false,
             'start_date' => carbon($record->start_date),

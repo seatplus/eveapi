@@ -13,18 +13,18 @@ final class ResolveUniverseGroupByIdJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetUniverseGroupsGroupId::class;
 
-    public function __construct(private readonly int $group_id) {}
+    public function __construct(private readonly int $groupId) {}
 
     #[\Override]
     public function tags(): array
     {
-        return ['resolve', 'universe', 'group', "group_id:{$this->group_id}"];
+        return ['resolve', 'universe', 'group', "group_id:{$this->groupId}"];
     }
 
     #[\Override]
     public function executeJob(EsiClient $esi): void
     {
-        $response = self::OPERATION_CLASS::execute($esi, $this->group_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->groupId);
 
         if ($response->isCachedLoad) {
             return;

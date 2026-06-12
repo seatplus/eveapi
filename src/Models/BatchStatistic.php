@@ -27,10 +27,10 @@ class BatchStatistic extends Model
     protected function duration(): Attribute
     {
         return Attribute::make(get: function () {
-            /** @var Carbon $finished_at */
-            $finished_at = $this->finished_at;
+            /** @var Carbon $finishedAt */
+            $finishedAt = $this->finished_at;
 
-            return (int) $this->started_at->diffInSeconds($finished_at);
+            return (int) $this->started_at->diffInSeconds($finishedAt);
         });
     }
 
@@ -47,13 +47,13 @@ class BatchStatistic extends Model
         $env = config('app.env');
 
         // get horizon config
-        $horizon_config = config("horizon.environments.{$env}.seatplus-workers");
+        $horizonConfig = config("horizon.environments.{$env}.seatplus-workers");
 
         // convert array to string
-        $queue_balancing_configuration = json_encode($horizon_config);
+        $queueBalancingConfiguration = json_encode($horizonConfig);
 
         // add to attributes
-        $attributes['queue_balancing_configuration'] = $queue_balancing_configuration;
+        $attributes['queue_balancing_configuration'] = $queueBalancingConfiguration;
 
         return self::create($attributes);
     }

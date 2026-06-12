@@ -54,7 +54,7 @@ class CheckJobsCommand extends Command
      */
     protected $description = 'Check all used endpoints and whether the jobs are up to date or in need of an update';
 
-    private bool $has_errors = false;
+    private bool $hasErrors = false;
 
     public function __construct(
         private readonly JobChecker $jobChecker
@@ -68,13 +68,13 @@ class CheckJobsCommand extends Command
             ->map(function (EsiJob $job) {
                 $assertions = $this->jobChecker->checkJob($job);
 
-                $has_errors = $assertions->contains(fn (array $assertion) => $assertion['status'] === 'error');
-                $has_warnings = $assertions->contains(fn (array $assertion) => $assertion['status'] === 'warning');
+                $hasErrors = $assertions->contains(fn (array $assertion) => $assertion['status'] === 'error');
+                $hasWarnings = $assertions->contains(fn (array $assertion) => $assertion['status'] === 'warning');
 
                 return [
                     'class' => $job::class,
                     'assertions' => $assertions,
-                    'status' => $has_errors ? 'error' : ($has_warnings ? 'warning' : 'success'),
+                    'status' => $hasErrors ? 'error' : ($hasWarnings ? 'warning' : 'success'),
                 ];
             })
             // sort by status, pass first, warning second, error last
@@ -102,7 +102,7 @@ class CheckJobsCommand extends Command
                 $this->writeNewLine();
             });
 
-        if ($this->has_errors) {
+        if ($this->hasErrors) {
             return self::FAILURE;
         }
 
@@ -111,22 +111,22 @@ class CheckJobsCommand extends Command
 
     private function getAllJobs(): Collection
     {
-        $job_strings = glob(__DIR__.'/../Jobs/*/*.php');
+        $jobStrings = glob(__DIR__.'/../Jobs/*/*.php');
 
-        return collect($job_strings)
-            ->map(function (string $job_string) {
-                $job_string = str_replace(__DIR__.'/../Jobs/', '', $job_string);
-                $job_string = str_replace('.php', '', $job_string);
-                $job_string = str_replace('/', '\\', $job_string);
+        return collect($jobStrings)
+            ->map(function (string $jobString) {
+                $jobString = str_replace(__DIR__.'/../Jobs/', '', $jobString);
+                $jobString = str_replace('.php', '', $jobString);
+                $jobString = str_replace('/', '\\', $jobString);
 
-                return 'Seatplus\\Eveapi\\Jobs\\'.$job_string;
+                return 'Seatplus\\Eveapi\\Jobs\\'.$jobString;
             })
             ->filter(fn (string $job) => is_subclass_of($job, EsiJob::class))
             // filter out abstract classes
             ->filter(fn (string $job) => ! (new ReflectionClass($job))->isAbstract())
             ->map(function (string $job) {
-                $constructor_parameters = (new ReflectionClass($job))->getConstructor()?->getParameters();
-                $constructor_parameters = collect($constructor_parameters)
+                $constructorParameters = (new ReflectionClass($job))->getConstructor()?->getParameters();
+                $constructorParameters = collect($constructorParameters)
                     ->map(function (\ReflectionParameter $parameter) {
                         $type = 'unknown';
 
@@ -148,7 +148,7 @@ class CheckJobsCommand extends Command
                         };
                     });
 
-                return new $job(...$constructor_parameters->toArray());
+                return new $job(...$constructorParameters->toArray());
             });
     }
 
@@ -160,7 +160,7 @@ class CheckJobsCommand extends Command
     private function writeError(string $message): void
     {
         $this->writeAssertionOutput($message, 'text-red font-bold px-2', '⨯');
-        $this->has_errors = true;
+        $this->hasErrors = true;
     }
 
     private function writeWarning(string $message): void
@@ -168,16 +168,16 @@ class CheckJobsCommand extends Command
         $this->writeAssertionOutput($message, 'text-yellow font-bold px-2', '-');
     }
 
-    private function writeAssertionOutput(string $message, string $symbol_class, string $symbol): void
+    private function writeAssertionOutput(string $message, string $symbolClass, string $symbol): void
     {
-        $output = sprintf('<div class="text-gray-800"><span class="%s">%s</span>%s</div>', $symbol_class, $symbol, $message);
+        $output = sprintf('<div class="text-gray-800"><span class="%s">%s</span>%s</div>', $symbolClass, $symbol, $message);
 
         render($output);
     }
 
-    private function writeAssertionHeader(string $job, string $status_class, string $status): void
+    private function writeAssertionHeader(string $job, string $statusClass, string $status): void
     {
-        $output = sprintf('<div><div class="px-2"><span class="%s">%s</span></div>%s</div>', $status_class, $status, $job);
+        $output = sprintf('<div><div class="px-2"><span class="%s">%s</span></div>%s</div>', $statusClass, $status, $job);
 
         render($output);
     }

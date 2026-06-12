@@ -10,15 +10,15 @@ use Seatplus\Eveapi\Models\RefreshToken;
 class ThroughRandomRefreshTokenFinder implements FinderInterface
 {
     #[\Override]
-    public function handle(int $location_id, Collection $tracings): ?RefreshToken
+    public function handle(int $locationId, Collection $tracings): ?RefreshToken
     {
 
-        $character_ids_to_ignore = $tracings->pluck('character_id');
+        $characterIdsToIgnore = $tracings->pluck('character_id');
 
         return RefreshToken::query()
-            ->whereNotIn('character_id', $character_ids_to_ignore)
+            ->whereNotIn('character_id', $characterIdsToIgnore)
             ->inRandomOrder()
             ->cursor()
-            ->firstWhere(fn (RefreshToken $refresh_token) => $refresh_token->hasScope('esi-universe.read_structures.v1'));
+            ->firstWhere(fn (RefreshToken $refreshToken) => $refreshToken->hasScope('esi-universe.read_structures.v1'));
     }
 }

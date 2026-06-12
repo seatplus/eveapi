@@ -30,7 +30,7 @@ it('does not upsert balances when response is cached', function () {
 
 it('returns the corporation refresh token for an accountant', function () {
     $scope = head(config('eveapi.scopes.corporation.wallet'));
-    updateRefreshTokenScopes(testCharacter()->refresh_token, [$scope])->save();
+    updateRefreshTokenScopes(testCharacter()->refreshToken, [$scope])->save();
 
     CharacterRole::updateOrCreate(
         ['character_id' => testCharacter()->character_id],

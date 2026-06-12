@@ -14,8 +14,8 @@ beforeEach(function () {
     Queue::fake();
     Event::fake();
 
-    $refresh_token = updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-universe.read_structures.v1']);
-    $refresh_token->save();
+    $refreshToken = updateRefreshTokenScopes($this->test_character->refreshToken, ['esi-universe.read_structures.v1']);
+    $refreshToken->save();
 });
 
 describe('isStation or recently updated structure', function () {
@@ -88,20 +88,20 @@ describe('is potential structure', function () {
     it('checks structure if location has not recently been updated', function () {
 
         // Arrange
-        $location_id = 832_949_394;
+        $locationId = 832_949_394;
 
         Structure::factory()->make([
             'updated_at' => carbon()->subDays(8),
-            'structure_id' => $location_id,
+            'structure_id' => $locationId,
         ])->save();
 
         $location = Location::firstOrNew([
-            'location_id' => $location_id,
-            'locatable_id' => $location_id,
+            'location_id' => $locationId,
+            'locatable_id' => $locationId,
             'locatable_type' => Structure::class,
         ]);
 
-        $resolveStructurePipe = new StructureResolver($this->test_character->refresh_token);
+        $resolveStructurePipe = new StructureResolver($this->test_character->refreshToken);
 
         Log::shouldReceive('info')->once();
 
@@ -115,7 +115,7 @@ describe('is potential structure', function () {
     it('creates location and returns early without refresh token', function () {
 
         // Arrange
-        $location_id = 832_949_394;
+        $locationId = 832_949_394;
 
         // Delete all RefreshTokens
         RefreshToken::truncate();
@@ -123,16 +123,16 @@ describe('is potential structure', function () {
         expect(Location::count())->toBe(0);
 
         $location = Location::firstOrNew([
-            'location_id' => $location_id,
+            'location_id' => $locationId,
         ]);
 
-        $mocked_refresh_token_finder = mock(StructureRefreshTokenFinder::class)
+        $mockedRefreshTokenFinder = mock(StructureRefreshTokenFinder::class)
             ->shouldReceive('findValidToken')
             ->once()
             ->andReturnNull()
             ->getMock();
 
-        $resolveStructurePipe = new StructureResolver($mocked_refresh_token_finder);
+        $resolveStructurePipe = new StructureResolver($mockedRefreshTokenFinder);
 
         Log::shouldReceive('warning')
             ->once();
@@ -148,16 +148,16 @@ describe('is potential structure', function () {
     it('logs successfully resolved structure', function () {
 
         // Arrange
-        $location_id = 832_949_394;
+        $locationId = 832_949_394;
 
         expect(Location::count())->toBe(0)
             ->and(Structure::count())->toBe(0);
 
         $location = Location::firstOrNew([
-            'location_id' => $location_id,
+            'location_id' => $locationId,
         ]);
 
-        $resolveStructurePipe = new StructureResolver($this->test_character->refresh_token);
+        $resolveStructurePipe = new StructureResolver($this->test_character->refreshToken);
 
         Log::shouldReceive('info')->once();
 
@@ -173,32 +173,32 @@ describe('is potential structure', function () {
     it('throws error if resolving structure fails', function () {
 
         // Arrange
-        $location_id = 832_949_394;
+        $locationId = 832_949_394;
 
         expect(Location::count())->toBe(0)
             ->and(Structure::count())->toBe(0);
 
         $location = Location::firstOrNew([
-            'location_id' => $location_id,
+            'location_id' => $locationId,
         ]);
 
-        $mocked_refresh_token_finder = mock(StructureRefreshTokenFinder::class)->makePartial();
+        $mockedRefreshTokenFinder = mock(StructureRefreshTokenFinder::class)->makePartial();
 
-        $mocked_refresh_token_finder
+        $mockedRefreshTokenFinder
             ->shouldReceive('findValidToken')
             ->once()
-            ->andReturn($this->test_character->refresh_token);
+            ->andReturn($this->test_character->refreshToken);
 
-        $mocked_refresh_token_finder
+        $mockedRefreshTokenFinder
             ->shouldReceive('markAsResolved')
             ->once()
             ->andThrow(new Exception('test'));
 
-        $mocked_refresh_token_finder
+        $mockedRefreshTokenFinder
             ->shouldReceive('markAsFailed')
             ->once();
 
-        $resolveStructurePipe = new StructureResolver($mocked_refresh_token_finder);
+        $resolveStructurePipe = new StructureResolver($mockedRefreshTokenFinder);
 
         Log::shouldReceive('error')->once(); // once for the error and once for the exception
 

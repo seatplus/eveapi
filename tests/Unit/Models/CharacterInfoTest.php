@@ -19,22 +19,22 @@ beforeEach(function () {
 });
 
 test('character has refresh token relation test', function () {
-    expect($this->test_character->refresh_token)->toBeInstanceOf(RefreshToken::class);
+    expect($this->test_character->refreshToken)->toBeInstanceOf(RefreshToken::class);
 });
 
 test('character has alliance relation test', function () {
     $faker = Factory::create();
 
-    $alliance_id = $faker->numberBetween(99000000, 100000000);
+    $allianceId = $faker->numberBetween(99000000, 100000000);
 
     $affiliation = CharacterAffiliation::factory()->create([
-        'alliance_id' => $alliance_id,
+        'alliance_id' => $allianceId,
     ]);
 
     $character = $affiliation->character()->save(CharacterInfo::factory()->create());
 
     $affiliation->alliance()->associate(AllianceInfo::factory()->create([
-        'alliance_id' => $alliance_id,
+        'alliance_id' => $allianceId,
     ]));
 
     expect($character->alliance)->toBeInstanceOf(AllianceInfo::class);
@@ -90,10 +90,10 @@ test('character has balance relationship', function () {
     expect($this->test_character->refresh()->balance)->toBeInstanceOf(Balance::class);
 });
 
-it('has skill_queues relationship', function () {
+it('has skillQueues relationship', function () {
     SkillQueue::factory()->create([
         'character_id' => $this->test_character->character_id,
     ]);
 
-    expect($this->test_character->refresh()->skill_queues->first())->toBeInstanceOf(SkillQueue::class);
+    expect($this->test_character->refresh()->skillQueues->first())->toBeInstanceOf(SkillQueue::class);
 });

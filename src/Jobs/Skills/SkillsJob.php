@@ -16,30 +16,30 @@ final class SkillsJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetCharactersCharacterIdSkills::class;
 
-    public function __construct(private readonly int $character_id) {}
+    public function __construct(private readonly int $characterId) {}
 
     #[\Override]
     public function getRefreshToken(): RefreshToken
     {
-        return RefreshToken::findOrFail($this->character_id);
+        return RefreshToken::findOrFail($this->characterId);
     }
 
     #[\Override]
     public function tags(): array
     {
-        return ['character', "character_id:{$this->character_id}", 'skills'];
+        return ['character', "character_id:{$this->characterId}", 'skills'];
     }
 
     #[\Override]
     public function executeJob(EsiClient $esi): void
     {
-        $response = self::OPERATION_CLASS::execute($esi, $this->character_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->characterId);
         if ($response->isCachedLoad) {
             return;
         }
 
         $skills = collect($response->skills)->map(fn (object $skill) => [
-            'character_id' => $this->character_id,
+            'character_id' => $this->characterId,
             'skill_id' => $skill->skill_id,
             'active_skill_level' => $skill->active_skill_level,
             'skillpoints_in_skill' => $skill->skillpoints_in_skill,
@@ -52,13 +52,13 @@ final class SkillsJob extends EsiJob
             ['skillpoints_in_skill', 'trained_skill_level', 'active_skill_level']
         );
 
-        CharacterInfo::where('character_id', $this->character_id)->update([
+        CharacterInfo::where('character_id', $this->characterId)->update([
             'total_sp' => $response->total_sp,
             'unallocated_sp' => $response->unallocated_sp,
         ]);
 
         Skill::query()
-            ->where('character_id', $this->character_id)
+            ->where('character_id', $this->characterId)
             ->doesntHave('type')
             ->pluck('skill_id')
             ->each(fn (int $skillId) => ResolveUniverseTypeByIdJob::dispatch($skillId)->onQueue('high'));

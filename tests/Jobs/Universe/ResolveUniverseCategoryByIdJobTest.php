@@ -5,15 +5,15 @@ use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseCategoryByIdJob;
 use Seatplus\Eveapi\Models\Universe\Category;
 
 it('creates category', function () {
-    $mock_data = Category::factory()->make();
+    $mockData = Category::factory()->make();
 
     $esi = Mockery::mock(EsiClient::class);
-    mockEsiTransport($esi, makeEsiResult((object) $mock_data->toArray()));
+    mockEsiTransport($esi, makeEsiResult((object) $mockData->toArray()));
 
-    $job = new ResolveUniverseCategoryByIdJob($mock_data->category_id);
+    $job = new ResolveUniverseCategoryByIdJob($mockData->category_id);
     $job->executeJob($esi);
 
-    expect(Category::where('category_id', $mock_data->category_id)->exists())->toBeTrue();
+    expect(Category::where('category_id', $mockData->category_id)->exists())->toBeTrue();
 });
 
 it('skips db write when response is a cached load', function () {

@@ -49,7 +49,7 @@ class UpdateCorporation implements ShouldQueue
     private FindCorporationRefreshToken $findCorporationRefreshToken;
 
     public function __construct(
-        public ?int $corporation_id = null,
+        public ?int $corporationId = null,
     ) {
         $this->findCorporationRefreshToken = new FindCorporationRefreshToken;
     }
@@ -63,27 +63,27 @@ class UpdateCorporation implements ShouldQueue
 
     public function handle(): void
     {
-        if ($this->corporation_id) {
-            $this->execute($this->corporation_id, 'high');
+        if ($this->corporationId) {
+            $this->execute($this->corporationId, 'high');
         } else {
             RefreshToken::with(['corporation', 'character.roles'])
                 ->cursor()
                 ->map(fn (RefreshToken $token) => $token->corporation?->corporation_id)
                 ->filter()
                 ->unique()
-                ->each(fn (int $corporation_id) => $this->execute($corporation_id));
+                ->each(fn (int $corporationId) => $this->execute($corporationId));
         }
     }
 
-    private function execute(int $corporation_id, string $queue = 'default'): void
+    private function execute(int $corporationId, string $queue = 'default'): void
     {
-        $corporation = optional(CorporationInfo::find($corporation_id))->name ?? $corporation_id;
+        $corporation = optional(CorporationInfo::find($corporationId))->name ?? $corporationId;
 
-        $batch_name = sprintf('%s (corporation) update batch', $corporation);
+        $batchName = sprintf('%s (corporation) update batch', $corporation);
 
-        $batch = Bus::batch($this->getBatchJobs($corporation_id))
+        $batch = Bus::batch($this->getBatchJobs($corporationId))
             ->then(fn (Batch $batch) => BatchStatistic::where('batch_id', $batch->id)->update(['finished_at' => now()]))
-            ->name($batch_name)
+            ->name($batchName)
             ->onQueue($queue)
             ->allowFailures()
             ->dispatch();
@@ -91,48 +91,48 @@ class UpdateCorporation implements ShouldQueue
         BatchStatistic::createEntry($batch);
     }
 
-    private function getBatchJobs(int $corporation_id): array
+    private function getBatchJobs(int $corporationId): array
     {
         return collect()
-            ->merge($this->addCorporationDivisionsJobs($corporation_id))
-            ->merge($this->addCorporationMemberTrackingJobs($corporation_id))
-            ->merge($this->addCorporationWalletHydrateBatch($corporation_id))
+            ->merge($this->addCorporationDivisionsJobs($corporationId))
+            ->merge($this->addCorporationMemberTrackingJobs($corporationId))
+            ->merge($this->addCorporationWalletHydrateBatch($corporationId))
             ->values()
             ->toArray();
     }
 
-    private function addCorporationDivisionsJobs(int $corporation_id): array
+    private function addCorporationDivisionsJobs(int $corporationId): array
     {
-        if (! call_user_func_array($this->findCorporationRefreshToken, [$corporation_id, 'esi-corporations.read_divisions.v1', 'Director'])) {
+        if (! call_user_func_array($this->findCorporationRefreshToken, [$corporationId, 'esi-corporations.read_divisions.v1', 'Director'])) {
             return [];
         }
 
         return [
-            new CorporationDivisionsJob($corporation_id),
+            new CorporationDivisionsJob($corporationId),
         ];
     }
 
-    private function addCorporationMemberTrackingJobs(int $corporation_id): array
+    private function addCorporationMemberTrackingJobs(int $corporationId): array
     {
-        if (! call_user_func_array($this->findCorporationRefreshToken, [$corporation_id, 'esi-corporations.track_members.v1', 'Director'])) {
+        if (! call_user_func_array($this->findCorporationRefreshToken, [$corporationId, 'esi-corporations.track_members.v1', 'Director'])) {
             return [];
         }
 
         return [
-            new CorporationMemberTrackingJob($corporation_id),
+            new CorporationMemberTrackingJob($corporationId),
         ];
     }
 
-    private function addCorporationWalletHydrateBatch(int $corporation_id): array
+    private function addCorporationWalletHydrateBatch(int $corporationId): array
     {
-        if (! call_user_func_array($this->findCorporationRefreshToken, [$corporation_id, head(config('eveapi.scopes.corporation.wallet')), ['Accountant', 'Junior_Accountant']])) {
+        if (! call_user_func_array($this->findCorporationRefreshToken, [$corporationId, head(config('eveapi.scopes.corporation.wallet')), ['Accountant', 'Junior_Accountant']])) {
             return [];
         }
 
         return [
             [
-                new CorporationBalanceJob($corporation_id),
-                new CorporationWalletJournalJob($corporation_id),
+                new CorporationBalanceJob($corporationId),
+                new CorporationWalletJournalJob($corporationId),
             ],
         ];
     }

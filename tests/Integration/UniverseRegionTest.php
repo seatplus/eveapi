@@ -20,42 +20,42 @@ it('has tags', function () {
 });
 
 it('resolves system', function () {
-    $mock_data = System::factory()->make();
+    $mockData = System::factory()->make();
 
     $esi = Mockery::mock(EsiClient::class);
-    mockEsiTransport($esi, makeEsiResult((object) $mock_data->toArray()));
+    mockEsiTransport($esi, makeEsiResult((object) $mockData->toArray()));
 
     expect(System::all())->toHaveCount(0);
 
-    $job = new ResolveUniverseSystemBySystemIdJob($mock_data->system_id);
+    $job = new ResolveUniverseSystemBySystemIdJob($mockData->system_id);
     $job->executeJob($esi);
 
     expect(System::all())->toHaveCount(1);
 });
 
 it('resolves constellation', function () {
-    $mock_data = Constellation::factory()->make();
+    $mockData = Constellation::factory()->make();
 
     $esi = Mockery::mock(EsiClient::class);
-    mockEsiTransport($esi, makeEsiResult((object) $mock_data->toArray()));
+    mockEsiTransport($esi, makeEsiResult((object) $mockData->toArray()));
 
     expect(Constellation::all())->toHaveCount(0);
 
-    $job = new ResolveUniverseConstellationByConstellationIdJob($mock_data->constellation_id);
+    $job = new ResolveUniverseConstellationByConstellationIdJob($mockData->constellation_id);
     $job->executeJob($esi);
 
     expect(Constellation::all())->toHaveCount(1);
 });
 
 it('resolves region', function () {
-    $mock_data = Region::factory()->make();
+    $mockData = Region::factory()->make();
 
     $esi = Mockery::mock(EsiClient::class);
-    mockEsiTransport($esi, makeEsiResult((object) $mock_data->toArray()));
+    mockEsiTransport($esi, makeEsiResult((object) $mockData->toArray()));
 
     expect(Region::all())->toHaveCount(0);
 
-    $job = new ResolveUniverseRegionByRegionIdJob($mock_data->region_id);
+    $job = new ResolveUniverseRegionByRegionIdJob($mockData->region_id);
     $job->executeJob($esi);
 
     expect(Region::all())->toHaveCount(1);

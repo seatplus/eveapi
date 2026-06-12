@@ -17,39 +17,39 @@ beforeEach(function () {
 });
 
 it('creates structure', function () {
-    $mock_data = Structure::factory()->make();
+    $mockData = Structure::factory()->make();
 
     $esi = Mockery::mock(EsiClient::class);
-    mockEsiTransport($esi, makeEsiResult((object) $mock_data->only(['name', 'owner_id', 'solar_system_id', 'type_id'])));
+    mockEsiTransport($esi, makeEsiResult((object) $mockData->only(['name', 'owner_id', 'solar_system_id', 'type_id'])));
 
-    $job = new ResolveUniverseStructureByIdJob(12345, $mock_data->structure_id);
+    $job = new ResolveUniverseStructureByIdJob(12345, $mockData->structure_id);
     $job->executeJob($esi);
 
-    expect(Structure::where('structure_id', $mock_data->structure_id)->exists())->toBeTrue();
+    expect(Structure::where('structure_id', $mockData->structure_id)->exists())->toBeTrue();
 });
 
 it('creates location', function () {
-    $mock_data = Structure::factory()->make();
+    $mockData = Structure::factory()->make();
 
     $esi = Mockery::mock(EsiClient::class);
-    mockEsiTransport($esi, makeEsiResult((object) $mock_data->only(['name', 'owner_id', 'solar_system_id', 'type_id'])));
+    mockEsiTransport($esi, makeEsiResult((object) $mockData->only(['name', 'owner_id', 'solar_system_id', 'type_id'])));
 
-    $job = new ResolveUniverseStructureByIdJob(12345, $mock_data->structure_id);
+    $job = new ResolveUniverseStructureByIdJob(12345, $mockData->structure_id);
     $job->executeJob($esi);
 
-    expect(Location::where('location_id', $mock_data->structure_id)->exists())->toBeTrue();
+    expect(Location::where('location_id', $mockData->structure_id)->exists())->toBeTrue();
 });
 
 it('creates polymorphic relationship', function () {
-    $mock_data = Structure::factory()->make();
+    $mockData = Structure::factory()->make();
 
     $esi = Mockery::mock(EsiClient::class);
-    mockEsiTransport($esi, makeEsiResult((object) $mock_data->only(['name', 'owner_id', 'solar_system_id', 'type_id'])));
+    mockEsiTransport($esi, makeEsiResult((object) $mockData->only(['name', 'owner_id', 'solar_system_id', 'type_id'])));
 
-    $job = new ResolveUniverseStructureByIdJob(12345, $mock_data->structure_id);
+    $job = new ResolveUniverseStructureByIdJob(12345, $mockData->structure_id);
     $job->executeJob($esi);
 
-    $location = Location::find($mock_data->structure_id);
+    $location = Location::find($mockData->structure_id);
 
     expect($location->locatable)->toBeInstanceOf(Structure::class);
 });

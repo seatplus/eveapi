@@ -50,7 +50,7 @@ class Asset extends Model implements TypeWatchListInterface
 
     const int ASSET_SAFETY = 2004;
 
-    protected array $affiliated_ids = [];
+    protected array $affiliatedIds = [];
 
     /**
      * @var string
@@ -101,27 +101,27 @@ class Asset extends Model implements TypeWatchListInterface
     #[Scope]
     public function filterByTypeIds(Builder $query, int|array $types): Builder
     {
-        $type_ids = is_array($types) ? $types : [$types];
+        $typeIds = is_array($types) ? $types : [$types];
 
-        return $query->whereIn('type_id', $type_ids);
+        return $query->whereIn('type_id', $typeIds);
     }
 
     #[\Override]
     #[Scope]
     public function filterByGroupIds(Builder $query, int|array $groups): Builder
     {
-        $group_ids = is_array($groups) ? $groups : [$groups];
+        $groupIds = is_array($groups) ? $groups : [$groups];
 
-        return $query->whereIn('group_id', $group_ids);
+        return $query->whereIn('group_id', $groupIds);
     }
 
     #[\Override]
     #[Scope]
     public function filterByCategoryIds(Builder $query, int|array $categories): Builder
     {
-        $category_ids = is_array($categories) ? $categories : [$categories];
+        $categoryIds = is_array($categories) ? $categories : [$categories];
 
-        return $query->whereIn('category_id', $category_ids);
+        return $query->whereIn('category_id', $categoryIds);
     }
 
     #[\Override]

@@ -30,7 +30,7 @@ final class CharacterAssetsNameJob extends EsiJob
 
     private Collection $assetNames;
 
-    public function __construct(public int $character_id)
+    public function __construct(public int $characterId)
     {
         $this->assetNames = collect();
     }
@@ -38,13 +38,13 @@ final class CharacterAssetsNameJob extends EsiJob
     #[\Override]
     public function getRefreshToken(): RefreshToken
     {
-        return RefreshToken::findOrFail($this->character_id);
+        return RefreshToken::findOrFail($this->characterId);
     }
 
     #[\Override]
     public function tags(): array
     {
-        return ['character', "character_id:{$this->character_id}", 'assets', 'name'];
+        return ['character', "character_id:{$this->characterId}", 'assets', 'name'];
     }
 
     #[\Override]
@@ -60,7 +60,7 @@ final class CharacterAssetsNameJob extends EsiJob
                 self::CELESTIAL_CATEGORY, self::SHIP_CATEGORY, self::DEPLOYABLE_CATEGORY,
                 self::STARBASE_CATEGORY, self::ORBITALS_CATEGORY, self::STRUCTURE_CATEGORY,
             ]))
-            ->where('assetable_id', $this->character_id)
+            ->where('assetable_id', $this->characterId)
             ->where('is_singleton', true)
             ->pluck('item_id')
             ->chunk(1000)
@@ -68,7 +68,7 @@ final class CharacterAssetsNameJob extends EsiJob
                 $response = static::OPERATION_CLASS::execute(
                     $esi,
                     $itemIds->values()->toArray(),
-                    $this->character_id
+                    $this->characterId
                 );
 
                 if ($response->isCachedLoad) {
@@ -81,7 +81,7 @@ final class CharacterAssetsNameJob extends EsiJob
         $this->assetNames
             ->filter(fn (object $item) => $item->name !== 'None')
             ->each(fn (object $item) => Asset::query()
-                ->where('assetable_id', $this->character_id)
+                ->where('assetable_id', $this->characterId)
                 ->where('item_id', $item->item_id)
                 ->update(['name' => $item->name])
             );

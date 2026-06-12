@@ -8,7 +8,7 @@ use Seatplus\Eveapi\Models\Corporation\CorporationMemberTracking;
 
 beforeEach(function () {
     Event::fakeFor(function () {
-        updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-corporations.track_members.v1'])->save();
+        updateRefreshTokenScopes($this->test_character->refreshToken, ['esi-corporations.track_members.v1'])->save();
         $this->test_character->roles()->update(['roles' => ['Director']]);
         updateCharacterRoles(['Director']);
     });
@@ -27,7 +27,7 @@ test('if job is queued', function () {
 test('retrieve test', function () {
     Queue::fake();
 
-    $mock_data = CorporationMemberTracking::factory()->make([
+    $mockData = CorporationMemberTracking::factory()->make([
         'character_id' => testCharacter()->character_id,
         'corporation_id' => testCharacter()->corporation->corporation_id,
     ]);
@@ -35,10 +35,10 @@ test('retrieve test', function () {
     Bus::fake();
 
     expect(testCharacter()->roles->hasRole('roles', 'Director'))->toBeTrue()
-        ->and(testCharacter()->refresh_token->hasScope('esi-corporations.track_members.v1'))->toBeTrue();
+        ->and(testCharacter()->refreshToken->hasScope('esi-corporations.track_members.v1'))->toBeTrue();
 
     $esi = Mockery::mock(EsiClient::class);
-    mockEsiTransport($esi, makeEsiResult([(object) $mock_data->toArray()]));
+    mockEsiTransport($esi, makeEsiResult([(object) $mockData->toArray()]));
 
     $job = new CorporationMemberTrackingJob(testCharacter()->corporation->corporation_id);
     $job->executeJob($esi);

@@ -13,61 +13,61 @@ beforeEach(function () {
 });
 
 test('run character contact', function () {
-    $mock_data = Contact::factory()->count(5)->make();
+    $mockData = Contact::factory()->count(5)->make();
 
     $esi = Mockery::mock(EsiClient::class);
-    mockEsiTransport($esi, makeEsiResult(array_map(fn ($c) => (object) $c, $mock_data->toArray())));
+    mockEsiTransport($esi, makeEsiResult(array_map(fn ($c) => (object) $c, $mockData->toArray())));
 
     $job = new CharacterContactJob(testCharacter()->character_id);
     $job->executeJob($esi);
 
-    $cached_ids = CacheCharacterAffiliationIdsService::make()->retrieve();
+    $cachedIds = CacheCharacterAffiliationIdsService::make()->retrieve();
 
-    foreach ($mock_data as $data) {
+    foreach ($mockData as $data) {
         $this->assertDatabaseHas('contacts', [
             'contactable_id' => $this->test_character->character_id,
             'contact_id' => $data->contact_id,
         ]);
 
         if ($data->contact_type === 'character') {
-            expect(in_array($data->contact_id, $cached_ids->toArray()))->toBeTrue();
+            expect(in_array($data->contact_id, $cachedIds->toArray()))->toBeTrue();
         }
     }
 });
 
 test('run corporation contact', function () {
-    $mock_data = Contact::factory()->count(5)->make();
+    $mockData = Contact::factory()->count(5)->make();
 
     $esi = Mockery::mock(EsiClient::class);
-    mockEsiTransport($esi, makeEsiResult(array_map(fn ($c) => (object) $c, $mock_data->toArray())));
+    mockEsiTransport($esi, makeEsiResult(array_map(fn ($c) => (object) $c, $mockData->toArray())));
 
     $job = new CorporationContactJob(testCharacter()->corporation->corporation_id, testCharacter()->character_id);
     $job->executeJob($esi);
 
-    $cached_ids = CacheCharacterAffiliationIdsService::make()->retrieve();
+    $cachedIds = CacheCharacterAffiliationIdsService::make()->retrieve();
 
-    foreach ($mock_data as $data) {
+    foreach ($mockData as $data) {
         $this->assertDatabaseHas('contacts', [
             'contactable_id' => $this->test_character->corporation->corporation_id,
             'contact_id' => $data->contact_id,
         ]);
 
         if ($data->contact_type === 'character') {
-            expect(in_array($data->contact_id, $cached_ids->toArray()))->toBeTrue();
+            expect(in_array($data->contact_id, $cachedIds->toArray()))->toBeTrue();
         }
     }
 });
 
 test('run alliance contact', function () {
-    $mock_data = Contact::factory()->count(5)->make();
+    $mockData = Contact::factory()->count(5)->make();
 
     $esi = Mockery::mock(EsiClient::class);
-    mockEsiTransport($esi, makeEsiResult(array_map(fn ($c) => (object) $c, $mock_data->toArray())));
+    mockEsiTransport($esi, makeEsiResult(array_map(fn ($c) => (object) $c, $mockData->toArray())));
 
     $job = new AllianceContactJob(testCharacter()->corporation->alliance_id, testCharacter()->character_id);
     $job->executeJob($esi);
 
-    foreach ($mock_data as $data) {
+    foreach ($mockData as $data) {
         $this->assertDatabaseHas('contacts', [
             'contactable_id' => $this->test_character->corporation->alliance_id,
             'contact_id' => $data->contact_id,
@@ -76,10 +76,10 @@ test('run alliance contact', function () {
 });
 
 it('has labels', function () {
-    $mock_data = Contact::factory()->withLabels()->make();
+    $mockData = Contact::factory()->withLabels()->make();
 
     $esi = Mockery::mock(EsiClient::class);
-    mockEsiTransport($esi, makeEsiResult([(object) $mock_data->toArray()]));
+    mockEsiTransport($esi, makeEsiResult([(object) $mockData->toArray()]));
 
     expect($this->test_character->contacts)->toHaveCount(0);
 

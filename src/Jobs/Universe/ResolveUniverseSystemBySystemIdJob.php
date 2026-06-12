@@ -13,18 +13,18 @@ final class ResolveUniverseSystemBySystemIdJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetUniverseSystemsSystemId::class;
 
-    public function __construct(private readonly int $system_id) {}
+    public function __construct(private readonly int $systemId) {}
 
     #[\Override]
     public function tags(): array
     {
-        return ['resolve', 'universe', 'system', "system_id:{$this->system_id}"];
+        return ['resolve', 'universe', 'system', "system_id:{$this->systemId}"];
     }
 
     #[\Override]
     public function executeJob(EsiClient $esi): void
     {
-        $response = self::OPERATION_CLASS::execute($esi, $this->system_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->systemId);
 
         if ($response->isCachedLoad) {
             return;

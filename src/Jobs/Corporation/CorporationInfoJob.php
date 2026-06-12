@@ -13,23 +13,23 @@ final class CorporationInfoJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetCorporationsCorporationId::class;
 
-    public function __construct(public int $corporation_id) {}
+    public function __construct(public int $corporationId) {}
 
     #[\Override]
     public function tags(): array
     {
-        return ['corporation', 'info', "corporation_id:{$this->corporation_id}"];
+        return ['corporation', 'info', "corporation_id:{$this->corporationId}"];
     }
 
     #[\Override]
     public function executeJob(EsiClient $esi): void
     {
-        $response = self::OPERATION_CLASS::execute($esi, $this->corporation_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->corporationId);
         if ($response->isCachedLoad) {
             return;
         }
 
-        CorporationInfo::firstOrNew(['corporation_id' => $this->corporation_id])->fill([
+        CorporationInfo::firstOrNew(['corporation_id' => $this->corporationId])->fill([
             'ticker' => $response->ticker,
             'name' => $response->name,
             'member_count' => $response->member_count,

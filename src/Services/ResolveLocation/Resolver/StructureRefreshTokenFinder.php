@@ -18,15 +18,15 @@ use Seatplus\Eveapi\Services\ResolveLocation\Finders\ThroughWalletTransactionsFi
 
 class StructureRefreshTokenFinder
 {
-    private int $location_id;
+    private int $locationId;
 
     public function __construct(
         public ?RefreshToken $refreshToken = null,
     ) {}
 
-    public function findValidToken(int $location_id): ?RefreshToken
+    public function findValidToken(int $locationId): ?RefreshToken
     {
-        $this->location_id = $location_id;
+        $this->locationId = $locationId;
 
         if ($this->refreshToken) {
             return $this->refreshToken;
@@ -53,7 +53,7 @@ class StructureRefreshTokenFinder
     {
         LocationRefreshToken::query()
             ->updateOrCreate([
-                'location_id' => $this->location_id,
+                'location_id' => $this->locationId,
                 'character_id' => $this->refreshToken->character_id,
             ], [
                 'resolved' => $resolved,
@@ -69,7 +69,7 @@ class StructureRefreshTokenFinder
     private function incrementAttempts(): void
     {
         LocationRefreshToken::query()
-            ->where('location_id', $this->location_id)
+            ->where('location_id', $this->locationId)
             ->where('character_id', $this->refreshToken->character_id)
             ->increment('attempts');
     }
@@ -77,7 +77,7 @@ class StructureRefreshTokenFinder
     private function resetAttempts(): void
     {
         LocationRefreshToken::query()
-            ->where('location_id', $this->location_id)
+            ->where('location_id', $this->locationId)
             ->where('character_id', $this->refreshToken->character_id)
             ->update(['attempts' => 0]);
     }
@@ -98,7 +98,7 @@ class StructureRefreshTokenFinder
     private function getLocationRefreshTokens(): Collection
     {
         return LocationRefreshToken::query()
-            ->where('location_id', $this->location_id)
+            ->where('location_id', $this->locationId)
             ->inRandomOrder()
             ->get();
     }
@@ -109,7 +109,7 @@ class StructureRefreshTokenFinder
             $instance = new $class;
 
             if ($instance instanceof FinderInterface) {
-                $this->refreshToken = $instance->handle($this->location_id, $tracings);
+                $this->refreshToken = $instance->handle($this->locationId, $tracings);
 
                 if ($this->refreshToken) {
                     break;

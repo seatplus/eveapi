@@ -43,7 +43,7 @@ it('handles multiple pages correctly', function () {
     expect(WalletJournal::count())->toBe(2);
 });
 
-it('handles contextable type', function ($context_id_type) {
+it('handles contextable type', function ($contextIdType) {
     $data = [CharactersCharacterIdWalletJournalGetItem::from((object) [
         'id' => 12345,
         'date' => now()->toIso8601String(),
@@ -52,7 +52,7 @@ it('handles contextable type', function ($context_id_type) {
         'amount' => 100.0,
         'balance' => 200.0,
         'context_id' => 12345,
-        'context_id_type' => $context_id_type,
+        'context_id_type' => $contextIdType,
     ])];
 
     $esi = Mockery::mock(EsiClient::class);

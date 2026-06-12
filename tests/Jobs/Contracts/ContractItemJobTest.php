@@ -14,9 +14,9 @@ test('job is being dispatched', function () {
 
     Queue::assertNothingPushed();
 
-    $mock_data = ContractItem::factory()->count(1)->make();
+    $mockData = ContractItem::factory()->count(1)->make();
 
-    CharacterContractItemsJob::dispatch(testCharacter()->character_id, $mock_data->first()->contract_id);
+    CharacterContractItemsJob::dispatch(testCharacter()->character_id, $mockData->first()->contract_id);
 
     Queue::assertNotPushed(ResolveUniverseTypeByIdJob::class);
 });
@@ -24,14 +24,14 @@ test('job is being dispatched', function () {
 it('dispatches resolve universe type job if type is unknown', function () {
     Queue::fake();
 
-    $mock_data = ContractItem::factory()->withoutType()->count(5)->make();
+    $mockData = ContractItem::factory()->withoutType()->count(5)->make();
 
     $contract = Event::fakeFor(fn () => Contract::factory()->create([
-        'contract_id' => $mock_data->first()->contract_id,
+        'contract_id' => $mockData->first()->contract_id,
     ]));
 
     $esi = Mockery::mock(EsiClient::class);
-    mockEsiTransport($esi, makeEsiResult(array_map(fn ($i) => (object) $i, $mock_data->toArray())));
+    mockEsiTransport($esi, makeEsiResult(array_map(fn ($i) => (object) $i, $mockData->toArray())));
 
     $job = new CharacterContractItemsJob(testCharacter()->character_id, $contract->contract_id);
     $job->executeJob($esi);

@@ -16,7 +16,7 @@ final class CorporationWalletTransactionByDivisionJob extends WalletTransactionB
     protected const string OPERATION_CLASS = GetCorporationsCorporationIdWalletsDivisionTransactions::class;
 
     public function __construct(
-        public int $corporation_id,
+        public int $corporationId,
         private readonly int $division
     ) {}
 
@@ -24,11 +24,11 @@ final class CorporationWalletTransactionByDivisionJob extends WalletTransactionB
     public function getRefreshToken(): RefreshToken
     {
         $token = (new FindCorporationRefreshToken)(
-            $this->corporation_id,
+            $this->corporationId,
             head(config('eveapi.scopes.corporation.wallet')),
             ['Accountant', 'Junior_Accountant']
         );
-        throw_unless($token, new \Exception("No eligible refresh token for corporation {$this->corporation_id}"));
+        throw_unless($token, new \Exception("No eligible refresh token for corporation {$this->corporationId}"));
 
         return $token;
     }
@@ -36,13 +36,13 @@ final class CorporationWalletTransactionByDivisionJob extends WalletTransactionB
     #[\Override]
     protected function fetchTransactions(EsiClient $esi, ?int $fromId): EsiResult
     {
-        return self::OPERATION_CLASS::execute($esi, $this->corporation_id, $this->division, $fromId);
+        return self::OPERATION_CLASS::execute($esi, $this->corporationId, $this->division, $fromId);
     }
 
     #[\Override]
     protected function transactionableId(): int
     {
-        return $this->corporation_id;
+        return $this->corporationId;
     }
 
     #[\Override]
@@ -60,6 +60,6 @@ final class CorporationWalletTransactionByDivisionJob extends WalletTransactionB
     #[\Override]
     public function tags(): array
     {
-        return ['corporation', "corporation_id:{$this->corporation_id}", 'wallet', 'transaction', "division:{$this->division}"];
+        return ['corporation', "corporation_id:{$this->corporationId}", 'wallet', 'transaction', "division:{$this->division}"];
     }
 }

@@ -16,31 +16,31 @@ final class CorporationContactJob extends ContactBaseJob
     protected const string OPERATION_CLASS = GetCorporationsCorporationIdContacts::class;
 
     public function __construct(
-        public int $corporation_id,
-        public int $character_id
+        public int $corporationId,
+        public int $characterId
     ) {}
 
     #[\Override]
     public function getRefreshToken(): RefreshToken
     {
-        return RefreshToken::findOrFail($this->character_id);
+        return RefreshToken::findOrFail($this->characterId);
     }
 
     #[\Override]
     protected function fetchPage(EsiClient $esi, int $page): EsiResult
     {
-        return self::OPERATION_CLASS::execute($esi, $this->corporation_id, $page);
+        return self::OPERATION_CLASS::execute($esi, $this->corporationId, $page);
     }
 
     #[\Override]
     public function tags(): array
     {
-        return ['corporation', "corporation_id:{$this->corporation_id}", 'contacts'];
+        return ['corporation', "corporation_id:{$this->corporationId}", 'contacts'];
     }
 
     #[\Override]
     public function executeJob(EsiClient $esi): void
     {
-        $this->handleProcessor(new ProcessContactResponse($this->corporation_id, CorporationInfo::class), $esi);
+        $this->handleProcessor(new ProcessContactResponse($this->corporationId, CorporationInfo::class), $esi);
     }
 }

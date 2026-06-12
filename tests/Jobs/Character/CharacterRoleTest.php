@@ -17,18 +17,18 @@ test('if job is queued', function () {
 });
 
 test('retrieve test', function () {
-    $mock_data = CharacterRole::factory()->make([
+    $mockData = CharacterRole::factory()->make([
         'roles' => ['Personnel_Manager'],
         'character_id' => testCharacter()->character_id,
     ]);
 
     $esi = Mockery::mock(EsiClient::class);
-    mockEsiTransport($esi, makeEsiResult((object) $mock_data->toArray()));
+    mockEsiTransport($esi, makeEsiResult((object) $mockData->toArray()));
 
     $job = new CharacterRoleJob(testCharacter()->character_id);
     $job->executeJob($esi);
 
-    expect(CharacterRole::where('character_id', $mock_data->character_id)->exists())->toBeTrue();
+    expect(CharacterRole::where('character_id', $mockData->character_id)->exists())->toBeTrue();
 });
 
 it('returns the refresh token', function () {

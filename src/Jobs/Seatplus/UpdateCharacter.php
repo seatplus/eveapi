@@ -42,13 +42,13 @@ class UpdateCharacter implements ShouldQueue
     use Queueable;
 
     public function __construct(
-        public ?RefreshToken $refresh_token = null
+        public ?RefreshToken $refreshToken = null
     ) {}
 
     public function handle(): void
     {
         // if refresh_token is set, we only want to update this character
-        $this->refresh_token
+        $this->refreshToken
             ? $this->updateSingleCharacter()
             // otherwise bootstrap/catchup: dispatch chars that need scheduling
             : $this->updateNextIncrementOfCharacters();
@@ -56,15 +56,15 @@ class UpdateCharacter implements ShouldQueue
 
     private function updateSingleCharacter(): void
     {
-        CharacterBatchJob::dispatch($this->refresh_token->character_id)->onQueue('high');
+        CharacterBatchJob::dispatch($this->refreshToken->character_id)->onQueue('high');
     }
 
     private function updateNextIncrementOfCharacters(): void
     {
-        $stale_threshold = now()->subMinutes(CharacterBatchJob::REFRESH_DELAY_MINUTES * 2);
+        $staleThreshold = now()->subMinutes(CharacterBatchJob::REFRESH_DELAY_MINUTES * 2);
 
         // Characters that never had a BatchUpdate record
-        $never_updated = RefreshToken::query()
+        $neverUpdated = RefreshToken::query()
             ->whereNotIn('character_id', BatchUpdate::query()
                 ->select('batchable_id')
                 ->where('batchable_type', CharacterInfo::class)
@@ -72,16 +72,16 @@ class UpdateCharacter implements ShouldQueue
             ->get();
 
         // Characters whose last batch finished before the stale threshold (not currently running)
-        $stale_updated = RefreshToken::query()
+        $staleUpdated = RefreshToken::query()
             ->whereIn('character_id', BatchUpdate::query()
                 ->select('batchable_id')
                 ->where('batchable_type', CharacterInfo::class)
                 ->whereNotNull('finished_at')
-                ->where('finished_at', '<', $stale_threshold)
+                ->where('finished_at', '<', $staleThreshold)
             )
             ->get();
 
-        $tokens = $never_updated->merge($stale_updated)->unique('character_id');
+        $tokens = $neverUpdated->merge($staleUpdated)->unique('character_id');
 
         $tokens->each(function (RefreshToken $token, int $index) {
             CharacterBatchJob::dispatch($token->character_id, 'default', reschedule: true)

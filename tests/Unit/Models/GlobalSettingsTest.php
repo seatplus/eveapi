@@ -3,18 +3,18 @@
 use Seatplus\Eveapi\Exceptions\SettingException;
 
 test('set global setting', function () {
-    $test_value = 'settingTest';
-    setting(['test', $test_value]);
+    $testValue = 'settingTest';
+    setting(['test', $testValue]);
 
     $this->assertDatabaseHas('global_settings', [
         'name' => 'test',
     ]);
 
-    expect(setting('test'))->toEqual($test_value);
+    expect(setting('test'))->toEqual($testValue);
 });
 
 test('get global setting', function () {
-    $testing_value = bin2hex(random_bytes(10));
+    $testingValue = bin2hex(random_bytes(10));
 
     // 1. try to get a non set setting, returning null
     $value = setting('test');
@@ -23,11 +23,11 @@ test('get global setting', function () {
 
     // 2. set setting and expect the setting to return the previously set value.
 
-    $value = setting(['test', $testing_value]);
+    $value = setting(['test', $testingValue]);
 
     $this->assertNotNull($value);
 
-    expect($testing_value)->toEqual($value);
+    expect($testingValue)->toEqual($value);
 
     $this->assertDatabaseHas('global_settings', [
         'name' => 'test',

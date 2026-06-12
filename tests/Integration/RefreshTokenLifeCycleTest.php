@@ -10,51 +10,51 @@ use Seatplus\Eveapi\Models\RefreshToken;
 it('generates an event', function () {
     Event::fake();
 
-    $refresh_token = RefreshToken::factory()->create();
+    $refreshToken = RefreshToken::factory()->create();
 
-    Event::assertDispatched(RefreshTokenCreated::class, fn ($e) => $e->refresh_token === $refresh_token);
+    Event::assertDispatched(RefreshTokenCreated::class, fn ($e) => $e->refreshToken === $refreshToken);
 });
 
 it('queues update character job', function () {
     Queue::fake();
 
-    $refresh_token = RefreshToken::factory()->create();
+    $refreshToken = RefreshToken::factory()->create();
 
     Queue::assertPushedOn('high', UpdateCharacter::class);
 });
 
 it('queues update character job after scope change', function () {
-    $refresh_token = Event::fakeFor(fn () => RefreshToken::factory()->scopes(['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1'])->create());
+    $refreshToken = Event::fakeFor(fn () => RefreshToken::factory()->scopes(['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1'])->create());
 
     Queue::fake();
 
     $helperToken = RefreshToken::factory()->scopes(['public'])->make();
 
-    $refresh_token->token = $helperToken->token;
-    $refresh_token->save();
+    $refreshToken->token = $helperToken->token;
+    $refreshToken->save();
 
     Queue::assertPushedOn('high', UpdateCharacter::class);
 });
 
 it('does not queues update character job after no scope change', function () {
-    $refresh_token = Event::fakeFor(fn () => RefreshToken::factory()->scopes(['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1'])->create());
+    $refreshToken = Event::fakeFor(fn () => RefreshToken::factory()->scopes(['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1'])->create());
 
     Queue::fake();
 
     $helperToken = RefreshToken::factory()->scopes(['esi-assets.read_assets.v1', 'esi-universe.read_structures.v1'])->make();
 
-    $refresh_token->token = $helperToken->token;
-    $refresh_token->save();
+    $refreshToken->token = $helperToken->token;
+    $refreshToken->save();
 
     Queue::assertNotPushed(UpdateCharacter::class);
 });
 
 it('queues update corporation job after scope change', function () {
-    $refresh_token = $this->test_character->refresh_token;
+    $refreshToken = $this->test_character->refreshToken;
 
     Queue::fake();
 
-    $token = updateRefreshTokenScopes($refresh_token, ['updating']);
+    $token = updateRefreshTokenScopes($refreshToken, ['updating']);
     $token->save();
 
     Queue::assertPushedOn('high', UpdateCorporation::class);

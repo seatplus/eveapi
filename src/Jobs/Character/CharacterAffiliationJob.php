@@ -18,15 +18,15 @@ final class CharacterAffiliationJob extends EsiJob
 {
     protected const string OPERATION_CLASS = PostCharactersAffiliation::class;
 
-    private array $manual_ids = [];
+    private array $manualIds = [];
 
-    private readonly Collection $character_affiliations;
+    private readonly Collection $characterAffiliations;
 
-    public function __construct(int|array $character_ids)
+    public function __construct(int|array $characterIds)
     {
-        $this->setManualIds($character_ids);
-        throw_unless(count($this->manual_ids) <= 1000, new \Exception('Character ids must not exceed 1000'));
-        $this->character_affiliations = collect();
+        $this->setManualIds($characterIds);
+        throw_unless(count($this->manualIds) <= 1000, new \Exception('Character ids must not exceed 1000'));
+        $this->characterAffiliations = collect();
     }
 
     #[\Override]
@@ -41,7 +41,7 @@ final class CharacterAffiliationJob extends EsiJob
         $this->updateOrCreateCharacterAffiliations($this->getManualIds(), $esi);
 
         CharacterAffiliation::query()->upsert(
-            $this->character_affiliations->toArray(),
+            $this->characterAffiliations->toArray(),
             ['character_id'],
             ['corporation_id', 'alliance_id', 'faction_id', 'last_pulled']
         );
@@ -51,12 +51,12 @@ final class CharacterAffiliationJob extends EsiJob
 
     public function getManualIds(): array
     {
-        return $this->manual_ids;
+        return $this->manualIds;
     }
 
-    public function setManualIds(int|array $manual_ids): void
+    public function setManualIds(int|array $manualIds): void
     {
-        $this->manual_ids = is_array($manual_ids) ? $manual_ids : [$manual_ids];
+        $this->manualIds = is_array($manualIds) ? $manualIds : [$manualIds];
     }
 
     private function updateOrCreateCharacterAffiliations(array $characterIds, EsiClient $esi): void
@@ -70,7 +70,7 @@ final class CharacterAffiliationJob extends EsiJob
             }
 
             foreach ($response->data as $result) {
-                $this->character_affiliations->push([
+                $this->characterAffiliations->push([
                     'character_id' => $result->character_id,
                     'corporation_id' => $result->corporation_id,
                     'alliance_id' => $result->alliance_id ?? null,

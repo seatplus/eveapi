@@ -15,13 +15,13 @@ final class CorporationDivisionsJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetCorporationsCorporationIdDivisions::class;
 
-    public function __construct(public int $corporation_id) {}
+    public function __construct(public int $corporationId) {}
 
     #[\Override]
     public function getRefreshToken(): RefreshToken
     {
-        $token = (new FindCorporationRefreshToken)($this->corporation_id, 'esi-corporations.read_divisions.v1', 'Director');
-        throw_unless($token, new \Exception("No eligible refresh token found for corporation {$this->corporation_id}"));
+        $token = (new FindCorporationRefreshToken)($this->corporationId, 'esi-corporations.read_divisions.v1', 'Director');
+        throw_unless($token, new \Exception("No eligible refresh token found for corporation {$this->corporationId}"));
 
         return $token;
     }
@@ -29,13 +29,13 @@ final class CorporationDivisionsJob extends EsiJob
     #[\Override]
     public function tags(): array
     {
-        return ['corporation', "corporation_id:{$this->corporation_id}", 'divisions'];
+        return ['corporation', "corporation_id:{$this->corporationId}", 'divisions'];
     }
 
     #[\Override]
     public function executeJob(EsiClient $esi): void
     {
-        $response = self::OPERATION_CLASS::execute($esi, $this->corporation_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->corporationId);
         if ($response->isCachedLoad) {
             return;
         }
@@ -44,7 +44,7 @@ final class CorporationDivisionsJob extends EsiJob
 
         foreach (['hangar' => $response->hangar ?? [], 'wallet' => $response->wallet ?? []] as $divisionType => $entries) {
             collect($entries)->each(fn (mixed $entry) => $divisions->push([
-                'corporation_id' => $this->corporation_id,
+                'corporation_id' => $this->corporationId,
                 'division_type' => $divisionType,
                 'division_id' => ((object) $entry)->division,
                 'name' => ((object) $entry)->name ?? '',

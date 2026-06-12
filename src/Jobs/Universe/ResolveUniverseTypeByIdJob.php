@@ -13,18 +13,18 @@ final class ResolveUniverseTypeByIdJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetUniverseTypesTypeId::class;
 
-    public function __construct(private readonly int $type_id) {}
+    public function __construct(private readonly int $typeId) {}
 
     #[\Override]
     public function tags(): array
     {
-        return ['resolve', 'universe', 'type', "type_id:{$this->type_id}"];
+        return ['resolve', 'universe', 'type', "type_id:{$this->typeId}"];
     }
 
     #[\Override]
     public function executeJob(EsiClient $esi): void
     {
-        $response = self::OPERATION_CLASS::execute($esi, $this->type_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->typeId);
 
         if ($response->isCachedLoad) {
             return;

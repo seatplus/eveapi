@@ -6,7 +6,7 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 it('has causer morph relationshio', function () {
     $application = Application::factory()->create();
 
-    $log = $application->log_entries()->create([
+    $log = $application->logEntries()->create([
         'causer_type' => CharacterInfo::class,
         'causer_id' => test()->test_character->character_id,
         'type' => faker()->randomElement(['decision', 'comment']),

@@ -13,18 +13,18 @@ final class ResolveUniverseRegionByRegionIdJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetUniverseRegionsRegionId::class;
 
-    public function __construct(private readonly int $region_id) {}
+    public function __construct(private readonly int $regionId) {}
 
     #[\Override]
     public function tags(): array
     {
-        return ['resolve', 'universe', 'region', "region_id:{$this->region_id}"];
+        return ['resolve', 'universe', 'region', "region_id:{$this->regionId}"];
     }
 
     #[\Override]
     public function executeJob(EsiClient $esi): void
     {
-        $response = self::OPERATION_CLASS::execute($esi, $this->region_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->regionId);
 
         if ($response->isCachedLoad) {
             return;

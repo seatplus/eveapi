@@ -14,75 +14,75 @@ beforeEach(function () {
 });
 
 test('model has types', function () {
-    $test_asset = Asset::factory()->withType()->create();
+    $testAsset = Asset::factory()->withType()->create();
 
     $assets = Asset::has('type')->get();
 
-    expect($assets->contains($test_asset))->toBeTrue();
+    expect($assets->contains($testAsset))->toBeTrue();
 });
 
 test('model misses types', function () {
-    $test_asset = Asset::factory()->create();
+    $testAsset = Asset::factory()->create();
 
     $assets = Asset::has('type')->get();
 
-    expect($assets->contains($test_asset))->toBeFalse();
+    expect($assets->contains($testAsset))->toBeFalse();
 });
 
 test('model has location', function () {
-    $test_asset = Asset::factory()->create();
+    $testAsset = Asset::factory()->create();
 
-    $test_asset->location()->save(Location::factory()->create());
+    $testAsset->location()->save(Location::factory()->create());
 
     $assets = Asset::has('location')->get();
 
-    expect($assets->contains($test_asset))->toBeTrue();
+    expect($assets->contains($testAsset))->toBeTrue();
 });
 
 it('has scope assets location ids', function () {
-    $test_asset = Asset::factory()->create([
+    $testAsset = Asset::factory()->create([
         'location_flag' => 'Hangar',
         'location_type' => 'other',
     ]);
 
     $assets = Asset::query()->assetsLocationIds()->first();
 
-    expect($test_asset->location_id)->toEqual($assets->location_id);
+    expect($testAsset->location_id)->toEqual($assets->location_id);
 });
 
 it('has assetable relationship', function () {
-    $test_asset = Asset::factory()->create([
+    $testAsset = Asset::factory()->create([
         'assetable_id' => $this->test_character->character_id, // CharacterInfo::factory(),
         'assetable_type' => CharacterInfo::class,
     ]);
 
-    expect($test_asset->assetable)->toBeInstanceOf(CharacterInfo::class);
+    expect($testAsset->assetable)->toBeInstanceOf(CharacterInfo::class);
 });
 
 it('has content relationship', function () {
-    $test_asset = Asset::factory()->create([
+    $testAsset = Asset::factory()->create([
         'location_flag' => 'Hangar',
     ]);
 
     // Create Content
-    $test_asset->content()->save(Asset::factory()->create([
+    $testAsset->content()->save(Asset::factory()->create([
         'location_flag' => 'cargo',
     ]));
 
-    expect($test_asset->content->first())->toBeInstanceOf(Asset::class);
+    expect($testAsset->content->first())->toBeInstanceOf(Asset::class);
 });
 
 it('has container relationship', function () {
-    $test_asset = Asset::factory()->create([
+    $testAsset = Asset::factory()->create([
         'location_flag' => 'Hangar',
     ]);
 
     // Create Content
-    $test_asset->content()->save(Asset::factory()->create([
+    $testAsset->content()->save(Asset::factory()->create([
         'location_flag' => 'cargo',
     ]));
 
-    expect($test_asset->content->first()->container)->toBeInstanceOf(Asset::class);
+    expect($testAsset->content->first()->container)->toBeInstanceOf(Asset::class);
 });
 
 it('has in scope', function (string $scope) {

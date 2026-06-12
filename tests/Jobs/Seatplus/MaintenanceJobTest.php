@@ -52,12 +52,12 @@ beforeEach(function () {
     // $this->job = new MaintenanceJob;
 });
 
-it('MaintenanceJob dispatches job: ', function ($hydrate_job) {
+it('MaintenanceJob dispatches job: ', function ($hydrateJob) {
     Bus::fake();
 
     (new MaintenanceJob)->handle();
 
-    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof $hydrate_job));
+    Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof $hydrateJob));
 
 })->with([
     GetMissingGroups::class,
@@ -189,7 +189,7 @@ test('get missing location from assets pipe can handle non station or structure 
 
     expect(Location::all())->toHaveCount(0);
 
-    $non_structure_or_station_location = Location::factory()->create([
+    $nonStructureOrStationLocation = Location::factory()->create([
         'location_id' => $type->type_id,
         'locatable_id' => $type->type_id,
         'locatable_type' => Type::class,
@@ -216,7 +216,7 @@ test('get missing location from assets pipe can handle non station or structure 
 });
 
 it('fetches missing types from corporation member tracking', function () {
-    $corporation_member_tracking = Event::fakeFor(fn () => CorporationMemberTracking::factory()->create());
+    $corporationMemberTracking = Event::fakeFor(fn () => CorporationMemberTracking::factory()->create());
 
     $mock = Mockery::mock(GetMissingTypesFromCorporationMemberTracking::class)->makePartial();
 
@@ -224,14 +224,14 @@ it('fetches missing types from corporation member tracking', function () {
     $mock->shouldReceive('batch->add')
         ->once()
         ->with([
-            new ResolveUniverseTypeByIdJob($corporation_member_tracking->ship_type_id),
+            new ResolveUniverseTypeByIdJob($corporationMemberTracking->ship_type_id),
         ]);
 
     $mock->handle();
 });
 
 it('dispatch resolve location job for missing corporation member tracking location', function () {
-    $corporation_member_tracking = Event::fakeFor(fn () => CorporationMemberTracking::factory()->create([
+    $corporationMemberTracking = Event::fakeFor(fn () => CorporationMemberTracking::factory()->create([
         'character_id' => $this->test_character->character_id,
     ]));
 
@@ -241,7 +241,7 @@ it('dispatch resolve location job for missing corporation member tracking locati
     $mock->shouldReceive('batch->add')
         ->once()
         ->with([
-            new ResolveLocationJob($corporation_member_tracking->location_id),
+            new ResolveLocationJob($corporationMemberTracking->location_id),
         ]);
 
     $mock->handle();
@@ -252,7 +252,7 @@ test('get missing location from corporation member tracking pipe can handle non 
 
     expect(Location::all())->toHaveCount(0);
 
-    $non_structure_or_station_location = Location::factory()->create([
+    $nonStructureOrStationLocation = Location::factory()->create([
         'location_id' => $type->type_id,
         'locatable_id' => $type->type_id,
         'locatable_type' => Type::class,
@@ -260,7 +260,7 @@ test('get missing location from corporation member tracking pipe can handle non 
 
     expect(Location::all())->toHaveCount(1);
 
-    $corporation_member_tracking = Event::fakeFor(fn () => CorporationMemberTracking::factory()->create([
+    $corporationMemberTracking = Event::fakeFor(fn () => CorporationMemberTracking::factory()->create([
         'character_id' => $this->test_character->character_id,
         'location_id' => $type->type_id,
     ]));
@@ -274,7 +274,7 @@ test('get missing location from corporation member tracking pipe can handle non 
     $mock->shouldReceive('batch->add')
         ->once()
         ->with([
-            new ResolveLocationJob($corporation_member_tracking->location_id),
+            new ResolveLocationJob($corporationMemberTracking->location_id),
         ]);
 
     $mock->handle();
@@ -298,7 +298,7 @@ it('fetches missing types from wallet transaction', function () {
 });
 
 it('dispatch resolve location job for missing wallet transaction location', function () {
-    $wallet_transaction = Event::fakeFor(fn () => WalletTransaction::factory()->create([
+    $walletTransaction = Event::fakeFor(fn () => WalletTransaction::factory()->create([
         'wallet_transactionable_id' => $this->test_character->character_id,
     ]));
 
@@ -308,7 +308,7 @@ it('dispatch resolve location job for missing wallet transaction location', func
     $mock->shouldReceive('batch->add')
         ->once()
         ->with([
-            new ResolveLocationJob($wallet_transaction->location_id),
+            new ResolveLocationJob($walletTransaction->location_id),
         ]);
 
     $mock->handle();
@@ -319,7 +319,7 @@ test('get missing location from wallet transaction pipe can handle non station o
 
     expect(Location::all())->toHaveCount(0);
 
-    $non_structure_or_station_location = Location::factory()->create([
+    $nonStructureOrStationLocation = Location::factory()->create([
         'location_id' => $type->type_id,
         'locatable_id' => $type->type_id,
         'locatable_type' => Type::class,
@@ -345,7 +345,7 @@ test('get missing location from wallet transaction pipe can handle non station o
 });
 
 it('dispatches character info job for missing member tracking characters', function () {
-    $corporation_member_tracking = Event::fakeFor(fn () => CorporationMemberTracking::factory()->create([
+    $corporationMemberTracking = Event::fakeFor(fn () => CorporationMemberTracking::factory()->create([
         'character_id' => CharacterInfo::factory()->make(),
     ]));
 
@@ -355,14 +355,14 @@ it('dispatches character info job for missing member tracking characters', funct
     $mock->shouldReceive('batch->add')
         ->once()
         ->with([
-            new CharacterInfoJob($corporation_member_tracking->character_id),
+            new CharacterInfoJob($corporationMemberTracking->character_id),
         ]);
 
     $mock->handle();
 });
 
 it('dispatches resolve types job for missing contract item types', function () {
-    $contract_item = Event::fakeFor(function () {
+    $contractItem = Event::fakeFor(function () {
         $contract = Contract::factory()->create();
 
         return ContractItem::factory()->withoutType()->create([
@@ -376,7 +376,7 @@ it('dispatches resolve types job for missing contract item types', function () {
     $mock->shouldReceive('batch->add')
         ->once()
         ->with([
-            new ResolveUniverseTypeByIdJob($contract_item->type_id),
+            new ResolveUniverseTypeByIdJob($contractItem->type_id),
         ]);
 
     $mock->handle();
@@ -406,7 +406,7 @@ test('get missing start location from contracts pipe can handle non station or s
 
     expect(Location::all())->toHaveCount(0);
 
-    $non_structure_or_station_location = Location::factory()->create([
+    $nonStructureOrStationLocation = Location::factory()->create([
         'location_id' => $type->type_id,
         'locatable_id' => $type->type_id,
         'locatable_type' => Type::class,
@@ -505,8 +505,8 @@ it('dispatches resolve universe type by id job for missing types of skillqueue',
 
 it('dispatches mail body job for missing mail bodies', function () {
     Queue::fake();
-    $refresh_token = updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-mail.read_mail.v1']);
-    $refresh_token->save();
+    $refreshToken = updateRefreshTokenScopes($this->test_character->refreshToken, ['esi-mail.read_mail.v1']);
+    $refreshToken->save();
 
     $mail = Event::fakeFor(fn () => Mail::factory(['body' => null])->create());
 

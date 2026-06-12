@@ -42,9 +42,9 @@ class GetMissingTypesFromContractItem extends HydrateMaintenanceBase
             return;
         }
 
-        $type_ids = ContractItem::doesntHave('type')->pluck('type_id')->unique()->values();
+        $typeIds = ContractItem::doesntHave('type')->pluck('type_id')->unique()->values();
 
-        $jobs = $type_ids->map(fn (int $id) => new ResolveUniverseTypeByIdJob($id));
+        $jobs = $typeIds->map(fn (int $id) => new ResolveUniverseTypeByIdJob($id));
 
         $this->batch()->add(
             $jobs->toArray()

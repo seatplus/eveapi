@@ -127,25 +127,25 @@ function testCharacter()
 function updateRefreshTokenScopes(RefreshToken $refreshToken, array $scopes): RefreshToken
 {
     $jwt = $refreshToken->getRawOriginal('token');
-    $jwt_payload_base64_encoded = explode('.', (string) $jwt)[1];
+    $jwtPayloadBase64Encoded = explode('.', (string) $jwt)[1];
     // create an associative array
-    $jwt_payload = json_decode(JWT::urlsafeB64Decode($jwt_payload_base64_encoded), true);
+    $jwtPayload = json_decode(JWT::urlsafeB64Decode($jwtPayloadBase64Encoded), true);
     // update scopes
-    $jwt_payload['scp'] = $scopes;
+    $jwtPayload['scp'] = $scopes;
     // create a json object
-    $jwt_payload = json_encode($jwt_payload);
+    $jwtPayload = json_encode($jwtPayload);
 
-    $jwt_header = json_encode([
+    $jwtHeader = json_encode([
         'alg' => 'RS256',
         'kid' => 'JWT-Signature-Key',
         'typ' => 'JWT',
     ]);
 
-    $data = JWT::urlsafeB64Encode($jwt_header).'.'.JWT::urlsafeB64Encode($jwt_payload);
+    $data = JWT::urlsafeB64Encode($jwtHeader).'.'.JWT::urlsafeB64Encode($jwtPayload);
 
     $signature = hash_hmac(
         'sha256',
-        base64_encode($jwt_header).'.'.base64_encode($jwt_payload),
+        base64_encode($jwtHeader).'.'.base64_encode($jwtPayload),
         'test'
     );
 
@@ -156,8 +156,8 @@ function updateRefreshTokenScopes(RefreshToken $refreshToken, array $scopes): Re
 
 function updateCharacterRoles(array $roles)
 {
-    $character_roles = testCharacter()->roles;
+    $characterRoles = testCharacter()->roles;
 
-    $character_roles->roles = $roles;
-    $character_roles->save();
+    $characterRoles->roles = $roles;
+    $characterRoles->save();
 }

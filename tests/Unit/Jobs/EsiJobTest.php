@@ -42,7 +42,7 @@ it('does not apply auth for public endpoints', function () {
 });
 
 it('injects auth token when getRefreshToken returns a token', function () {
-    $refreshToken = testCharacter()->refresh_token;
+    $refreshToken = testCharacter()->refreshToken;
 
     $authenticatedEsi = Mockery::mock(EsiClient::class);
 
@@ -114,7 +114,7 @@ it('permanently fails the job when token service throws InvalidRefreshTokenExcep
         ->once()
         ->andThrow(new InvalidRefreshTokenException('Token is invalid', 400));
 
-    $refreshToken = testCharacter()->refresh_token;
+    $refreshToken = testCharacter()->refreshToken;
 
     $throttle = Mockery::mock(InvalidTokenThrottleService::class);
     $throttle->shouldReceive('hit')->with($refreshToken->character_id)->once()->andReturn(false);
@@ -144,7 +144,7 @@ it('calls setContext on RecordingEsiClient before executeJob', function () {
 it('does not soft-delete the token when failure count is below threshold', function () {
     $esi = Mockery::mock(EsiClient::class);
 
-    $refreshToken = testCharacter()->refresh_token;
+    $refreshToken = testCharacter()->refreshToken;
 
     $tokenService = Mockery::mock(GetUpToDateRefreshTokenService::class);
     $tokenService->shouldReceive('get')
@@ -165,7 +165,7 @@ it('does not soft-delete the token when failure count is below threshold', funct
 it('soft-deletes the token when failure count reaches the threshold', function () {
     $esi = Mockery::mock(EsiClient::class);
 
-    $refreshToken = testCharacter()->refresh_token;
+    $refreshToken = testCharacter()->refreshToken;
 
     $tokenService = Mockery::mock(GetUpToDateRefreshTokenService::class);
     $tokenService->shouldReceive('get')
@@ -205,7 +205,7 @@ it('rateLimitCharacterId returns null for public endpoints', function () {
 
 it('rateLimitCharacterId returns character_id from refresh token', function () {
     $job = new TestableEsiJob;
-    $job->refreshToken = testCharacter()->refresh_token;
+    $job->refreshToken = testCharacter()->refreshToken;
 
     expect($job->rateLimitCharacterId())->toBe(testCharacter()->character_id);
 });

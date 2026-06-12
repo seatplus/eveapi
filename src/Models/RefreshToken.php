@@ -106,9 +106,9 @@ class RefreshToken extends Model
     {
         return Attribute::make(get: function () {
             $jwt = $this->getRawOriginal('token');
-            $jwt_payload_base64_encoded = explode('.', (string) $jwt)[1];
-            $jwt_payload = JWT::urlsafeB64Decode($jwt_payload_base64_encoded);
-            $scopes = data_get(json_decode($jwt_payload), 'scp', []);
+            $jwtPayloadBase64Encoded = explode('.', (string) $jwt)[1];
+            $jwtPayload = JWT::urlsafeB64Decode($jwtPayloadBase64Encoded);
+            $scopes = data_get(json_decode($jwtPayload), 'scp', []);
 
             return is_array($scopes) ? $scopes : [$scopes];
         });

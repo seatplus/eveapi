@@ -32,10 +32,10 @@ test('database row is created', function () {
 test('create character corporation releation', function () {
     $character = CharacterInfo::factory()->make();
 
-    $character_affiliation = $character->character_affiliation()->save(CharacterAffiliation::factory()->make());
+    $characterAffiliation = $character->characterAffiliation()->save(CharacterAffiliation::factory()->make());
 
-    $character_affiliation->corporation()->associate(CorporationInfo::factory()->create([
-        'corporation_id' => $character_affiliation->corporation_id,
+    $characterAffiliation->corporation()->associate(CorporationInfo::factory()->create([
+        'corporation_id' => $characterAffiliation->corporation_id,
     ]));
 
     $this->assertEquals(
@@ -60,39 +60,39 @@ test('create many character relation', function () {
 });
 
 it('has morphable sso scope', function () {
-    $corporation_info = CorporationInfo::factory()
+    $corporationInfo = CorporationInfo::factory()
         ->hasSsoScopes()
         ->create();
 
-    // $corporation_info->ssoScopes()->save(SsoScopes::factory()->make());
+    // $corporationInfo->ssoScopes()->save(SsoScopes::factory()->make());
 
-    expect($corporation_info->refresh()->ssoScopes)->toBeInstanceOf(SsoScopes::class);
+    expect($corporationInfo->refresh()->ssoScopes)->toBeInstanceOf(SsoScopes::class);
 });
 
 it('has recruits relationship', function () {
-    $corporation_info = CorporationInfo::factory()->create();
+    $corporationInfo = CorporationInfo::factory()->create();
 
     $app = Application::factory()->count(5)->create([
-        'corporation_id' => $corporation_info->corporation_id,
+        'corporation_id' => $corporationInfo->corporation_id,
     ]);
 
-    foreach ($corporation_info->refresh()->candidates as $candidate) {
+    foreach ($corporationInfo->refresh()->candidates as $candidate) {
         expect($candidate)->toBeInstanceOf(Application::class);
     }
 
-    expect($corporation_info->refresh()->candidates->count())->toEqual(5);
+    expect($corporationInfo->refresh()->candidates->count())->toEqual(5);
 });
 
 it('has alliance relationship', function () {
-    $corporation_info = CorporationInfo::factory()->create([
+    $corporationInfo = CorporationInfo::factory()->create([
         'alliance_id' => AllianceInfo::factory(),
     ]);
 
-    expect($corporation_info->alliance)->toBeInstanceOf(AllianceInfo::class);
+    expect($corporationInfo->alliance)->toBeInstanceOf(AllianceInfo::class);
 });
 
 it('has members relationship', function () {
-    $member_tracking = CorporationMemberTracking::factory()->create([
+    $memberTracking = CorporationMemberTracking::factory()->create([
         'character_id' => $this->test_character->character_id,
         'corporation_id' => $this->test_character->corporation->corporation_id,
     ]);
@@ -124,5 +124,5 @@ it('has wallet transactions relationship', function () {
         'wallet_transactionable_type' => CorporationInfo::class,
     ]);
 
-    expect($this->test_character->corporation->refresh()->wallet_transactions->first())->toBeInstanceOf(WalletTransaction::class);
+    expect($this->test_character->corporation->refresh()->walletTransactions->first())->toBeInstanceOf(WalletTransaction::class);
 });

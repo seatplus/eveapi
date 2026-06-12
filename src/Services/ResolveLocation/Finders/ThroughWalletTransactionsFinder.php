@@ -15,42 +15,42 @@ use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 class ThroughWalletTransactionsFinder implements FinderInterface
 {
     #[\Override]
-    public function handle(int $location_id, Collection $tracings): ?RefreshToken
+    public function handle(int $locationId, Collection $tracings): ?RefreshToken
     {
-        $character_ids_to_ignore = $tracings->pluck('character_id');
+        $characterIdsToIgnore = $tracings->pluck('character_id');
 
-        $refresh_token = WalletTransaction::query()
-            ->where('location_id', $location_id)
-            ->whereNotIn('wallet_transactionable_id', $character_ids_to_ignore)
+        $refreshToken = WalletTransaction::query()
+            ->where('location_id', $locationId)
+            ->whereNotIn('wallet_transactionable_id', $characterIdsToIgnore)
             ->whereHasMorph(
-                'wallet_transactionable',
+                'walletTransactionable',
                 CharacterInfo::class,
-                fn (Builder $query) => $query->whereHas('refresh_token')
+                fn (Builder $query) => $query->whereHas('refreshToken')
             )
             ->where('wallet_transactionable_type', CharacterInfo::class)
             ->inRandomOrder()
             ->get()
-            ->map(fn (WalletTransaction $wallet_transaction) => data_get($wallet_transaction, 'wallet_transactionable.refresh_token'))
+            ->map(fn (WalletTransaction $walletTransaction) => data_get($walletTransaction, 'walletTransactionable.refreshToken'))
             ->unique()
             // filter refresh token that has scope esi-universe.read_structures.v1
-            ->filter(fn (RefreshToken $refresh_token) => $refresh_token->hasScope('esi-universe.read_structures.v1'))
+            ->filter(fn (RefreshToken $refreshToken) => $refreshToken->hasScope('esi-universe.read_structures.v1'))
             ->first();
 
-        if ($refresh_token) {
-            return $refresh_token;
+        if ($refreshToken) {
+            return $refreshToken;
         }
 
         return WalletTransaction::query()
-            ->where('location_id', $location_id)
+            ->where('location_id', $locationId)
             ->where('wallet_transactionable_type', CorporationInfo::class)
             ->inRandomOrder()
             ->pluck('wallet_transactionable_id')
             ->unique()
-            ->map(function (int $corporation_id) {
+            ->map(function (int $corporationId) {
 
                 $service = new FindCorporationRefreshToken;
 
-                return $service($corporation_id, 'esi-universe.read_structures.v1', 'Director');
+                return $service($corporationId, 'esi-universe.read_structures.v1', 'Director');
             })
             ->filter()
             ->first();

@@ -33,12 +33,12 @@ use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseConstellationByConstellationIdJ
 
 class DispatchGetConstellationById
 {
-    public function handle(UniverseSystemCreated $universe_system_created): void
+    public function handle(UniverseSystemCreated $universeSystemCreated): void
     {
-        if ($universe_system_created->system->constellation) {
+        if ($universeSystemCreated->system->constellation) {
             return;
         }
 
-        ResolveUniverseConstellationByConstellationIdJob::dispatch($universe_system_created->system->constellation_id)->onQueue('default');
+        ResolveUniverseConstellationByConstellationIdJob::dispatch($universeSystemCreated->system->constellation_id)->onQueue('default');
     }
 }

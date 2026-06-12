@@ -14,27 +14,27 @@ class RefreshCharacterAffiliationsService
     public function __invoke(): void
     {
 
-        $character_ids = [
+        $characterIds = [
             ...$this->getIdsToUpdateFromDatabase(),
             ...$this->getIdsToUpdateFromCache(),
             ...$this->getMissingIdsFromCharacterInfo(),
         ];
 
-        $this->processAffiliations($character_ids);
+        $this->processAffiliations($characterIds);
     }
 
     private function getMissingIdsFromCharacterInfo(): array
     {
         return CharacterInfo::query()
-            ->whereDoesntHave('character_affiliation')
+            ->whereDoesntHave('characterAffiliation')
             ->pluck('character_id')
             ->toArray();
     }
 
     private function processAffiliations(array $ids): void
     {
-        $unique_ids = array_unique($ids);
-        $chunks = array_chunk($unique_ids, 1000);
+        $uniqueIds = array_unique($ids);
+        $chunks = array_chunk($uniqueIds, 1000);
 
         foreach ($chunks as $chunk) {
             CharacterAffiliationJob::dispatch($chunk)->onQueue('high');

@@ -51,17 +51,17 @@ test('it has decision count attribute based on log entries', function () {
     ]);
 
     expect($application)
-        ->log_entries->toHaveCount(0)
+        ->logEntries->toHaveCount(0)
         ->decision_count->toBe(0);
 
-    $application->log_entries()->create([
+    $application->logEntries()->create([
         'causer_type' => User::class,
         'causer_id' => 1,
         'type' => 'decision',
         'comment' => 'test_comment',
     ]);
 
-    $application->log_entries()->create([
+    $application->logEntries()->create([
         'causer_type' => User::class,
         'causer_id' => 1,
         'type' => 'comment',
@@ -69,7 +69,7 @@ test('it has decision count attribute based on log entries', function () {
     ]);
 
     expect($application->refresh())
-        ->log_entries->toHaveCount(2)
+        ->logEntries->toHaveCount(2)
         ->decision_count->toBe(1);
 });
 

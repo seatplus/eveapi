@@ -16,9 +16,9 @@ beforeEach(function () {
 it('runs mail header job', function () {
     expect(Mail::all())->toHaveCount(0);
 
-    $mocked_mails = Event::fakeFor(fn () => Mail::factory()->count(5)->make());
+    $mockedMails = Event::fakeFor(fn () => Mail::factory()->count(5)->make());
 
-    $mock_data = $mocked_mails->map(fn ($mail) => (object) [
+    $mockData = $mockedMails->map(fn ($mail) => (object) [
         'mail_id' => data_get($mail, 'id'),
         'subject' => data_get($mail, 'subject'),
         'from' => data_get($mail, 'from'),
@@ -35,7 +35,7 @@ it('runs mail header job', function () {
     ]);
 
     $esi = Mockery::mock(EsiClient::class);
-    mockEsiTransport($esi, makeEsiResult($mock_data->values()->toArray()));
+    mockEsiTransport($esi, makeEsiResult($mockData->values()->toArray()));
 
     $job = new MailHeaderJob(testCharacter()->character_id);
     $job->executeJob($esi);
@@ -66,7 +66,7 @@ it('adds MailBodyJob to batch if batched', function () {
     $mails = Event::fakeFor(fn () => Mail::factory()->count(5)->create(['body' => null]));
 
     $job = mock(MailHeaderJob::class, function (MockInterface $mock) {
-        $mock->character_id = testCharacter()->character_id;
+        $mock->characterId = testCharacter()->character_id;
         $mock->shouldReceive('batching')->andReturnTrue();
         $mock->shouldReceive('batch->add')->times(5);
     })->makePartial();

@@ -13,26 +13,26 @@ it('finds Director Token', function () {
     $scope = 'esi-corporations.track_members.v1';
     $role = 'Director';
 
-    $refresh_token = testCharacter()->refresh_token;
-    updateRefreshTokenScopes($refresh_token, [$scope])->save();
+    $refreshToken = testCharacter()->refreshToken;
+    updateRefreshTokenScopes($refreshToken, [$scope])->save();
 
-    $character_roles = $refresh_token->refresh()->character->roles;
-    $character_roles->roles = [$role];
-    $character_roles->save();
+    $characterRoles = $refreshToken->refresh()->character->roles;
+    $characterRoles->roles = [$role];
+    $characterRoles->save();
 
-    $corporation_member_tracking = CorporationMemberTracking::factory()->create([
-        'corporation_id' => $refresh_token->corporation_id,
+    $corporationMemberTracking = CorporationMemberTracking::factory()->create([
+        'corporation_id' => $refreshToken->corporation_id,
         'location_id' => 1,
     ]);
 
-    expect($refresh_token->hasScope($scope))->toBeTrue()
-        ->and($refresh_token->character->roles->hasRole('roles', $role))->toBeTrue();
+    expect($refreshToken->hasScope($scope))->toBeTrue()
+        ->and($refreshToken->character->roles->hasRole('roles', $role))->toBeTrue();
 
     $tracking = Collection::make();
 
     // act
     $finder = new ThroughCorporationMemberTrackingFinder;
-    $result = $finder->handle($corporation_member_tracking->location_id, $tracking);
+    $result = $finder->handle($corporationMemberTracking->location_id, $tracking);
 
     // assert
     expect($result)->not()->toBeNull();

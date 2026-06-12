@@ -29,10 +29,10 @@ it('runs with empty response', function () {
 });
 
 it('creates contract job', function () {
-    $mock_data = Contract::factory()->count(5)->make();
+    $mockData = Contract::factory()->count(5)->make();
 
     $esi = Mockery::mock(EsiClient::class);
-    mockEsiTransport($esi, makeEsiResult(array_map(fn ($c) => (object) $c, $mock_data->toArray())));
+    mockEsiTransport($esi, makeEsiResult(array_map(fn ($c) => (object) $c, $mockData->toArray())));
 
     Event::fakeFor(function () use ($esi) {
         $job = new CharacterContractsJob(testCharacter()->character_id);
@@ -44,10 +44,10 @@ it('creates contract job', function () {
 });
 
 it('creates contract job other way', function () {
-    $mock_data = Contract::factory()->count(5)->make();
+    $mockData = Contract::factory()->count(5)->make();
 
     $esi = Mockery::mock(EsiClient::class);
-    mockEsiTransport($esi, makeEsiResult(array_map(fn ($c) => (object) $c, $mock_data->toArray())));
+    mockEsiTransport($esi, makeEsiResult(array_map(fn ($c) => (object) $c, $mockData->toArray())));
 
     Event::fakeFor(function () use ($esi) {
         $job = new CharacterContractsJob(testCharacter()->character_id);

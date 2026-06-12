@@ -18,18 +18,18 @@ final class CharacterContractsJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetCharactersCharacterIdContracts::class;
 
-    public function __construct(public int $character_id) {}
+    public function __construct(public int $characterId) {}
 
     #[\Override]
     public function getRefreshToken(): RefreshToken
     {
-        return RefreshToken::findOrFail($this->character_id);
+        return RefreshToken::findOrFail($this->characterId);
     }
 
     #[\Override]
     public function tags(): array
     {
-        return ['character', "character_id:{$this->character_id}", 'contracts'];
+        return ['character', "character_id:{$this->characterId}", 'contracts'];
     }
 
     #[\Override]
@@ -38,7 +38,7 @@ final class CharacterContractsJob extends EsiJob
         $contracts = collect();
         $page = 1;
         do {
-            $response = self::OPERATION_CLASS::execute($esi, $this->character_id, $page);
+            $response = self::OPERATION_CLASS::execute($esi, $this->characterId, $page);
             if ($response->isCachedLoad) {
                 return;
             }
@@ -89,57 +89,57 @@ final class CharacterContractsJob extends EsiJob
             ]
         );
 
-        $character = CharacterInfo::find($this->character_id);
-        $contract_ids = $contracts->pluck('contract_id')->toArray();
+        $character = CharacterInfo::find($this->characterId);
+        $contractIds = $contracts->pluck('contract_id')->toArray();
 
         if ($character) {
-            $character->contracts()->syncWithoutDetaching($contract_ids);
+            $character->contracts()->syncWithoutDetaching($contractIds);
         }
     }
 
     private function dispatchFollowUpJobs(Collection $contracts): void
     {
-        $contract_ids = $contracts->pluck('contract_id')->toArray();
+        $contractIds = $contracts->pluck('contract_id')->toArray();
 
-        $contract_item_jobs = $this->getContractItemJobs($contract_ids);
-        $location_jobs = $this->getLocationJobs($contract_ids);
+        $contractItemJobs = $this->getContractItemJobs($contractIds);
+        $locationJobs = $this->getLocationJobs($contractIds);
 
         if ($this->batching()) {
-            $this->batch()->add([...$contract_item_jobs, ...$location_jobs]);
+            $this->batch()->add([...$contractItemJobs, ...$locationJobs]);
 
             return;
         }
 
-        foreach ([...$contract_item_jobs, ...$location_jobs] as $job) {
+        foreach ([...$contractItemJobs, ...$locationJobs] as $job) {
             dispatch($job)->onQueue('high');
         }
     }
 
-    private function getContractItemJobs(array $contract_ids): Collection
+    private function getContractItemJobs(array $contractIds): Collection
     {
         return Contract::query()
-            ->whereIn('contract_id', $contract_ids)
+            ->whereIn('contract_id', $contractIds)
             ->doesntHave('items')
             ->where('volume', '>', 0)
             ->where('status', '<>', 'deleted')
             ->where('type', '<>', 'courier')
             ->get()
-            ->map(fn (Contract $contract) => new CharacterContractItemsJob($this->character_id, $contract->contract_id));
+            ->map(fn (Contract $contract) => new CharacterContractItemsJob($this->characterId, $contract->contract_id));
     }
 
-    private function getLocationJobs(array $contract_ids): Collection
+    private function getLocationJobs(array $contractIds): Collection
     {
-        $refresh_token = RefreshToken::find($this->character_id);
+        $refreshToken = RefreshToken::find($this->characterId);
 
         return Contract::query()
-            ->whereIn('contract_id', $contract_ids)
+            ->whereIn('contract_id', $contractIds)
             ->where(fn (Builder $query) => $query->whereNotNull('start_location_id')->orWhereNotNull('end_location_id'))
-            ->where(fn (Builder $query) => $query->doesntHave('start_location')->orDoesntHave('end_location'))
+            ->where(fn (Builder $query) => $query->doesntHave('startLocation')->orDoesntHave('endLocation'))
             ->select('start_location_id', 'end_location_id')
             ->get()
             ->map(fn (Contract $contract) => [$contract->start_location_id, $contract->end_location_id])
             ->flatten()
             ->unique()
-            ->map(fn (int $location_id) => new ResolveLocationJob($location_id, $refresh_token));
+            ->map(fn (int $locationId) => new ResolveLocationJob($locationId, $refreshToken));
     }
 }

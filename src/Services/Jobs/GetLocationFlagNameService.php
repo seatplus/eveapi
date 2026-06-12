@@ -37,9 +37,9 @@ class GetLocationFlagNameService
         return new self;
     }
 
-    public function get(int $flag_id): string
+    public function get(int $flagId): string
     {
-        $location_flags = [
+        $locationFlags = [
             'highslots' => range(27, 34),
             'midslots' => range(19, 26),
             'lowslots' => range(11, 18),
@@ -59,9 +59,9 @@ class GetLocationFlagNameService
             ],
         ];
 
-        foreach ($location_flags as $location_flag => $ids) {
-            if (in_array($flag_id, $ids)) {
-                return $location_flag;
+        foreach ($locationFlags as $locationFlag => $ids) {
+            if (in_array($flagId, $ids)) {
+                return $locationFlag;
             }
         }
 

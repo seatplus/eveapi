@@ -16,7 +16,7 @@ final class CorporationWalletJournalByDivisionJob extends WalletJournalBase
     protected const string OPERATION_CLASS = GetCorporationsCorporationIdWalletsDivisionJournal::class;
 
     public function __construct(
-        public int $corporation_id,
+        public int $corporationId,
         private readonly int $division
     ) {}
 
@@ -24,11 +24,11 @@ final class CorporationWalletJournalByDivisionJob extends WalletJournalBase
     public function getRefreshToken(): RefreshToken
     {
         $token = (new FindCorporationRefreshToken)(
-            $this->corporation_id,
+            $this->corporationId,
             head(config('eveapi.scopes.corporation.wallet')),
             ['Accountant', 'Junior_Accountant']
         );
-        throw_unless($token, new \Exception("No eligible refresh token for corporation {$this->corporation_id}"));
+        throw_unless($token, new \Exception("No eligible refresh token for corporation {$this->corporationId}"));
 
         return $token;
     }
@@ -36,13 +36,13 @@ final class CorporationWalletJournalByDivisionJob extends WalletJournalBase
     #[\Override]
     protected function fetchPage(EsiClient $esi, int $page): EsiResult
     {
-        return self::OPERATION_CLASS::execute($esi, $this->corporation_id, $this->division, $page);
+        return self::OPERATION_CLASS::execute($esi, $this->corporationId, $this->division, $page);
     }
 
     #[\Override]
     protected function walletableId(): int
     {
-        return $this->corporation_id;
+        return $this->corporationId;
     }
 
     #[\Override]
@@ -60,6 +60,6 @@ final class CorporationWalletJournalByDivisionJob extends WalletJournalBase
     #[\Override]
     public function tags(): array
     {
-        return ['corporation', "corporation_id:{$this->corporation_id}", 'wallet', 'journal', "division:{$this->division}"];
+        return ['corporation', "corporation_id:{$this->corporationId}", 'wallet', 'journal', "division:{$this->division}"];
     }
 }

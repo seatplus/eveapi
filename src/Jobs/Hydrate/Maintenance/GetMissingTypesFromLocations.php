@@ -45,7 +45,7 @@ class GetMissingTypesFromLocations extends HydrateMaintenanceBase
             return;
         }
 
-        $type_ids = Location::whereHasMorph(
+        $typeIds = Location::whereHasMorph(
             'locatable',
             [Station::class, Structure::class],
             function (Builder $query) {
@@ -63,7 +63,7 @@ class GetMissingTypesFromLocations extends HydrateMaintenanceBase
             ->unique()
             ->values();
 
-        $jobs = $type_ids->map(fn (int $id) => new ResolveUniverseTypeByIdJob($id));
+        $jobs = $typeIds->map(fn (int $id) => new ResolveUniverseTypeByIdJob($id));
 
         $this->batch()->add(
             $jobs->toArray()

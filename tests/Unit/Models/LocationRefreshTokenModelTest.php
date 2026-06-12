@@ -33,5 +33,5 @@ it('belongs to a refresh token', function () {
             'resolved' => true,
         ]);
 
-    expect($locationRefreshToken->refresh_token->character_id)->toBe(testCharacter()->character_id);
+    expect($locationRefreshToken->refreshToken->character_id)->toBe(testCharacter()->character_id);
 });

@@ -16,7 +16,7 @@ abstract class TestCase extends OrchestraTestCase
 {
     use LazilyRefreshDatabase;
 
-    public CharacterInfo $test_character;
+    public CharacterInfo $testCharacter;
 
     #[\Override]
     protected function setUp(): void

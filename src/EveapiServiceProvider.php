@@ -136,7 +136,7 @@ class EveapiServiceProvider extends ServiceProvider
         });
 
         // Configure the workers for SeAT plus.
-        $horizon_environments = [
+        $horizonEnvironments = [
             'local' => [
                 'seatplus-workers' => [
                     'connection' => 'redis',
@@ -167,7 +167,7 @@ class EveapiServiceProvider extends ServiceProvider
         ];
 
         // Set the environment configuration.
-        config(['horizon.environments' => $horizon_environments]);
+        config(['horizon.environments' => $horizonEnvironments]);
 
         // remove the default config worker
         config(['horizon.defaults' => []]);
@@ -261,13 +261,13 @@ class EveapiServiceProvider extends ServiceProvider
         RateLimiter::for(
             'character_batch',
             function (object $job) { // @pest-ignore-type
-                $character_id = $job->refresh_token?->character_id;
-                $queue_name = $job->queue;
+                $characterId = $job->refreshToken?->character_id;
+                $queueName = $job->queue;
 
                 // if queue is high then we need no rate limiting
-                return $queue_name === 'high'
+                return $queueName === 'high'
                     ? Limit::none()
-                    : Limit::perHour(1)->by("character_batch_{$character_id}_{$queue_name}");
+                    : Limit::perHour(1)->by("character_batch_{$characterId}_{$queueName}");
             }
         );
     }

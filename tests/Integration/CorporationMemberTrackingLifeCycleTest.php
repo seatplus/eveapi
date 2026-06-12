@@ -15,10 +15,10 @@ beforeEach(function () {
     Queue::fake();
 });
 
-it('handles missing jobs after corporation member job', function (string $job_class, array $configuration, bool $should_be_queued = true) {
-    updateRefreshTokenScopes(testCharacter()->refresh_token, ['esi-corporations.track_members.v1'])->save();
+it('handles missing jobs after corporation member job', function (string $jobClass, array $configuration, bool $shouldBeQueued = true) {
+    updateRefreshTokenScopes(testCharacter()->refreshToken, ['esi-corporations.track_members.v1'])->save();
 
-    expect(testCharacter()->refresh_token->scopes)->toContain('esi-corporations.track_members.v1');
+    expect(testCharacter()->refreshToken->scopes)->toContain('esi-corporations.track_members.v1');
 
     updateCharacterRoles(['Director']);
 
@@ -36,9 +36,9 @@ it('handles missing jobs after corporation member job', function (string $job_cl
     $job = new CorporationMemberTrackingJob($tracking->corporation_id);
     $job->executeJob($esi);
 
-    match ($should_be_queued) {
-        true => Queue::assertPushedOn('high', $job_class),
-        false => Queue::assertNotPushed($job_class),
+    match ($shouldBeQueued) {
+        true => Queue::assertPushedOn('high', $jobClass),
+        false => Queue::assertNotPushed($jobClass),
     };
 })->with([
     'resolves type if ship is unknown' => [ResolveUniverseTypeByIdJob::class, ['ship_type_id' => 1234]],

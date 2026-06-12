@@ -17,17 +17,17 @@ final class CorporationBalanceJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetCorporationsCorporationIdWallets::class;
 
-    public function __construct(public int $corporation_id) {}
+    public function __construct(public int $corporationId) {}
 
     #[\Override]
     public function getRefreshToken(): RefreshToken
     {
         $token = (new FindCorporationRefreshToken)(
-            $this->corporation_id,
+            $this->corporationId,
             head(config('eveapi.scopes.corporation.wallet')),
             ['Accountant', 'Junior_Accountant']
         );
-        throw_unless($token, new \Exception("No eligible refresh token found for corporation {$this->corporation_id}"));
+        throw_unless($token, new \Exception("No eligible refresh token found for corporation {$this->corporationId}"));
 
         return $token;
     }
@@ -35,19 +35,19 @@ final class CorporationBalanceJob extends EsiJob
     #[\Override]
     public function tags(): array
     {
-        return ['corporation', "corporation_id:{$this->corporation_id}", 'balances'];
+        return ['corporation', "corporation_id:{$this->corporationId}", 'balances'];
     }
 
     #[\Override]
     public function executeJob(EsiClient $esi): void
     {
-        $response = self::OPERATION_CLASS::execute($esi, $this->corporation_id);
+        $response = self::OPERATION_CLASS::execute($esi, $this->corporationId);
         if ($response->isCachedLoad) {
             return;
         }
 
         $balances = collect($response->data)->map(fn (object $wallet) => [
-            'balanceable_id' => $this->corporation_id,
+            'balanceable_id' => $this->corporationId,
             'balanceable_type' => CorporationInfo::class,
             'division' => $wallet->division,
             'balance' => $wallet->balance,
@@ -61,8 +61,8 @@ final class CorporationBalanceJob extends EsiJob
     private function dispatchDivisionJobs(Collection $balances): void
     {
         $balances->each(function (array $balance) {
-            CorporationWalletJournalByDivisionJob::dispatch($this->corporation_id, $balance['division'])->onQueue('high');
-            CorporationWalletTransactionByDivisionJob::dispatch($this->corporation_id, $balance['division'])->onQueue('high');
+            CorporationWalletJournalByDivisionJob::dispatch($this->corporationId, $balance['division'])->onQueue('high');
+            CorporationWalletTransactionByDivisionJob::dispatch($this->corporationId, $balance['division'])->onQueue('high');
         });
     }
 }

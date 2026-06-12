@@ -10,7 +10,7 @@ use Seatplus\Eveapi\Models\RefreshToken;
 test('if constructor receives single refresh token push update to high queue', function () {
     Queue::fake();
 
-    (new UpdateCharacter(testCharacter()->refresh_token))->handle();
+    (new UpdateCharacter(testCharacter()->refreshToken))->handle();
 
     Queue::assertPushedOn('high', CharacterBatchJob::class);
 });

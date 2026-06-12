@@ -12,13 +12,13 @@ beforeEach(function () {
 
 it('runs ResolveLocationService', function () {
     // Arrange
-    $location_id = 100; // use low number to avoid being a potential structure or station
+    $locationId = 100; // use low number to avoid being a potential structure or station
 
-    $refresh_token = updateRefreshTokenScopes($this->test_character->refresh_token, ['esi-universe.read_structures.v1']);
-    $refresh_token->save();
+    $refreshToken = updateRefreshTokenScopes($this->test_character->refreshToken, ['esi-universe.read_structures.v1']);
+    $refreshToken->save();
 
     // Act
-    $job = new ResolveLocationJob($location_id, $refresh_token);
+    $job = new ResolveLocationJob($locationId, $refreshToken);
 
     $job->handle();
 

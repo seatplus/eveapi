@@ -15,7 +15,7 @@ beforeEach(function () {
 it('runs skill job', function () {
     expect(Skill::all())->toHaveCount(0);
 
-    $mocked_skills = Event::fakeFor(
+    $mockedSkills = Event::fakeFor(
         fn () => Skill::factory(['character_id' => testCharacter()->character_id])
             ->count(5)
             ->make()
@@ -23,7 +23,7 @@ it('runs skill job', function () {
 
     $esi = Mockery::mock(EsiClient::class);
     mockEsiTransport($esi, makeEsiResult((object) [
-        'skills' => array_map(fn ($s) => (object) $s, $mocked_skills->toArray()),
+        'skills' => array_map(fn ($s) => (object) $s, $mockedSkills->toArray()),
         'total_sp' => 1337,
         'unallocated_sp' => 42,
     ]));

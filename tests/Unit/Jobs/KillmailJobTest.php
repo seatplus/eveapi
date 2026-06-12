@@ -81,8 +81,8 @@ it('adds to batch', function () {
     mockEsiTransport($esi, $data);
 
     $job = mock(KillmailJob::class)->shouldAllowMockingProtectedMethods()->makePartial();
-    $job->killmail_id = $killmail->killmail_id;
-    $job->killmail_hash = $killmail->killmail_hash;
+    $job->killmailId = $killmail->killmail_id;
+    $job->killmailHash = $killmail->killmail_hash;
 
     $job->shouldReceive('batching')->twice()->andReturn(true);
     $job->shouldReceive('batch->add')->twice();

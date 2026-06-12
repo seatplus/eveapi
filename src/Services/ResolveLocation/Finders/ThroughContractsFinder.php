@@ -12,33 +12,33 @@ use Seatplus\Eveapi\Models\RefreshToken;
 class ThroughContractsFinder implements FinderInterface
 {
     #[\Override]
-    public function handle(int $location_id, Collection $tracings): ?RefreshToken
+    public function handle(int $locationId, Collection $tracings): ?RefreshToken
     {
-        $character_ids_to_ignore = $tracings->pluck('character_id');
+        $characterIdsToIgnore = $tracings->pluck('character_id');
 
         return Contract::query()
             ->where(fn (Builder $query) => $query
-                ->where('start_location_id', $location_id)
-                ->orWhere('end_location_id', $location_id)
+                ->where('start_location_id', $locationId)
+                ->orWhere('end_location_id', $locationId)
             )
             ->where(fn (Builder $query) => $query
-                ->whereHas('issuer_character.refresh_token')
-                ->orWhereHas('assignee_character.refresh_token')
+                ->whereHas('issuerCharacter.refreshToken')
+                ->orWhereHas('assigneeCharacter.refreshToken')
             )
             ->where(fn (Builder $query) => $query
-                ->whereNotIn('issuer_id', $character_ids_to_ignore)
-                ->orWhereNotIn('assignee_id', $character_ids_to_ignore)
+                ->whereNotIn('issuer_id', $characterIdsToIgnore)
+                ->orWhereNotIn('assignee_id', $characterIdsToIgnore)
             )
             ->inRandomOrder()
             ->get()
             ->map(fn (Contract $contract) => [
-                $contract->issuer_character?->refresh_token,
-                $contract->assignee_character?->refresh_token,
+                $contract->issuerCharacter?->refreshToken,
+                $contract->assigneeCharacter?->refreshToken,
             ])
             ->flatten()
             ->unique()
             ->filter()
-            ->filter(fn (RefreshToken $refresh_token) => $refresh_token->hasScope('esi-universe.read_structures.v1'))
+            ->filter(fn (RefreshToken $refreshToken) => $refreshToken->hasScope('esi-universe.read_structures.v1'))
             ->first();
     }
 }
