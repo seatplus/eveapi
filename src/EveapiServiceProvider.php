@@ -69,7 +69,14 @@ class EveapiServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $version = InstalledVersions::getPrettyVersion('seatplus/eveapi') ?? 'dev';
-        EsiConfiguration::getInstance()->http_user_agent .= " seatplus/eveapi/{$version} +https://github.com/seatplus/eveapi";
+        $esiConfiguration = EsiConfiguration::getInstance();
+        $esiConfiguration->http_user_agent .= " seatplus/eveapi/{$version} +https://github.com/seatplus/eveapi";
+
+        // Wire the esi-client logging config so its RotatingFileLogger writes alongside
+        // the Laravel logs. Without this it falls back to its relative-path default
+        // ('logs/'), which resolves to the process CWD (e.g. /workspace/logs) instead.
+        $esiConfiguration->logfile_location = config('eveapi.config.esi-client.logfile_location');
+        $esiConfiguration->logger_level = config('eveapi.config.esi-client.logger_level');
 
         Model::preventLazyLoading(! app()->isProduction());
 
@@ -145,6 +152,7 @@ class EveapiServiceProvider extends ServiceProvider
                     'processes' => config('eveapi.config.queue.workers'),
                     'block_for' => 5,
                     'timeout' => 120, // 2 minutes
+                    'tries' => 1, // a failing job lands in failed_jobs instead of retrying forever (Horizon defaults to unlimited)
                     'nice' => 10, // Allowed values are between 0 and 19
                     'maxTime' => 3600,
                     'maxJobs' => 1000,
