@@ -18,14 +18,22 @@ class CacheCharacterAffiliationIdsService
     {
         $characterIds = is_array($characterIds) ? $characterIds : [$characterIds];
 
-        Cache::lock('CharacterAffiliationLock')
+        // 10s TTL so a crashed holder can't wedge the lock forever.
+        Cache::lock('CharacterAffiliationLock', 10)
             ->get(fn () => Cache::put('CharacterAffiliationIds', $this->getIdsCollection()->merge($characterIds)));
     }
 
     final public function retrieve(): Collection
     {
-        return Cache::lock('CharacterAffiliationLock')
+        // Lock::get() returns false when the lock isn't acquired (another process is
+        // draining the set, or a crashed holder still owns it). The return type is
+        // Collection, so guard the false instead of letting it become a TypeError
+        // that 500s every caller (e.g. the /shared/resolve/{id} endpoint). The 10s
+        // TTL lets a wedged lock self-heal.
+        $ids = Cache::lock('CharacterAffiliationLock', 10)
             ->get(fn () => Cache::pull('CharacterAffiliationIds', collect()));
+
+        return $ids instanceof Collection ? $ids : collect();
     }
 
     private function getIdsCollection(): Collection
