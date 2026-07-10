@@ -42,7 +42,7 @@ class CorporationDivisionFactory extends Factory
         return [
             'corporation_id' => fake()->unique()->numberBetween(98000000, 99000000),
             'division_id' => fake()->unique()->randomDigitNotNull,
-            'division_typ' => fake()->randomElement(['hangar', 'wallet']),
+            'division_type' => fake()->randomElement(['hangar', 'wallet']),
         ];
     }
 }
