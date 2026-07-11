@@ -40,7 +40,7 @@ class AllianceInfoFactory extends Factory
     public function definition()
     {
         return [
-            'alliance_id' => fake()->numberBetween(99000000, 100000000),
+            'alliance_id' => fake()->unique()->numberBetween(99000000, 100000000),
             'creator_corporation_id' => fake()->numberBetween(98000000, 99000000),
             'creator_id' => fake()->numberBetween(90000000, 98000000),
             'date_founded' => fake()->date('Y-m-d', 'now'),
