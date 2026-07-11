@@ -111,7 +111,7 @@ class SdeImportCommand extends Command
             primaryKey: 'category_id',
             mapper: fn (array $row): array => [
                 'category_id' => $row['_key'],
-                'name' => $row['name']['en'] ?? null,
+                'name' => $row['name']['en'] ?? '',
                 'published' => $row['published'] ?? false,
             ],
             uniqueBy: ['category_id'],
@@ -128,7 +128,7 @@ class SdeImportCommand extends Command
             mapper: fn (array $row): array => [
                 'group_id' => $row['_key'],
                 'category_id' => $row['categoryID'],
-                'name' => $row['name']['en'] ?? null,
+                'name' => $row['name']['en'] ?? '',
                 'published' => $row['published'] ?? false,
             ],
             uniqueBy: ['group_id'],
@@ -145,8 +145,8 @@ class SdeImportCommand extends Command
             mapper: fn (array $row): array => [
                 'type_id' => $row['_key'],
                 'group_id' => $row['groupID'],
-                'name' => $row['name']['en'] ?? null,
-                'description' => $row['description']['en'] ?? null,
+                'name' => $row['name']['en'] ?? '',
+                'description' => $row['description']['en'] ?? '',
                 'published' => $row['published'] ?? false,
             ],
             uniqueBy: ['type_id'],
@@ -162,8 +162,8 @@ class SdeImportCommand extends Command
             primaryKey: 'region_id',
             mapper: fn (array $row): array => [
                 'region_id' => $row['_key'],
-                'name' => $row['name']['en'] ?? null,
-                'description' => $row['description']['en'] ?? null,
+                'name' => $row['name']['en'] ?? '',
+                'description' => $row['description']['en'] ?? '',
             ],
             uniqueBy: ['region_id'],
         );
@@ -179,7 +179,7 @@ class SdeImportCommand extends Command
             mapper: fn (array $row): array => [
                 'constellation_id' => $row['_key'],
                 'region_id' => $row['regionID'],
-                'name' => $row['name']['en'] ?? null,
+                'name' => $row['name']['en'] ?? '',
             ],
             uniqueBy: ['constellation_id'],
         );
@@ -195,7 +195,7 @@ class SdeImportCommand extends Command
             mapper: fn (array $row): array => [
                 'system_id' => $row['_key'],
                 'constellation_id' => $row['constellationID'],
-                'name' => $row['name']['en'] ?? null,
+                'name' => $row['name']['en'] ?? '',
                 'security_class' => $row['securityClass'] ?? null,
                 'security_status' => $row['securityStatus'] ?? 0.0,
             ],

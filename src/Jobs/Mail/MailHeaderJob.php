@@ -51,7 +51,7 @@ final class MailHeaderJob extends EsiJob
                 'subject' => $item->subject,
                 'from' => $item->from,
                 'timestamp' => carbon($item->timestamp),
-                'is_read' => $item->is_read ?? null,
+                'is_read' => $item->is_read ?? false,
                 'recipients' => $item->recipients ?? [],
             ])
             ->tap(function (Collection $mails) {
