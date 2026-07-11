@@ -117,7 +117,12 @@ abstract class EsiJob implements ShouldBeUnique, ShouldQueue
             }
 
             if ($esi instanceof RecordingEsiClient) {
-                $esi->setContext($this->rateLimitGroup(), $this->rateLimitCharacterId());
+                $esi->setContext(
+                    $this->rateLimitGroup(),
+                    $this->rateLimitCharacterId(),
+                    $this->rateLimitMaxTokens(),
+                    $this->rateLimitWindowSeconds(),
+                );
             }
 
             DB::transaction(fn () => $this->executeJob($esi));
@@ -170,6 +175,49 @@ abstract class EsiJob implements ShouldBeUnique, ShouldQueue
     public function rateLimitCharacterId(): ?int
     {
         return $this->getRefreshToken()?->character_id;
+    }
+
+    /**
+     * The bucket capacity for this endpoint, from OPERATION_CLASS::RATE_LIMIT_MAX_TOKENS
+     * (e.g. 150 for char-wallet). Null when the endpoint declares no quota — such jobs
+     * are never proactively throttled rather than measured against a wrong denominator.
+     */
+    public function rateLimitMaxTokens(): ?int
+    {
+        $op = static::OPERATION_CLASS;
+
+        if ($op === '') {
+            return null;
+        }
+
+        $value = defined("{$op}::RATE_LIMIT_MAX_TOKENS") ? constant("{$op}::RATE_LIMIT_MAX_TOKENS") : null;
+
+        return is_int($value) ? $value : null;
+    }
+
+    /**
+     * The refill window in seconds, parsed from OPERATION_CLASS::RATE_LIMIT_WINDOW
+     * (e.g. '15m' → 900). Null when unknown or unparseable.
+     */
+    public function rateLimitWindowSeconds(): ?int
+    {
+        $op = static::OPERATION_CLASS;
+
+        if ($op === '') {
+            return null;
+        }
+
+        $window = defined("{$op}::RATE_LIMIT_WINDOW") ? constant("{$op}::RATE_LIMIT_WINDOW") : null;
+
+        if (! is_string($window) || ! preg_match('/^(\d+)([smh])$/', $window, $matches)) {
+            return null;
+        }
+
+        return (int) $matches[1] * match ($matches[2]) {
+            's' => 1,
+            'm' => 60,
+            'h' => 3600,
+        };
     }
 
     /**

@@ -129,7 +129,7 @@ it('permanently fails the job when token service throws InvalidRefreshTokenExcep
 
 it('calls setContext on RecordingEsiClient before executeJob', function () {
     $esi = Mockery::mock(RecordingEsiClient::class, function (MockInterface $mock) {
-        $mock->shouldReceive('setContext')->with('global', null)->once();
+        $mock->shouldReceive('setContext')->with('global', null, null, null)->once();
     });
 
     $tokenService = Mockery::mock(GetUpToDateRefreshTokenService::class);
