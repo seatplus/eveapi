@@ -221,7 +221,7 @@ it('uniqueId returns tags joined with comma and space', function () {
 it('backoff returns array of delay values in seconds', function () {
     $job = new TestableEsiJob;
 
-    expect($job->backoff())->toBe([60, 300, 600, 900, 900, 900, 900, 900, 900]);
+    expect($job->backoff())->toBe([60, 300, 600]);
 });
 
 it('bounds retries by time and genuine errors, not a fixed attempt count', function () {

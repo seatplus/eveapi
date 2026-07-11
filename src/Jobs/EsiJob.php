@@ -74,11 +74,13 @@ abstract class EsiJob implements ShouldBeUnique, ShouldQueue
     public int $maxExceptions = 3;
 
     /**
-     * Calculate the number of seconds to wait before retrying the job.
+     * Seconds to wait between retries of a *genuine* (rethrown) exception. Rate-limit
+     * releases pass their own explicit delay and never use this, so only maxExceptions
+     * worth of entries are ever consumed.
      */
     public function backoff(): array
     {
-        return [1 * 60, 5 * 60, 10 * 60, 15 * 60, 15 * 60, 15 * 60, 15 * 60, 15 * 60, 15 * 60];
+        return [1 * 60, 5 * 60, 10 * 60];
     }
 
     /**
