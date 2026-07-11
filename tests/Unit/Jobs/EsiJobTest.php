@@ -17,6 +17,7 @@ use Seatplus\Eveapi\Services\Esi\InvalidTokenThrottleService;
 use Seatplus\Eveapi\Services\Esi\RecordingEsiClient;
 use Seatplus\Eveapi\Tests\Unit\Jobs\Support\TestableEsiJob;
 use Seatplus\Eveapi\Tests\Unit\Jobs\Support\TestableEsiJobWithOperation;
+use Seatplus\Eveapi\Tests\Unit\Jobs\Support\TestableEsiJobWithoutRateLimit;
 
 it('calls executeJob via handle', function () {
     $esi = Mockery::mock(EsiClient::class);
@@ -240,4 +241,12 @@ it('retryUntil returns a deadline 30 minutes out', function () {
     expect($job->retryUntil())->toEqual(now()->addMinutes(30));
 
     Carbon::setTestNow();
+});
+
+it('degrades to null quota and the global group for endpoints without rate-limit metadata', function () {
+    $job = new TestableEsiJobWithoutRateLimit;
+
+    expect($job->rateLimitMaxTokens())->toBeNull()
+        ->and($job->rateLimitWindowSeconds())->toBeNull()
+        ->and($job->rateLimitGroup())->toBe('global');
 });

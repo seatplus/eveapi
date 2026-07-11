@@ -72,3 +72,22 @@ class TestableEsiJobWithOperation extends TestableEsiJob
 {
     protected const string OPERATION_CLASS = GetCharactersCharacterIdMail::class;
 }
+
+/**
+ * Stand-in operation class for an ESI endpoint that declares no rate-limit metadata
+ * (62 of the generated resources have null constants). Verifies the quota accessors
+ * degrade to null / 'global' instead of throttling against unknown limits.
+ */
+class OperationWithoutRateLimit
+{
+    public const ?string RATE_LIMIT_GROUP = null;
+
+    public const ?int RATE_LIMIT_MAX_TOKENS = null;
+
+    public const ?string RATE_LIMIT_WINDOW = null;
+}
+
+class TestableEsiJobWithoutRateLimit extends TestableEsiJob
+{
+    protected const string OPERATION_CLASS = OperationWithoutRateLimit::class;
+}

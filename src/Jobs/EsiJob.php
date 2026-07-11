@@ -240,11 +240,9 @@ abstract class EsiJob implements ShouldBeUnique, ShouldQueue
             return null;
         }
 
-        return (int) $matches[1] * match ($matches[2]) {
-            's' => 1,
-            'm' => 60,
-            'h' => 3600,
-        };
+        $unitSeconds = ['s' => 1, 'm' => 60, 'h' => 3600];
+
+        return (int) $matches[1] * $unitSeconds[$matches[2]];
     }
 
     /**
