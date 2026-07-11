@@ -51,10 +51,27 @@ abstract class EsiJob implements ShouldBeUnique, ShouldQueue
     use Queueable;
 
     /**
-     * The number of times the job may be attempted.
-     * Higher than default to allow for rate-limit releases.
+     * Absolute deadline, in minutes from first dispatch, for retrying a job — including
+     * time spent waiting out rate-limit releases.
      */
-    public int $tries = 10;
+    private const int RETRY_UNTIL_MINUTES = 30;
+
+    /**
+     * No fixed attempt cap. Rate-limit releases — from EsiProactiveRateLimitMiddleware, the
+     * ThrottlesExceptions circuit breaker, and the EsiRateLimited/ErrorLimited catch in
+     * handle() — are flow control, not failures; bounding them by a fixed $tries turned
+     * "waiting for tokens" into MaxAttemptsExceeded (and cancelled batches). Retries are
+     * instead bounded by retryUntil() (time) and $maxExceptions (genuine errors).
+     */
+    public int $tries = 0;
+
+    /**
+     * Genuine, uncaught exceptions tolerated before the job is failed. Only the rethrowing
+     * `catch (Exception)` in handle() decrements this — caught paths (rate-limit release,
+     * InvalidRefreshToken fail) and middleware releases do not — so throttling can never
+     * fail a job, while a real ESI error still stops it after three attempts.
+     */
+    public int $maxExceptions = 3;
 
     /**
      * Calculate the number of seconds to wait before retrying the job.
@@ -62,6 +79,16 @@ abstract class EsiJob implements ShouldBeUnique, ShouldQueue
     public function backoff(): array
     {
         return [1 * 60, 5 * 60, 10 * 60, 15 * 60, 15 * 60, 15 * 60, 15 * 60, 15 * 60, 15 * 60];
+    }
+
+    /**
+     * Retry deadline. Laravel computes this once on first dispatch and persists it across
+     * attempts, so a throttled job keeps retrying until its tokens refill without ever
+     * failing on attempt count.
+     */
+    public function retryUntil(): \DateTimeInterface
+    {
+        return now()->addMinutes(self::RETRY_UNTIL_MINUTES);
     }
 
     /**
