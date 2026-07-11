@@ -41,7 +41,7 @@ class CorporationInfoFactory extends Factory
     public function definition()
     {
         return [
-            'corporation_id' => fake()->numberBetween(98000000, 99000000),
+            'corporation_id' => fake()->unique()->numberBetween(98000000, 99000000),
             'ticker' => fake()->bothify('[##??]'),
             'name' => fake()->name,
             'member_count' => fake()->randomDigitNotNull,
