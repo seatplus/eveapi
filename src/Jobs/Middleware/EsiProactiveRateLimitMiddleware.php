@@ -73,15 +73,25 @@ class EsiProactiveRateLimitMiddleware
      * RecordingEsiClient before calling executeJob(), so the correct
      * (group, characterId) pair is always available here.
      *
-     * @param  string  $group  ESI rate-limit group (e.g. 'characters', 'alliances').
+     * The real quota (limit + window) is endpoint-specific and comes from the
+     * operation class (RATE_LIMIT_MAX_TOKENS / RATE_LIMIT_WINDOW), threaded through
+     * EsiJob::handle() → RecordingEsiClient. It must NOT be hardcoded: e.g. the
+     * char-wallet group is 150/15m, so a hardcoded 1800 would read 147 remaining as
+     * 8 % (throttle) instead of 98 % (fine). A null limit means the endpoint has no
+     * known quota and is never proactively throttled.
+     *
+     * @param  int|null  $limit  Bucket capacity (RATE_LIMIT_MAX_TOKENS), or null if unknown.
+     * @param  int|null  $windowSeconds  Refill window in seconds, or null if unknown.
+     * @param  string  $group  ESI rate-limit group (e.g. 'char-wallet', 'characters').
      * @param  string  $characterId  Character ID string, or 'public' for unauthenticated endpoints.
      */
-    public static function recordResponse(int $remaining, string $group = 'global', string $characterId = 'public'): void
+    public static function recordResponse(int $remaining, ?int $limit, ?int $windowSeconds, string $group = 'global', string $characterId = 'public'): void
     {
         Redis::setex(self::KEY_PREFIX."{$group}:{$characterId}", self::TTL_SECONDS, json_encode([
             'remaining' => $remaining,
-            'limit' => 1800,
-            'window_seconds' => 900,
+            'limit' => $limit ?? 0,
+            'window_seconds' => $windowSeconds ?? 0,
+            'recorded_at' => now()->timestamp,
         ]));
     }
 
@@ -110,22 +120,34 @@ class EsiProactiveRateLimitMiddleware
         $remaining = (int) ($state['remaining'] ?? 0);
         $limit = (int) ($state['limit'] ?? 0);
         $windowSeconds = (int) ($state['window_seconds'] ?? 0);
+        $recordedAt = (int) ($state['recorded_at'] ?? 0);
 
         if ($limit === 0 || $windowSeconds === 0) {
             return 0;
         }
 
-        if (($remaining / $limit) >= self::LOW_THRESHOLD) {
+        // ESI refills the bucket at limit/window tokens per second. The stored value is
+        // a snapshot; age it by the refill accrued since it was recorded. Without this a
+        // brief dip below the threshold would starve the group forever — the release
+        // prevents the very ESI call that would refresh the snapshot, so it never rises.
+        // Integer-first math (multiply before divide) keeps the boundaries exact.
+        $elapsed = max(0, now()->timestamp - $recordedAt);
+        $refilled = (int) floor(($elapsed * $limit) / $windowSeconds);
+        $effectiveRemaining = (int) min($limit, $remaining + $refilled);
+
+        $threshold = (int) ceil(self::LOW_THRESHOLD * $limit);
+
+        if ($effectiveRemaining >= $threshold) {
             return 0;
         }
 
-        // Calculate delay: refill enough tokens for one request (costs 2 tokens).
-        // refill_rate = limit / windowSeconds tokens/sec
-        // delay = tokens_needed / refill_rate = 2 / (limit / windowSeconds)
-        $refillRate = $limit / $windowSeconds; // tokens per second
-        $tokensNeeded = 2; // cost of a 2xx response
+        // Hold the job just long enough to refill back to the threshold — a single
+        // release, rather than re-checking a stale value every second and exhausting
+        // the job's retry budget (which is what turned throttling into MaxAttemptsExceeded).
+        // delay = deficit / refillRate = deficit * window / limit.
+        $deficit = $threshold - $effectiveRemaining;
 
-        return (int) ceil($tokensNeeded / $refillRate);
+        return max(1, (int) ceil(($deficit * $windowSeconds) / $limit));
     }
 
     private function computeErrorLimitDelay(): int

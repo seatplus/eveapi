@@ -24,17 +24,25 @@ class RecordingEsiClient extends EsiClient
 
     private ?int $characterId = null;
 
+    private ?int $rateLimitMaxTokens = null;
+
+    private ?int $rateLimitWindowSeconds = null;
+
     /**
      * Set the rate-limit context for the upcoming job execution.
      * Called by EsiJob::handle() before executeJob() is invoked.
      *
      * @param  string  $group  ESI rate-limit group (from OPERATION_CLASS::RATE_LIMIT_GROUP).
      * @param  int|null  $characterId  JWT character ID, or null for public/unauthenticated endpoints.
+     * @param  int|null  $maxTokens  Bucket capacity (OPERATION_CLASS::RATE_LIMIT_MAX_TOKENS), or null if unknown.
+     * @param  int|null  $windowSeconds  Refill window in seconds (from RATE_LIMIT_WINDOW), or null if unknown.
      */
-    public function setContext(string $group, ?int $characterId): void
+    public function setContext(string $group, ?int $characterId, ?int $maxTokens = null, ?int $windowSeconds = null): void
     {
         $this->ratelimitGroup = $group;
         $this->characterId = $characterId;
+        $this->rateLimitMaxTokens = $maxTokens;
+        $this->rateLimitWindowSeconds = $windowSeconds;
     }
 
     #[\Override]
@@ -52,6 +60,8 @@ class RecordingEsiClient extends EsiClient
         if ($response->rateLimitRemaining !== null) {
             EsiProactiveRateLimitMiddleware::recordResponse(
                 $response->rateLimitRemaining,
+                $this->rateLimitMaxTokens,
+                $this->rateLimitWindowSeconds,
                 $this->ratelimitGroup,
                 $charId,
             );

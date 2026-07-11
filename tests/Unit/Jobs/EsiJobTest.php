@@ -3,6 +3,7 @@
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use Illuminate\Support\Carbon;
 use Mockery\MockInterface;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
 use Seatplus\EsiClient\EsiClient;
@@ -16,6 +17,7 @@ use Seatplus\Eveapi\Services\Esi\InvalidTokenThrottleService;
 use Seatplus\Eveapi\Services\Esi\RecordingEsiClient;
 use Seatplus\Eveapi\Tests\Unit\Jobs\Support\TestableEsiJob;
 use Seatplus\Eveapi\Tests\Unit\Jobs\Support\TestableEsiJobWithOperation;
+use Seatplus\Eveapi\Tests\Unit\Jobs\Support\TestableEsiJobWithoutRateLimit;
 
 it('calls executeJob via handle', function () {
     $esi = Mockery::mock(EsiClient::class);
@@ -129,7 +131,7 @@ it('permanently fails the job when token service throws InvalidRefreshTokenExcep
 
 it('calls setContext on RecordingEsiClient before executeJob', function () {
     $esi = Mockery::mock(RecordingEsiClient::class, function (MockInterface $mock) {
-        $mock->shouldReceive('setContext')->with('global', null)->once();
+        $mock->shouldReceive('setContext')->with('global', null, null, null)->once();
     });
 
     $tokenService = Mockery::mock(GetUpToDateRefreshTokenService::class);
@@ -219,5 +221,32 @@ it('uniqueId returns tags joined with comma and space', function () {
 it('backoff returns array of delay values in seconds', function () {
     $job = new TestableEsiJob;
 
-    expect($job->backoff())->toBe([60, 300, 600, 900, 900, 900, 900, 900, 900]);
+    expect($job->backoff())->toBe([60, 300, 600]);
+});
+
+it('bounds retries by time and genuine errors, not a fixed attempt count', function () {
+    $job = new TestableEsiJob;
+
+    // No fixed attempt cap: rate-limit releases (flow control) must never accumulate into
+    // MaxAttemptsExceeded. Failure is bounded by genuine errors + a time deadline instead.
+    expect($job->tries)->toBe(0)
+        ->and($job->maxExceptions)->toBe(3);
+});
+
+it('retryUntil returns a deadline 30 minutes out', function () {
+    Carbon::setTestNow('2026-07-11 12:00:00');
+
+    $job = new TestableEsiJob;
+
+    expect($job->retryUntil())->toEqual(now()->addMinutes(30));
+
+    Carbon::setTestNow();
+});
+
+it('degrades to null quota and the global group for endpoints without rate-limit metadata', function () {
+    $job = new TestableEsiJobWithoutRateLimit;
+
+    expect($job->rateLimitMaxTokens())->toBeNull()
+        ->and($job->rateLimitWindowSeconds())->toBeNull()
+        ->and($job->rateLimitGroup())->toBe('global');
 });
