@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 use Seatplus\Eveapi\Jobs\Seatplus\SdeImportJob;
+use Seatplus\Eveapi\Models\Schedules;
 use Seatplus\Eveapi\Models\Universe\Category;
 use Seatplus\Eveapi\Models\Universe\Constellation;
 use Seatplus\Eveapi\Models\Universe\Group;
@@ -234,10 +235,14 @@ it('removes nested subdirectories during cleanup', function () {
     expect(Category::find(6))->not->toBeNull();
 });
 
-it('seeds the SDE import schedule and dispatches SdeImportJob on migration', function () {
+it('seeds the SDE import schedule without importing on migration', function () {
     Queue::fake();
 
     (new (require __DIR__.'/../../../database/migrations/2026_05_26_150000_seed_sde_import_schedule.php'))->up();
 
-    Queue::assertPushed(SdeImportJob::class);
+    // Registers the weekly cadence but must not trigger the import itself — dispatching a
+    // queued job at migrate time would make a fresh install (and CI's migrate:fresh) depend
+    // on Horizon and download the SDE as a side effect.
+    expect(Schedules::where('job', SdeImportJob::class)->exists())->toBeTrue();
+    Queue::assertNotPushed(SdeImportJob::class);
 });
