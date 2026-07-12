@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Bus\PendingBatch;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Support\Facades\Bus;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationDivisionsJob;
 use Seatplus\Eveapi\Jobs\Corporation\CorporationMemberTrackingJob;
@@ -71,4 +72,11 @@ it('Batch Statistics entry has been made', function () {
 
 it('has middleware', function () {
     expect((new UpdateCorporation)->middleware())->toBeArray();
+});
+
+it('is unique per corporation so duplicate dispatches collapse', function () {
+    expect(new UpdateCorporation(90000001))->toBeInstanceOf(ShouldBeUnique::class)
+        ->and((new UpdateCorporation(90000001))->uniqueId())->toBe('90000001')
+        ->and((new UpdateCorporation(90000002))->uniqueId())->toBe('90000002')
+        ->and((new UpdateCorporation)->uniqueId())->toBe('all');
 });

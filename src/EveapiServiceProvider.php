@@ -263,7 +263,7 @@ class EveapiServiceProvider extends ServiceProvider
         RateLimiter::for(
             'corporation_batch',
             fn ($job) => Limit::perHour(1) // @pest-ignore-type
-                ->by($job->corporation_id ?? 'corporation_batch')
+                ->by($job->corporationId ?? 'corporation_batch')
         );
 
         RateLimiter::for(
