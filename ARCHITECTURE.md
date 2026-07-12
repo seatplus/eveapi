@@ -302,7 +302,7 @@ Schedules::cursor()->each(function (Schedules $entry) use ($schedule) {
 });
 ```
 
-Migrations seed the initial entries (e.g. `SdeImportJob` weekly). The `seatplus:sde-import` command can also be run ad-hoc or pointed at a local zip file.
+Migrations seed the initial schedule entries (e.g. `SdeImportJob` weekly). They deliberately do **not** trigger the work itself — the SDE-schedule migration registers the weekly cadence but does not import: a migration must not download tens of thousands of rows as a side effect, and dispatching the queued job at migrate time would make a fresh install (and CI's `migrate:fresh`) depend on Horizon running. Initial population is an explicit step — `php artisan seatplus:sde-import` (`--source=<sde.zip>` to skip the download) — and the scheduled `SdeImportJob` (a thin wrapper that just `Artisan::call`s that command) keeps it current thereafter.
 
 A small number of schedules that must never be disabled are still hardcoded (e.g. `RefreshCharacterAffiliationsService` every 5 minutes, `horizon:snapshot` every 5 minutes, `horizon:terminate` hourly).
 
