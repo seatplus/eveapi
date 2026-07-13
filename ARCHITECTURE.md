@@ -64,7 +64,7 @@ public function getRefreshToken(): RefreshToken
 ### Consequences
 - `BaseJobInterface::executeJob(): void` still exists but is superseded by `EsiJob::executeJob(EsiClient $esi): void`. The interface is kept for backward compatibility but all current jobs extend `EsiJob`.
 - The `EsiJob::handle()` signature is injected by the container: `handle(EsiClient $esi, GetUpToDateRefreshTokenService $tokenService, InvalidTokenThrottleService $throttle)`.
-- 10 tries with exponential backoff (1m, 5m, 10m, then 15m × 6).
+- Retries are bounded on **two independent axes** (see Decision 4), not a single `$tries` cap: `$tries = 0` (no fixed attempt limit) + `$maxExceptions = 3` (only genuine, rethrown errors count) + `retryUntil() = now()->addMinutes(30)` (absolute deadline). Genuine errors back off `[1m, 5m, 10m]`; rate-limit `release()`s never consume the failure budget.
 
 ---
 
@@ -82,7 +82,7 @@ final class GetCharactersCharacterId
 {
     public const ?string REQUIRED_SCOPE        = null;           // public endpoint
     public const ?string RATE_LIMIT_GROUP      = 'char-info';
-    public const ?int    RATE_LIMIT_MAX_TOKENS = 1800;
+    public const ?int    RATE_LIMIT_MAX_TOKENS = 1800;   // real per-endpoint quota (varies by group; e.g. char-wallet is 150)
     public const ?string RATE_LIMIT_WINDOW     = '15m';
     public const ?int    CACHE_AGE             = 3600;
     public const array   REQUIRED_ROLES        = [];
@@ -169,15 +169,20 @@ $this->app->bind(EsiClient::class, RecordingEsiClient::class);
 ## Decision 4 — Two-tier rate limiting: proactive bucket-guard + reactive exception throttle
 
 ### Context
-ESI uses a floating token bucket per rate-limit group (`X-Ratelimit-Limit: 1800/15m`). A 429 response costs 5 tokens; a 2xx costs 2 tokens. Burning the bucket with aggressive retries is worse than a brief delay.
+ESI uses a floating token bucket **per rate-limit group**, and the quota differs by group — e.g. `char-info` is large while `char-wallet` is only `150/15m`. The bucket refills continuously toward its cap. Burning the bucket with aggressive retries is worse than a brief delay.
+
+> **Denominator must be the real quota.** An earlier version hardcoded `1800` as the limit for every group, so a `char-wallet` bucket at `147/150` (98% full — plenty) looked like `147/1800` (8% — under the 10% cutoff) and got throttled forever. Tier 1 now reads the **real static quota** from the endpoint's esi-schema class (`RATE_LIMIT_MAX_TOKENS` / `RATE_LIMIT_WINDOW`, threaded through `EsiJob::rateLimitMaxTokens()` / `rateLimitWindowSeconds()` → `RecordingEsiClient::setContext()`), falling back to the live `X-Ratelimit-Limit` header when the response carries one.
 
 ### Decision
 Two middleware layers run on every `EsiJob`:
 
 **Tier 1 — `EsiProactiveRateLimitMiddleware`** (runs before the job executes):
-- Reads `esi_ratelimit:{group}:{characterId}` from Redis.
-- If `remaining / limit < 10%`, releases the job for `ceil(2 / refill_rate)` seconds.
+- Reads `esi_ratelimit:{group}:{characterId}` from Redis, storing the real `limit`, `windowSeconds`, and a `recorded_at` timestamp alongside `remaining`.
+- **Refill-aware:** ages the stored `remaining` forward by `(now − recorded_at) × refillRate` (integer-first math) before comparing, so a bucket that has refilled since the last call isn't treated as still-depleted.
+- If the aged `remaining / limit < 10%`, releases the job for a *targeted* delay — just long enough to refill back above the cutoff — rather than a flat wait.
 - Also reads `esi_errorlimit:global`; if `errorLimitRemaining < 10`, releases for `resetIn` seconds.
+
+Because a `release()` is flow control (not a thrown exception) and `$maxExceptions` only counts rethrown errors, a proactively-throttled job **releases and retries freely until the bucket refills** (bounded by `retryUntil()`), never dying with `MaxAttemptsExceeded` — which previously cancelled the web Update batch.
 
 **Tier 2 — `ThrottlesExceptionsWithRedis(80, 5*60)`** (runs after, reactive):
 - On a thrown exception, backs off and retries. Keyed by `'esiratelimit'` globally.
@@ -297,7 +302,7 @@ Schedules::cursor()->each(function (Schedules $entry) use ($schedule) {
 });
 ```
 
-Migrations seed the initial entries (e.g. `SdeImportJob` weekly). The `seatplus:sde-import` command can also be run ad-hoc or pointed at a local zip file.
+Migrations seed the initial schedule entries (e.g. `SdeImportJob` weekly). They deliberately do **not** trigger the work itself — the SDE-schedule migration registers the weekly cadence but does not import: a migration must not download tens of thousands of rows as a side effect, and dispatching the queued job at migrate time would make a fresh install (and CI's `migrate:fresh`) depend on Horizon running. Initial population is an explicit step — `php artisan seatplus:sde-import` (`--source=<sde.zip>` to skip the download) — and the scheduled `SdeImportJob` (a thin wrapper that just `Artisan::call`s that command) keeps it current thereafter.
 
 A small number of schedules that must never be disabled are still hardcoded (e.g. `RefreshCharacterAffiliationsService` every 5 minutes, `horizon:snapshot` every 5 minutes, `horizon:terminate` hourly).
 

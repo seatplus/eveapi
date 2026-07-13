@@ -9,6 +9,24 @@ use Seatplus\Eveapi\Models\Assets\Asset;
 
 class EnrichAssetTypeGroupCategoryJob extends HydrateMaintenanceBase
 {
+    /**
+     * Re-trigger enrichment when SDE data lands late, but only if at least one
+     * asset is actually waiting for a now-complete type->group->category chain.
+     *
+     * The Type/Group/Category observers all call this the moment a link of that
+     * chain resolves, so the denormalized columns self-heal without waiting for
+     * the next full character batch. The guard keeps a burst of SDE inserts from
+     * dispatching redundant no-op jobs.
+     */
+    public static function dispatchForWaitingAssets(): void
+    {
+        if (! Asset::query()->needsUniverseEnrichment()->exists()) {
+            return;
+        }
+
+        self::dispatch()->onQueue('high');
+    }
+
     #[\Override]
     public function handle(): void
     {
@@ -33,8 +51,7 @@ class EnrichAssetTypeGroupCategoryJob extends HydrateMaintenanceBase
     private function getAssetsWithMissingGroupAndCategoryInfo(): Collection
     {
         return Asset::query()
-            ->whereNull('group_id')
-            ->has('type.group.category')
+            ->needsUniverseEnrichment()
             ->with('type.group.category')
             ->get();
     }

@@ -31,6 +31,7 @@ namespace Seatplus\Eveapi\Observers;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\EnrichAssetTypeGroupCategoryJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseCategoryByIdJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Universe\Group;
@@ -45,6 +46,7 @@ class GroupObserver
 
         $this->handleCategory();
         $this->handleAssetsName();
+        $this->handleEnrichment();
     }
 
     private function handleCategory(): void
@@ -74,5 +76,14 @@ class GroupObserver
                     CharacterAssetsNameJob::dispatch($asset->assetable_id)->onQueue('high');
                 });
             });
+    }
+
+    /**
+     * A group with a resolvable category completes the type->group->category
+     * chain for any asset that was created before the group resolved.
+     */
+    private function handleEnrichment(): void
+    {
+        EnrichAssetTypeGroupCategoryJob::dispatchForWaitingAssets();
     }
 }

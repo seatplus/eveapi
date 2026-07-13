@@ -116,6 +116,32 @@ it('does not dispatch ResolveLocationJob if location is known', function () {
     Queue::assertNotPushed(ResolveLocationJob::class);
 });
 
+it('sets root_location_id for the whole 3-level nesting chain', function () {
+    $characterId = testCharacter()->character_id;
+    $location = Location::factory()->create();
+
+    // capital (in a real location) → freighter → container: each child's location_id is its
+    // parent's item_id. All three should resolve to the top-level location.
+    $make = fn (array $overrides): object => (object) Asset::factory()
+        ->make(array_merge(['assetable_id' => $characterId], $overrides))
+        ->toArray();
+
+    $data = [
+        $make(['item_id' => 100, 'location_id' => $location->location_id, 'location_flag' => 'Hangar']),
+        $make(['item_id' => 200, 'location_id' => 100]),
+        $make(['item_id' => 300, 'location_id' => 200]),
+    ];
+
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult($data));
+
+    (new CharacterAssetJob($characterId))->executeJob($esi);
+
+    expect(Asset::find(100)->root_location_id)->toBe($location->location_id)
+        ->and(Asset::find(200)->root_location_id)->toBe($location->location_id)
+        ->and(Asset::find(300)->root_location_id)->toBe($location->location_id);
+});
+
 // Helpers
 function buildAssetMockEsiData(MockInterface $esi): Collection
 {

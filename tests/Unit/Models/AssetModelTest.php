@@ -13,6 +13,23 @@ beforeEach(function () {
     Queue::fake();
 });
 
+it('resolves descendantAssets on a location flatly via root_location_id', function () {
+    $location = Location::factory()->create();
+
+    // three assets at different nesting depths, all rooted in $location
+    Asset::factory()->count(3)->create([
+        'assetable_id' => testCharacter()->character_id,
+        'root_location_id' => $location->location_id,
+    ]);
+    // an asset rooted elsewhere must not be included
+    Asset::factory()->create([
+        'assetable_id' => testCharacter()->character_id,
+        'root_location_id' => Location::factory()->create()->location_id,
+    ]);
+
+    expect($location->descendantAssets)->toHaveCount(3);
+});
+
 test('model has types', function () {
     $testAsset = Asset::factory()->withType()->create();
 

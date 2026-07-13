@@ -29,6 +29,7 @@ declare(strict_types=1);
 namespace Seatplus\Eveapi\Jobs\Seatplus;
 
 use Illuminate\Bus\Batch;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Middleware\RateLimitedWithRedis;
@@ -42,7 +43,7 @@ use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
 
-class UpdateCorporation implements ShouldQueue
+class UpdateCorporation implements ShouldBeUnique, ShouldQueue
 {
     use Queueable;
 
@@ -59,6 +60,11 @@ class UpdateCorporation implements ShouldQueue
         return [
             (new RateLimitedWithRedis('corporation_batch'))->dontRelease(),
         ];
+    }
+
+    public function uniqueId(): string
+    {
+        return (string) ($this->corporationId ?? 'all');
     }
 
     public function handle(): void

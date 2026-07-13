@@ -44,6 +44,7 @@ use Seatplus\EsiClient\EsiConfiguration;
 use Seatplus\Eveapi\Commands\CheckJobsCommand;
 use Seatplus\Eveapi\Commands\ClearCache;
 use Seatplus\Eveapi\Commands\SdeImportCommand;
+use Seatplus\Eveapi\Commands\UpdateCharacterCommand;
 use Seatplus\Eveapi\Events\RefreshTokenCreated;
 use Seatplus\Eveapi\Events\UniverseConstellationCreated;
 use Seatplus\Eveapi\Events\UniverseSystemCreated;
@@ -56,8 +57,10 @@ use Seatplus\Eveapi\Listeners\ReactOnFreshRefreshToken;
 use Seatplus\Eveapi\Listeners\UpdatingRefreshTokenListener;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Schedules;
+use Seatplus\Eveapi\Models\Universe\Category;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Type;
+use Seatplus\Eveapi\Observers\CategoryObserver;
 use Seatplus\Eveapi\Observers\CharacterInfoObserver;
 use Seatplus\Eveapi\Observers\GroupObserver;
 use Seatplus\Eveapi\Observers\TypeObserver;
@@ -207,6 +210,7 @@ class EveapiServiceProvider extends ServiceProvider
 
         Type::observe(TypeObserver::class);
         Group::observe(GroupObserver::class);
+        Category::observe(CategoryObserver::class);
 
         // Character Observers
         CharacterInfo::observe(CharacterInfoObserver::class);
@@ -255,6 +259,7 @@ class EveapiServiceProvider extends ServiceProvider
             ClearCache::class,
             CheckJobsCommand::class,
             SdeImportCommand::class,
+            UpdateCharacterCommand::class,
         ]);
     }
 
@@ -263,7 +268,7 @@ class EveapiServiceProvider extends ServiceProvider
         RateLimiter::for(
             'corporation_batch',
             fn ($job) => Limit::perHour(1) // @pest-ignore-type
-                ->by($job->corporation_id ?? 'corporation_batch')
+                ->by($job->corporationId ?? 'corporation_batch')
         );
 
         RateLimiter::for(

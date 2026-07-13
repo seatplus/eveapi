@@ -51,17 +51,46 @@ abstract class EsiJob implements ShouldBeUnique, ShouldQueue
     use Queueable;
 
     /**
-     * The number of times the job may be attempted.
-     * Higher than default to allow for rate-limit releases.
+     * Absolute deadline, in minutes from first dispatch, for retrying a job — including
+     * time spent waiting out rate-limit releases.
      */
-    public int $tries = 10;
+    private const int RETRY_UNTIL_MINUTES = 30;
 
     /**
-     * Calculate the number of seconds to wait before retrying the job.
+     * No fixed attempt cap. Rate-limit releases — from EsiProactiveRateLimitMiddleware, the
+     * ThrottlesExceptions circuit breaker, and the EsiRateLimited/ErrorLimited catch in
+     * handle() — are flow control, not failures; bounding them by a fixed $tries turned
+     * "waiting for tokens" into MaxAttemptsExceeded (and cancelled batches). Retries are
+     * instead bounded by retryUntil() (time) and $maxExceptions (genuine errors).
+     */
+    public int $tries = 0;
+
+    /**
+     * Genuine, uncaught exceptions tolerated before the job is failed. Only the rethrowing
+     * `catch (Exception)` in handle() decrements this — caught paths (rate-limit release,
+     * InvalidRefreshToken fail) and middleware releases do not — so throttling can never
+     * fail a job, while a real ESI error still stops it after three attempts.
+     */
+    public int $maxExceptions = 3;
+
+    /**
+     * Seconds to wait between retries of a *genuine* (rethrown) exception. Rate-limit
+     * releases pass their own explicit delay and never use this, so only maxExceptions
+     * worth of entries are ever consumed.
      */
     public function backoff(): array
     {
-        return [1 * 60, 5 * 60, 10 * 60, 15 * 60, 15 * 60, 15 * 60, 15 * 60, 15 * 60, 15 * 60];
+        return [1 * 60, 5 * 60, 10 * 60];
+    }
+
+    /**
+     * Retry deadline. Laravel computes this once on first dispatch and persists it across
+     * attempts, so a throttled job keeps retrying until its tokens refill without ever
+     * failing on attempt count.
+     */
+    public function retryUntil(): \DateTimeInterface
+    {
+        return now()->addMinutes(self::RETRY_UNTIL_MINUTES);
     }
 
     /**
@@ -117,7 +146,12 @@ abstract class EsiJob implements ShouldBeUnique, ShouldQueue
             }
 
             if ($esi instanceof RecordingEsiClient) {
-                $esi->setContext($this->rateLimitGroup(), $this->rateLimitCharacterId());
+                $esi->setContext(
+                    $this->rateLimitGroup(),
+                    $this->rateLimitCharacterId(),
+                    $this->rateLimitMaxTokens(),
+                    $this->rateLimitWindowSeconds(),
+                );
             }
 
             DB::transaction(fn () => $this->executeJob($esi));
@@ -170,6 +204,47 @@ abstract class EsiJob implements ShouldBeUnique, ShouldQueue
     public function rateLimitCharacterId(): ?int
     {
         return $this->getRefreshToken()?->character_id;
+    }
+
+    /**
+     * The bucket capacity for this endpoint, from OPERATION_CLASS::RATE_LIMIT_MAX_TOKENS
+     * (e.g. 150 for char-wallet). Null when the endpoint declares no quota — such jobs
+     * are never proactively throttled rather than measured against a wrong denominator.
+     */
+    public function rateLimitMaxTokens(): ?int
+    {
+        $op = static::OPERATION_CLASS;
+
+        if ($op === '') {
+            return null;
+        }
+
+        $value = defined("{$op}::RATE_LIMIT_MAX_TOKENS") ? constant("{$op}::RATE_LIMIT_MAX_TOKENS") : null;
+
+        return is_int($value) ? $value : null;
+    }
+
+    /**
+     * The refill window in seconds, parsed from OPERATION_CLASS::RATE_LIMIT_WINDOW
+     * (e.g. '15m' → 900). Null when unknown or unparseable.
+     */
+    public function rateLimitWindowSeconds(): ?int
+    {
+        $op = static::OPERATION_CLASS;
+
+        if ($op === '') {
+            return null;
+        }
+
+        $window = defined("{$op}::RATE_LIMIT_WINDOW") ? constant("{$op}::RATE_LIMIT_WINDOW") : null;
+
+        if (! is_string($window) || ! preg_match('/^(\d+)([smh])$/', $window, $matches)) {
+            return null;
+        }
+
+        $unitSeconds = ['s' => 1, 'm' => 60, 'h' => 3600];
+
+        return (int) $matches[1] * $unitSeconds[$matches[2]];
     }
 
     /**

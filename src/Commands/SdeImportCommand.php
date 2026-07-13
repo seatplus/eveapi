@@ -66,13 +66,15 @@ class SdeImportCommand extends Command
     {
         $this->info('Downloading SDE…');
 
-        $response = Http::timeout(300)->get(self::SDE_URL);
+        // Stream the response straight to disk (sink) instead of buffering the full
+        // multi-hundred-MB body in memory via $response->body(), which exhausts the default
+        // 128 MB CLI / Horizon-worker memory limit — a second cause of the SdeImportJob
+        // failures, independent of the queue retry_after window.
+        $response = Http::timeout(300)->sink($destination)->get(self::SDE_URL);
 
         if (! $response->successful()) {
             $this->fail("Download failed: HTTP {$response->status()}");
         }
-
-        file_put_contents($destination, $response->body());
     }
 
     private function extractSde(string $zipPath, string $targetDir): void
