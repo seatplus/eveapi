@@ -31,6 +31,7 @@ namespace Seatplus\Eveapi\Observers;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\EnrichAssetTypeGroupCategoryJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseCategoryByIdJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Universe\Group;
@@ -45,6 +46,7 @@ class GroupObserver
 
         $this->handleCategory();
         $this->handleAssetsName();
+        $this->handleEnrichment();
     }
 
     private function handleCategory(): void
@@ -74,5 +76,32 @@ class GroupObserver
                     CharacterAssetsNameJob::dispatch($asset->assetable_id)->onQueue('high');
                 });
             });
+    }
+
+    /**
+     * Self-heal denormalized asset columns when SDE data lands late.
+     *
+     * CharacterAssetJob resolves unknown types asynchronously, so the enrich
+     * job chained after it usually finds an unresolved type->group->category
+     * chain and skips those assets. Once the group (with a resolvable category)
+     * arrives we re-trigger the enrichment so the backfill happens without
+     * waiting for the next full batch.
+     */
+    private function handleEnrichment(): void
+    {
+        if (! $this->group->category) {
+            return;
+        }
+
+        $enrichableAssetsExist = Asset::query()
+            ->whereNull('group_id')
+            ->has('type.group.category')
+            ->exists();
+
+        if (! $enrichableAssetsExist) {
+            return;
+        }
+
+        EnrichAssetTypeGroupCategoryJob::dispatch()->onQueue('high');
     }
 }
