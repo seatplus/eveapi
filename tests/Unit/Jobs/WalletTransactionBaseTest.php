@@ -2,10 +2,31 @@
 
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiSchema\Responses\CharactersCharacterIdWalletTransactionsGetItem;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Jobs\Wallet\CharacterWalletTransactionJob;
+use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Wallet\WalletTransaction;
 
 beforeEach(fn () => Queue::fake());
+
+it('only resolves types for its own transactions, not another owner', function () {
+    $characterId = testCharacter()->character_id;
+
+    // An unresolved-type transaction belonging to a DIFFERENT character. Before the scope fix
+    // the follow-up scan was global and would resolve this; now it must be ignored.
+    WalletTransaction::factory()->create([
+        'wallet_transactionable_id' => 999999,
+        'wallet_transactionable_type' => CharacterInfo::class,
+        'type_id' => 8888,
+    ]);
+
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([])); // this character has no transactions
+
+    (new CharacterWalletTransactionJob($characterId))->executeJob($esi);
+
+    Queue::assertNotPushed(ResolveUniverseTypeByIdJob::class);
+});
 
 it('sets from_id to latest transaction id minus one when latest transaction exists', function () {
     $characterId = testCharacter()->character_id;

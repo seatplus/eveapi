@@ -44,7 +44,11 @@ abstract class ContractItemsBase extends EsiJob implements ShouldBeUnique
 
         ContractItem::upsert($contractItems->toArray(), ['record_id']);
 
-        ContractItem::doesntHave('type')
+        // Scope to the contract just written — an unscoped doesntHave() scans every contract's
+        // items in the system on every run.
+        ContractItem::query()
+            ->where('contract_id', $this->contractId)
+            ->doesntHave('type')
             ->pluck('type_id')
             ->unique()
             ->each(fn (int $typeId) => ResolveUniverseTypeByIdJob::dispatch($typeId)->onQueue('high'));

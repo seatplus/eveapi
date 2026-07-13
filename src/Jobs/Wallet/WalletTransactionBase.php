@@ -83,7 +83,11 @@ abstract class WalletTransactionBase extends EsiJob
 
     private function dispatchFollowUpJobs(): void
     {
+        // Scope the unresolved-type/location scans to this wallet's own transactions — an
+        // unscoped doesntHave() is a NOT EXISTS over every character's transactions on every run.
         WalletTransaction::query()
+            ->where('wallet_transactionable_id', $this->transactionableId())
+            ->where('wallet_transactionable_type', $this->transactionableType())
             ->doesntHave('type')
             ->pluck('type_id')
             ->unique()
@@ -91,6 +95,8 @@ abstract class WalletTransactionBase extends EsiJob
 
         $refreshToken = $this->getRefreshToken();
         WalletTransaction::query()
+            ->where('wallet_transactionable_id', $this->transactionableId())
+            ->where('wallet_transactionable_type', $this->transactionableType())
             ->doesntHave('location')
             ->pluck('location_id')
             ->unique()
