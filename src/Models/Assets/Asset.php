@@ -124,12 +124,35 @@ class Asset extends Model implements TypeWatchListInterface
         return $query->whereIn('category_id', $categoryIds);
     }
 
+    /**
+     * Assets whose type->group->category chain is resolvable but whose
+     * denormalized universe columns are not fully populated yet.
+     *
+     * This is the work set of EnrichAssetTypeGroupCategoryJob. It keys off every
+     * column the job fills - not just group_id - so a row left partially filled
+     * (e.g. group_id set by an older code path but the *_name_normalized columns
+     * still null) is healed too. Loop-safe: the source names are stored generated
+     * columns (non-null once the entity exists), so a filled row never re-matches.
+     */
+    public function scopeNeedsUniverseEnrichment(Builder $query): Builder
+    {
+        return $query
+            ->has('type.group.category')
+            ->where(fn (Builder $query) => $query
+                ->whereNull('group_id')
+                ->orWhereNull('category_id')
+                ->orWhereNull('type_name_normalized')
+                ->orWhereNull('group_name_normalized')
+                ->orWhereNull('category_name_normalized'));
+    }
+
     #[\Override]
     protected function casts(): array
     {
         return [
             'assetable_id' => 'integer',
             'type_id' => 'integer',
+            'root_location_id' => 'integer',
         ];
     }
 }

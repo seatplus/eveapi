@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * MIT License
  *
@@ -24,25 +26,20 @@
  * SOFTWARE.
  */
 
-namespace Seatplus\Eveapi\Database\Factories;
+namespace Seatplus\Eveapi\Observers;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Seatplus\Eveapi\Models\Corporation\CorporationDivision;
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\EnrichAssetTypeGroupCategoryJob;
+use Seatplus\Eveapi\Models\Universe\Category;
 
-/**
- * @extends Factory<CorporationDivision>
- */
-class CorporationDivisionFactory extends Factory
+class CategoryObserver
 {
-    protected $model = CorporationDivision::class;
-
-    #[\Override]
-    public function definition()
+    /**
+     * The category is the last link of the type->group->category chain to
+     * resolve (Type -> ResolveUniverseGroupByIdJob -> ResolveUniverseCategoryByIdJob),
+     * so its arrival completes the chain for any waiting asset.
+     */
+    public function created(Category $category): void
     {
-        return [
-            'corporation_id' => fake()->unique()->numberBetween(98000000, 99000000),
-            'division_id' => fake()->unique()->randomDigitNotNull,
-            'division_type' => fake()->randomElement(['hangar', 'wallet']),
-        ];
+        EnrichAssetTypeGroupCategoryJob::dispatchForWaitingAssets();
     }
 }

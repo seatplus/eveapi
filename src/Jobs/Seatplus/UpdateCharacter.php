@@ -42,7 +42,8 @@ class UpdateCharacter implements ShouldQueue
     use Queueable;
 
     public function __construct(
-        public ?RefreshToken $refreshToken = null
+        public ?RefreshToken $refreshToken = null,
+        public bool $force = false,
     ) {}
 
     public function handle(): void
@@ -56,7 +57,7 @@ class UpdateCharacter implements ShouldQueue
 
     private function updateSingleCharacter(): void
     {
-        CharacterBatchJob::dispatch($this->refreshToken->character_id)->onQueue('high');
+        CharacterBatchJob::dispatch($this->refreshToken->character_id, force: $this->force)->onQueue('high');
     }
 
     private function updateNextIncrementOfCharacters(): void

@@ -11,6 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Middleware\RateLimitedWithRedis;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\DB;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetJob;
 use Seatplus\Eveapi\Jobs\Assets\CharacterAssetsNameJob;
 use Seatplus\Eveapi\Jobs\Character\CharacterAffiliationJob;
@@ -52,6 +53,7 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
         public $queue = 'default', // @pest-ignore-type
         array $batchJobs = [],
         public bool $reschedule = false,
+        public bool $force = false,
     ) {
         $this->refreshToken = RefreshToken::find($this->characterId);
         $this->batchJobs = $batchJobs ?: $this->createBatchJobs();
@@ -74,7 +76,9 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
         // 1. Get BatchUpdate Entry
         $batchUpdate = $this->getBatchUpdate();
 
-        if ($this->shouldDiscardUpdate($batchUpdate)) {
+        // Force paths (scope change, seatplus:update-character) always run; only the scheduled
+        // catch-up defers to a previous batch that is genuinely still in flight.
+        if (! $this->force && $this->shouldDiscardUpdate($batchUpdate)) {
             return;
         }
         $this->resetBatchUpdate($batchUpdate);
@@ -304,9 +308,22 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
         ]);
     }
 
-    private function shouldDiscardUpdate(mixed $batchUpdate): bool
+    private function shouldDiscardUpdate(BatchUpdate $batchUpdate): bool
     {
-        return $batchUpdate->is_pending;
+        if (! $batchUpdate->is_pending) {
+            return false;
+        }
+
+        // No time cap — a batch can legitimately run for a long time on large installs, so we
+        // never interrupt one by the clock. Skip only while the previous batch genuinely still
+        // exists and is in flight (neither finished nor cancelled). A crashed/pruned batch — or
+        // a force dispatch — falls through and re-runs, so a character is never silenced forever.
+        return $batchUpdate->batch_id !== null
+            && DB::table('job_batches')
+                ->where('id', $batchUpdate->batch_id)
+                ->whereNull('finished_at')
+                ->whereNull('cancelled_at')
+                ->exists();
     }
 
     public function resetBatchUpdate(BatchUpdate $batchUpdate): void

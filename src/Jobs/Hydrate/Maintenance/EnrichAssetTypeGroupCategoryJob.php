@@ -11,15 +11,33 @@ use Seatplus\Eveapi\Models\Assets\Asset;
 class EnrichAssetTypeGroupCategoryJob extends HydrateMaintenanceBase
 {
     // $characterId scopes the enrichment to a single character's assets — the per-character
-    // update chain only ever adds that character's rows. Left null (MaintenanceJob) it enriches
-    // every unenriched asset globally. Scoping avoids re-scanning the whole assets table (all
-    // characters) on every character batch. Declared (not promoted) with a default so it stays
-    // initialised even when a test builds the job via a partial mock (no constructor call).
+    // update chain only ever adds that character's rows. Left null (MaintenanceJob / observers)
+    // it enriches every unenriched asset globally. Scoping avoids re-scanning the whole assets
+    // table (all characters) on every character batch. Declared (not promoted) with a default so
+    // it stays initialised even when a test builds the job via a partial mock (no constructor call).
     public ?int $characterId = null;
 
     public function __construct(?int $characterId = null)
     {
         $this->characterId = $characterId;
+    }
+
+    /**
+     * Re-trigger enrichment when SDE data lands late, but only if at least one
+     * asset is actually waiting for a now-complete type->group->category chain.
+     *
+     * The Type/Group/Category observers all call this the moment a link of that
+     * chain resolves, so the denormalized columns self-heal without waiting for
+     * the next full character batch. The guard keeps a burst of SDE inserts from
+     * dispatching redundant no-op jobs.
+     */
+    public static function dispatchForWaitingAssets(): void
+    {
+        if (! Asset::query()->needsUniverseEnrichment()->exists()) {
+            return;
+        }
+
+        self::dispatch()->onQueue('high');
     }
 
     #[\Override]
@@ -54,9 +72,8 @@ class EnrichAssetTypeGroupCategoryJob extends HydrateMaintenanceBase
     private function getAssetsWithMissingGroupAndCategoryInfo(): Collection
     {
         return Asset::query()
-            ->whereNull('group_id')
+            ->needsUniverseEnrichment()
             ->when($this->characterId, fn ($query) => $query->where('assetable_id', $this->characterId))
-            ->has('type.group.category')
             ->with('type.group.category')
             ->get();
     }
