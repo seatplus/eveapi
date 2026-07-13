@@ -57,8 +57,10 @@ use Seatplus\Eveapi\Listeners\ReactOnFreshRefreshToken;
 use Seatplus\Eveapi\Listeners\UpdatingRefreshTokenListener;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Schedules;
+use Seatplus\Eveapi\Models\Universe\Category;
 use Seatplus\Eveapi\Models\Universe\Group;
 use Seatplus\Eveapi\Models\Universe\Type;
+use Seatplus\Eveapi\Observers\CategoryObserver;
 use Seatplus\Eveapi\Observers\CharacterInfoObserver;
 use Seatplus\Eveapi\Observers\GroupObserver;
 use Seatplus\Eveapi\Observers\TypeObserver;
@@ -208,6 +210,7 @@ class EveapiServiceProvider extends ServiceProvider
 
         Type::observe(TypeObserver::class);
         Group::observe(GroupObserver::class);
+        Category::observe(CategoryObserver::class);
 
         // Character Observers
         CharacterInfo::observe(CharacterInfoObserver::class);
