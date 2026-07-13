@@ -42,7 +42,9 @@ class UpdatingRefreshTokenListener
         $newScopes = $this->getScopes($refreshToken->token);
 
         if (array_diff($newScopes, $originalScopes)) {
-            UpdateCharacter::dispatch($refreshToken)->onQueue('high');
+            // force: the scopes just changed — run a fresh batch even if a previous one is
+            // in flight (or stuck), so the newly-granted endpoint (e.g. assets) is fetched now.
+            UpdateCharacter::dispatch($refreshToken, force: true)->onQueue('high');
 
             $corporationId = data_get($refreshToken, 'character.corporation.corporation_id');
 
