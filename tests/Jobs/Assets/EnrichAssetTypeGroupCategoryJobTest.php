@@ -34,6 +34,25 @@ it('does not enrich asset if category is missing', function () {
         ->type_name_normalized->toBeNull();
 });
 
+it('only enriches the scoped character assets', function () {
+    $category = Event::fakeFor(fn () => Category::factory()->create());
+    $group = Event::fakeFor(fn () => Group::factory()->create(['category_id' => $category->category_id]));
+    $type = Event::fakeFor(fn () => Type::factory()->create(['group_id' => $group->group_id]));
+
+    $mine = Event::fakeFor(fn () => Asset::factory()->create(['type_id' => $type->type_id, 'assetable_id' => 100]));
+    $other = Event::fakeFor(fn () => Asset::factory()->create(['type_id' => $type->type_id, 'assetable_id' => 200]));
+
+    // Scoped to character 100. Not dispatched in a batch, so batch()?->cancelled() is null → proceeds.
+    (new EnrichAssetTypeGroupCategoryJob(100))->handle();
+
+    expect($mine->refresh()->type_name_normalized)->not->toBeNull()
+        ->and($mine->refresh()->group_id)->not->toBeNull();
+
+    // the other character's asset is left untouched — the scan no longer spans all characters
+    expect($other->refresh()->group_id)->toBeNull()
+        ->and($other->refresh()->type_name_normalized)->toBeNull();
+});
+
 it('enriches asset if category is present', function () {
 
     // Prepare data
