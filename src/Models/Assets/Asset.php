@@ -130,6 +130,7 @@ class Asset extends Model implements TypeWatchListInterface
         return [
             'assetable_id' => 'integer',
             'type_id' => 'integer',
+            'root_location_id' => 'integer',
         ];
     }
 }
