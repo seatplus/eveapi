@@ -29,31 +29,17 @@ declare(strict_types=1);
 namespace Seatplus\Eveapi\Observers;
 
 use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\EnrichAssetTypeGroupCategoryJob;
-use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Universe\Category;
 
 class CategoryObserver
 {
     /**
-     * Self-heal denormalized asset columns when SDE data lands late.
-     *
-     * The category is the last link of the type->group->category chain to be
-     * resolved (Type -> ResolveUniverseGroupByIdJob -> ResolveUniverseCategoryByIdJob).
-     * Once it arrives the chain becomes complete, so we re-trigger the enrich
-     * job to backfill any asset whose group_id/category_id/normalized columns
-     * are still empty - instead of waiting for the next full batch.
+     * The category is the last link of the type->group->category chain to
+     * resolve (Type -> ResolveUniverseGroupByIdJob -> ResolveUniverseCategoryByIdJob),
+     * so its arrival completes the chain for any waiting asset.
      */
     public function created(Category $category): void
     {
-        $enrichableAssetsExist = Asset::query()
-            ->whereNull('group_id')
-            ->has('type.group.category')
-            ->exists();
-
-        if (! $enrichableAssetsExist) {
-            return;
-        }
-
-        EnrichAssetTypeGroupCategoryJob::dispatch()->onQueue('high');
+        EnrichAssetTypeGroupCategoryJob::dispatchForWaitingAssets();
     }
 }

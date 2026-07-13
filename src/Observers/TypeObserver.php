@@ -28,20 +28,28 @@ declare(strict_types=1);
 
 namespace Seatplus\Eveapi\Observers;
 
+use Seatplus\Eveapi\Jobs\Hydrate\Maintenance\EnrichAssetTypeGroupCategoryJob;
 use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseGroupByIdJob;
 use Seatplus\Eveapi\Models\Universe\Type;
 
 class TypeObserver
 {
     /**
-     * Handle the User "created" event.
+     * Handle the Type "created" event.
      */
     public function created(Type $type): void
     {
-        if ($type->group) {
+        // When the type's group is not resolved yet, resolving it will fire the
+        // Group (and then Category) observer, which re-triggers the enrichment.
+        if (! $type->group) {
+            ResolveUniverseGroupByIdJob::dispatch($type->group_id)->onQueue('high');
+
             return;
         }
 
-        ResolveUniverseGroupByIdJob::dispatch($type->group_id)->onQueue('high');
+        // The group (and possibly category) already exist, so resolving the type
+        // won't create either - no downstream observer fires. Self-heal here so an
+        // asset created before this type resolved gets its columns backfilled.
+        EnrichAssetTypeGroupCategoryJob::dispatchForWaitingAssets();
     }
 }

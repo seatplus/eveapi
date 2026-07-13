@@ -79,29 +79,11 @@ class GroupObserver
     }
 
     /**
-     * Self-heal denormalized asset columns when SDE data lands late.
-     *
-     * CharacterAssetJob resolves unknown types asynchronously, so the enrich
-     * job chained after it usually finds an unresolved type->group->category
-     * chain and skips those assets. Once the group (with a resolvable category)
-     * arrives we re-trigger the enrichment so the backfill happens without
-     * waiting for the next full batch.
+     * A group with a resolvable category completes the type->group->category
+     * chain for any asset that was created before the group resolved.
      */
     private function handleEnrichment(): void
     {
-        if (! $this->group->category) {
-            return;
-        }
-
-        $enrichableAssetsExist = Asset::query()
-            ->whereNull('group_id')
-            ->has('type.group.category')
-            ->exists();
-
-        if (! $enrichableAssetsExist) {
-            return;
-        }
-
-        EnrichAssetTypeGroupCategoryJob::dispatch()->onQueue('high');
+        EnrichAssetTypeGroupCategoryJob::dispatchForWaitingAssets();
     }
 }
