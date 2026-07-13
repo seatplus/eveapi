@@ -13,6 +13,7 @@ use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Assets\Asset;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
+use Seatplus\Eveapi\Services\Assets\ResolveAssetRootLocations;
 
 final class CharacterAssetJob extends EsiJob
 {
@@ -74,12 +75,25 @@ final class CharacterAssetJob extends EsiJob
             ->whereNotIn('item_id', $this->assets->pluck('item_id')->toArray())
             ->delete();
 
+        $this->updateRootLocationIds();
+
         $this->resolveUnknownLocations();
         $this->resolveUnknownTypes();
 
         if (app()->bound('queue.worker')) {
             app('queue.worker')->shouldQuit = true;
         }
+    }
+
+    /**
+     * Set root_location_id (the top-level location an asset ultimately sits in) for this
+     * character's assets, resolved in-memory from the set just upserted — no extra query.
+     */
+    private function updateRootLocationIds(): void
+    {
+        $resolver = new ResolveAssetRootLocations;
+
+        $resolver->persist($resolver->resolve($this->assets));
     }
 
     private function resolveUnknownLocations(): void
