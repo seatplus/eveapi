@@ -14,8 +14,10 @@ use Illuminate\Support\Carbon;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
 /**
+ * @property string|null $batch_id
  * @property Carbon|null $started_at
  * @property Carbon|null $finished_at
+ * @property bool $is_pending
  */
 #[Unguarded]
 class BatchUpdate extends Model

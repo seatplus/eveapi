@@ -44,6 +44,7 @@ use Seatplus\EsiClient\EsiConfiguration;
 use Seatplus\Eveapi\Commands\CheckJobsCommand;
 use Seatplus\Eveapi\Commands\ClearCache;
 use Seatplus\Eveapi\Commands\SdeImportCommand;
+use Seatplus\Eveapi\Commands\UpdateCharacterCommand;
 use Seatplus\Eveapi\Events\RefreshTokenCreated;
 use Seatplus\Eveapi\Events\UniverseConstellationCreated;
 use Seatplus\Eveapi\Events\UniverseSystemCreated;
@@ -255,6 +256,7 @@ class EveapiServiceProvider extends ServiceProvider
             ClearCache::class,
             CheckJobsCommand::class,
             SdeImportCommand::class,
+            UpdateCharacterCommand::class,
         ]);
     }
 
