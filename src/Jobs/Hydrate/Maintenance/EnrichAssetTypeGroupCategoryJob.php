@@ -20,12 +20,7 @@ class EnrichAssetTypeGroupCategoryJob extends HydrateMaintenanceBase
      */
     public static function dispatchForWaitingAssets(): void
     {
-        $enrichableAssetsExist = Asset::query()
-            ->whereNull('group_id')
-            ->has('type.group.category')
-            ->exists();
-
-        if (! $enrichableAssetsExist) {
+        if (! Asset::query()->needsUniverseEnrichment()->exists()) {
             return;
         }
 
@@ -56,8 +51,7 @@ class EnrichAssetTypeGroupCategoryJob extends HydrateMaintenanceBase
     private function getAssetsWithMissingGroupAndCategoryInfo(): Collection
     {
         return Asset::query()
-            ->whereNull('group_id')
-            ->has('type.group.category')
+            ->needsUniverseEnrichment()
             ->with('type.group.category')
             ->get();
     }
