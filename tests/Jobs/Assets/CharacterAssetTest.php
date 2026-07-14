@@ -116,7 +116,7 @@ it('does not dispatch ResolveLocationJob if location is known', function () {
     Queue::assertNotPushed(ResolveLocationJob::class);
 });
 
-it('sets root_location_id for the whole 3-level nesting chain', function () {
+it('sets root_location_id and root_item_id for the whole 3-level nesting chain', function () {
     $characterId = testCharacter()->character_id;
     $location = Location::factory()->create();
 
@@ -139,7 +139,11 @@ it('sets root_location_id for the whole 3-level nesting chain', function () {
 
     expect(Asset::find(100)->root_location_id)->toBe($location->location_id)
         ->and(Asset::find(200)->root_location_id)->toBe($location->location_id)
-        ->and(Asset::find(300)->root_location_id)->toBe($location->location_id);
+        ->and(Asset::find(300)->root_location_id)->toBe($location->location_id)
+        // root_item_id: all three ultimately sit in the top-level item 100.
+        ->and(Asset::find(100)->root_item_id)->toBe(100)
+        ->and(Asset::find(200)->root_item_id)->toBe(100)
+        ->and(Asset::find(300)->root_item_id)->toBe(100);
 });
 
 // Helpers

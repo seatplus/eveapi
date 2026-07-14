@@ -73,6 +73,11 @@ class Asset extends Model implements TypeWatchListInterface
         return $this->belongsTo(self::class, 'location_id', 'item_id');
     }
 
+    public function rootItem(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'root_item_id', 'item_id');
+    }
+
     public function content(): HasMany
     {
         return $this->hasMany(self::class, 'location_id', 'item_id');
@@ -153,6 +158,7 @@ class Asset extends Model implements TypeWatchListInterface
             'assetable_id' => 'integer',
             'type_id' => 'integer',
             'root_location_id' => 'integer',
+            'root_item_id' => 'integer',
         ];
     }
 }
