@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Seatplus\Eveapi\Jobs\Hydrate\Maintenance;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Seatplus\Eveapi\Models\Assets\Asset;
@@ -50,7 +51,7 @@ class EnrichAssetTypeGroupCategoryJob extends HydrateMaintenanceBase
 
         // Bulk enrich: one UPDATE per distinct type (assets that share a type share their
         // group/category), instead of one UPDATE per asset row.
-        DB::transaction(fn () => $this->getAssetsWithMissingGroupAndCategoryInfo()
+        DB::transaction(fn () => $this->getAssetsToEnrich()
             ->groupBy('type_id')
             ->each(function (Collection $assets): void {
                 /** @var Asset $first */
@@ -69,11 +70,11 @@ class EnrichAssetTypeGroupCategoryJob extends HydrateMaintenanceBase
             }));
     }
 
-    private function getAssetsWithMissingGroupAndCategoryInfo(): Collection
+    private function getAssetsToEnrich(): Collection
     {
         return Asset::query()
             ->needsUniverseEnrichment()
-            ->when($this->characterId, fn ($query) => $query->where('assetable_id', $this->characterId))
+            ->when($this->characterId, fn (Builder $query) => $query->where('assetable_id', $this->characterId))
             ->with('type.group.category')
             ->get();
     }
