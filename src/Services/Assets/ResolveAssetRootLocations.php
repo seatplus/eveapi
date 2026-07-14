@@ -27,13 +27,15 @@ class ResolveAssetRootLocations
      */
     public function resolve(Collection $assets): Collection
     {
-        // item_id => location_id lookup, built typed so the walk stays int-typed end to end.
+        // item_id => location_id lookup, built typed (the foreach var carries the shape) so lookups
+        // stay int-typed.
         $locationByItemId = [];
         foreach ($assets as $asset) {
             $locationByItemId[$asset['item_id']] = $asset['location_id'];
         }
 
-        return $assets->mapWithKeys(function ($asset) use ($locationByItemId): array {
+        $roots = [];
+        foreach ($assets as $asset) {
             $locationId = $asset['location_id'];
             $rootItemId = $asset['item_id']; // a top-level asset is its own root item
             $seen = [];
@@ -48,10 +50,12 @@ class ResolveAssetRootLocations
                 $locationId = $locationByItemId[$locationId];
             }
 
-            return [$asset['item_id'] => [
+            $roots[$asset['item_id']] = [
                 'root_location_id' => $locationId,
                 'root_item_id' => $rootItemId,
-            ]];
-        });
+            ];
+        }
+
+        return collect($roots);
     }
 }
