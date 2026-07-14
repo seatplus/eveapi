@@ -20,13 +20,6 @@ return new class extends Migration
         $this->backfillRootItemIds();
     }
 
-    public function down(): void
-    {
-        Schema::table('assets', function (Blueprint $table) {
-            $table->dropColumn('root_item_id'); // drops its index too
-        });
-    }
-
     /**
      * Set root_item_id for every existing asset. A top-level asset (its location_id is not another
      * of the same owner's item_ids, i.e. it points at a real Location) is its own root item;
