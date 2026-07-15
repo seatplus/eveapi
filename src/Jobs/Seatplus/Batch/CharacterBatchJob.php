@@ -150,7 +150,7 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
             [
                 new CharacterAssetJob($this->characterId),
                 new CharacterAssetsNameJob($this->characterId),
-                new EnrichAssetTypeGroupCategoryJob,
+                new EnrichAssetTypeGroupCategoryJob($this->characterId),
             ],
         ];
     }
