@@ -102,6 +102,17 @@ it('has container relationship', function () {
     expect($testAsset->content->first()->container)->toBeInstanceOf(Asset::class);
 });
 
+it('has rootItem relationship', function () {
+    $topLevel = Asset::factory()->create(['location_flag' => 'Hangar']);
+    $nested = Asset::factory()->create([
+        'location_flag' => 'cargo',
+        'root_item_id' => $topLevel->item_id,
+    ]);
+
+    expect($nested->rootItem)->toBeInstanceOf(Asset::class)
+        ->and($nested->rootItem->item_id)->toBe($topLevel->item_id);
+});
+
 it('has in scope', function (string $scope) {
     expect(Asset::all())->toHaveCount(0);
 

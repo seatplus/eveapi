@@ -65,9 +65,20 @@ final class CharacterAssetJob extends EsiJob
             $page++;
         } while ($page <= $response->pages);
 
-        Asset::upsert($this->assets->toArray(), ['item_id'], [
+        // Resolve the top-level location/item each asset sits in from the in-memory set (no extra
+        // query) and write them in the same upsert, so both roots land in one write.
+        $roots = (new ResolveAssetRootLocations)->resolve($this->assets);
+
+        $assetsWithRoots = $this->assets->map(fn (array $asset): array => [
+            ...$asset,
+            'root_location_id' => $roots->get($asset['item_id'])['root_location_id'],
+            'root_item_id' => $roots->get($asset['item_id'])['root_item_id'],
+        ]);
+
+        Asset::upsert($assetsWithRoots->toArray(), ['item_id'], [
             'assetable_id', 'assetable_type', 'is_blueprint_copy', 'is_singleton',
             'location_flag', 'location_id', 'location_type', 'quantity', 'type_id',
+            'root_location_id', 'root_item_id',
         ]);
 
         Asset::query()
@@ -75,25 +86,12 @@ final class CharacterAssetJob extends EsiJob
             ->whereNotIn('item_id', $this->assets->pluck('item_id')->toArray())
             ->delete();
 
-        $this->updateRootLocationIds();
-
         $this->resolveUnknownLocations();
         $this->resolveUnknownTypes();
 
         if (app()->bound('queue.worker')) {
             app('queue.worker')->shouldQuit = true;
         }
-    }
-
-    /**
-     * Set root_location_id (the top-level location an asset ultimately sits in) for this
-     * character's assets, resolved in-memory from the set just upserted — no extra query.
-     */
-    private function updateRootLocationIds(): void
-    {
-        $resolver = new ResolveAssetRootLocations;
-
-        $resolver->persist($resolver->resolve($this->assets));
     }
 
     private function resolveUnknownLocations(): void
