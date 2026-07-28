@@ -19,13 +19,6 @@ return new class extends Migration
         });
     }
 
-    public function down(): void
-    {
-        Schema::table('contacts', function (Blueprint $table) {
-            $table->dropUnique('contacts_composite_unique');
-        });
-    }
-
     /**
      * Defensively collapse any legacy duplicate rows (kept lowest id) so the unique index can be
      * created. updateOrCreate already guaranteed uniqueness, so this normally matches nothing;
