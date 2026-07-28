@@ -27,6 +27,47 @@ it('sets EVE-compliant user agent on boot', function () {
         ->toContain('+https://github.com/seatplus/eveapi');
 });
 
+it('wires the esi-client connection config onto the EsiConfiguration singleton on boot', function () {
+    EsiConfiguration::resetInstance();
+
+    config([
+        'eveapi.config.esi-client.datasource' => 'singularity',
+        'eveapi.config.esi-client.esi_scheme' => 'http',
+        'eveapi.config.esi-client.esi_host' => 'esi.example.test',
+        'eveapi.config.esi-client.esi_port' => 8443,
+        'eveapi.config.esi-client.sso_scheme' => 'http',
+        'eveapi.config.esi-client.sso_host' => 'login.example.test',
+        'eveapi.config.esi-client.sso_port' => 9443,
+        'eveapi.config.esi-client.compatibility_date' => '2020-01-01',
+    ]);
+
+    $serviceProvider = new EveapiServiceProvider(app());
+    $serviceProvider->boot();
+
+    expect(EsiConfiguration::getInstance())
+        ->datasource->toBe('singularity')
+        ->esi_scheme->toBe('http')
+        ->esi_host->toBe('esi.example.test')
+        ->esi_port->toBe(8443)
+        ->sso_scheme->toBe('http')
+        ->sso_host->toBe('login.example.test')
+        ->sso_port->toBe(9443)
+        ->compatibility_date->toBe('2020-01-01');
+});
+
+it('keeps the esi-client default compatibility date when none is configured', function () {
+    EsiConfiguration::resetInstance();
+
+    config(['eveapi.config.esi-client.compatibility_date' => null]);
+
+    $default = (new EsiConfiguration)->compatibility_date;
+
+    $serviceProvider = new EveapiServiceProvider(app());
+    $serviceProvider->boot();
+
+    expect(EsiConfiguration::getInstance()->compatibility_date)->toBe($default);
+});
+
 it('tests horizon auth with user', function () {
 
     $serviceProvider = new EveapiServiceProvider(app());

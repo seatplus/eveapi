@@ -81,6 +81,24 @@ class EveapiServiceProvider extends ServiceProvider
         $esiConfiguration->logfile_location = config('eveapi.config.esi-client.logfile_location');
         $esiConfiguration->logger_level = config('eveapi.config.esi-client.logger_level');
 
+        // Wire the esi-client connection config so the EVE_ESI_*/EVE_SSO_* env vars are
+        // actually honoured. These keys were defined but never applied. The config
+        // defaults mirror EsiConfiguration's own, so behaviour is unchanged unless overridden.
+        $esiConfiguration->datasource = config('eveapi.config.esi-client.datasource');
+        $esiConfiguration->esi_scheme = config('eveapi.config.esi-client.esi_scheme');
+        $esiConfiguration->esi_host = config('eveapi.config.esi-client.esi_host');
+        $esiConfiguration->esi_port = (int) config('eveapi.config.esi-client.esi_port');
+        $esiConfiguration->sso_scheme = config('eveapi.config.esi-client.sso_scheme');
+        $esiConfiguration->sso_host = config('eveapi.config.esi-client.sso_host');
+        $esiConfiguration->sso_port = (int) config('eveapi.config.esi-client.sso_port');
+
+        // Only override the X-Compatibility-Date header when explicitly configured;
+        // otherwise leave the esi-client's schema-matched default in place.
+        $compatibilityDate = config('eveapi.config.esi-client.compatibility_date');
+        if ($compatibilityDate !== null) {
+            $esiConfiguration->compatibility_date = $compatibilityDate;
+        }
+
         Model::preventLazyLoading(! app()->isProduction());
 
         // Add Migrations

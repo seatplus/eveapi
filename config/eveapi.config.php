@@ -38,6 +38,9 @@ return [
         'sso_scheme' => env('EVE_SSO_SCHEME', 'https'),
         'sso_host' => env('EVE_SSO_HOST', 'login.eveonline.com'),
         'sso_port' => env('EVE_SSO_PORT', 443),
+        // Versioning — X-Compatibility-Date header (YYYY-MM-DD). Null keeps the
+        // esi-client's schema-matched default; set to pin a specific ESI spec date.
+        'compatibility_date' => env('EVE_ESI_COMPATIBILITY_DATE'),
         // Loging
         'logger_level' => Level::Info->value, // Monolog\Level case (Debug/Info/Warning/Error/…)
         'logfile_location' => storage_path('logs'),
