@@ -31,6 +31,7 @@ namespace Seatplus\Eveapi\Services\Contacts;
 use Illuminate\Support\Collection;
 use Seatplus\EsiSchema\EsiResult;
 use Seatplus\Eveapi\Models\Contacts\Contact;
+use Seatplus\Eveapi\Models\Contacts\ContactLabel;
 use Seatplus\Eveapi\Services\Jobs\CacheCharacterAffiliationIdsService;
 
 class ProcessContactResponse
@@ -39,34 +40,76 @@ class ProcessContactResponse
 
     public function execute(EsiResult $response): Collection
     {
-        return collect($response->data)
-            ->each(function (object $contact) {
-                $contactModel = Contact::updateOrCreate([
-                    'contact_id' => $contact->contact_id,
-                    'contactable_id' => $this->contactableId,
-                    'contactable_type' => $this->contactableType,
-                ], [
-                    'contact_type' => $contact->contact_type,
-                    'standing' => $contact->standing,
-                    'is_blocked' => $contact->is_blocked ?? null,
-                    'is_watched' => $contact->is_watched ?? null,
-                ]);
+        $contacts = collect($response->data);
 
-                $contactModel->labels()->whereNotIn('label_id', $contact->label_ids ?? [])->delete();
+        if ($contacts->isEmpty()) {
+            return collect();
+        }
 
-                if (isset($contact->label_ids)) {
-                    $alreadyExistingLabelIds = $contactModel->labels()->pluck('label_id');
+        $this->upsertContacts($contacts);
+        $this->reconcileLabels($contacts);
 
-                    $labelsToSave = collect($contact->label_ids)->diff($alreadyExistingLabelIds);
+        CacheCharacterAffiliationIdsService::make()
+            ->queue($contacts->filter(fn (object $contact) => $contact->contact_type === 'character')->pluck('contact_id')->toArray());
 
-                    $contactModel->labels()->createMany($labelsToSave->map(fn (int $labelId) => ['label_id' => $labelId]));
-                }
-            })->pipe(function (Collection $response) {
-                CacheCharacterAffiliationIdsService::make()
-                    ->queue($response->filter(fn (object $contact) => $contact->contact_type === 'character')->pluck('contact_id')->toArray());
+        return $contacts->pluck('contact_id');
+    }
 
-                return $response;
-            })->pluck('contact_id');
+    /**
+     * Replaces the former per-contact updateOrCreate with one chunked bulk upsert on the
+     * composite key. Chunked to stay under Postgres' 65535 bind cap (7 columns per row).
+     */
+    private function upsertContacts(Collection $contacts): void
+    {
+        $rows = $contacts->map(fn (object $contact): array => [
+            'contact_id' => $contact->contact_id,
+            'contactable_id' => $this->contactableId,
+            'contactable_type' => $this->contactableType,
+            'contact_type' => $contact->contact_type,
+            'standing' => $contact->standing,
+            'is_blocked' => $contact->is_blocked ?? null,
+            'is_watched' => $contact->is_watched ?? null,
+        ]);
+
+        $rows->chunk(1000)->each(fn (Collection $chunk) => Contact::upsert(
+            $chunk->all(),
+            ['contact_id', 'contactable_id', 'contactable_type'],
+            ['contact_type', 'standing', 'is_blocked', 'is_watched'],
+        ));
+    }
+
+    /**
+     * Set-based replacement for the former per-contact label reconciliation (delete-missing +
+     * insert-new per row). One delete over every affected contact, then one chunked bulk insert
+     * of the desired (contact_id, label_id) pairs rebuilds identical label membership.
+     */
+    private function reconcileLabels(Collection $contacts): void
+    {
+        $modelIdByContactId = Contact::query()
+            ->where('contactable_id', $this->contactableId)
+            ->where('contactable_type', $this->contactableType)
+            ->whereIn('contact_id', $contacts->pluck('contact_id')->all())
+            ->pluck('id', 'contact_id');
+
+        ContactLabel::query()->whereIn('contact_id', $modelIdByContactId->values()->all())->delete();
+
+        $now = now();
+
+        $labelRows = $contacts->flatMap(fn (object $contact): array => collect($contact->label_ids ?? [])
+            ->unique()
+            ->map(fn (int $labelId): array => [
+                'contact_id' => $modelIdByContactId->get($contact->contact_id),
+                'label_id' => $labelId,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ])
+            ->all());
+
+        if ($labelRows->isEmpty()) {
+            return;
+        }
+
+        $labelRows->chunk(1000)->each(fn (Collection $chunk) => ContactLabel::query()->insert($chunk->all()));
     }
 
     public function remove_old_entries(array $knownIds): void
