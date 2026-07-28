@@ -20,6 +20,13 @@ final class CharacterAssetJob extends EsiJob
 {
     protected const string OPERATION_CLASS = GetCharactersCharacterIdAssets::class;
 
+    /**
+     * PostgreSQL rejects a statement with more than 65,535 bind parameters. The upsert payload
+     * carries 12 columns per row, so a single call tops out at 65,535 / 12 ≈ 5,461 rows. We chunk
+     * well below that ceiling to stay safe across drivers and future column additions.
+     */
+    private const int UPSERT_CHUNK_SIZE = 5000;
+
     private readonly Collection $assets;
 
     public function __construct(public int $characterId)
@@ -83,14 +90,14 @@ final class CharacterAssetJob extends EsiJob
         ]);
 
         // Only the write is transactional; the paging above ran outside any transaction. The
-        // upsert and the stale-row delete stay atomic together as they were under the old
+        // chunked upsert and the stale-row delete stay atomic together as they were under the old
         // whole-job transaction.
         DB::transaction(function () use ($assetsWithRoots): void {
-            Asset::upsert($assetsWithRoots->toArray(), ['item_id'], [
+            $assetsWithRoots->chunk(self::UPSERT_CHUNK_SIZE)->each(fn (Collection $chunk): int => Asset::upsert($chunk->values()->toArray(), ['item_id'], [
                 'assetable_id', 'assetable_type', 'is_blueprint_copy', 'is_singleton',
                 'location_flag', 'location_id', 'location_type', 'quantity', 'type_id',
                 'root_location_id', 'root_item_id',
-            ]);
+            ]));
 
             Asset::query()
                 ->where('assetable_id', $this->characterId)

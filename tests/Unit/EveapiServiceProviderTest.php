@@ -27,6 +27,24 @@ it('sets EVE-compliant user agent on boot', function () {
         ->toContain('+https://github.com/seatplus/eveapi');
 });
 
+it('leaves the esi-client connection + compatibility date untouched', function () {
+    EsiConfiguration::resetInstance();
+
+    $defaults = new EsiConfiguration;
+
+    $serviceProvider = new EveapiServiceProvider(app());
+    $serviceProvider->boot();
+
+    // eveapi must not override esi-client's connection or versioning config — the base
+    // URL is fixed and the compatibility date is pinned to the installed esi-schema.
+    expect(EsiConfiguration::getInstance())
+        ->datasource->toBe($defaults->datasource)
+        ->esi_host->toBe($defaults->esi_host)
+        ->esi_scheme->toBe($defaults->esi_scheme)
+        ->esi_port->toBe($defaults->esi_port)
+        ->compatibility_date->toBe($defaults->compatibility_date);
+});
+
 it('tests horizon auth with user', function () {
 
     $serviceProvider = new EveapiServiceProvider(app());
