@@ -42,3 +42,9 @@ it('handles multiple pages and upserts all assets', function () {
 
     expect(Asset::count())->toBe(2);
 });
+
+it('runs its write outside the whole-job transaction', function () {
+    $job = new CharacterAssetJob(12345);
+
+    expect((fn () => $this->wrapExecuteJobInTransaction())->call($job))->toBeFalse();
+});
