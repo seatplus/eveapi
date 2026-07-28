@@ -92,12 +92,10 @@ class EveapiServiceProvider extends ServiceProvider
         $esiConfiguration->sso_host = config('eveapi.config.esi-client.sso_host');
         $esiConfiguration->sso_port = (int) config('eveapi.config.esi-client.sso_port');
 
-        // Only override the X-Compatibility-Date header when explicitly configured;
-        // otherwise leave the esi-client's schema-matched default in place.
-        $compatibilityDate = config('eveapi.config.esi-client.compatibility_date');
-        if ($compatibilityDate !== null) {
-            $esiConfiguration->compatibility_date = $compatibilityDate;
-        }
+        // Deliberately NOT wired: compatibility_date (the X-Compatibility-Date header).
+        // It is welded to the generated esi-schema that the installed esi-client version
+        // ships, so it must track that package — not an operator env var, which could pin
+        // a date that mismatches the schema and break response deserialization.
 
         Model::preventLazyLoading(! app()->isProduction());
 

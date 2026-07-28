@@ -38,7 +38,6 @@ it('wires the esi-client connection config onto the EsiConfiguration singleton o
         'eveapi.config.esi-client.sso_scheme' => 'http',
         'eveapi.config.esi-client.sso_host' => 'login.example.test',
         'eveapi.config.esi-client.sso_port' => 9443,
-        'eveapi.config.esi-client.compatibility_date' => '2020-01-01',
     ]);
 
     $serviceProvider = new EveapiServiceProvider(app());
@@ -51,20 +50,19 @@ it('wires the esi-client connection config onto the EsiConfiguration singleton o
         ->esi_port->toBe(8443)
         ->sso_scheme->toBe('http')
         ->sso_host->toBe('login.example.test')
-        ->sso_port->toBe(9443)
-        ->compatibility_date->toBe('2020-01-01');
+        ->sso_port->toBe(9443);
 });
 
-it('keeps the esi-client default compatibility date when none is configured', function () {
+it('leaves the esi-client schema-matched compatibility date untouched', function () {
     EsiConfiguration::resetInstance();
-
-    config(['eveapi.config.esi-client.compatibility_date' => null]);
 
     $default = (new EsiConfiguration)->compatibility_date;
 
     $serviceProvider = new EveapiServiceProvider(app());
     $serviceProvider->boot();
 
+    // eveapi must not override compatibility_date — it is pinned to the installed
+    // esi-client/esi-schema version, not to application config.
     expect(EsiConfiguration::getInstance()->compatibility_date)->toBe($default);
 });
 
