@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Seatplus\Eveapi\Jobs\Wallet;
 
+use Illuminate\Support\Facades\DB;
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiSchema\EsiResult;
 use Seatplus\Eveapi\Jobs\EsiJob;
@@ -26,6 +27,12 @@ abstract class WalletTransactionBase extends EsiJob
     protected function division(): ?int
     {
         return null;
+    }
+
+    #[\Override]
+    protected function wrapExecuteJobInTransaction(): bool
+    {
+        return false;
     }
 
     #[\Override]
@@ -74,7 +81,8 @@ abstract class WalletTransactionBase extends EsiJob
             $this->transactions = array_merge($this->transactions, $transactions);
         }
 
-        WalletTransaction::upsert($this->transactions, ['transaction_id']);
+        // Paging ran outside any transaction; wrap only the final write.
+        DB::transaction(fn () => WalletTransaction::upsert($this->transactions, ['transaction_id']));
         $this->dispatchFollowUpJobs();
         if (app()->bound('queue.worker')) {
             app('queue.worker')->shouldQuit = true;

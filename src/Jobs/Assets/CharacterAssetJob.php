@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Seatplus\Eveapi\Jobs\Assets;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiSchema\Resources\Assets\GetCharactersCharacterIdAssets;
 use Seatplus\Eveapi\Jobs\EsiJob;
@@ -24,6 +25,12 @@ final class CharacterAssetJob extends EsiJob
     public function __construct(public int $characterId)
     {
         $this->assets = collect();
+    }
+
+    #[\Override]
+    protected function wrapExecuteJobInTransaction(): bool
+    {
+        return false;
     }
 
     #[\Override]
@@ -75,16 +82,21 @@ final class CharacterAssetJob extends EsiJob
             'root_item_id' => $roots->get($asset['item_id'])['root_item_id'],
         ]);
 
-        Asset::upsert($assetsWithRoots->toArray(), ['item_id'], [
-            'assetable_id', 'assetable_type', 'is_blueprint_copy', 'is_singleton',
-            'location_flag', 'location_id', 'location_type', 'quantity', 'type_id',
-            'root_location_id', 'root_item_id',
-        ]);
+        // Only the write is transactional; the paging above ran outside any transaction. The
+        // upsert and the stale-row delete stay atomic together as they were under the old
+        // whole-job transaction.
+        DB::transaction(function () use ($assetsWithRoots): void {
+            Asset::upsert($assetsWithRoots->toArray(), ['item_id'], [
+                'assetable_id', 'assetable_type', 'is_blueprint_copy', 'is_singleton',
+                'location_flag', 'location_id', 'location_type', 'quantity', 'type_id',
+                'root_location_id', 'root_item_id',
+            ]);
 
-        Asset::query()
-            ->where('assetable_id', $this->characterId)
-            ->whereNotIn('item_id', $this->assets->pluck('item_id')->toArray())
-            ->delete();
+            Asset::query()
+                ->where('assetable_id', $this->characterId)
+                ->whereNotIn('item_id', $this->assets->pluck('item_id')->toArray())
+                ->delete();
+        });
 
         $this->resolveUnknownLocations();
         $this->resolveUnknownTypes();
