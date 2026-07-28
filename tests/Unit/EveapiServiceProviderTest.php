@@ -27,43 +27,22 @@ it('sets EVE-compliant user agent on boot', function () {
         ->toContain('+https://github.com/seatplus/eveapi');
 });
 
-it('wires the esi-client connection config onto the EsiConfiguration singleton on boot', function () {
+it('leaves the esi-client connection + compatibility date untouched', function () {
     EsiConfiguration::resetInstance();
 
-    config([
-        'eveapi.config.esi-client.datasource' => 'singularity',
-        'eveapi.config.esi-client.esi_scheme' => 'http',
-        'eveapi.config.esi-client.esi_host' => 'esi.example.test',
-        'eveapi.config.esi-client.esi_port' => 8443,
-        'eveapi.config.esi-client.sso_scheme' => 'http',
-        'eveapi.config.esi-client.sso_host' => 'login.example.test',
-        'eveapi.config.esi-client.sso_port' => 9443,
-    ]);
+    $defaults = new EsiConfiguration;
 
     $serviceProvider = new EveapiServiceProvider(app());
     $serviceProvider->boot();
 
+    // eveapi must not override esi-client's connection or versioning config — the base
+    // URL is fixed and the compatibility date is pinned to the installed esi-schema.
     expect(EsiConfiguration::getInstance())
-        ->datasource->toBe('singularity')
-        ->esi_scheme->toBe('http')
-        ->esi_host->toBe('esi.example.test')
-        ->esi_port->toBe(8443)
-        ->sso_scheme->toBe('http')
-        ->sso_host->toBe('login.example.test')
-        ->sso_port->toBe(9443);
-});
-
-it('leaves the esi-client schema-matched compatibility date untouched', function () {
-    EsiConfiguration::resetInstance();
-
-    $default = (new EsiConfiguration)->compatibility_date;
-
-    $serviceProvider = new EveapiServiceProvider(app());
-    $serviceProvider->boot();
-
-    // eveapi must not override compatibility_date — it is pinned to the installed
-    // esi-client/esi-schema version, not to application config.
-    expect(EsiConfiguration::getInstance()->compatibility_date)->toBe($default);
+        ->datasource->toBe($defaults->datasource)
+        ->esi_host->toBe($defaults->esi_host)
+        ->esi_scheme->toBe($defaults->esi_scheme)
+        ->esi_port->toBe($defaults->esi_port)
+        ->compatibility_date->toBe($defaults->compatibility_date);
 });
 
 it('tests horizon auth with user', function () {
