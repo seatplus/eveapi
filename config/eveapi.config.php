@@ -29,16 +29,10 @@ use Monolog\Level;
 return [
 
     'esi-client' => [
-        // ESI
-        'datasource' => env('EVE_ESI_DATASOURCE', 'tranquility'),
-        'esi_scheme' => env('EVE_ESI_SCHEME', 'https'),
-        'esi_host' => env('EVE_ESI_HOST', 'esi.evetech.net'),
-        'esi_port' => env('EVE_ESI_PORT', 443),
-        // SSO
-        'sso_scheme' => env('EVE_SSO_SCHEME', 'https'),
-        'sso_host' => env('EVE_SSO_HOST', 'login.eveonline.com'),
-        'sso_port' => env('EVE_SSO_PORT', 443),
-        // Loging
+        // Logging only. The ESI/SSO connection (datasource, scheme, host, port) and the
+        // X-Compatibility-Date header are esi-client's own concern — the base URL is
+        // esi.evetech.net and the compatibility date is pinned to the installed
+        // esi-client/esi-schema version, so neither is application-configurable.
         'logger_level' => Level::Info->value, // Monolog\Level case (Debug/Info/Warning/Error/…)
         'logfile_location' => storage_path('logs'),
     ],
