@@ -100,3 +100,9 @@ it('returns early when result is cached', function () {
 
     expect(WalletTransaction::count())->toBe(0);
 });
+
+it('runs its write outside the whole-job transaction', function () {
+    $job = new CharacterWalletTransactionJob(12345);
+
+    expect((fn () => $this->wrapExecuteJobInTransaction())->call($job))->toBeFalse();
+});
