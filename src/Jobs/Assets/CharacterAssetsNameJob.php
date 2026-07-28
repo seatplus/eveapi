@@ -6,6 +6,7 @@ namespace Seatplus\Eveapi\Jobs\Assets;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiSchema\Resources\Assets\PostCharactersCharacterIdAssetsNames;
 use Seatplus\Eveapi\Jobs\EsiJob;
@@ -78,12 +79,36 @@ final class CharacterAssetsNameJob extends EsiJob
                 $this->assetNames = $this->assetNames->merge(collect($response->data));
             });
 
-        $this->assetNames
+        $namedItems = $this->assetNames
             ->filter(fn (object $item) => $item->name !== 'None')
-            ->each(fn (object $item) => Asset::query()
-                ->where('assetable_id', $this->characterId)
-                ->where('item_id', $item->item_id)
-                ->update(['name' => $item->name])
-            );
+            ->values();
+
+        if ($namedItems->isEmpty()) {
+            return;
+        }
+
+        // Replace the per-row UPDATE loop with a single set-based UPDATE ... FROM (VALUES …) per
+        // chunk. This is update-only — it never inserts, so item_ids we hold no asset row for are
+        // simply not matched (an ON CONFLICT upsert would instead try to insert an orphan tuple and
+        // fail the NOT NULL on assetable_id). Chunked to stay well under Postgres' 65535 bind cap
+        // (2 binds per row + 1 for the character scope).
+        $namedItems
+            ->chunk(1000)
+            ->each(fn (Collection $chunk) => $this->bulkUpdateNames($chunk));
+    }
+
+    private function bulkUpdateNames(Collection $items): void
+    {
+        $placeholders = $items->map(fn () => '(?, ?)')->implode(', ');
+
+        $bindings = $items
+            ->flatMap(fn (object $item) => [$item->item_id, $item->name])
+            ->push($this->characterId)
+            ->all();
+
+        DB::update(
+            "UPDATE assets SET name = v.name FROM (VALUES {$placeholders}) AS v(item_id, name) WHERE assets.item_id = v.item_id::bigint AND assets.assetable_id = ?",
+            $bindings
+        );
     }
 }
