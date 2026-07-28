@@ -154,7 +154,11 @@ abstract class EsiJob implements ShouldBeUnique, ShouldQueue
                 );
             }
 
-            DB::transaction(fn () => $this->executeJob($esi));
+            if ($this->wrapExecuteJobInTransaction()) {
+                DB::transaction(fn () => $this->executeJob($esi));
+            } else {
+                $this->executeJob($esi);
+            }
         } catch (EsiRateLimitedException|EsiErrorLimitedException $e) {
             $this->release($e->retryAfter);
         } catch (InvalidRefreshTokenException $e) {
@@ -168,6 +172,21 @@ abstract class EsiJob implements ShouldBeUnique, ShouldQueue
 
             throw $e;
         }
+    }
+
+    /**
+     * Whether handle() should wrap the whole executeJob() call in a DB transaction.
+     *
+     * The default (true) keeps every job's historical behaviour: executeJob() runs inside a
+     * single transaction. Buffered paging jobs (assets, wallet journal/transactions, contracts)
+     * accumulate every ESI page into memory before a single final write, so wrapping the whole
+     * method would hold the transaction — and its snapshot/row locks — open across every network
+     * round-trip for no benefit. Those jobs return false here and open a narrow transaction around
+     * only their final write themselves; the read-only paging then runs outside any transaction.
+     */
+    protected function wrapExecuteJobInTransaction(): bool
+    {
+        return true;
     }
 
     /**

@@ -79,3 +79,9 @@ it('handles contextable type', function ($contextIdType) {
     'system_id',
     'type_id',
 ]);
+
+it('runs its write outside the whole-job transaction', function () {
+    $job = new CharacterWalletJournalJob(12345);
+
+    expect((fn () => $this->wrapExecuteJobInTransaction())->call($job))->toBeFalse();
+});

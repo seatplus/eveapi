@@ -14,6 +14,16 @@ it('returns early if cached', function () {
     expect(Contact::count())->toBe(0);
 });
 
+it('handles an empty (non-cached) contact response without writing', function () {
+    $esi = Mockery::mock(EsiClient::class);
+    mockEsiTransport($esi, makeEsiResult([]));
+
+    $job = new CharacterContactJob(characterId: 123);
+    $job->executeJob($esi);
+
+    expect(Contact::count())->toBe(0);
+});
+
 it('writes contacts to database on normal execution', function () {
     $contact = (object) [
         'contact_id' => 1001,

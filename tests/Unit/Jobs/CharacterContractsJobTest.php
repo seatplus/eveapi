@@ -73,3 +73,9 @@ it('returns the refresh token', function () {
 
     expect($job->getRefreshToken())->toBeInstanceOf(RefreshToken::class);
 });
+
+it('runs its write outside the whole-job transaction', function () {
+    $job = new CharacterContractsJob(12345);
+
+    expect((fn () => $this->wrapExecuteJobInTransaction())->call($job))->toBeFalse();
+});

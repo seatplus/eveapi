@@ -6,6 +6,7 @@ namespace Seatplus\Eveapi\Jobs\Contracts;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiSchema\Resources\Contracts\GetCharactersCharacterIdContracts;
 use Seatplus\Eveapi\Jobs\EsiJob;
@@ -19,6 +20,12 @@ final class CharacterContractsJob extends EsiJob
     protected const string OPERATION_CLASS = GetCharactersCharacterIdContracts::class;
 
     public function __construct(public int $characterId) {}
+
+    #[\Override]
+    protected function wrapExecuteJobInTransaction(): bool
+    {
+        return false;
+    }
 
     #[\Override]
     public function getRefreshToken(): RefreshToken
@@ -78,23 +85,27 @@ final class CharacterContractsJob extends EsiJob
 
     private function persist(Collection $contracts): void
     {
-        Contract::upsert(
-            $contracts->toArray(),
-            ['contract_id'],
-            [
-                'acceptor_id', 'assignee_id', 'availability', 'date_expired', 'date_issued',
-                'for_corporation', 'issuer_corporation_id', 'issuer_id', 'status', 'type',
-                'buyout', 'collateral', 'date_accepted', 'date_completed', 'days_to_complete',
-                'price', 'reward', 'end_location_id', 'start_location_id', 'title', 'volume',
-            ]
-        );
+        // Paging ran outside any transaction; wrap only the write. The upsert and the pivot sync
+        // stay atomic together as they were under the old whole-job transaction.
+        DB::transaction(function () use ($contracts): void {
+            Contract::upsert(
+                $contracts->toArray(),
+                ['contract_id'],
+                [
+                    'acceptor_id', 'assignee_id', 'availability', 'date_expired', 'date_issued',
+                    'for_corporation', 'issuer_corporation_id', 'issuer_id', 'status', 'type',
+                    'buyout', 'collateral', 'date_accepted', 'date_completed', 'days_to_complete',
+                    'price', 'reward', 'end_location_id', 'start_location_id', 'title', 'volume',
+                ]
+            );
 
-        $character = CharacterInfo::find($this->characterId);
-        $contractIds = $contracts->pluck('contract_id')->toArray();
+            $character = CharacterInfo::find($this->characterId);
+            $contractIds = $contracts->pluck('contract_id')->toArray();
 
-        if ($character) {
-            $character->contracts()->syncWithoutDetaching($contractIds);
-        }
+            if ($character) {
+                $character->contracts()->syncWithoutDetaching($contractIds);
+            }
+        });
     }
 
     private function dispatchFollowUpJobs(Collection $contracts): void

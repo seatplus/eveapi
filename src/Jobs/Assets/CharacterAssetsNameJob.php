@@ -78,12 +78,22 @@ final class CharacterAssetsNameJob extends EsiJob
                 $this->assetNames = $this->assetNames->merge(collect($response->data));
             });
 
-        $this->assetNames
+        $namedItems = $this->assetNames
             ->filter(fn (object $item) => $item->name !== 'None')
-            ->each(fn (object $item) => Asset::query()
-                ->where('assetable_id', $this->characterId)
-                ->where('item_id', $item->item_id)
-                ->update(['name' => $item->name])
-            );
+            ->values();
+
+        if ($namedItems->isEmpty()) {
+            return;
+        }
+
+        // Update each named asset by its (assetable_id, item_id) scope. A bulk upsert is not an
+        // option here: Postgres validates NOT NULL on the candidate insert tuple of an
+        // INSERT ... ON CONFLICT DO UPDATE before resolving the conflict, so a partial (item_id,
+        // name) upsert throws on assetable_id even when the row already exists. This stays
+        // update-only — an item_id whose asset has since gone simply matches nothing.
+        $namedItems->each(fn (object $item) => Asset::query()
+            ->where('assetable_id', $this->characterId)
+            ->where('item_id', $item->item_id)
+            ->update(['name' => $item->name]));
     }
 }
