@@ -1,9 +1,9 @@
 includes:
     - vendor/larastan/larastan/extension.neon
-    # Pest-aware static analysis. `tests` is intentionally kept out of `paths`
-    # below for now — analysing the suite surfaces Mockery false-positives and
-    # redundant-expectation findings handled in a dedicated follow-up.
+    # Pest-aware static analysis (understands it()/expect()/$this).
     - vendor/pestphp/pest-plugin-phpstan/extension.neon
+    # Understands Mockery's dynamic API (shouldReceive(), etc.).
+    - vendor/phpstan/phpstan-mockery/extension.neon
 
 parameters:
     databaseMigrationsPath:
@@ -14,8 +14,55 @@ parameters:
         - src
         - config
         - database
+        - tests
     tmpDir: build/phpstan
     checkOctaneCompatibility: true
     checkModelProperties: true
     configDirectories:
         - config
+    ignoreErrors:
+        # pest.expectation.redundant flags assertions a strict return type / Larastan
+        # already guarantees; failOnRisky makes deleting sole-assertion cases unsafe.
+        # pest.expectation.impossible (real, unsatisfiable assertions) stays active.
+        -
+            identifier: pest.expectation.redundant
+        # filterBy*Ids are #[Scope]-attributed query scopes; Larastan does not yet
+        # resolve the #[Scope] attribute onto the Builder type (same gap as #[Table]).
+        -
+            message: '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder<.*>::filterBy(Type|Group|Category|Region|System)Ids\(\)#'
+        # Pest higher-order proxy: dynamic test-state props (test()->x / $this->x set
+        # in setUp) are not statically declared on the proxy type.
+        -
+            message: '#Access to an undefined property Pest\\(PendingCalls\\TestCall|Support\\HigherOrderTapProxy).*::\$#'
+        # Mockery's dynamic API: partial-mock method calls and property reads on a
+        # bare MockInterface (phpstan-mockery types shouldReceive(), not these).
+        -
+            message: '#(Call to an undefined method|Access to an undefined property) Mockery\\(Legacy)?MockInterface::#'
+        # Pest higher-order expectation chaining (expect()->first(), ->getRawOriginal(),
+        # TestCall::expectExceptionMessage()) — dynamic, not statically typed.
+        -
+            message: '#Call to an undefined method Pest\\(Expectation|Expectations\\HigherOrderExpectation|PendingCalls\\TestCall)#'
+        # Anonymous test-double classes declare return types the doubles never use.
+        -
+            identifier: return.unusedType
+        # Cross-package: eveapi tests reference auth''s User (auth depends on eveapi,
+        # not the reverse) — resolvable only in the assembled app.
+        -
+            message: '#Class Seatplus\\Auth\\Models\\User not found#'
+        # Intentional env() call: the setUp() dev-DB safety guard (see the comment there).
+        -
+            identifier: larastan.noEnvCallsOutsideOfConfig
+            path: tests/TestCase.php
+        # Larastan infers RefreshToken::$token as never (model-property inference gap).
+        -
+            message: '#Property Seatplus\\Eveapi\\Models\\RefreshToken::\$token#'
+        # Pre-existing orphaned PHPUnit-style function (never registered as a Pest test).
+        -
+            message: '#Undefined variable: \$this#'
+            path: tests/Unit/Models/CorporationMemberTrackingTest.php
+        # The queued job mutates its static $handled through serialize()/handle();
+        # PHPStan's flow analysis only sees the `= false` set just before, so it
+        # (wrongly) reports the later toBeTrue() as impossible. Runtime is correct.
+        -
+            identifier: pest.expectation.impossible
+            path: tests/Unit/EveapiServiceProviderTest.php

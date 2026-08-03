@@ -98,6 +98,7 @@ test('ContactJob using ContactBaseJob and finds refresh_token', function (string
         'character_label' => new CharacterContactLabelJob($this->test_character->character_id),
         'corporation_label' => new CorporationContactLabelJob($this->test_character->corporation->corporation_id, testCharacter()->character_id),
         'alliance_label' => new AllianceContactLabelJob($this->test_character->corporation->alliance->alliance_id, testCharacter()->character_id),
+        default => throw new UnhandledMatchError,
     };
 
     expect($job->getRefreshToken())->character_id->toBe($this->test_character->character_id);

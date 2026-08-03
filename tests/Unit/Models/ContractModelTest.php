@@ -29,7 +29,8 @@ it('has inRegionScope', function (string $locationId) {
 
     $regionId = match ($locationId) {
         'start_location_id' => $testContract->startLocation->locatable->system->region->region_id,
-        'end_location_id' => $testContract->endLocation->locatable->system->region->region_id
+        'end_location_id' => $testContract->endLocation->locatable->system->region->region_id,
+        default => throw new UnhandledMatchError,
     };
 
     expect(Contract::query()->filterByRegionIds($regionId)->get())->toHaveCount(1)
@@ -53,7 +54,8 @@ it('has inSystemScope', function (string $locationId) {
 
     $systemId = match ($locationId) {
         'start_location_id' => $testContract->startLocation->locatable->system->system_id,
-        'end_location_id' => $testContract->endLocation->locatable->system->system_id
+        'end_location_id' => $testContract->endLocation->locatable->system->system_id,
+        default => throw new UnhandledMatchError,
     };
 
     expect(Contract::query()->filterBySystemIds($systemId)->get())->toHaveCount(1)

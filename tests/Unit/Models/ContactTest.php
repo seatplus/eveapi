@@ -96,6 +96,7 @@ it('has has affiliation relationship', function (string $contactType) {
         'corporation' => $affiliation->corporation_id,
         'alliance' => $affiliation->alliance_id,
         'faction' => $affiliation->faction_id,
+        default => throw new UnhandledMatchError,
     };
 
     Contact::factory()->create([

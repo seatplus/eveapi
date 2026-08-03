@@ -135,6 +135,7 @@ it('has in scope', function (string $scope) {
         'ofTypes' => $query->filterByTypeIds($type->type_id),
         'ofGroups' => $query->filterByGroupIds($type->group->group_id),
         'ofCategories' => $query->filterByCategoryIds($type->group->category->category_id),
+        default => throw new UnhandledMatchError,
     };
 
     expect($query->get())->toHaveCount(1);

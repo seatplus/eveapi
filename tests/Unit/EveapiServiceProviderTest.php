@@ -151,7 +151,7 @@ class RateLimitedTestJob
 {
     use InteractsWithQueue, Queueable;
 
-    public static $handled = false;
+    public static bool $handled = false;
 
     public function __construct(public $refreshToken) {}
 
