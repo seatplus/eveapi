@@ -9,7 +9,7 @@ it('dispatches job', function (string $job) {
 
     Queue::fake();
 
-    (new DispatchIndividualUpdate($refreshToken))->execute($job);
+    new DispatchIndividualUpdate($refreshToken)->execute($job);
 
     $jobClass = config('eveapi.jobs')[$job];
 

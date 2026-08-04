@@ -50,7 +50,7 @@ class DispatchIndividualUpdate
             $id = $this->refreshToken->character->corporation_id;
         }
 
-        $job = (new $jobClass($id))->onQueue('high');
+        $job = new $jobClass($id)->onQueue('high');
 
         return $this->dispatch($job);
     }

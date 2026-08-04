@@ -58,7 +58,7 @@ class UpdateCorporation implements ShouldBeUnique, ShouldQueue
     public function middleware(): array
     {
         return [
-            (new RateLimitedWithRedis('corporation_batch'))->dontRelease(),
+            new RateLimitedWithRedis('corporation_batch')->dontRelease(),
         ];
     }
 

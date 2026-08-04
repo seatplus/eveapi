@@ -47,13 +47,7 @@ class FindCorporationRefreshToken
 
     private function tokenHasScopes(RefreshToken $token, array $scopes): bool
     {
-        foreach ($scopes as $scope) {
-            if ($token->hasScope($scope)) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any($scopes, fn (string $scope) => $token->hasScope($scope));
     }
 
     private function tokenHasRoles(RefreshToken $token, array $roles): bool
@@ -62,12 +56,6 @@ class FindCorporationRefreshToken
             return true;
         }
 
-        foreach ($roles as $role) {
-            if ($token->character?->roles?->hasRole('roles', $role)) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any($roles, fn (string $role) => $token->character?->roles?->hasRole('roles', $role));
     }
 }

@@ -62,7 +62,7 @@ class CharacterBatchJob implements ShouldBeUnique, ShouldQueue
     public function middleware(): array
     {
         return [
-            (new RateLimitedWithRedis('character_batch'))->dontRelease(),
+            new RateLimitedWithRedis('character_batch')->dontRelease(),
         ];
     }
 

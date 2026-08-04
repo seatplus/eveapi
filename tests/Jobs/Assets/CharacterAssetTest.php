@@ -135,7 +135,7 @@ it('sets root_location_id and root_item_id for the whole 3-level nesting chain',
     $esi = Mockery::mock(EsiClient::class);
     mockEsiTransport($esi, makeEsiResult($data));
 
-    (new CharacterAssetJob($characterId))->executeJob($esi);
+    new CharacterAssetJob($characterId)->executeJob($esi);
 
     expect(Asset::find(100)->root_location_id)->toBe($location->location_id)
         ->and(Asset::find(200)->root_location_id)->toBe($location->location_id)

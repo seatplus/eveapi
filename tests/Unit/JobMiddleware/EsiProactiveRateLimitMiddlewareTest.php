@@ -17,7 +17,7 @@ it('RecordingEsiClient is bound as EsiClient in the service container', function
 
 it('RecordingEsiClient extends EsiClient', function (): void {
     expect(new ReflectionClass(RecordingEsiClient::class))
-        ->and((new ReflectionClass(RecordingEsiClient::class))->getParentClass()->getName())
+        ->and(new ReflectionClass(RecordingEsiClient::class)->getParentClass()->getName())
         ->toBe(EsiClient::class);
 });
 

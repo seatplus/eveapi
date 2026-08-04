@@ -62,7 +62,7 @@ it('spawns a job for every wallet division', function () {
         'balanceable_type' => CorporationInfo::class,
     ]));
 
-    (new CorporationWalletJournalJob(testCharacter()->corporation->corporation_id))->handle();
+    new CorporationWalletJournalJob(testCharacter()->corporation->corporation_id)->handle();
 
     expect(Balance::all())->toHaveCount(7);
 
