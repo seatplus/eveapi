@@ -24,6 +24,31 @@ use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\Esi\GetUpToDateRefreshTokenService;
 use Seatplus\Eveapi\Tests\TestCase;
 
+// pest-plugin-type-coverage v5.0.0 analyses files across forked pokio workers that
+// each read-modify-write one shared cache file (vendor/.../.temp/v3.php). Its lock
+// gives up after ~100ms and runs the write anyway (Support/Cache.php withinLock()),
+// so concurrent non-atomic file_put_contents() splice the cache into invalid PHP.
+// The plugin then include()s that file, which makes the breakage sticky: every later
+// run fails on the poisoned cache until it is deleted. Recovery is
+//     rm -rf vendor/pestphp/pest-plugin-type-coverage/.temp
+// Failures are intermittent, not deterministic — cold-cache runs failed 5/5 in one
+// sample here and ~25% in another on the same tree, so rate depends on machine load.
+//
+// Setting this env is the plugin's own opt-out: Analyser.php clamps $maxProcesses to
+// 1 when it is set, which leaves a single writer. It is assigned here in PHP rather
+// than as an env var on the composer script (as seatplus/web does) because $_ENV is
+// only populated from the environment when variables_order contains E, and the
+// php.ini PHP ships for production uses GPCS — so the shell form can silently no-op.
+//
+// CI does not strictly need this: formats.yml already sets FORK_MEM_PER_PROC=100GB,
+// which drives pokio's maxProcesses() to 1 for the same effect. This makes local runs
+// deterministic without depending on that env being set.
+//
+// Gated to --type-coverage so nothing else in the suite is affected.
+if (in_array('--type-coverage', $_SERVER['argv'] ?? [], true)) {
+    $_ENV['__PEST_PLUGIN_ENV'] = '1';
+}
+
 BypassFinals::enable();
 
 uses(TestCase::class)->in('Unit', 'Integration', 'Jobs');
