@@ -11,17 +11,13 @@ use Seatplus\Eveapi\Models\Assets\Asset;
 
 class EnrichAssetTypeGroupCategoryJob extends HydrateMaintenanceBase
 {
-    // $characterId scopes the enrichment to a single character's assets — the per-character
-    // update chain only ever adds that character's rows. Left null (MaintenanceJob / observers)
-    // it enriches every unenriched asset globally. Scoping avoids re-scanning the whole assets
-    // table (all characters) on every character batch. Declared (not promoted) with a default so
-    // it stays initialised even when a test builds the job via a partial mock (no constructor call).
-    public ?int $characterId = null;
-
-    public function __construct(?int $characterId = null)
-    {
-        $this->characterId = $characterId;
-    }
+    /**
+     * $characterId scopes the enrichment to a single character's assets — the per-character
+     * update chain only ever adds that character's rows. Left null (MaintenanceJob / observers)
+     * it enriches every unenriched asset globally. Scoping avoids re-scanning the whole assets
+     * table (all characters) on every character batch.
+     */
+    public function __construct(public ?int $characterId = null) {}
 
     /**
      * Re-trigger enrichment when SDE data lands late, but only if at least one
