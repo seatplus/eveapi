@@ -35,7 +35,7 @@ final class ResolveUniverseStructureByIdJob extends EsiJob
     {
         return [
             new EsiProactiveRateLimitMiddleware,
-            (new ThrottlesExceptionsWithRedis(40 / 2, 5 * 60))
+            new ThrottlesExceptionsWithRedis(40 / 2, 5 * 60)
                 ->by('esiratelimit')
                 ->backoff(5),
         ];

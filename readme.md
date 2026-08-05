@@ -52,7 +52,7 @@ For full architecture decisions see [ARCHITECTURE.md](ARCHITECTURE.md).
 
 | Dependency | Version |
 |-----------|---------|
-| PHP | ^8.3 |
+| PHP | ^8.5 |
 | Laravel | ^13.0 |
 | PostgreSQL | 17+ (tests), any for production |
 | Redis | 7+ (required for Horizon and rate-limit tracking) |

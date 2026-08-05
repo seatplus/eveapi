@@ -16,7 +16,7 @@ it('creates system', function () {
     $esi = Mockery::mock(EsiClient::class);
     mockEsiTransport($esi, $data);
 
-    (new ResolveUniverseSystemBySystemIdJob(30000001))->executeJob($esi);
+    new ResolveUniverseSystemBySystemIdJob(30000001)->executeJob($esi);
 
     expect(System::count())->toBe(1)
         ->and(System::first()->system_id)->toBe(30000001);
@@ -35,7 +35,7 @@ it('skips db write when response is a cached load', function () {
     $esi = Mockery::mock(EsiClient::class);
     mockEsiTransport($esi, $data);
 
-    (new ResolveUniverseSystemBySystemIdJob(30000001))->executeJob($esi);
+    new ResolveUniverseSystemBySystemIdJob(30000001)->executeJob($esi);
 
     expect(System::count())->toBe(0);
 });

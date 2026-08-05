@@ -36,6 +36,27 @@ composer run test        # Pint + PHPStan + type-coverage + Pest
 vendor/bin/pest --filter "test name"
 ```
 
+Requires **PHP 8.5** (`require.php` is `^8.5`) and runs Pest 5 / PHPUnit 13.
+
+`composer test:unit` (and so `composer run test`) always executes the whole suite.
+Test Impact Analysis is opt-in via **`composer test:unit-tia`**, which replays tests
+your change cannot have affected from a cached dependency graph instead of running
+them — useful for fast local iteration, ~2s versus ~30s.
+
+⚠️ **Do not use `test:unit-tia` to decide the suite is green.** Recording the graph
+needs pcov/Xdebug, but *replaying does not*, so on a stock PHP it silently replays
+whatever is cached (in `~/.pest/tia/`, outside the repo, per worktree) and reports
+`608 passed … 608 replayed` having executed nothing. Worse, its invalidation only
+looks at `.php` source: it hashes `composer.lock`, which this package gitignores (a
+gitignored lockfile hashes to null), `composer.json` hashing is disabled upstream,
+and its `php_minor` field stores `PHP_MAJOR_VERSION`. So a dependency bump or a
+`phpunit.xml` edit does not invalidate the graph at all. That is exactly why it is
+not wired into `composer test`.
+
+`tests/Pest.php` forces `pest-plugin-type-coverage` onto pokio's sync runtime. Leave
+it: its forked workers corrupt the plugin's shared cache into invalid PHP, and the
+corruption is sticky because the plugin `include`s that file. See the comment there.
+
 > See the "Working in Orca" section of core's `CLAUDE.md` for the per-package
 > test-DB rationale. Limit: two worktrees of *this* package share `laravel_eveapi`.
 

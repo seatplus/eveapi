@@ -108,7 +108,7 @@ abstract class EsiJob implements ShouldBeUnique, ShouldQueue
     {
         return [
             new EsiProactiveRateLimitMiddleware,
-            (new ThrottlesExceptionsWithRedis(80, 5 * 60))
+            new ThrottlesExceptionsWithRedis(80, 5 * 60)
                 ->by('esiratelimit')
                 ->backoff(5),
         ];

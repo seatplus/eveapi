@@ -14,7 +14,7 @@ it('creates constellation', function () {
     $esi = Mockery::mock(EsiClient::class);
     mockEsiTransport($esi, $data);
 
-    (new ResolveUniverseConstellationByConstellationIdJob(20000001))->executeJob($esi);
+    new ResolveUniverseConstellationByConstellationIdJob(20000001)->executeJob($esi);
 
     expect(Constellation::count())->toBe(1)
         ->and(Constellation::first()->constellation_id)->toBe(20000001);
@@ -31,7 +31,7 @@ it('skips db write when response is a cached load', function () {
     $esi = Mockery::mock(EsiClient::class);
     mockEsiTransport($esi, $data);
 
-    (new ResolveUniverseConstellationByConstellationIdJob(20000001))->executeJob($esi);
+    new ResolveUniverseConstellationByConstellationIdJob(20000001)->executeJob($esi);
 
     expect(Constellation::count())->toBe(0);
 });

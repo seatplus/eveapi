@@ -21,7 +21,7 @@ test('it dispatches jobs if token with role, scope and permission is present', f
     updateRefreshTokenScopes($this->test_character->refreshToken, [$scope])->save();
     $this->test_character->roles()->update(['roles' => ['Director']]);
 
-    (new UpdateCorporation($corporationId))->handle();
+    new UpdateCorporation($corporationId)->handle();
 
     // loop through classes and check if jobs that are instance of class are in batch
     foreach ($jobClasses as $jobClass) {
@@ -37,14 +37,7 @@ test('it dispatches jobs if token with role, scope and permission is present', f
                     return false;
                 }
 
-                // loop through classes and check if jobs that are instance of class are in batch
-                foreach ($classes as $jobClass) {
-                    if (! collect($jobs)->first(fn ($job) => $job instanceof $jobClass)) {
-                        return false;
-                    }
-                }
-
-                return true;
+                return array_all($classes, fn ($jobClass) => collect($jobs)->first(fn ($job) => $job instanceof $jobClass));
             });
         } else {
             Bus::assertBatched(fn ($batch) => $batch->jobs->first(fn ($job) => $job instanceof $jobClass));
@@ -76,7 +69,7 @@ it('has middleware', function () {
 
 it('is unique per corporation so duplicate dispatches collapse', function () {
     expect(new UpdateCorporation(90000001))->toBeInstanceOf(ShouldBeUnique::class)
-        ->and((new UpdateCorporation(90000001))->uniqueId())->toBe('90000001')
-        ->and((new UpdateCorporation(90000002))->uniqueId())->toBe('90000002')
+        ->and(new UpdateCorporation(90000001)->uniqueId())->toBe('90000001')
+        ->and(new UpdateCorporation(90000002)->uniqueId())->toBe('90000002')
         ->and((new UpdateCorporation)->uniqueId())->toBe('all');
 });

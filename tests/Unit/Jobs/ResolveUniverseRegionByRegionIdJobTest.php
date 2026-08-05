@@ -14,7 +14,7 @@ it('creates region', function () {
     $esi = Mockery::mock(EsiClient::class);
     mockEsiTransport($esi, $data);
 
-    (new ResolveUniverseRegionByRegionIdJob(10000001))->executeJob($esi);
+    new ResolveUniverseRegionByRegionIdJob(10000001)->executeJob($esi);
 
     expect(Region::count())->toBe(1)
         ->and(Region::first()->region_id)->toBe(10000001);
@@ -31,7 +31,7 @@ it('skips db write when response is a cached load', function () {
     $esi = Mockery::mock(EsiClient::class);
     mockEsiTransport($esi, $data);
 
-    (new ResolveUniverseRegionByRegionIdJob(10000001))->executeJob($esi);
+    new ResolveUniverseRegionByRegionIdJob(10000001)->executeJob($esi);
 
     expect(Region::count())->toBe(0);
 });

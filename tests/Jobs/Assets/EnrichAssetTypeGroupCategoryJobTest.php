@@ -43,7 +43,7 @@ it('only enriches the scoped character assets', function () {
     $other = Event::fakeFor(fn () => Asset::factory()->create(['type_id' => $type->type_id, 'assetable_id' => 200]));
 
     // Scoped to character 100. Not dispatched in a batch, so batch()?->cancelled() is null → proceeds.
-    (new EnrichAssetTypeGroupCategoryJob(100))->handle();
+    new EnrichAssetTypeGroupCategoryJob(100)->handle();
 
     expect($mine->refresh()->type_name_normalized)->not->toBeNull()
         ->and($mine->refresh()->group_id)->not->toBeNull();

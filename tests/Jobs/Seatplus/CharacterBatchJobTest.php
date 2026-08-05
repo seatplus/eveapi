@@ -34,7 +34,7 @@ it('creates BatchUpdate entries', function () {
 
     expect(testCharacter())->refreshToken->not()->toBeNull();
 
-    (new CharacterBatchJob(testCharacter()->character_id))->handle();
+    new CharacterBatchJob(testCharacter()->character_id)->handle();
 
     expect(BatchUpdate::all())->toHaveCount(RefreshToken::count())
         ->and(BatchUpdate::first())
@@ -48,7 +48,7 @@ it('creates BatchUpdate entries', function () {
 it('contains public jobs in batch', function ($publicJob) {
     Bus::fake();
 
-    (new CharacterBatchJob(testCharacter()->character_id))->handle();
+    new CharacterBatchJob(testCharacter()->character_id)->handle();
 
     Bus::assertBatched(fn ($batch) => isInstanceOfClassInArray($batch->jobs, $publicJob));
 })->with([
@@ -88,7 +88,7 @@ it('Batch Statistics entry has been made', function () {
 
     expect(BatchStatistic::count())->toBe(0);
 
-    (new CharacterBatchJob(testCharacter()->character_id))->handle();
+    new CharacterBatchJob(testCharacter()->character_id)->handle();
 
     expect(BatchStatistic::count())->toBe(1)
         ->and(BatchStatistic::first())->finished_at->toBeNull();

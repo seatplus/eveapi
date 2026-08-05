@@ -23,7 +23,7 @@ it('only resolves types for its own transactions, not another owner', function (
     $esi = Mockery::mock(EsiClient::class);
     mockEsiTransport($esi, makeEsiResult([])); // this character has no transactions
 
-    (new CharacterWalletTransactionJob($characterId))->executeJob($esi);
+    new CharacterWalletTransactionJob($characterId)->executeJob($esi);
 
     Queue::assertNotPushed(ResolveUniverseTypeByIdJob::class);
 });
@@ -42,7 +42,7 @@ it('sets from_id to latest transaction id minus one when latest transaction exis
     $job = new CharacterWalletTransactionJob($characterId);
     $job->executeJob($esi);
 
-    $property = (new ReflectionClass($job))->getProperty('fromId');
+    $property = new ReflectionClass($job)->getProperty('fromId');
 
     expect($property->getValue($job))->toBe(99);
 });
@@ -54,7 +54,7 @@ it('keeps from_id as PHP_INT_MAX when no latest transaction exists', function ()
     $job = new CharacterWalletTransactionJob(testCharacter()->character_id);
     $job->executeJob($esi);
 
-    $property = (new ReflectionClass($job))->getProperty('fromId');
+    $property = new ReflectionClass($job)->getProperty('fromId');
 
     expect($property->getValue($job))->toBe(PHP_INT_MAX);
 });
@@ -86,7 +86,7 @@ it('breaks when transaction_id is equal to the from_id', function () {
     $job = new CharacterWalletTransactionJob($characterId);
     $job->executeJob($esi);
 
-    $property = (new ReflectionClass($job))->getProperty('fromId');
+    $property = new ReflectionClass($job)->getProperty('fromId');
 
     expect($property->getValue($job))->not()->toBe(100);
 });

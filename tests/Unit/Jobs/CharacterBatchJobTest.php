@@ -47,7 +47,7 @@ it('discards update while the previous batch is still in flight', function () {
 
     Bus::fake();
 
-    (new CharacterBatchJob(testCharacter()->character_id, batchJobs: [fn () => 'test']))->handle();
+    new CharacterBatchJob(testCharacter()->character_id, batchJobs: [fn () => 'test'])->handle();
 
     Bus::assertNothingBatched();
 });
@@ -67,7 +67,7 @@ it('re-runs when the pending batch is no longer in flight (finished but never re
 
     Bus::fake();
 
-    (new CharacterBatchJob(testCharacter()->character_id, batchJobs: [fn () => 'test']))->handle();
+    new CharacterBatchJob(testCharacter()->character_id, batchJobs: [fn () => 'test'])->handle();
 
     Bus::assertBatched(fn ($batch) => true);
 });
@@ -85,7 +85,7 @@ it('runs even while a batch is in flight when forced', function () {
 
     Bus::fake();
 
-    (new CharacterBatchJob(testCharacter()->character_id, force: true, batchJobs: [fn () => 'test']))->handle();
+    new CharacterBatchJob(testCharacter()->character_id, force: true, batchJobs: [fn () => 'test'])->handle();
 
     // force bypasses the in-flight guard
     Bus::assertBatched(fn ($batch) => true);
@@ -152,7 +152,7 @@ it('stores queue on batch update', function () {
 
     Bus::fake();
 
-    (new CharacterBatchJob(testCharacter()->character_id, 'high', batchJobs: [fn () => 'test']))->handle();
+    new CharacterBatchJob(testCharacter()->character_id, 'high', batchJobs: [fn () => 'test'])->handle();
 
     expect(BatchUpdate::first())->queue->toBe('high');
 });

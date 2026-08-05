@@ -123,9 +123,9 @@ class CheckJobsCommand extends Command
             })
             ->filter(fn (string $job) => is_subclass_of($job, EsiJob::class))
             // filter out abstract classes
-            ->filter(fn (string $job) => ! (new ReflectionClass($job))->isAbstract())
+            ->filter(fn (string $job) => ! new ReflectionClass($job)->isAbstract())
             ->map(function (string $job) {
-                $constructorParameters = (new ReflectionClass($job))->getConstructor()?->getParameters();
+                $constructorParameters = new ReflectionClass($job)->getConstructor()?->getParameters();
                 $constructorParameters = collect($constructorParameters)
                     ->map(function (\ReflectionParameter $parameter) {
                         $type = 'unknown';
