@@ -16,11 +16,7 @@ it('does not enrich asset if category is missing', function () {
         'type_id' => $type->type_id,
     ]));
 
-    $mock = Mockery::mock(EnrichAssetTypeGroupCategoryJob::class)->makePartial();
-
-    $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
-
-    $mock->handle();
+    new EnrichAssetTypeGroupCategoryJob()->handle();
 
     // assert
     $assets = Asset::all();
@@ -69,11 +65,7 @@ it('enriches asset if category is present', function () {
     ]));
 
     // run the job
-    $mock = Mockery::mock(EnrichAssetTypeGroupCategoryJob::class)->makePartial();
-
-    $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
-
-    $mock->handle();
+    new EnrichAssetTypeGroupCategoryJob()->handle();
 
     // assert
     $assets = Asset::all();
@@ -108,9 +100,7 @@ it('heals a partially enriched asset whose group_id is set but name columns are 
         'category_name_normalized' => null,
     ]));
 
-    $mock = Mockery::mock(EnrichAssetTypeGroupCategoryJob::class)->makePartial();
-    $mock->shouldReceive('batch->cancelled')->once()->andReturnFalse();
-    $mock->handle();
+    new EnrichAssetTypeGroupCategoryJob()->handle();
 
     expect(Asset::first())
         ->type_name_normalized->not()->toBeNull()

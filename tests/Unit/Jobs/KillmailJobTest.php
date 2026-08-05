@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Event;
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Killmails\KillmailJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseSystemBySystemIdJob;
+use Seatplus\Eveapi\Jobs\Universe\ResolveUniverseTypeByIdJob;
 use Seatplus\Eveapi\Models\Killmails\Killmail;
 use Seatplus\Eveapi\Models\Universe\System;
 
@@ -80,14 +82,15 @@ it('adds to batch', function () {
     $esi = Mockery::mock(EsiClient::class);
     mockEsiTransport($esi, $data);
 
-    $job = mock(KillmailJob::class)->shouldAllowMockingProtectedMethods()->makePartial();
-    $job->killmailId = $killmail->killmail_id;
-    $job->killmailHash = $killmail->killmail_hash;
-
-    $job->shouldReceive('batching')->twice()->andReturn(true);
-    $job->shouldReceive('batch->add')->twice();
+    [$job, $batch] = new KillmailJob($killmail->killmail_id, $killmail->killmail_hash)->withFakeBatch();
 
     $job->executeJob($esi);
+
+    // The unknown solar system and the unknown ship type are resolved through the batch,
+    // not dispatched on their own.
+    expect($batch->added)->toHaveCount(2)
+        ->and($batch->added[0])->toBeInstanceOf(ResolveUniverseSystemBySystemIdJob::class)
+        ->and($batch->added[1])->toBeInstanceOf(ResolveUniverseTypeByIdJob::class);
 
     Queue::assertNothingPushed();
 });

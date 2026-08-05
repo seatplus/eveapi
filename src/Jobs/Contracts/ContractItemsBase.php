@@ -23,7 +23,10 @@ abstract class ContractItemsBase extends EsiJob implements ShouldBeUnique
     #[\Override]
     public function executeJob(EsiClient $esi): void
     {
-        if ($this->batching() && $this->batch()->cancelled()) {
+        // batching() is already false for a cancelled batch (it is
+        // `$batch && ! finished() && ! cancelled()`), so it must not gate this check —
+        // `batching() && batch()->cancelled()` can never be true.
+        if ($this->batch()?->cancelled()) {
             return;
         }
 

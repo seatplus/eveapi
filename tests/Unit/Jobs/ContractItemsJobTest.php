@@ -11,14 +11,15 @@ it('has tags', function () {
 });
 
 it('stops executing when batch is cancelled', function () {
+    // No expectations on the client: any ESI call means the guard did not return early.
     $esi = Mockery::mock(EsiClient::class);
 
-    $job = mock(CharacterContractItemsJob::class)->shouldAllowMockingProtectedMethods()->makePartial();
-    $job->contractId = 1;
-    $job->shouldReceive('batching')->once()->andReturn(true);
-    $job->shouldReceive('batch->cancelled')->once()->andReturn(true);
+    [$job, $batch] = new CharacterContractItemsJob(characterId: 1, contractId: 1)->withFakeBatch();
+    $batch->cancel();
 
     $job->executeJob($esi);
+
+    expect(ContractItem::count())->toBe(0);
 });
 
 it('does stop executing if response is cached', function () {

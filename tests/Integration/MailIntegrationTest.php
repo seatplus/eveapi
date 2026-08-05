@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
-use Mockery\MockInterface;
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\Eveapi\Jobs\Mail\MailBodyJob;
 use Seatplus\Eveapi\Jobs\Mail\MailHeaderJob;
@@ -65,13 +64,15 @@ it('adds MailBodyJob to batch if batched', function () {
     // Create 5 mails in DB without body
     $mails = Event::fakeFor(fn () => Mail::factory()->count(5)->create(['body' => null]));
 
-    $job = mock(MailHeaderJob::class, function (MockInterface $mock) {
-        $mock->characterId = testCharacter()->character_id;
-        $mock->shouldReceive('batching')->andReturnTrue();
-        $mock->shouldReceive('batch->add')->times(5);
-    })->makePartial();
+    [$job, $batch] = new MailHeaderJob(testCharacter()->character_id)->withFakeBatch();
 
     // handleMailBody is public — call it directly with the mail collection mapped to expected shape
     $mailCollection = $mails->map(fn ($mail) => ['id' => $mail->id]);
     $job->handleMailBody(collect($mailCollection));
+
+    expect($batch->added)
+        ->toHaveCount(5)
+        ->each->toBeInstanceOf(MailBodyJob::class);
+
+    Queue::assertNothingPushed();
 });

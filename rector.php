@@ -27,11 +27,11 @@ return RectorConfig::configure()
         // Single-version PHP sets, deliberately NOT LevelSetList::UP_TO_PHP_85 — that one
         // is cumulative (php85 + up-to-php84 + … down to 7.x), so on a tree that had never
         // been Rector-clean it also applied long-pending 8.0/8.1/8.3 rewrites that have
-        // nothing to do with the PHP floor moving to 8.5. Two of them were not behaviour
-        // preserving here (constructor promotion under a partial mock that skips the
-        // constructor; arrow-function-to-first-class-callable where the closure is later
-        // rebound via Closure::call()). Scoping to 8.4 + 8.5 keeps this config to the
-        // version bump it is named for. Adopt older levels deliberately if ever wanted.
+        // nothing to do with the PHP floor moving to 8.5. At least one of them was not
+        // behaviour preserving here (arrow-function-to-first-class-callable where the
+        // closure is later rebound via Closure::call()). Scoping to 8.4 + 8.5 keeps this
+        // config to the version bump it is named for. Adopt older levels deliberately if
+        // ever wanted.
         SetList::PHP_84,
         SetList::PHP_85,
     ])
