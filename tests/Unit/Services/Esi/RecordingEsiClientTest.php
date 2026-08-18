@@ -12,9 +12,9 @@ beforeEach(function () {
 it('records rate limit remaining in redis after invoke', function () {
     $esiResponse = new EsiResponse(
         raw: json_encode([]),
-        raw_headers: ['X-Ratelimit-Remaining' => '100'],
+        rawHeaders: ['X-Ratelimit-Remaining' => '100'],
         expires: 'now',
-        response_code: 200,
+        responseCode: 200,
     );
 
     $fetcher = Mockery::mock(GuzzleFetcher::class);
@@ -31,9 +31,9 @@ it('records rate limit remaining in redis after invoke', function () {
 it('records rate limit with character context', function () {
     $esiResponse = new EsiResponse(
         raw: json_encode([]),
-        raw_headers: ['X-Ratelimit-Remaining' => '42'],
+        rawHeaders: ['X-Ratelimit-Remaining' => '42'],
         expires: 'now',
-        response_code: 200,
+        responseCode: 200,
     );
 
     $fetcher = Mockery::mock(GuzzleFetcher::class);
@@ -50,12 +50,12 @@ it('records rate limit with character context', function () {
 it('records error limit in redis after invoke', function () {
     $esiResponse = new EsiResponse(
         raw: json_encode([]),
-        raw_headers: [
+        rawHeaders: [
             'X-Esi-Error-Limit-Remain' => '50',
             'X-Esi-Error-Limit-Reset' => '30',
         ],
         expires: 'now',
-        response_code: 200,
+        responseCode: 200,
     );
 
     $fetcher = Mockery::mock(GuzzleFetcher::class);
@@ -71,9 +71,9 @@ it('records error limit in redis after invoke', function () {
 it('skips rate limit recording when rateLimitRemaining is null', function () {
     $esiResponse = new EsiResponse(
         raw: json_encode([]),
-        raw_headers: [],
+        rawHeaders: [],
         expires: 'now',
-        response_code: 200,
+        responseCode: 200,
     );
 
     $fetcher = Mockery::mock(GuzzleFetcher::class);
@@ -88,9 +88,9 @@ it('skips rate limit recording when rateLimitRemaining is null', function () {
 it('skips error limit recording when errorLimitRemaining is null', function () {
     $esiResponse = new EsiResponse(
         raw: json_encode([]),
-        raw_headers: ['X-Ratelimit-Remaining' => '80'],
+        rawHeaders: ['X-Ratelimit-Remaining' => '80'],
         expires: 'now',
-        response_code: 200,
+        responseCode: 200,
     );
 
     $fetcher = Mockery::mock(GuzzleFetcher::class);
