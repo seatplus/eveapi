@@ -73,13 +73,13 @@ class EveapiServiceProvider extends ServiceProvider
     {
         $version = InstalledVersions::getPrettyVersion('seatplus/eveapi') ?? 'dev';
         $esiConfiguration = EsiConfiguration::getInstance();
-        $esiConfiguration->http_user_agent .= " seatplus/eveapi/{$version} +https://github.com/seatplus/eveapi";
+        $esiConfiguration->httpUserAgent .= " seatplus/eveapi/{$version} +https://github.com/seatplus/eveapi";
 
         // Wire the esi-client logging config so its RotatingFileLogger writes alongside
         // the Laravel logs. Without this it falls back to its relative-path default
         // ('logs/'), which resolves to the process CWD (e.g. /workspace/logs) instead.
-        $esiConfiguration->logfile_location = config('eveapi.config.esi-client.logfile_location');
-        $esiConfiguration->logger_level = config('eveapi.config.esi-client.logger_level');
+        $esiConfiguration->logfileLocation = config('eveapi.config.esi-client.logfile_location');
+        $esiConfiguration->loggerLevel = config('eveapi.config.esi-client.logger_level');
 
         Model::preventLazyLoading(! app()->isProduction());
 

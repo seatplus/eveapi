@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Seatplus\Eveapi\Jobs\Character;
 
 use Seatplus\EsiClient\EsiClient;
-use Seatplus\EsiSchema\Resources\Character\GetCharactersCharacterId;
+use Seatplus\EsiSchema\Resources\Character\GetCharactersDetail;
 use Seatplus\Eveapi\Jobs\EsiJob;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 
 final class CharacterInfoJob extends EsiJob
 {
-    protected const string OPERATION_CLASS = GetCharactersCharacterId::class;
+    protected const string OPERATION_CLASS = GetCharactersDetail::class;
 
     public function __construct(public int $characterId) {}
 
@@ -38,7 +38,7 @@ final class CharacterInfoJob extends EsiJob
             'bloodline_id' => $response->bloodline_id,
             'security_status' => $response->security_status,
             'faction_id' => $response->faction_id,
-            'title' => $response->title,
+            'title' => $response->corporation_title,
         ]);
     }
 }

@@ -26,9 +26,9 @@ class UpdateRefreshTokenService
     public function update(RefreshToken $refreshToken): RefreshToken
     {
         $authentication = new EsiAuthentication(
-            access_token: $refreshToken->getRawOriginal('token'),
-            refresh_token: $refreshToken->refresh_token,
-            client_id: config('eveapi.config.esi.eve_client_id'),
+            accessToken: $refreshToken->getRawOriginal('token'),
+            refreshToken: $refreshToken->refresh_token,
+            clientId: config('eveapi.config.esi.eve_client_id'),
             secret: config('eveapi.config.esi.eve_client_secret'),
         );
 
