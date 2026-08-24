@@ -74,6 +74,7 @@ class CharacterInfo extends Model
         return $this->hasOne(RefreshToken::class, 'character_id', 'character_id');
     }
 
+    /** @return HasOneThrough<CorporationInfo, CharacterAffiliation, $this> */
     public function corporation(): HasOneThrough
     {
         return $this->hasOneThrough(
@@ -86,6 +87,7 @@ class CharacterInfo extends Model
         );
     }
 
+    /** @return HasOneThrough<AllianceInfo, CharacterAffiliation, $this> */
     public function alliance(): HasOneThrough
     {
         return $this->hasOneThrough(

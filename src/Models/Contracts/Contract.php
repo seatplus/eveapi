@@ -114,9 +114,8 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
         return $this->morphedByMany(CharacterInfo::class, 'contractable', null, 'contract_id');
     }
 
-    #[\Override]
     #[Scope]
-    public function filterByRegionIds(Builder $query, int|array $regions): Builder
+    protected function filterByRegionIds(Builder $query, int|array $regions): Builder
     {
         $regionIds = is_array($regions) ? $regions : [$regions];
 
@@ -125,9 +124,8 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
             ->orWhereHas('endLocation.locatable.system.region', fn (Builder $query) => $query->whereIn('universe_regions.region_id', $regionIds));
     }
 
-    #[\Override]
     #[Scope]
-    public function filterBySystemIds(Builder $query, int|array $systems): Builder
+    protected function filterBySystemIds(Builder $query, int|array $systems): Builder
     {
         $systemIds = is_array($systems) ? $systems : [$systems];
 
@@ -136,27 +134,24 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
             ->orWhereHas('endLocation.locatable.system', fn (Builder $query) => $query->whereIn('system_id', $systemIds));
     }
 
-    #[\Override]
     #[Scope]
-    public function filterByTypeIds(Builder $query, int|array $types): Builder
+    protected function filterByTypeIds(Builder $query, int|array $types): Builder
     {
         $typeIds = is_array($types) ? $types : [$types];
 
         return $query->whereHas('items', fn (Builder $query) => $query->whereIn('type_id', $typeIds));
     }
 
-    #[\Override]
     #[Scope]
-    public function filterByGroupIds(Builder $query, int|array $groups): Builder
+    protected function filterByGroupIds(Builder $query, int|array $groups): Builder
     {
         $groupIds = is_array($groups) ? $groups : [$groups];
 
         return $query->whereHas('items.type', fn (Builder $query) => $query->whereIn('group_id', $groupIds));
     }
 
-    #[\Override]
     #[Scope]
-    public function filterByCategoryIds(Builder $query, int|array $category): Builder
+    protected function filterByCategoryIds(Builder $query, int|array $category): Builder
     {
         $categoryIds = is_array($category) ? $category : [$category];
 

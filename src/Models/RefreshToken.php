@@ -64,7 +64,7 @@ class RefreshToken extends Model
         'updating' => UpdatingRefreshTokenEvent::class,
     ];
 
-    /** @return Attribute<string|null, never> */
+    /** @return Attribute<string|null, string> */
     protected function token(): Attribute
     {
         return Attribute::make(get: function (string $value) {

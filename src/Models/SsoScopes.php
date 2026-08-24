@@ -35,6 +35,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
+/**
+ * @property array<int, string> $selected_scopes
+ */
 #[Fillable(['selected_scopes', 'morphable_type', 'morphable_id', 'type'])]
 class SsoScopes extends Model
 {

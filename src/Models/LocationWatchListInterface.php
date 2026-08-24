@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Seatplus\Eveapi\Models;
 
-use Illuminate\Database\Eloquent\Builder;
-
-interface LocationWatchListInterface
-{
-    public function filterByRegionIds(Builder $query, int|array $regions): Builder;
-
-    public function filterBySystemIds(Builder $query, int|array $systems): Builder;
-}
+/**
+ * Marker for models that can be filtered by a region/system watchlist.
+ *
+ * Implementations provide `filterByRegionIds` and `filterBySystemIds` as
+ * `protected #[Scope]` methods. See {@see TypeWatchListInterface} for why they
+ * are not declared on the interface.
+ */
+interface LocationWatchListInterface {}
