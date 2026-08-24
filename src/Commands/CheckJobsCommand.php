@@ -109,6 +109,7 @@ class CheckJobsCommand extends Command
         return self::SUCCESS;
     }
 
+    /** @return Collection<int<0, max>, EsiJob> */
     private function getAllJobs(): Collection
     {
         $jobStrings = glob(__DIR__.'/../Jobs/*/*.php');

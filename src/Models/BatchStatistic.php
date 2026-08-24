@@ -24,6 +24,7 @@ class BatchStatistic extends Model
 
     protected $table = 'batch_statistics';
 
+    /** @return Attribute<int, never> */
     protected function duration(): Attribute
     {
         return Attribute::make(get: function () {

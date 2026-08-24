@@ -95,6 +95,7 @@ class StructureRefreshTokenFinder
         ];
     }
 
+    /** @return Collection<int, LocationRefreshToken> */
     private function getLocationRefreshTokens(): Collection
     {
         return LocationRefreshToken::query()

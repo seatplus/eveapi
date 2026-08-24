@@ -43,16 +43,19 @@ class WalletTransaction extends Model
 
     protected $primaryKey = 'transaction_id';
 
+    /** @return MorphTo<Model, $this> */
     public function walletTransactionable(): MorphTo
     {
         return $this->morphTo('wallet_transactionable');
     }
 
+    /** @return HasOne<Type, $this> */
     public function type(): HasOne
     {
         return $this->hasOne(Type::class, 'type_id', 'type_id');
     }
 
+    /** @return HasOne<Location, $this> */
     public function location(): HasOne
     {
         return $this->hasOne(Location::class, 'location_id', 'location_id');

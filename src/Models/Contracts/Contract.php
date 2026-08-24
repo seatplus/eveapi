@@ -72,16 +72,19 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
         return new Attribute(get: fn () => $this->assigneeCharacter ?? $this->assigneeCorporation);
     }
 
+    /** @return HasMany<ContractItem, $this> */
     public function items(): HasMany
     {
         return $this->hasMany(ContractItem::class, 'contract_id', 'contract_id');
     }
 
+    /** @return HasOne<Location, $this> */
     public function startLocation(): HasOne
     {
         return $this->hasOne(Location::class, 'location_id', 'start_location_id');
     }
 
+    /** @return HasOne<Location, $this> */
     public function endLocation(): HasOne
     {
         return $this->hasOne(Location::class, 'location_id', 'end_location_id');
@@ -93,6 +96,7 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
         return $this->belongsTo(CharacterInfo::class, 'assignee_id', 'character_id');
     }
 
+    /** @return BelongsTo<CorporationInfo, $this> */
     public function assigneeCorporation(): BelongsTo
     {
         return $this->belongsTo(CorporationInfo::class, 'assignee_id', 'corporation_id');
@@ -104,16 +108,22 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
         return $this->belongsTo(CharacterInfo::class, 'issuer_id', 'character_id');
     }
 
+    /** @return BelongsTo<CorporationInfo, $this> */
     public function issuerCorporation(): BelongsTo
     {
         return $this->belongsTo(CorporationInfo::class, 'issuer_corporation_id', 'corporation_id');
     }
 
+    /** @return MorphToMany<CharacterInfo, $this> */
     public function characters(): MorphToMany
     {
         return $this->morphedByMany(CharacterInfo::class, 'contractable', null, 'contract_id');
     }
 
+    /**
+     * @param  Builder<Contract>  $query
+     * @return Builder<Contract>
+     */
     #[Scope]
     protected function filterByRegionIds(Builder $query, int|array $regions): Builder
     {
@@ -124,6 +134,10 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
             ->orWhereHas('endLocation.locatable.system.region', fn (Builder $query) => $query->whereIn('universe_regions.region_id', $regionIds));
     }
 
+    /**
+     * @param  Builder<Contract>  $query
+     * @return Builder<Contract>
+     */
     #[Scope]
     protected function filterBySystemIds(Builder $query, int|array $systems): Builder
     {
@@ -134,6 +148,10 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
             ->orWhereHas('endLocation.locatable.system', fn (Builder $query) => $query->whereIn('system_id', $systemIds));
     }
 
+    /**
+     * @param  Builder<Contract>  $query
+     * @return Builder<Contract>
+     */
     #[Scope]
     protected function filterByTypeIds(Builder $query, int|array $types): Builder
     {
@@ -142,6 +160,10 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
         return $query->whereHas('items', fn (Builder $query) => $query->whereIn('type_id', $typeIds));
     }
 
+    /**
+     * @param  Builder<Contract>  $query
+     * @return Builder<Contract>
+     */
     #[Scope]
     protected function filterByGroupIds(Builder $query, int|array $groups): Builder
     {
@@ -150,6 +172,10 @@ class Contract extends Model implements LocationWatchListInterface, TypeWatchLis
         return $query->whereHas('items.type', fn (Builder $query) => $query->whereIn('group_id', $groupIds));
     }
 
+    /**
+     * @param  Builder<Contract>  $query
+     * @return Builder<Contract>
+     */
     #[Scope]
     protected function filterByCategoryIds(Builder $query, int|array $category): Builder
     {

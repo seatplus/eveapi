@@ -39,6 +39,7 @@ class Skill extends Model
 {
     use HasFactory;
 
+    /** @return BelongsTo<Type, $this> */
     public function type(): BelongsTo
     {
         return $this->belongsTo(Type::class, 'skill_id');

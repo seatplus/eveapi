@@ -18,6 +18,7 @@ abstract class WalletTransactionBase extends EsiJob
 
     protected array $transactions = [];
 
+    /** @return EsiResult<covariant array<object>> */
     abstract protected function fetchTransactions(EsiClient $esi, ?int $fromId): EsiResult;
 
     abstract protected function transactionableId(): int;

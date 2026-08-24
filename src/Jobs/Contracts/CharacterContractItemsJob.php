@@ -7,6 +7,7 @@ namespace Seatplus\Eveapi\Jobs\Contracts;
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiSchema\EsiResult;
 use Seatplus\EsiSchema\Resources\Contracts\GetCharactersCharacterIdContractsContractIdItems;
+use Seatplus\EsiSchema\Responses\CharactersCharacterIdContractsContractIdItemsGetItem;
 use Seatplus\Eveapi\Models\RefreshToken;
 
 final class CharacterContractItemsJob extends ContractItemsBase
@@ -24,6 +25,7 @@ final class CharacterContractItemsJob extends ContractItemsBase
         return RefreshToken::findOrFail($this->characterId);
     }
 
+    /** @return EsiResult<array<CharactersCharacterIdContractsContractIdItemsGetItem>> */
     #[\Override]
     protected function fetchItems(EsiClient $esi): EsiResult
     {

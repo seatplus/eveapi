@@ -7,6 +7,7 @@ namespace Seatplus\Eveapi\Jobs\Wallet;
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiSchema\EsiResult;
 use Seatplus\EsiSchema\Resources\Wallet\GetCharactersCharacterIdWalletJournal;
+use Seatplus\EsiSchema\Responses\CharactersCharacterIdWalletJournalGetItem;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 
@@ -22,6 +23,7 @@ final class CharacterWalletJournalJob extends WalletJournalBase
         return RefreshToken::findOrFail($this->characterId);
     }
 
+    /** @return EsiResult<array<CharactersCharacterIdWalletJournalGetItem>> */
     #[\Override]
     protected function fetchPage(EsiClient $esi, int $page): EsiResult
     {

@@ -48,16 +48,19 @@ class CorporationMemberTracking extends Model
         return $this->belongsTo(CharacterInfo::class, 'character_id', 'character_id');
     }
 
+    /** @return BelongsTo<CorporationInfo, $this> */
     public function corporation(): BelongsTo
     {
         return $this->belongsTo(CorporationInfo::class, 'corporation_id', 'corporation_id');
     }
 
+    /** @return HasOne<Location, $this> */
     public function location(): HasOne
     {
         return $this->hasOne(Location::class, 'location_id', 'location_id');
     }
 
+    /** @return HasOne<Type, $this> */
     public function ship(): HasOne
     {
         return $this->hasOne(Type::class, 'type_id', 'ship_type_id');

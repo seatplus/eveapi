@@ -39,6 +39,7 @@ class ProcessContactLabelsResponse
         private readonly string $labelableType
     ) {}
 
+    /** @return Collection<int, mixed> */
     public function execute(EsiResult $response): Collection
     {
         return collect($response->data)

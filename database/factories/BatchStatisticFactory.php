@@ -54,6 +54,7 @@ class BatchStatisticFactory extends Factory
         ];
     }
 
+    /** @return Factory<BatchStatistic> */
     public function finished(): Factory
     {
         return $this->state(function () {

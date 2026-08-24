@@ -62,17 +62,20 @@ class Structure extends Model implements LocatableInterface
         'created' => UniverseStructureCreated::class,
     ];
 
+    /** @return MorphOne<Location, $this> */
     #[\Override]
     public function location(): MorphOne
     {
         return $this->morphOne(Location::class, 'locatable');
     }
 
+    /** @return HasOne<Type, $this> */
     public function type(): HasOne
     {
         return $this->hasOne(Type::class, 'type_id', 'type_id');
     }
 
+    /** @return BelongsTo<System, $this> */
     #[\Override]
     public function system(): BelongsTo
     {

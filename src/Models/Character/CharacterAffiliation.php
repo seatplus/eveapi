@@ -55,16 +55,19 @@ class CharacterAffiliation extends Model
      */
     protected $table = 'character_affiliations';
 
+    /** @return BelongsTo<AllianceInfo, $this> */
     public function alliance(): BelongsTo
     {
         return $this->belongsTo(AllianceInfo::class, 'alliance_id', 'alliance_id');
     }
 
+    /** @return BelongsTo<CorporationInfo, $this> */
     public function corporation(): BelongsTo
     {
         return $this->belongsTo(CorporationInfo::class, 'corporation_id', 'corporation_id');
     }
 
+    /** @return HasOne<CharacterInfo, $this> */
     public function character(): HasOne
     {
         return $this->hasOne(CharacterInfo::class, 'character_id', 'character_id');

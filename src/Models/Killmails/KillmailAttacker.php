@@ -37,16 +37,19 @@ use Seatplus\Eveapi\Models\Universe\Type;
 #[Unguarded]
 class KillmailAttacker extends Model
 {
+    /** @return HasOne<Type, $this> */
     public function ship(): HasOne
     {
         return $this->hasOne(Type::class, 'type_id', 'ship_type_id');
     }
 
+    /** @return HasOne<Type, $this> */
     public function weapon(): HasOne
     {
         return $this->hasOne(Type::class, 'type_id', 'weapon_type_id');
     }
 
+    /** @return BelongsTo<Killmail, $this> */
     public function killmail(): BelongsTo
     {
         return $this->belongsTo(Killmail::class, 'killmail_id', 'killmail_id');

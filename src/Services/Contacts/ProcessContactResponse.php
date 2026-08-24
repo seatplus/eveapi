@@ -38,6 +38,7 @@ class ProcessContactResponse
 {
     public function __construct(private readonly int $contactableId, private readonly string $contactableType) {}
 
+    /** @return Collection<int, mixed> */
     public function execute(EsiResult $response): Collection
     {
         $contacts = collect($response->data);

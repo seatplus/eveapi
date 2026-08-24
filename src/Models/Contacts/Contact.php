@@ -44,16 +44,22 @@ class Contact extends Model
 {
     use HasFactory;
 
+    /** @return MorphTo<Model, $this> */
     public function contactable(): MorphTo
     {
         return $this->morphTo();
     }
 
+    /** @return HasMany<ContactLabel, $this> */
     public function labels(): HasMany
     {
         return $this->hasMany(ContactLabel::class);
     }
 
+    /**
+     * @param  Builder<Contact>  $query
+     * @return Builder<Contact>
+     */
     #[Scope]
     protected function entityFilter(Builder $query, array $contactableIds): Builder
     {

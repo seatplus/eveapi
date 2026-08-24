@@ -61,21 +61,25 @@ class Application extends Model
         });
     }
 
+    /** @return BelongsTo<CorporationInfo, $this> */
     public function corporation(): BelongsTo
     {
         return $this->belongsTo(CorporationInfo::class, 'corporation_id', 'corporation_id');
     }
 
+    /** @return BelongsTo<Enlistments, $this> */
     public function enlistment(): BelongsTo
     {
         return $this->belongsTo(Enlistments::class, 'corporation_id', 'corporation_id');
     }
 
+    /** @return MorphTo<Model, $this> */
     public function applicationable(): MorphTo
     {
         return $this->morphTo();
     }
 
+    /** @return HasMany<ApplicationLogs, $this> */
     public function logEntries(): HasMany
     {
         return $this->hasMany(ApplicationLogs::class);
@@ -87,6 +91,10 @@ class Application extends Model
         return Attribute::make(get: fn () => $this->logEntries()->where('type', 'decision')->count());
     }
 
+    /**
+     * @param  Builder<Application>  $query
+     * @return Builder<Application>
+     */
     #[Scope]
     protected function ofCorporation(Builder $query, int|array $corporation): Builder
     {

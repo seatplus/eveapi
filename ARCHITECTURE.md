@@ -424,3 +424,41 @@ So an interface declaring these scopes forces them public, which is precisely th
 - The test asserts its discovered implementor set is non-empty — a broken scan fails rather than passing vacuously.
 - `larastan`'s `NoPublicModelScopeAndAccessorRule` (`checkModelMethodVisibility`, default `false`) agrees with this shape, so enabling it later would not conflict.
 - Consumers keep using the interfaces for `instanceof` and union narrowing; that role is unchanged.
+
+---
+
+## Decision 11 — Every generic return type declares its type arguments, enforced by one PHPStan rule
+
+### Context
+`CharacterInfo::contacts(): MorphMany` with no `@return` tag is valid PHP and analyses clean at level 4, but a consumer reading `$character->contacts->first()->contact_id` gets *"Access to an undefined property `Illuminate\Database\Eloquent\Model::$contact_id`"* — with no type arguments, `MorphMany`'s `TRelatedModel` falls back to its bound, `Model`. That is #723 and #725: four declarations were fixed by hand in 5.1.1, nine more were reported a release later, and a sweep of `src` found **99** relation methods in the same state plus **46** other generic returns (`Builder`, `Collection`, `Attribute`, `EsiResult`, `Factory`). Fixing the reported ones by hand is what produced the second report.
+
+### Decision
+Every method whose return type is a generic class declares its type arguments, and `phpstan.neon.dist` registers exactly one extra rule to keep it that way:
+
+```neon
+rules:
+    - PHPStan\Rules\Methods\MissingMethodReturnTypehintRule
+```
+
+The rule fires the `missingType.generics` error at level 4; its two other identifiers (`missingType.return`, `missingType.iterableValue`) are level-6 concerns this package has not adopted and are ignored with `reportUnmatched: false`. All 145 findings are annotated, so the rule ships with **no per-site exceptions** — a new untyped relation fails `composer test:types` naming the method.
+
+`TDeclaringModel` is always `$this`. `MorphTo` — the polymorphic parent — is `MorphTo<Model, $this>`, matching what `HasRelationships::morphTo()` itself returns.
+
+### Rationale
+- **The check already exists upstream; only its level is wrong for us.** Registering the one rule beats reimplementing it: level 6 would also demand ~250 unrelated missing typehints (mostly `array` value types in migrations) and drag in level 5's argument checks, and a hand-written architecture test would re-derive by regex what PHPStan derives from the type system.
+- **A gate with no exceptions is the only kind that survives.** This is the third issue from the same omission; the exception list is where the next one would hide. That is why the 46 non-relation returns were annotated rather than filtered out of the rule.
+- **Registering rules under `rules:` is the documented extension point**, used by `phpstan/phpstan-phpunit` and `phpstan/phpstan-deprecation-rules`, both already installed here. The class is not `@api`, so a rename in a future PHPStan release breaks the config *loudly* (invalid configuration, not a silent pass).
+- **Failure mode is verified, not assumed.** Deleting one `@return` reproduces `missingType.generics` on that method and fails the run.
+
+### Alternatives considered
+- **Fix only the nine relations in the issue.** Exactly what 5.1.1 did for the previous four; the residue is why #725 exists.
+- **Raise the whole project to level 6.** 245 errors, most of them unrelated to consumer-visible types, and it silently bundles level 5. Worth doing on its own terms, not as the vehicle for this fix.
+- **A second config at level 6 scoped to `src/Models`,** run as a second `test:types` step. Covers models only — `Builder`/`Collection`/`EsiResult` returns in `Jobs` and `Services` are equally consumer-visible — and doubles the analysis config.
+- **An architecture test in the style of Decision 10.** That pattern is right when PHP itself cannot express the contract and no analyser rule exists (widening `protected` to `public`). Here the analyser has the rule and reads the real type system; a docblock regex would not know that `MorphOne<Location, covariant Model>` is satisfied but `MorphOne<Location, Model>` is not.
+- **Unions for `MorphTo`** (`MorphTo<Station|Structure, $this>`). More precise, but `morphTo()` returns `MorphTo<Model, $this>` and the template is invariant, so narrowing needs a suppression at every site — and there is no morph map, so the closed set is an assumption about the data, not a fact about the schema.
+
+### Consequences
+- `LocatableInterface::location()` and `::system()` are declared `MorphOne<Location, covariant Model>` / `BelongsTo<System, covariant Model>`. An interface cannot spell this any other way: `TDeclaringModel` is invariant and satisfiable only by `$this`, and `$this` inside a non-`Model` interface is not a `Model` (`generics.notSubtype`), while a concrete or templated declaring model is rejected in the implementors (`return.type`, *"template type TDeclaringModel … is not covariant"*). All four shapes were tried. The projection keeps the interface's methods declared — so consumers type-hinting `LocatableInterface` keep resolving them — and is Laravel's own idiom: `Eloquent\Scope::apply()` takes `Builder<covariant TModel>`, and `HasRelationships::through()` takes `HasMany<TIntermediateModel, covariant $this>`.
+- The abstract ESI bases (`ContactBaseJob::fetchPage()`, `ContractItemsBase::fetchItems()`, `WalletJournalBase::fetchPage()`, `WalletTransactionBase::fetchTransactions()`) declare `EsiResult<covariant array<object>>` for the same reason; each leaf job declares the concrete response DTO its `OPERATION_CLASS` returns.
+- Watchlist and other `#[Scope]` methods now declare `@param Builder<TheModel> $query` alongside the return. The parameter tag is not optional: without it the incoming builder is `Builder<Model>`, and returning it as `Builder<TheModel>` is a variance error inside the method.
+- Cache-backed `Collection` returns (`CacheCharacterAffiliationIdsService`) declare the type the writer puts in; `Cache::get()` is `mixed`, so this is a claim the analyser accepts rather than verifies.

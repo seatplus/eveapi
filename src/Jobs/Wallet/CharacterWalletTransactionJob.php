@@ -7,6 +7,7 @@ namespace Seatplus\Eveapi\Jobs\Wallet;
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiSchema\EsiResult;
 use Seatplus\EsiSchema\Resources\Wallet\GetCharactersCharacterIdWalletTransactions;
+use Seatplus\EsiSchema\Responses\CharactersCharacterIdWalletTransactionsGetItem;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 
@@ -22,6 +23,7 @@ final class CharacterWalletTransactionJob extends WalletTransactionBase
         return RefreshToken::findOrFail($this->characterId);
     }
 
+    /** @return EsiResult<array<CharactersCharacterIdWalletTransactionsGetItem>> */
     #[\Override]
     protected function fetchTransactions(EsiClient $esi, ?int $fromId): EsiResult
     {

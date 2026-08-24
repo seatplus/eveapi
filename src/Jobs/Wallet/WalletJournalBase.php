@@ -22,6 +22,7 @@ abstract class WalletJournalBase extends EsiJob
 {
     private array $journalEntries = [];
 
+    /** @return EsiResult<covariant array<object>> */
     abstract protected function fetchPage(EsiClient $esi, int $page): EsiResult;
 
     abstract protected function walletableId(): int;

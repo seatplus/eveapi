@@ -7,6 +7,7 @@ namespace Seatplus\Eveapi\Jobs\Wallet;
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiSchema\EsiResult;
 use Seatplus\EsiSchema\Resources\Wallet\GetCorporationsCorporationIdWalletsDivisionTransactions;
+use Seatplus\EsiSchema\Responses\CorporationsCorporationIdWalletsDivisionTransactionsGetItem;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
@@ -33,6 +34,7 @@ final class CorporationWalletTransactionByDivisionJob extends WalletTransactionB
         return $token;
     }
 
+    /** @return EsiResult<array<CorporationsCorporationIdWalletsDivisionTransactionsGetItem>> */
     #[\Override]
     protected function fetchTransactions(EsiClient $esi, ?int $fromId): EsiResult
     {

@@ -66,6 +66,7 @@ class EnrichAssetTypeGroupCategoryJob extends HydrateMaintenanceBase
             }));
     }
 
+    /** @return Collection<int, Asset> */
     private function getAssetsToEnrich(): Collection
     {
         return Asset::query()

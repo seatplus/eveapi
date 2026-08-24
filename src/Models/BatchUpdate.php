@@ -22,11 +22,13 @@ use Seatplus\Eveapi\Models\Character\CharacterInfo;
 #[Unguarded]
 class BatchUpdate extends Model
 {
+    /** @return MorphTo<Model, $this> */
     public function batchable(): MorphTo
     {
         return $this->morphTo();
     }
 
+    /** @return Attribute<bool, never> */
     protected function isPending(): Attribute
     {
         return Attribute::make(get: fn () => ! is_null($this->started_at) && is_null($this->finished_at));

@@ -41,11 +41,13 @@ class MailRecipients extends Model
 {
     use HasFactory;
 
+    /** @return BelongsTo<Mail, $this> */
     public function mail(): BelongsTo
     {
         return $this->belongsTo(Mail::class, 'mail_id', 'id');
     }
 
+    /** @return MorphTo<Model, $this> */
     public function receivable(): MorphTo
     {
         return $this->morphTo();

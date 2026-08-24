@@ -63,3 +63,8 @@ corruption is sticky because the plugin `include`s that file. See the comment th
 ## Code style
 Spatie PHP guidelines / PSR-12; new PHP files omit the license header (match the
 newest sibling files). No `dd()`/`dump()` in committed code.
+
+Every generic return type must declare its type arguments — `@return MorphMany<Contact,
+$this>`, not a bare `: MorphMany`. Without them consumers see `Model`, which is what
+broke seatplus/web twice. `phpstan.neon.dist` registers `MissingMethodReturnTypehintRule`
+on top of level 4 to enforce it; see ARCHITECTURE.md, Decision 11.
