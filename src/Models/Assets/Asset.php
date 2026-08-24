@@ -38,6 +38,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Seatplus\Eveapi\Models\FiltersByTypeWatchList;
 use Seatplus\Eveapi\Models\TypeWatchListInterface;
 use Seatplus\Eveapi\Models\Universe\Location;
 use Seatplus\Eveapi\Models\Universe\Type;
@@ -46,6 +47,7 @@ use Seatplus\Eveapi\Models\Universe\Type;
 
 class Asset extends Model implements TypeWatchListInterface
 {
+    use FiltersByTypeWatchList;
     use HasFactory;
 
     const int ASSET_SAFETY = 2004;

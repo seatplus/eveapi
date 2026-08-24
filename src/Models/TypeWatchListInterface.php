@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Seatplus\Eveapi\Models;
 
 /**
- * Marker for models that can be filtered by a type/group/category watchlist.
+ * Marks a model as filterable by a type/group/category watchlist, so consumers
+ * can branch on `$model instanceof TypeWatchListInterface`.
  *
- * Implementations provide `filterByTypeIds`, `filterByGroupIds` and
- * `filterByCategoryIds` as `protected #[Scope]` methods. They are deliberately
- * not declared here: interface methods must be public, and Larastan only
- * resolves `#[Scope]` methods on the query builder when they are non-public
- * (mirroring Laravel 12's own convention), so declaring them would break static
- * analysis in consuming packages. Nothing calls them through the interface.
+ * The filter contract itself is {@see FiltersByTypeWatchList}, whose
+ * `abstract protected` declarations implementors must satisfy. It cannot live on
+ * this interface: interface methods must be public, and public `#[Scope]` methods
+ * are exactly the ones Larastan will not resolve on the query builder, which
+ * breaks static analysis in every consuming package. Declaring them here again
+ * would reintroduce that bug.
  */
 interface TypeWatchListInterface {}

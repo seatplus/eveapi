@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Seatplus\Eveapi\Models;
 
 /**
- * Marker for models that can be filtered by a region/system watchlist.
+ * Marks a model as filterable by a region/system watchlist, so consumers can
+ * branch on `$model instanceof LocationWatchListInterface`.
  *
- * Implementations provide `filterByRegionIds` and `filterBySystemIds` as
- * `protected #[Scope]` methods. See {@see TypeWatchListInterface} for why they
- * are not declared on the interface.
+ * The filter contract itself is {@see FiltersByLocationWatchList}; see
+ * {@see TypeWatchListInterface} for why it is not declared here.
  */
 interface LocationWatchListInterface {}

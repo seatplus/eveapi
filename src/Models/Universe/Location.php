@@ -37,12 +37,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Seatplus\Eveapi\Models\Assets\Asset;
+use Seatplus\Eveapi\Models\FiltersByLocationWatchList;
 use Seatplus\Eveapi\Models\LocationWatchListInterface;
 
 #[Unguarded] #[WithoutIncrementing]
 
 class Location extends Model implements LocationWatchListInterface
 {
+    use FiltersByLocationWatchList;
     use HasFactory;
 
     /**
