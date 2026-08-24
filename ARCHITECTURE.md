@@ -386,3 +386,41 @@ Higher-layer packages (`auth`, `web`) can append further if needed.
 ### Consequences
 - Boot order matters: esi-client's service provider must boot before eveapi's. Laravel's package auto-discovery handles this correctly.
 - `InstalledVersions::getPrettyVersion()` returns `null` in local dev (monorepo path-source install); falls back to `'dev'`.
+
+---
+
+## Decision 10 — Watchlist contracts as marker interfaces, enforced by an architecture test
+
+### Context
+`Asset`, `Contract` and `Location` expose watchlist filters as local query scopes — `filterByTypeIds` / `filterByGroupIds` / `filterByCategoryIds` and `filterByRegionIds` / `filterBySystemIds`. Consumers call them on a builder (`Asset::query()->filterByTypeIds([1])`) and branch on the marker interfaces (`seatplus/web`'s `TypeWatchListScope` narrows a `Builder|TypeWatchListInterface` union; `LocationWatchListScope` uses `instanceof`).
+
+Until #723 both interfaces declared the scopes as public methods. Three facts make that impossible to keep:
+
+1. Laravel documents local scopes as `protected` + `#[Scope]`, which is what these models do.
+2. PHP rejects non-public interface methods outright — *"Access type for interface method must be public"*.
+3. Larastan projects a `#[Scope]` method onto the query builder **only when it is non-public** (`vendor/larastan/larastan/src/Methods/BuilderHelper.php`, the `! $methodReflection->isPublic() && $hasScopeAttribute` gate).
+
+So an interface declaring these scopes forces them public, which is precisely the shape Larastan skips. Every `Model::query()->filterByTypeIds(…)` in a consuming package then fails analysis — the root cause of the five `ignoreErrors` entries `seatplus/web` carried.
+
+### Decision
+`TypeWatchListInterface` and `LocationWatchListInterface` are **empty marker interfaces**. The scopes stay `protected #[Scope]` on the models. The obligation to implement them is enforced by `tests/Architecture/WatchListContractTest.php`, which discovers every concrete implementor by scanning `src/Models` and asserts, per required method, that it exists, is **non-public**, and carries **`#[Scope]`**.
+
+### Rationale
+- **The methods are never called through the interface.** Not once in the project's history — every receiver is an `Eloquent\Builder`, reached via Laravel's scope forwarding. Declaring them on the interface published a signature nobody invoked through it.
+- **Discovery beats declaration for the actual goal.** The goal is that a *future* model implementing the marker also provides the filters. A scan-based test delivers that with nothing to remember; the author cannot forget to opt in.
+- **The two properties consumers depend on are exactly the ones PHP cannot guarantee.** Widening `protected` to `public` is legal inheritance, and silently un-resolves the scopes for every consumer. Only a test can guard that.
+- **Empty marker interfaces are idiomatic Laravel** — ~15% of interfaces in the dependency tree declare no methods (`ShouldQueue`, `ShouldBeUnique`, and `Illuminate\Contracts\Database\Eloquent\Builder`, whose docblock reads "This interface is intentionally empty and exists to improve IDE support").
+
+### Alternatives considered
+- **Keep the public methods on the interface** — reintroduces #723 by construction.
+- **A trait of `abstract protected` declarations** (shipped briefly in `f6841fa`, then removed). PHP does enforce existence and signature at class load, but it does not achieve the goal: nothing forces a future model to `use` the trait. It also has no precedent — of 368 traits in `vendor/`, none consist solely of abstract declarations — and it reverses `719d602`, which deleted exactly such a trait (`HasWatchlist`) in favour of an interface.
+- **Classic `scopeFilterBy*Ids()` public methods.** Would work, since Larastan's `scope*` branch has no visibility check, and would allow a real public interface contract. Rejected: `rector-laravel` ships `ScopeNamedClassMethodToScopeAttributedClassMethodRector` to migrate `public function scopeActive` → `#[Scope] protected function active`, so this moves against the ecosystem; no interface in `vendor/` declares a `scope*` method; and it would leave these five inconsistent with the other 16 `#[Scope]` methods here.
+- **A `WatchListFilter` query object** with real public methods — fully sidesteps the visibility problem, but breaks every consumer call site for no benefit to this contract.
+- **Removing the marker interfaces entirely.** Consumers can detect the capability without them: `Model::hasNamedScope('filterByTypeIds')` returns `true` for a `protected #[Scope]` method (`Illuminate/Database/Eloquent/Model.php`, via `isScopeMethodWithAttribute()`), and the change in `seatplus/web` is roughly fifteen lines across two guards and one type hint. Rejected because it deletes the contract's anchor — with no marker there is nothing for the architecture test to discover, so the test goes too — and because it turns *declared* capability into *accidental* capability: `hasNamedScope()` answers "does this method exist", not "is this model meant to participate". A future model carrying two of the three filters would then silently drop the third in front of users (these scopes feed asset listings via `->tap()`) instead of failing CI. Laravel makes the same trade deliberately, shipping `ShouldQueue` rather than checking `method_exists($job, 'handle')`.
+- **Shipping a PHPStan extension** so consumers resolve public `#[Scope]` methods — needs reimplementing Larastan's builder internals against a private API, and only helps consumers who install it.
+
+### Consequences
+- Adding a watchlist-filterable model means implementing the marker **and** the scopes; the architecture test names any method you miss.
+- The test asserts its discovered implementor set is non-empty — a broken scan fails rather than passing vacuously.
+- `larastan`'s `NoPublicModelScopeAndAccessorRule` (`checkModelMethodVisibility`, default `false`) agrees with this shape, so enabling it later would not conflict.
+- Consumers keep using the interfaces for `instanceof` and union narrowing; that role is unchanged.

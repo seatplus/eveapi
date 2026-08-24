@@ -77,9 +77,8 @@ class Location extends Model implements LocationWatchListInterface
         return $this->hasMany(Asset::class, 'root_location_id', 'location_id');
     }
 
-    #[\Override]
     #[Scope]
-    public function filterByRegionIds(Builder $query, int|array $regions): Builder
+    protected function filterByRegionIds(Builder $query, int|array $regions): Builder
     {
         $regionIds = is_array($regions) ? $regions : [$regions];
 
@@ -88,9 +87,8 @@ class Location extends Model implements LocationWatchListInterface
         });
     }
 
-    #[\Override]
     #[Scope]
-    public function filterBySystemIds(Builder $query, int|array $systems): Builder
+    protected function filterBySystemIds(Builder $query, int|array $systems): Builder
     {
         $systemIds = is_array($systems) ? $systems : [$systems];
 

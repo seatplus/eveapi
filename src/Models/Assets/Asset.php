@@ -102,27 +102,24 @@ class Asset extends Model implements TypeWatchListInterface
         return $query->where('location_id', '<>', self::ASSET_SAFETY);
     }
 
-    #[\Override]
     #[Scope]
-    public function filterByTypeIds(Builder $query, int|array $types): Builder
+    protected function filterByTypeIds(Builder $query, int|array $types): Builder
     {
         $typeIds = is_array($types) ? $types : [$types];
 
         return $query->whereIn('type_id', $typeIds);
     }
 
-    #[\Override]
     #[Scope]
-    public function filterByGroupIds(Builder $query, int|array $groups): Builder
+    protected function filterByGroupIds(Builder $query, int|array $groups): Builder
     {
         $groupIds = is_array($groups) ? $groups : [$groups];
 
         return $query->whereIn('group_id', $groupIds);
     }
 
-    #[\Override]
     #[Scope]
-    public function filterByCategoryIds(Builder $query, int|array $categories): Builder
+    protected function filterByCategoryIds(Builder $query, int|array $categories): Builder
     {
         $categoryIds = is_array($categories) ? $categories : [$categories];
 
