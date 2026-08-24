@@ -3,16 +3,14 @@
 declare(strict_types=1);
 
 use Illuminate\Database\Eloquent\Attributes\Scope;
-use Seatplus\Eveapi\Models\FiltersByLocationWatchList;
-use Seatplus\Eveapi\Models\FiltersByTypeWatchList;
 use Seatplus\Eveapi\Models\LocationWatchListInterface;
 use Seatplus\Eveapi\Models\TypeWatchListInterface;
 
 /**
  * Every concrete model under src/Models that implements $interface.
  *
- * Discovered rather than hardcoded so a model added later is covered without
- * anyone remembering to extend this test.
+ * Discovered rather than hardcoded so a model added later is covered without anyone
+ * remembering to extend this test — which is the whole point of the contract.
  *
  * @return array<int, class-string>
  */
@@ -54,42 +52,49 @@ function watchListImplementors(string $interface): array
 }
 
 /**
- * The watchlist filter contract cannot live on the marker interfaces: interface
- * methods must be public, and Larastan resolves `#[Scope]` methods on the query
- * builder only when they are non-public, so a public declaration makes the scopes
- * unresolvable in every consuming package.
+ * The watchlist filter contract, enforced here because it cannot be enforced by PHP.
  *
- * The paired trait's `abstract protected` declarations get PHP to enforce that the
- * methods exist with the right signature. What PHP cannot enforce is that they stay
- * non-public and keep `#[Scope]` — which is precisely what broke seatplus/web — nor
- * that a model implementing the interface remembers to use the trait at all. Those
- * three gaps are what this test closes.
+ * It cannot live on the marker interfaces: interface methods must be public, and
+ * Larastan resolves `#[Scope]` methods on the query builder only when they are
+ * non-public, so a public declaration makes the scopes unresolvable in every
+ * consuming package. See ARCHITECTURE.md, Decision 10.
+ *
+ * Three things are asserted per implementor — the method exists, it is non-public,
+ * and it carries `#[Scope]`. The last two are what consumers actually depend on:
+ * widening `protected` to `public` is legal inheritance PHP will never complain
+ * about, and it is exactly what broke seatplus/web.
  */
-it('enforces the watchlist filter contract on every implementor', function (string $interface, string $trait) {
+it('enforces the watchlist filter contract on every implementor', function (string $interface, array $required) {
     $implementors = watchListImplementors($interface);
 
-    // An empty set would let every assertion below pass vacuously, so the scan
-    // failing has to be a test failure rather than a silent green.
+    // An empty set would let every assertion below pass vacuously, so a broken scan
+    // has to fail the test rather than report a silent green.
     expect($implementors)->not->toBeEmpty();
 
-    $required = array_map(
-        fn (ReflectionMethod $method): string => $method->getName(),
-        (new ReflectionClass($trait))->getMethods(ReflectionMethod::IS_ABSTRACT)
-    );
-
-    expect($required)->not->toBeEmpty();
+    $violations = [];
 
     foreach ($implementors as $model) {
-        expect(class_uses_recursive($model))->toContain($trait);
-
         foreach ($required as $method) {
+            if (! method_exists($model, $method)) {
+                $violations[] = "{$model}::{$method}() is missing";
+
+                continue;
+            }
+
             $reflection = new ReflectionMethod($model, $method);
 
-            expect($reflection->isPublic())->toBeFalse()
-                ->and($reflection->getAttributes(Scope::class))->not->toBeEmpty();
+            if ($reflection->isPublic()) {
+                $violations[] = "{$model}::{$method}() must not be public — Larastan will not resolve it on the builder";
+            }
+
+            if ($reflection->getAttributes(Scope::class) === []) {
+                $violations[] = "{$model}::{$method}() is missing the #[Scope] attribute";
+            }
         }
     }
+
+    expect($violations)->toBe([]);
 })->with([
-    [TypeWatchListInterface::class, FiltersByTypeWatchList::class],
-    [LocationWatchListInterface::class, FiltersByLocationWatchList::class],
+    [TypeWatchListInterface::class, ['filterByTypeIds', 'filterByGroupIds', 'filterByCategoryIds']],
+    [LocationWatchListInterface::class, ['filterByRegionIds', 'filterBySystemIds']],
 ]);

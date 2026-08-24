@@ -6,9 +6,12 @@ namespace Seatplus\Eveapi\Models;
 
 /**
  * Marks a model as filterable by a region/system watchlist, so consumers can
- * branch on `$model instanceof LocationWatchListInterface`.
+ * dispatch on it — `$model instanceof LocationWatchListInterface`.
  *
- * The filter contract itself is {@see FiltersByLocationWatchList}; see
- * {@see TypeWatchListInterface} for why it is not declared here.
+ * Implementors must provide `filterByRegionIds` and `filterBySystemIds` as
+ * `protected #[Scope]` methods, enforced by
+ * `tests/Architecture/WatchListContractTest.php`. See
+ * {@see TypeWatchListInterface} for why the obligation cannot live on the interface,
+ * and ARCHITECTURE.md, Decision 10.
  */
 interface LocationWatchListInterface {}

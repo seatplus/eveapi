@@ -41,8 +41,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Seatplus\Eveapi\Models\Character\CharacterInfo;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
-use Seatplus\Eveapi\Models\FiltersByLocationWatchList;
-use Seatplus\Eveapi\Models\FiltersByTypeWatchList;
 use Seatplus\Eveapi\Models\LocationWatchListInterface;
 use Seatplus\Eveapi\Models\TypeWatchListInterface;
 use Seatplus\Eveapi\Models\Universe\Location;
@@ -51,8 +49,6 @@ use Seatplus\Eveapi\Models\Universe\Location;
 
 class Contract extends Model implements LocationWatchListInterface, TypeWatchListInterface
 {
-    use FiltersByLocationWatchList;
-    use FiltersByTypeWatchList;
     use HasFactory;
 
     /**
