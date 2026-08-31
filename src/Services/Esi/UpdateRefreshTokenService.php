@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Seatplus\Eveapi\Services\Esi;
 
-use GuzzleHttp\Exception\GuzzleException;
 use Seatplus\EsiClient\DataTransferObjects\EsiAuthentication;
+use Seatplus\EsiClient\Exceptions\EsiTransportException;
 use Seatplus\EsiClient\Exceptions\RequestFailedException;
 use Seatplus\EsiClient\Services\UpdateRefreshTokenService as EsiClientUpdateToken;
 use Seatplus\Eveapi\Models\RefreshToken;
@@ -20,7 +20,7 @@ class UpdateRefreshTokenService
     }
 
     /**
-     * @throws GuzzleException
+     * @throws EsiTransportException
      * @throws RequestFailedException
      */
     public function update(RefreshToken $refreshToken): RefreshToken
