@@ -1,8 +1,5 @@
 <?php
 
-use GuzzleHttp\Exception\ServerException;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Carbon;
 use Mockery\MockInterface;
 use Seatplus\EsiClient\DataTransferObjects\EsiResponse;
@@ -101,7 +98,7 @@ it('rethrows unexpected exceptions from executeJob', function () {
 
     $job = new TestableEsiJob;
     $job->executeCallback = fn () => throw new RequestFailedException(
-        new ServerException('failed', new Request('get', '/'), new Response(500)),
+        new Exception('failed', 500),
         new EsiResponse(json_encode([]), [], 'now', 500)
     );
 
