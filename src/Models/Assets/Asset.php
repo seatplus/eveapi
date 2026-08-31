@@ -57,6 +57,7 @@ class Asset extends Model implements TypeWatchListInterface
      */
     protected $primaryKey = 'item_id';
 
+    /** @return MorphTo<Model, $this> */
     public function assetable(): MorphTo
     {
         return $this->morphTo();
@@ -68,27 +69,35 @@ class Asset extends Model implements TypeWatchListInterface
         return $this->hasOne(Type::class, 'type_id', 'type_id');
     }
 
+    /** @return BelongsTo<Asset, $this> */
     public function container(): BelongsTo
     {
         return $this->belongsTo(self::class, 'location_id', 'item_id');
     }
 
+    /** @return BelongsTo<Asset, $this> */
     public function rootItem(): BelongsTo
     {
         return $this->belongsTo(self::class, 'root_item_id', 'item_id');
     }
 
+    /** @return HasMany<Asset, $this> */
     public function content(): HasMany
     {
         return $this->hasMany(self::class, 'location_id', 'item_id');
     }
 
+    /** @return HasOne<Location, $this> */
     public function location(): HasOne
     {
         // Todo create morphTo relation
         return $this->hasOne(Location::class, 'location_id', 'location_id');
     }
 
+    /**
+     * @param  Builder<Asset>  $query
+     * @return Builder<Asset>
+     */
     #[Scope]
     protected function assetsLocationIds(Builder $query): Builder
     {
@@ -96,12 +105,20 @@ class Asset extends Model implements TypeWatchListInterface
             ->addSelect('location_id');
     }
 
+    /**
+     * @param  Builder<Asset>  $query
+     * @return Builder<Asset>
+     */
     #[Scope]
     protected function withoutAssetSafety(Builder $query): Builder
     {
         return $query->where('location_id', '<>', self::ASSET_SAFETY);
     }
 
+    /**
+     * @param  Builder<Asset>  $query
+     * @return Builder<Asset>
+     */
     #[Scope]
     protected function filterByTypeIds(Builder $query, int|array $types): Builder
     {
@@ -110,6 +127,10 @@ class Asset extends Model implements TypeWatchListInterface
         return $query->whereIn('type_id', $typeIds);
     }
 
+    /**
+     * @param  Builder<Asset>  $query
+     * @return Builder<Asset>
+     */
     #[Scope]
     protected function filterByGroupIds(Builder $query, int|array $groups): Builder
     {
@@ -118,6 +139,10 @@ class Asset extends Model implements TypeWatchListInterface
         return $query->whereIn('group_id', $groupIds);
     }
 
+    /**
+     * @param  Builder<Asset>  $query
+     * @return Builder<Asset>
+     */
     #[Scope]
     protected function filterByCategoryIds(Builder $query, int|array $categories): Builder
     {
@@ -135,6 +160,9 @@ class Asset extends Model implements TypeWatchListInterface
      * (e.g. group_id set by an older code path but the *_name_normalized columns
      * still null) is healed too. Loop-safe: the source names are stored generated
      * columns (non-null once the entity exists), so a filled row never re-matches.
+     *
+     * @param  Builder<Asset>  $query
+     * @return Builder<Asset>
      */
     public function scopeNeedsUniverseEnrichment(Builder $query): Builder
     {

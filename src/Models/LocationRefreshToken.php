@@ -14,6 +14,7 @@ class LocationRefreshToken extends Model
 {
     protected $table = 'location_refresh_tokens';
 
+    /** @return BelongsTo<Location, $this> */
     public function location(): BelongsTo
     {
         return $this->belongsTo(Location::class, 'location_id', 'location_id');

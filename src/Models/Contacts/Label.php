@@ -38,6 +38,7 @@ class Label extends Model
 {
     use HasFactory;
 
+    /** @return MorphTo<Model, $this> */
     public function labelable(): MorphTo
     {
         return $this->morphTo();

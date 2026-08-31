@@ -41,16 +41,19 @@ use Seatplus\Eveapi\Models\Universe\Type;
 #[Unguarded]
 class KillmailItem extends Model
 {
+    /** @return Attribute<bool, never> */
     protected function hasContent(): Attribute
     {
         return new Attribute(get: fn () => $this->content()->exists());
     }
 
+    /** @return HasMany<KillmailItem, $this> */
     public function content(): HasMany
     {
         return $this->hasMany(self::class, 'location_id', 'id');
     }
 
+    /** @return HasOne<Type, $this> */
     public function type(): HasOne
     {
         return $this->hasOne(Type::class, 'type_id', 'type_id');

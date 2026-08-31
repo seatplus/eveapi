@@ -23,6 +23,7 @@ class CacheCharacterAffiliationIdsService
             ->get(fn () => Cache::put('CharacterAffiliationIds', $this->getIdsCollection()->merge($characterIds)));
     }
 
+    /** @return Collection<int, int> */
     final public function retrieve(): Collection
     {
         // Lock::get() returns false when the lock isn't acquired (another process is
@@ -36,6 +37,7 @@ class CacheCharacterAffiliationIdsService
         return $ids instanceof Collection ? $ids : collect();
     }
 
+    /** @return Collection<int, int> */
     private function getIdsCollection(): Collection
     {
         return Cache::get('CharacterAffiliationIds', collect());

@@ -112,6 +112,7 @@ class CharacterInfo extends Model
         return $this->hasOne(CharacterAffiliation::class, 'character_id', 'character_id');
     }
 
+    /** @return MorphOne<Application, $this> */
     public function application(): MorphOne
     {
         return $this->morphOne(Application::class, 'applicationable')->whereStatus('open');
@@ -129,31 +130,37 @@ class CharacterInfo extends Model
         return Attribute::make(get: fn () => $this->characterAffiliation?->alliance_id);
     }
 
+    /** @return MorphMany<Asset, $this> */
     public function assets(): MorphMany
     {
         return $this->morphMany(Asset::class, 'assetable');
     }
 
+    /** @return MorphMany<Contact, $this> */
     public function contacts(): MorphMany
     {
         return $this->morphMany(Contact::class, 'contactable');
     }
 
+    /** @return MorphMany<Label, $this> */
     public function labels(): MorphMany
     {
         return $this->morphMany(Label::class, 'labelable');
     }
 
+    /** @return MorphMany<WalletJournal, $this> */
     public function walletJournals(): MorphMany
     {
         return $this->morphMany(WalletJournal::class, 'wallet_journable');
     }
 
+    /** @return MorphMany<WalletTransaction, $this> */
     public function walletTransactions(): MorphMany
     {
         return $this->morphMany(WalletTransaction::class, 'wallet_transactionable');
     }
 
+    /** @return MorphToMany<Contract, $this> */
     public function contracts(): MorphToMany
     {
         return $this->morphToMany(
@@ -165,21 +172,25 @@ class CharacterInfo extends Model
         );
     }
 
+    /** @return HasMany<CorporationHistory, $this> */
     public function corporationHistory(): HasMany
     {
         return $this->hasMany(CorporationHistory::class, 'character_id');
     }
 
+    /** @return HasMany<Skill, $this> */
     public function skills(): HasMany
     {
         return $this->hasMany(Skill::class, 'character_id');
     }
 
+    /** @return HasMany<SkillQueue, $this> */
     public function skillQueues(): HasMany
     {
         return $this->hasMany(SkillQueue::class, 'character_id');
     }
 
+    /** @return HasManyThrough<Mail, MailRecipients, $this> */
     public function mails(): HasManyThrough
     {
         return $this->hasManyThrough(
@@ -192,11 +203,13 @@ class CharacterInfo extends Model
         );
     }
 
+    /** @return MorphOne<Balance, $this> */
     public function balance(): MorphOne
     {
         return $this->morphOne(Balance::class, 'balanceable');
     }
 
+    /** @return MorphOne<BatchUpdate, $this> */
     public function batchUpdate(): MorphOne
     {
         return $this->morphOne(BatchUpdate::class, 'batchable');

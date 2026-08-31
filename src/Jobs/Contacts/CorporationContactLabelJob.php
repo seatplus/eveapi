@@ -7,6 +7,7 @@ namespace Seatplus\Eveapi\Jobs\Contacts;
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiSchema\EsiResult;
 use Seatplus\EsiSchema\Resources\Contacts\GetCorporationsCorporationIdContactsLabels;
+use Seatplus\EsiSchema\Responses\CorporationsCorporationIdContactsLabelsGetItem;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\Contacts\ProcessContactLabelsResponse;
@@ -26,6 +27,7 @@ final class CorporationContactLabelJob extends ContactBaseJob
         return RefreshToken::findOrFail($this->characterId);
     }
 
+    /** @return EsiResult<array<CorporationsCorporationIdContactsLabelsGetItem>> */
     #[\Override]
     protected function fetchPage(EsiClient $esi, int $page): EsiResult
     {

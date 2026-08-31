@@ -50,6 +50,7 @@ class ContactLabel extends Model
         return $this->belongsTo(Contact::class, 'contact_id');
     }
 
+    /** @return Attribute<string, never> */
     protected function labelName(): Attribute
     {
         return new Attribute(function () {

@@ -68,6 +68,7 @@ class Constellation extends Model
         'created' => UniverseConstellationCreated::class,
     ];
 
+    /** @return HasOne<Region, $this> */
     public function region(): HasOne
     {
         return $this->hasOne(Region::class, 'region_id', 'region_id');

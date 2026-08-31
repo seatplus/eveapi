@@ -57,6 +57,7 @@ class CorporationInfo extends Model
      */
     protected $primaryKey = 'corporation_id';
 
+    /** @return HasManyThrough<CharacterInfo, CharacterAffiliation, $this> */
     public function characters(): HasManyThrough
     {
         return $this->hasManyThrough(
@@ -69,46 +70,55 @@ class CorporationInfo extends Model
         );
     }
 
+    /** @return MorphOne<SsoScopes, $this> */
     public function ssoScopes(): MorphOne
     {
         return $this->morphOne(SsoScopes::class, 'morphable');
     }
 
+    /** @return BelongsTo<AllianceInfo, $this> */
     public function alliance(): BelongsTo
     {
         return $this->belongsTo(AllianceInfo::class, 'alliance_id', 'alliance_id');
     }
 
+    /** @return HasMany<Application, $this> */
     public function candidates(): HasMany
     {
         return $this->hasMany(Application::class, 'corporation_id', 'corporation_id');
     }
 
+    /** @return MorphMany<Contact, $this> */
     public function contacts(): MorphMany
     {
         return $this->morphMany(Contact::class, 'contactable');
     }
 
+    /** @return MorphMany<Label, $this> */
     public function labels(): MorphMany
     {
         return $this->morphMany(Label::class, 'labelable');
     }
 
+    /** @return HasMany<CorporationMemberTracking, $this> */
     public function members(): HasMany
     {
         return $this->hasMany(CorporationMemberTracking::class, 'corporation_id', 'corporation_id');
     }
 
+    /** @return MorphMany<Balance, $this> */
     public function wallets(): MorphMany
     {
         return $this->morphMany(Balance::class, 'balanceable');
     }
 
+    /** @return MorphMany<WalletJournal, $this> */
     public function walletJournals(): MorphMany
     {
         return $this->morphMany(WalletJournal::class, 'wallet_journable');
     }
 
+    /** @return MorphMany<WalletTransaction, $this> */
     public function walletTransactions(): MorphMany
     {
         return $this->morphMany(WalletTransaction::class, 'wallet_transactionable');

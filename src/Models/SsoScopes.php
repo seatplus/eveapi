@@ -43,11 +43,16 @@ class SsoScopes extends Model
 {
     use HasFactory;
 
+    /** @return MorphTo<Model, $this> */
     public function morphable(): MorphTo
     {
         return $this->morphTo();
     }
 
+    /**
+     * @param  Builder<SsoScopes>  $query
+     * @return Builder<SsoScopes>
+     */
     #[Scope]
     protected function global(Builder $query): Builder
     {

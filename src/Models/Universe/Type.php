@@ -61,6 +61,7 @@ class Type extends Model
         return $this->hasOne(Group::class, 'group_id', 'group_id');
     }
 
+    /** @return HasOneThrough<Category, Group, $this> */
     public function category(): HasOneThrough
     {
         return $this->hasOneThrough(

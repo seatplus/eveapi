@@ -1,6 +1,14 @@
 includes:
     - vendor/larastan/larastan/extension.neon
 
+# A generic return type with no type arguments (`: MorphMany` with no `@return
+# MorphMany<Contact, $this>`) degrades to a bare Model for every consuming package
+# — the root cause of seatplus/eveapi#723 and #725. PHPStan only reports that from
+# level 6 up, together with ~250 unrelated missing-typehint errors, so the single
+# rule is registered here on top of level 4. See ARCHITECTURE.md, Decision 11.
+rules:
+    - PHPStan\Rules\Methods\MissingMethodReturnTypehintRule
+
 parameters:
     databaseMigrationsPath:
         - database/migrations
@@ -15,3 +23,12 @@ parameters:
     checkModelProperties: true
     configDirectories:
         - config
+    ignoreErrors:
+        # The rule above also reports missing return types and missing array value
+        # types, which are level-6 concerns this package has not adopted.
+        -
+            identifier: missingType.return
+            reportUnmatched: false
+        -
+            identifier: missingType.iterableValue
+            reportUnmatched: false

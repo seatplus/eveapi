@@ -40,6 +40,7 @@ class Mail extends Model
 {
     use HasFactory;
 
+    /** @return HasMany<MailRecipients, $this> */
     public function recipients(): HasMany
     {
         return $this->hasMany(MailRecipients::class, 'mail_id');

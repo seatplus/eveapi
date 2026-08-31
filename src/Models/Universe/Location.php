@@ -57,11 +57,13 @@ class Location extends Model implements LocationWatchListInterface
      */
     protected $table = 'universe_locations';
 
+    /** @return MorphTo<Model, $this> */
     public function locatable(): MorphTo
     {
         return $this->morphTo();
     }
 
+    /** @return HasMany<Asset, $this> */
     public function assets(): HasMany
     {
         return $this->hasMany(Asset::class, 'location_id', 'location_id');
@@ -71,12 +73,18 @@ class Location extends Model implements LocationWatchListInterface
      * Every asset that ultimately sits in this location, at any nesting depth (flattened via the
      * denormalized root_location_id). Lets "location contains a matching asset at any depth" be a
      * single flat whereHas instead of the recursive assets/content/content.content traversal.
+     *
+     * @return HasMany<Asset, $this>
      */
     public function descendantAssets(): HasMany
     {
         return $this->hasMany(Asset::class, 'root_location_id', 'location_id');
     }
 
+    /**
+     * @param  Builder<Location>  $query
+     * @return Builder<Location>
+     */
     #[Scope]
     protected function filterByRegionIds(Builder $query, int|array $regions): Builder
     {
@@ -87,6 +95,10 @@ class Location extends Model implements LocationWatchListInterface
         });
     }
 
+    /**
+     * @param  Builder<Location>  $query
+     * @return Builder<Location>
+     */
     #[Scope]
     protected function filterBySystemIds(Builder $query, int|array $systems): Builder
     {

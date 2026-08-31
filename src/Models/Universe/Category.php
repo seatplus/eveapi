@@ -58,6 +58,7 @@ class Category extends Model
      */
     protected $table = 'universe_categories';
 
+    /** @return HasMany<Group, $this> */
     public function groups(): HasMany
     {
         return $this->hasMany(Group::class, 'category_id', 'category_id');

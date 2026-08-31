@@ -38,6 +38,7 @@ class Balance extends Model
 {
     use HasFactory;
 
+    /** @return MorphTo<Model, $this> */
     public function balanceable(): MorphTo
     {
         return $this->morphTo();

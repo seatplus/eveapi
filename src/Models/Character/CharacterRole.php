@@ -54,6 +54,7 @@ class CharacterRole extends Model
         'Security_Officer', 'Starbase_Defense_Operator', 'Starbase_Fuel_Technician', 'Station_Manager', 'Trader',
     ];
 
+    /** @return BelongsTo<CharacterInfo, $this> */
     public function character(): BelongsTo
     {
         return $this->belongsTo(CharacterInfo::class, 'character_id', 'character_id');

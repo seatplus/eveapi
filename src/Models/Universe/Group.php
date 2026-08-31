@@ -59,6 +59,7 @@ class Group extends Model
      */
     protected $table = 'universe_groups';
 
+    /** @return HasMany<Type, $this> */
     public function types(): HasMany
     {
         return $this->hasMany(Type::class, 'group_id', 'group_id');

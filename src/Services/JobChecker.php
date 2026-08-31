@@ -15,6 +15,7 @@ class JobChecker
         private readonly FileGetContentsAction $fileGetContentsAction
     ) {}
 
+    /** @return Collection<int, array{status: string, message: string}> */
     public function checkJob(EsiJob $job): Collection
     {
         return collect()
@@ -22,6 +23,7 @@ class JobChecker
             ->push($this->checkIsCachedLoad($job));
     }
 
+    /** @return array{status: string, message: string} */
     private function checkMiddleware(EsiJob $job): array
     {
         $usedMiddlewares = collect($job->middleware());
@@ -37,6 +39,7 @@ class JobChecker
         return $this->assertionResult('success', 'all required middlewares are present');
     }
 
+    /** @return array{status: string, message: string} */
     private function checkIsCachedLoad(EsiJob $job): array
     {
         $reflection = new \ReflectionClass($job);
@@ -59,6 +62,7 @@ class JobChecker
         return $this->assertionResult('warning', 'job does not check isCachedLoad');
     }
 
+    /** @return array{status: string, message: string} */
     private function assertionResult(string $status, string $message): array
     {
         return ['status' => $status, 'message' => $message];

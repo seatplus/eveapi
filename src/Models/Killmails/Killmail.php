@@ -48,21 +48,25 @@ class Killmail extends Model
      */
     protected $primaryKey = 'killmail_id';
 
+    /** @return HasOne<Type, $this> */
     public function ship(): HasOne
     {
         return $this->hasOne(Type::class, 'type_id', 'ship_type_id');
     }
 
+    /** @return HasOne<System, $this> */
     public function system(): HasOne
     {
         return $this->hasOne(System::class, 'system_id', 'solar_system_id');
     }
 
+    /** @return HasMany<KillmailAttacker, $this> */
     public function attackers(): HasMany
     {
         return $this->hasMany(KillmailAttacker::class, 'killmail_id', 'killmail_id');
     }
 
+    /** @return HasMany<KillmailItem, $this> */
     public function items(): HasMany
     {
         return $this->hasMany(KillmailItem::class, 'location_id', 'killmail_id');

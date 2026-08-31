@@ -126,6 +126,10 @@ final class CharacterContractsJob extends EsiJob
         }
     }
 
+    /**
+     * @param  array<int, int>  $contractIds
+     * @return Collection<int, CharacterContractItemsJob>
+     */
     private function getContractItemJobs(array $contractIds): Collection
     {
         return Contract::query()
@@ -138,6 +142,10 @@ final class CharacterContractsJob extends EsiJob
             ->map(fn (Contract $contract) => new CharacterContractItemsJob($this->characterId, $contract->contract_id));
     }
 
+    /**
+     * @param  array<int, int>  $contractIds
+     * @return Collection<int, ResolveLocationJob>
+     */
     private function getLocationJobs(array $contractIds): Collection
     {
         $refreshToken = RefreshToken::find($this->characterId);

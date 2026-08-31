@@ -69,11 +69,13 @@ class System extends Model
         'created' => UniverseSystemCreated::class,
     ];
 
+    /** @return BelongsTo<Constellation, $this> */
     public function constellation(): BelongsTo
     {
         return $this->belongsTo(Constellation::class, 'constellation_id', 'constellation_id');
     }
 
+    /** @return HasOneThrough<Region, Constellation, $this> */
     public function region(): HasOneThrough
     {
         return $this->hasOneThrough(
@@ -86,11 +88,13 @@ class System extends Model
         );
     }
 
+    /** @return HasMany<Station, $this> */
     public function stations(): HasMany
     {
         return $this->hasMany(Station::class, 'system_id', 'system_id');
     }
 
+    /** @return HasMany<Structure, $this> */
     public function structures(): HasMany
     {
         return $this->hasMany(Structure::class, 'solar_system_id', 'system_id');

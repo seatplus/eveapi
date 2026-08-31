@@ -7,6 +7,7 @@ namespace Seatplus\Eveapi\Jobs\Contacts;
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiSchema\EsiResult;
 use Seatplus\EsiSchema\Resources\Contacts\GetAlliancesAllianceIdContacts;
+use Seatplus\EsiSchema\Responses\AlliancesAllianceIdContactsGetItem;
 use Seatplus\Eveapi\Models\Alliance\AllianceInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\Contacts\ProcessContactResponse;
@@ -26,6 +27,7 @@ final class AllianceContactJob extends ContactBaseJob
         return RefreshToken::findOrFail($this->characterId);
     }
 
+    /** @return EsiResult<array<AlliancesAllianceIdContactsGetItem>> */
     #[\Override]
     protected function fetchPage(EsiClient $esi, int $page): EsiResult
     {

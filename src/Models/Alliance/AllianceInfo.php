@@ -54,6 +54,7 @@ class AllianceInfo extends Model
      */
     protected $primaryKey = 'alliance_id';
 
+    /** @return HasManyThrough<CharacterInfo, CharacterAffiliation, $this> */
     public function characters(): HasManyThrough
     {
         return $this->hasManyThrough(
@@ -66,21 +67,25 @@ class AllianceInfo extends Model
         );
     }
 
+    /** @return HasMany<CorporationInfo, $this> */
     public function corporations(): HasMany
     {
         return $this->hasMany(CorporationInfo::class, 'alliance_id', 'alliance_id');
     }
 
+    /** @return MorphOne<SsoScopes, $this> */
     public function ssoScopes(): MorphOne
     {
         return $this->morphOne(SsoScopes::class, 'morphable');
     }
 
+    /** @return MorphMany<Contact, $this> */
     public function contacts(): MorphMany
     {
         return $this->morphMany(Contact::class, 'contactable');
     }
 
+    /** @return MorphMany<Label, $this> */
     public function labels(): MorphMany
     {
         return $this->morphMany(Label::class, 'labelable');

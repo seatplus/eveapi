@@ -38,6 +38,7 @@ class CorporationDivision extends Model
 {
     use HasFactory;
 
+    /** @return BelongsTo<CorporationInfo, $this> */
     public function corporation(): BelongsTo
     {
         return $this->belongsTo(CorporationInfo::class, 'corporation_id', 'corporation_id');

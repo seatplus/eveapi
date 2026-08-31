@@ -15,6 +15,7 @@ abstract class ContractItemsBase extends EsiJob implements ShouldBeUnique
 {
     public int $contractId;
 
+    /** @return EsiResult<covariant array<object>> */
     abstract protected function fetchItems(EsiClient $esi): EsiResult;
 
     #[\Override]

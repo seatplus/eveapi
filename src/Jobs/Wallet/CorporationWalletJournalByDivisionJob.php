@@ -7,6 +7,7 @@ namespace Seatplus\Eveapi\Jobs\Wallet;
 use Seatplus\EsiClient\EsiClient;
 use Seatplus\EsiSchema\EsiResult;
 use Seatplus\EsiSchema\Resources\Wallet\GetCorporationsCorporationIdWalletsDivisionJournal;
+use Seatplus\EsiSchema\Responses\CorporationsCorporationIdWalletsDivisionJournalGetItem;
 use Seatplus\Eveapi\Models\Corporation\CorporationInfo;
 use Seatplus\Eveapi\Models\RefreshToken;
 use Seatplus\Eveapi\Services\FindCorporationRefreshToken;
@@ -33,6 +34,7 @@ final class CorporationWalletJournalByDivisionJob extends WalletJournalBase
         return $token;
     }
 
+    /** @return EsiResult<array<CorporationsCorporationIdWalletsDivisionJournalGetItem>> */
     #[\Override]
     protected function fetchPage(EsiClient $esi, int $page): EsiResult
     {

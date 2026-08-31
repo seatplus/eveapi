@@ -46,6 +46,7 @@ class ContractItem extends Model
      */
     protected $primaryKey = 'record_id';
 
+    /** @return HasOne<Type, $this> */
     public function type(): HasOne
     {
         return $this->hasOne(Type::class, 'type_id', 'type_id');

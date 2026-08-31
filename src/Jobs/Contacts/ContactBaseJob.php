@@ -12,6 +12,7 @@ use Seatplus\Eveapi\Services\Contacts\ProcessContactResponse;
 
 abstract class ContactBaseJob extends EsiJob
 {
+    /** @return EsiResult<covariant array<object>> */
     abstract protected function fetchPage(EsiClient $esi, int $page): EsiResult;
 
     protected function handleProcessor(ProcessContactLabelsResponse|ProcessContactResponse $processor, EsiClient $esi): void
