@@ -35,13 +35,19 @@ use Seatplus\Eveapi\Models\Universe\Station;
  */
 class LocationFactory extends Factory
 {
+    // EVE solar system space: outside the station (60M-64M) and structure (>=100M) ranges the resolvers branch on.
+    private const int LOCATION_ID_BASE = 30_000_000;
+
+    // location_id is a primary key, so it must never repeat — see issue #728 and ARCHITECTURE.md Decision 12.
+    private static int $nextLocationId = self::LOCATION_ID_BASE;
+
     protected $model = Location::class;
 
     #[\Override]
     public function definition()
     {
         return [
-            'location_id' => fake()->numberBetween(0, 10000),
+            'location_id' => self::$nextLocationId++,
         ];
     }
 
