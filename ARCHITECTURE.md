@@ -462,3 +462,52 @@ The rule fires the `missingType.generics` error at level 4; its two other identi
 - The abstract ESI bases (`ContactBaseJob::fetchPage()`, `ContractItemsBase::fetchItems()`, `WalletJournalBase::fetchPage()`, `WalletTransactionBase::fetchTransactions()`) declare `EsiResult<covariant array<object>>` for the same reason; each leaf job declares the concrete response DTO its `OPERATION_CLASS` returns.
 - Watchlist and other `#[Scope]` methods now declare `@param Builder<TheModel> $query` alongside the return. The parameter tag is not optional: without it the incoming builder is `Builder<Model>`, and returning it as `Builder<TheModel>` is a variance error inside the method.
 - Cache-backed `Collection` returns (`CacheCharacterAffiliationIdsService`) declare the type the writer puts in; `Cache::get()` is `mixed`, so this is a claim the analyser accepts rather than verifies.
+
+---
+
+## Decision 12 — `LocationFactory` draws `location_id` from a process-wide counter, not from `fake()`
+
+### Context
+`Location` is one of the models whose primary key is a real EVE id: `protected $primaryKey = 'location_id'`, table `universe_locations`, column `$table->bigInteger('location_id')->primary()`, model marked `#[WithoutIncrementing]`. The factory generated that key with `fake()->numberBetween(0, 10000)`, so every `Location::factory()` was a draw against every row already in the table, and a repeat is a hard `universe_locations_pkey` violation rather than a retry.
+
+That is not a theoretical flake. `seatplus/web`'s browser test *"merges the next locations page in on scroll"* creates 20 locations in a single test to fill more than one paginator page; the birthday probability for 20 draws out of 10 001 is ~1.9%, and rows surviving from earlier tests in the same database push it well past that. Across web's last 23 completed `Browser (vs core)` runs, 4 failed this way — ~17%, including one on `5.x`. Because web's dependabot workflow arms GitHub auto-merge, and auto-merge never re-runs a check that already failed, one collision leaves a PR armed-but-`BLOCKED` with no notification; web #1714 and #1718 stalled exactly like that during a 5.1.0 release (#728).
+
+### Decision
+`LocationFactory` hands out ids from a **`private static int` counter on the factory class**, based at `30_000_000` and incremented once per generated model:
+
+```php
+private const int LOCATION_ID_BASE = 30_000_000;
+
+private static int $nextLocationId = self::LOCATION_ID_BASE;
+
+public function definition()
+{
+    return ['location_id' => self::$nextLocationId++];
+}
+```
+
+`withStation()` is unchanged: it overrides `location_id` with `Station::factory()`, and the counter merely advances an extra step when it does.
+
+`tests/Unit/Factories/LocationFactoryTest.php` pins all four properties this relies on — 500 generated ids are distinct, a second batch never reuses a persisted id, the ids stay below `StationResolver::MIN_STATION_ID`, and `withStation()` still takes its id from the station.
+
+### Rationale
+- **A counter is the only option that is blind-safe against rows it cannot see.** Uniqueness has to hold against the table, not against one generator's memory. A counter that only ever moves forward cannot re-emit a value it already emitted, whatever is stored.
+- **`fake()->unique()` would have fixed the reported test and left the class of failure open.** Its memory lives on the `Faker\Generator`, and the generator does not survive a test: `DatabaseServiceProvider::registerFakerGenerator()` calls `static::$fakers[$locale]->unique(true)` on *every* container resolution, and the `fake()` helper binds its own `Faker\Generator:<locale>` singleton into an application that Testbench rebuilds per test. Verified rather than assumed: drawing `numberBetween(7, 7)` twice inside one test throws `OverflowException`, and the next test draws `7` again. So `unique()` protects a single test's 20 locations and nothing beyond it — while the issue's own diagnosis is that leftover rows are what push the rate from 1.9% to 17%.
+- **`unique()` on the *old* range would also have started throwing.** `UniqueGenerator::__call` gives up after `maxRetries` (10 000) and throws `OverflowException`; against a 10 001-wide range that arrives quickly. Making `unique()` safe therefore means widening the range too — i.e. doing the harder half of the work and still keeping a random draw.
+- **Laravel's `Sequence` is the wrong tool here despite the name.** `Sequence::__invoke()` returns `$this->sequence[$this->index % $this->count]` — it cycles a fixed list — and it is attached as *state to one factory instance*, so `$index` restarts at 0 for every `Location::factory()` call. It is built for "alternate these N values across a `count()`", not for "never repeat".
+- **`30_000_000` is chosen, not arbitrary.** Both resolvers branch on the id itself: `StationResolver::isPotentialStation()` is `> 60_000_000 && < 64_000_000`, `StructureResolver::isPotentialStructure()` is `>= 100_000_000`. The previous 0–10 000 default sat outside both, so a default-constructed `Location` was neither a station nor a structure, and 64 call sites across two repositories were written against that. `30_000_000` is EVE's solar-system id space — a legitimate location id, still outside both bands — so the semantics 28 sites here and 36 in `seatplus/web` depend on are preserved, while the old value (which lived in the *type* id band) was never realistic in the first place.
+- **The ecosystem offers no factory precedent either way.** There are no `database/factories` directories anywhere in `vendor/`; Laravel's own answer to "a primary key that must not repeat" is the database sequence behind `$table->id()`, which a model with a natural EVE key and `#[WithoutIncrementing]` cannot use. A process-local counter is the nearest available equivalent.
+
+### Alternatives considered
+- **A wider random range** (`60_000_000`+ or `1_000_000_000_000`+, as sketched in #728). Lowers the probability without ending the class of failure, and both candidate bands reclassify every default location as a potential station or structure for the resolvers.
+- **A wide range plus `fake()->unique()`.** Removes intra-test collisions only, for the reasons measured above, and inherits the same reclassification problem.
+- **`Illuminate\...\Factories\Sequence`** — cycles a fixed list per factory instance; see rationale.
+- **A database sequence / dropping `#[WithoutIncrementing]`.** `location_id` is a real EVE id supplied by ESI, not an application-assigned surrogate. Letting Postgres allocate it in tests would diverge from production behaviour and would not survive `Location::firstOrCreate(['location_id' => $esiId])`.
+- **`max(location_id) + 1` from the table.** Database-aware and correct, but a query per generated model, and it still races when two rows are built before either is inserted.
+- **Leaving the factory alone and pinning ids at each of web's call sites.** Fixes the four known failures and leaves the trap armed for the next test that creates locations in bulk; it also pushes a `seatplus/eveapi` defect onto its consumer.
+
+### Consequences
+- Location ids are now stable and increasing within a process, which makes failure output readable, and they no longer vary run to run — but they are *not* reproducible from a faker seed. Nothing in either suite seeds faker for locations.
+- The counter never resets, including under `LazilyRefreshDatabase`, which is what makes it safe: a rolled-back test still consumes ids. There are 2 000 000 ids inside the solar-system band and 30 000 000 before the station range begins; the whole suite creates a few hundred.
+- The counter is per PHP process. CI shards with `pest --shard=n/3`, each shard a separate job with its own Postgres service, so shards never share a table. A future move to `--parallel` against one shared database would need the worker token folded into the base.
+- Two latent collisions in `seatplus/web` close as a side effect: its `ManualLocationFactory` still draws `location_id` from the same `0–10000` range, which could previously coincide with a factory-built `Location`. No change is required there — `manual_locations` has its own `$table->id()` and `location_id` is a plain column — but the range is worth widening on its own terms.
